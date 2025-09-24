@@ -50,3 +50,15 @@ edge:
   rbac:
     # Install platform roles (admin, self-provisioner, etc.)
     installPlatformRoles: true
+
+  # Host Cluster configuration
+  cluster:
+    name: "host-cluster"
+    enabled: true
+    provider: "Kubernetes"
+    joinFederation: false
+    externalKubeAPIEnabled: false
+    connection:
+      type: "direct"
+      kubernetesAPIEndpoint: "https://kubernetes.default.svc:443"
+      # theriseunionAPIEndpoint: "http://edge-apiserver:8080"
