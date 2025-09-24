@@ -1,0 +1,25 @@
+{{- if .Values.edge.defaultAdmin.enabled }}
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: User
+metadata:
+  name: {{ .Values.edge.defaultAdmin.username }}
+  annotations:
+    iam.theriseunion.io/globalrole: platform-admin
+    iam.theriseunion.io/granted-clusters: host
+    iam.theriseunion.io/last-enable-time: "{{ now | date "2006-01-02T15:04:05Z" }}"
+    iam.theriseunion.io/last-password-change-time: "{{ now | date "2006-01-02T15:04:05Z" }}"
+    theriseunion.io/creator: system
+    helm.sh/resource-policy: keep
+  finalizers:
+  - finalizers.theriseunion.io/users
+spec:
+  description: '{"zh":"默认管理员用户","en":"Default admin user"}'
+  displayName: {{ .Values.edge.defaultAdmin.displayName }}
+  email: {{ .Values.edge.defaultAdmin.email }}
+  # Password: P@88w0rd
+  # Bcrypt hash from verified local cluster
+  encryptedPassword: "$2a$10$9WPIjffGQX6Jhj2Ql9mmBepWZUB68uZy89Zj5GTnLD9V495IWidB."
+  groups:
+  - system:admin
+  lang: {{ .Values.edge.defaultAdmin.lang | default "zh-CN" }}
+{{- end }}

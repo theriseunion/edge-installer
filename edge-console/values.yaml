@@ -2,6 +2,9 @@
 
 replicaCount: 1
 
+# Override the full name to remove edge- prefix
+fullnameOverride: "console"
+
 image:
   repository: quanzhenglong.com/edge/edge-console
   pullPolicy: IfNotPresent
@@ -9,7 +12,6 @@ image:
 
 imagePullSecrets: []
 nameOverride: ""
-fullnameOverride: ""
 
 # ServiceAccount configuration
 serviceAccount:
@@ -83,7 +85,7 @@ edge:
     # Console port
     port: 3000
     # API server endpoint
-    apiServerUrl: "http://edge-apiserver:8080"
+    apiServerUrl: "http://apiserver:8080"
     # Log level
     logLevel: info
     # Environment
@@ -94,6 +96,6 @@ env:
   - name: NODE_ENV
     value: "production"
   - name: NEXT_PUBLIC_API_BASE_URL
-    value: "http://edge-apiserver:8080"
+    value: "http://apiserver:8080"
   - name: PORT
     value: "3000"

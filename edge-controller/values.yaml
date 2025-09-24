@@ -2,6 +2,9 @@
 
 replicaCount: 1
 
+# Override the full name to remove edge- prefix
+fullnameOverride: "controller"
+
 image:
   repository: quanzhenglong.com/edge/edge-controller
   pullPolicy: IfNotPresent  # Options: Always, IfNotPresent, Never
