@@ -1,0 +1,14 @@
+{{- if .Values.edge.oauth.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "edge-apiserver.fullname" . }}-oauth-clients
+  labels:
+    {{- include "edge-apiserver.labels" . | nindent 4 }}
+data:
+  clients.yaml: |
+    clients:
+      {{- range .Values.edge.oauth.clients }}
+      {{ .clientId }}: {{ .clientSecret | quote }}
+      {{- end }}
+{{- end }}

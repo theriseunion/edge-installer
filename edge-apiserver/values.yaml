@@ -65,3 +65,24 @@ edge:
       type: "direct"
       kubernetesAPIEndpoint: "https://kubernetes.default.svc:443"
       # theriseunionAPIEndpoint: "http://edge-apiserver:8080"
+
+  # Default admin user configuration
+  defaultAdmin:
+    enabled: true
+    username: "admin"
+    displayName: "Platform Administrator"
+    email: "admin@theriseunion.com"
+    lang: "zh-CN"
+
+  # OAuth configuration
+  oauth:
+    enabled: true
+    clients:
+      - clientId: "edge-console"
+        clientSecret: "edge-secret"
+      - clientId: "test-client"
+        clientSecret: "test-secret"
+      - clientId: "kubectl"
+        clientSecret: "kubectl-secret"
+      - clientId: "default-client"
+        clientSecret: "default-secret"
