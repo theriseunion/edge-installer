@@ -16,7 +16,7 @@ export KUBECONFIG=$KUBECONFIG_PATH
 kubectl create namespace $NAMESPACE --dry-run=client -o yaml | kubectl apply -f -
 
 # 部署 Controller
-helm upgrade --install edge-controller ./edge-controller \
+helm upgrade --install controller ./edge-controller \
   --namespace $NAMESPACE \
   --set image.repository=$REGISTRY/controller \
   --set image.tag=$TAG \
@@ -24,7 +24,7 @@ helm upgrade --install edge-controller ./edge-controller \
   --wait
 
 # 部署 API Server
-helm upgrade --install edge-apiserver ./edge-apiserver \
+helm upgrade --install apiserver ./edge-apiserver \
   --namespace $NAMESPACE \
   --set image.repository=$REGISTRY/apiserver \
   --set image.tag=$TAG \
@@ -32,13 +32,13 @@ helm upgrade --install edge-apiserver ./edge-apiserver \
   --wait
 
 # 部署 Console
-helm upgrade --install edge-console ./edge-console \
+helm upgrade --install console ./edge-console \
   --namespace $NAMESPACE \
   --set image.repository=$REGISTRY/console \
   --set image.tag=$TAG \
   --set image.pullPolicy=$PULL_POLICY \
   --set 'env[0].name=NEXT_PUBLIC_API_BASE_URL' \
-  --set 'env[0].value=http://edge-apiserver:8080' \
+  --set 'env[0].value=http://apiserver:8080' \
   --wait
 
 echo "部署完成！"
