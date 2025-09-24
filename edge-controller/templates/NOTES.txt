@@ -1,0 +1,9 @@
+Edge Controller has been deployed successfully!
+
+To check the controller status:
+  kubectl get deployment {{ include "edge-controller.fullname" . }} -n {{ .Release.Namespace }}
+
+To view the logs:
+  kubectl logs deployment/{{ include "edge-controller.fullname" . }} -n {{ .Release.Namespace }}
+
+RBAC Resources will be created automatically by the controller.

@@ -1,0 +1,109 @@
+---
+apiVersion: installer.edge.theriseunion.io/v1alpha1
+kind: EdgeConfiguration
+metadata:
+  name: edge-installer
+  namespace: edge-system
+  labels:
+    version: main
+spec:
+  # 基础配置
+  persistence:
+    storageClass: ""        # 如果集群没有默认StorageClass，请指定现有的StorageClass
+
+  # 认证配置
+  authentication:
+    # adminPassword: ""     # 自定义管理员密码。如果参数存在但值为空，则生成随机密码。如果参数不存在，则使用 P@88w0rd
+    jwtSecret: ""           # JWT密钥，用于token签名
+
+  # 私有镜像仓库
+  local_registry: "quanzhenglong.com"   # 私有镜像仓库地址
+
+  # Edge 组件配置
+  edge:
+    # API Server 配置
+    apiserver:
+      enabled: true           # 是否启用 API Server
+      image:
+        repository: quanzhenglong.com/edge/edge-apiserver
+        tag: main
+      replicas: 1
+      resources:
+        limits:
+          cpu: 500m
+          memory: 512Mi
+        requests:
+          cpu: 100m
+          memory: 128Mi
+      service:
+        type: ClusterIP
+        port: 8080
+
+    # Controller 配置
+    controller:
+      enabled: true           # 是否启用 Controller
+      image:
+        repository: quanzhenglong.com/edge/edge-controller
+        tag: main
+      replicas: 1
+      resources:
+        limits:
+          cpu: 200m
+          memory: 256Mi
+        requests:
+          cpu: 50m
+          memory: 64Mi
+      service:
+        type: ClusterIP
+        port: 8080
+
+    # Console 配置
+    console:
+      enabled: true           # 是否启用 Web Console
+      image:
+        repository: quanzhenglong.com/edge/edge-console
+        tag: main
+      replicas: 1
+      resources:
+        limits:
+          cpu: 500m
+          memory: 512Mi
+        requests:
+          cpu: 100m
+          memory: 128Mi
+      service:
+        type: ClusterIP
+        port: 3000
+      ingress:
+        enabled: true
+        className: ""
+        annotations:
+          kubernetes.io/ingress.class: nginx
+          nginx.ingress.kubernetes.io/rewrite-target: /
+        hosts:
+          - host: edge-console.local
+            paths:
+              - path: /
+                pathType: Prefix
+
+  # 监控配置
+  monitoring:
+    enabled: false            # 是否启用监控
+    storageClass: ""         # 监控存储类
+
+  # 日志配置
+  logging:
+    enabled: false           # 是否启用日志系统
+
+  # 网络配置
+  network:
+    networkpolicy:
+      enabled: false         # 是否启用网络策略
+    ippool:
+      type: none            # Pod IP池类型: calico/none
+    topology:
+      type: none            # 服务拓扑类型: weave-scope/none
+
+  # 边缘运行时配置
+  edgeruntime:
+    enabled: false          # 是否启用边缘运行时

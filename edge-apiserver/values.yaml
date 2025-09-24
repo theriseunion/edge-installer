@@ -1,0 +1,52 @@
+# Edge API Server Configuration - Focused on RBAC Management
+
+replicaCount: 1
+
+image:
+  repository: quanzhenglong.com/edge/edge-apiserver
+  pullPolicy: IfNotPresent
+  tag: "main"
+
+# ServiceAccount configuration
+serviceAccount:
+  create: true
+  automount: true
+  name: ""
+
+# Security Context
+securityContext:
+  runAsNonRoot: true
+  runAsUser: 65532
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+    - ALL
+
+# Service configuration
+service:
+  type: ClusterIP
+  port: 8080
+  targetPort: 8080
+
+# Resource limits and requests
+resources:
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+# Edge specific configuration
+edge:
+  # API Server configuration
+  apiserver:
+    # Log level (debug, info, warn, error)
+    logLevel: info
+    # API Server port
+    port: 8080
+
+  # RBAC configuration - Core functionality
+  rbac:
+    # Install platform roles (admin, self-provisioner, etc.)
+    installPlatformRoles: true

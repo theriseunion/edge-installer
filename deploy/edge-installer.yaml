@@ -1,0 +1,195 @@
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  name: edgeconfigurations.installer.edge.theriseunion.io
+spec:
+  group: installer.edge.theriseunion.io
+  versions:
+    - name: v1alpha1
+      served: true
+      storage: true
+      schema:
+        openAPIV3Schema:
+          type: object
+          properties:
+            spec:
+              type: object
+              x-kubernetes-preserve-unknown-fields: true
+            status:
+              type: object
+              x-kubernetes-preserve-unknown-fields: true
+  scope: Namespaced
+  names:
+    plural: edgeconfigurations
+    singular: edgeconfiguration
+    kind: EdgeConfiguration
+    shortNames:
+      - ec
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: edge-system
+
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: edge-installer
+  namespace: edge-system
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: edge-installer
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - '*'
+  verbs:
+  - '*'
+- apiGroups:
+  - apps
+  resources:
+  - '*'
+  verbs:
+  - '*'
+- apiGroups:
+  - extensions
+  resources:
+  - '*'
+  verbs:
+  - '*'
+- apiGroups:
+  - batch
+  resources:
+  - '*'
+  verbs:
+  - '*'
+- apiGroups:
+  - rbac.authorization.k8s.io
+  resources:
+  - '*'
+  verbs:
+  - '*'
+- apiGroups:
+  - apiregistration.k8s.io
+  resources:
+  - '*'
+  verbs:
+  - '*'
+- apiGroups:
+  - apiextensions.k8s.io
+  resources:
+  - '*'
+  verbs:
+  - '*'
+- apiGroups:
+  - certificates.k8s.io
+  resources:
+  - '*'
+  verbs:
+  - '*'
+- apiGroups:
+  - storage.k8s.io
+  resources:
+  - '*'
+  verbs:
+  - '*'
+- apiGroups:
+  - admissionregistration.k8s.io
+  resources:
+  - '*'
+  verbs:
+  - '*'
+- apiGroups:
+  - policy
+  resources:
+  - '*'
+  verbs:
+  - '*'
+- apiGroups:
+  - autoscaling
+  resources:
+  - '*'
+  verbs:
+  - '*'
+- apiGroups:
+  - networking.k8s.io
+  resources:
+  - '*'
+  verbs:
+  - '*'
+- apiGroups:
+  - iam.theriseunion.io
+  resources:
+  - '*'
+  verbs:
+  - '*'
+- apiGroups:
+  - installer.edge.theriseunion.io
+  resources:
+  - '*'
+  verbs:
+  - '*'
+
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: edge-installer
+subjects:
+- kind: ServiceAccount
+  name: edge-installer
+  namespace: edge-system
+roleRef:
+  kind: ClusterRole
+  name: edge-installer
+  apiGroup: rbac.authorization.k8s.io
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: edge-installer
+  namespace: edge-system
+  labels:
+    app: edge-installer
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: edge-installer
+  template:
+    metadata:
+      labels:
+        app: edge-installer
+    spec:
+      serviceAccountName: edge-installer
+      containers:
+      - name: installer
+        image: quanzhenglong.com/edge/edge-installer:main
+        imagePullPolicy: "Always"
+        resources:
+          limits:
+            cpu: "1"
+            memory: 1Gi
+          requests:
+            cpu: 20m
+            memory: 100Mi
+        env:
+        - name: KUBECONFIG_PATH
+          value: "/etc/kubeconfig"
+        volumeMounts:
+        - mountPath: /etc/localtime
+          name: host-time
+          readOnly: true
+      volumes:
+      - hostPath:
+          path: /etc/localtime
+          type: ""
+        name: host-time

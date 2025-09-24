@@ -1,0 +1,9 @@
+Edge API Server has been deployed successfully!
+
+To check the API server status:
+  kubectl get deployment {{ include "edge-apiserver.fullname" . }} -n {{ .Release.Namespace }}
+
+To access the API server:
+  kubectl port-forward deployment/{{ include "edge-apiserver.fullname" . }} 8080:8080 -n {{ .Release.Namespace }}
+
+Then visit: http://localhost:8080

@@ -1,0 +1,18 @@
+apiVersion: v2
+name: edge-apiserver
+description: Edge API Server - Multi-tenant cloud native platform API server with comprehensive RBAC
+type: application
+version: 0.1.0
+appVersion: "v1.0.0"
+home: https://github.com/edge/apiserver
+maintainers:
+  - name: Edge Team
+    email: dev@edge.io
+keywords:
+  - edge
+  - api-server
+  - rbac
+  - multi-tenant
+  - kubernetes
+sources:
+  - https://github.com/edge/apiserver
