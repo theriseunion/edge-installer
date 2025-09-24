@@ -64,10 +64,17 @@ export REGISTRY=your-registry.com/edge
 export TAG=v1.0.0
 export NAMESPACE=my-namespace
 export KUBECONFIG_PATH=/path/to/kubeconfig
+export PULL_POLICY=Always  # Always, IfNotPresent, Never
 
 # 执行部署
 ./deploy.sh
 ```
+
+### 镜像拉取策略配置
+
+- **开发环境**：`PULL_POLICY=Always` - 总是拉取最新镜像
+- **生产环境**：`PULL_POLICY=IfNotPresent` - 仅在镜像不存在时拉取
+- **离线环境**：`PULL_POLICY=Never` - 从不拉取，使用本地镜像
 
 #### 使用 values 文件
 

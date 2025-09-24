@@ -7,6 +7,7 @@ NAMESPACE=${NAMESPACE:-edge-system}
 KUBECONFIG_PATH=${KUBECONFIG_PATH:-~/.kube/116.63.161.198.config}
 REGISTRY=${REGISTRY:-quanzhenglong.com/edge}
 TAG=${TAG:-main}
+PULL_POLICY=${PULL_POLICY:-Always}
 
 # 设置 kubeconfig
 export KUBECONFIG=$KUBECONFIG_PATH
@@ -19,6 +20,7 @@ helm upgrade --install edge-controller ./edge-controller \
   --namespace $NAMESPACE \
   --set image.repository=$REGISTRY/edge-controller \
   --set image.tag=$TAG \
+  --set image.pullPolicy=$PULL_POLICY \
   --wait
 
 # 部署 API Server
@@ -26,6 +28,7 @@ helm upgrade --install edge-apiserver ./edge-apiserver \
   --namespace $NAMESPACE \
   --set image.repository=$REGISTRY/edge-apiserver \
   --set image.tag=$TAG \
+  --set image.pullPolicy=$PULL_POLICY \
   --wait
 
 # 部署 Console
@@ -33,8 +36,9 @@ helm upgrade --install edge-console ./edge-console \
   --namespace $NAMESPACE \
   --set image.repository=$REGISTRY/edge-console \
   --set image.tag=$TAG \
-  --set env[0].name=NEXT_PUBLIC_API_BASE_URL \
-  --set env[0].value=http://edge-apiserver:8080 \
+  --set image.pullPolicy=$PULL_POLICY \
+  --set 'env[0].name=NEXT_PUBLIC_API_BASE_URL' \
+  --set 'env[0].value=http://edge-apiserver:8080' \
   --wait
 
 echo "部署完成！"
