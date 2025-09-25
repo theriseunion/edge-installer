@@ -11,5 +11,9 @@ spec:
       targetPort: http
       protocol: TCP
       name: http
+    - port: 8083
+      targetPort: 8083
+      protocol: TCP
+      name: metrics
   selector:
     {{- include "edge-apiserver.selectorLabels" . | nindent 4 }}
