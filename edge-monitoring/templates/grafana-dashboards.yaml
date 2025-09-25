@@ -1,0 +1,161 @@
+{{- if and .Values.global.enabled .Values.grafana.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: edge-grafana-dashboards
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    app: edge-grafana
+    component: grafana
+data:
+  edge-overview.json: |
+    {
+      "dashboard": {
+        "id": null,
+        "title": "Edge Platform Overview",
+        "tags": ["edge", "overview"],
+        "timezone": "browser",
+        "time": {
+          "from": "now-1h",
+          "to": "now"
+        },
+        "refresh": "30s",
+        "panels": [
+          {
+            "id": 1,
+            "title": "Edge APIServer QPS",
+            "type": "graph",
+            "targets": [
+              {
+                "expr": "rate(http_requests_total{job=\"edge-apiserver\"}[5m])",
+                "legendFormat": "{{ "{{" }}method{{ "}}" }} {{ "{{" }}handler{{ "}}" }}"
+              }
+            ],
+            "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0}
+          },
+          {
+            "id": 2,
+            "title": "Edge Controller Reconcile Rate",
+            "type": "graph",
+            "targets": [
+              {
+                "expr": "rate(controller_runtime_reconcile_total{job=\"edge-controller\"}[5m])",
+                "legendFormat": "{{ "{{" }}controller{{ "}}" }}"
+              }
+            ],
+            "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0}
+          },
+          {
+            "id": 3,
+            "title": "Memory Usage",
+            "type": "graph",
+            "targets": [
+              {
+                "expr": "go_memstats_heap_inuse_bytes{job=~\"edge-(apiserver|controller)\"}",
+                "legendFormat": "{{ "{{" }}job{{ "}}" }}"
+              }
+            ],
+            "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8}
+          },
+          {
+            "id": 4,
+            "title": "CPU Usage",
+            "type": "graph",
+            "targets": [
+              {
+                "expr": "rate(process_cpu_seconds_total{job=~\"edge-(apiserver|controller)\"}[5m])",
+                "legendFormat": "{{ "{{" }}job{{ "}}" }}"
+              }
+            ],
+            "gridPos": {"h": 8, "w": 12, "x": 12, "y": 8}
+          }
+        ]
+      }
+    }
+
+  edge-apiserver.json: |
+    {
+      "dashboard": {
+        "id": null,
+        "title": "Edge APIServer Metrics",
+        "tags": ["edge", "apiserver"],
+        "timezone": "browser",
+        "time": {
+          "from": "now-1h",
+          "to": "now"
+        },
+        "refresh": "30s",
+        "panels": [
+          {
+            "id": 1,
+            "title": "HTTP Request Rate by Status Code",
+            "type": "graph",
+            "targets": [
+              {
+                "expr": "sum by (code) (rate(http_requests_total{job=\"edge-apiserver\"}[5m]))",
+                "legendFormat": "{{ "{{" }}code{{ "}}" }}"
+              }
+            ],
+            "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0}
+          },
+          {
+            "id": 2,
+            "title": "HTTP Request Duration",
+            "type": "graph",
+            "targets": [
+              {
+                "expr": "histogram_quantile(0.95, rate(http_request_duration_seconds_bucket{job=\"edge-apiserver\"}[5m]))",
+                "legendFormat": "95th percentile"
+              },
+              {
+                "expr": "histogram_quantile(0.50, rate(http_request_duration_seconds_bucket{job=\"edge-apiserver\"}[5m]))",
+                "legendFormat": "50th percentile"
+              }
+            ],
+            "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0}
+          }
+        ]
+      }
+    }
+
+  edge-controller.json: |
+    {
+      "dashboard": {
+        "id": null,
+        "title": "Edge Controller Metrics",
+        "tags": ["edge", "controller"],
+        "timezone": "browser",
+        "time": {
+          "from": "now-1h",
+          "to": "now"
+        },
+        "refresh": "30s",
+        "panels": [
+          {
+            "id": 1,
+            "title": "Controller Reconcile Rate",
+            "type": "graph",
+            "targets": [
+              {
+                "expr": "sum by (controller) (rate(controller_runtime_reconcile_total{job=\"edge-controller\"}[5m]))",
+                "legendFormat": "{{ "{{" }}controller{{ "}}" }}"
+              }
+            ],
+            "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0}
+          },
+          {
+            "id": 2,
+            "title": "Controller Reconcile Errors",
+            "type": "graph",
+            "targets": [
+              {
+                "expr": "sum by (controller) (rate(controller_runtime_reconcile_errors_total{job=\"edge-controller\"}[5m]))",
+                "legendFormat": "{{ "{{" }}controller{{ "}}" }} errors"
+              }
+            ],
+            "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0}
+          }
+        ]
+      }
+    }
+{{- end }}

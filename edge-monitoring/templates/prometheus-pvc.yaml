@@ -1,0 +1,19 @@
+{{- if and .Values.global.enabled .Values.prometheus.enabled .Values.prometheus.persistence.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: edge-prometheus-pvc
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    app: edge-prometheus
+    component: prometheus
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.prometheus.persistence.size }}
+  {{- if .Values.prometheus.persistence.storageClassName }}
+  storageClassName: {{ .Values.prometheus.persistence.storageClassName }}
+  {{- end }}
+{{- end }}

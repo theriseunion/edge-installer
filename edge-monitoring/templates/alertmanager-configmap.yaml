@@ -1,0 +1,20 @@
+{{- if and .Values.global.enabled .Values.alertmanager.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: edge-alertmanager-config
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    app: edge-alertmanager
+    component: alertmanager
+data:
+  alertmanager.yml: |
+    global:
+      {{- toYaml .Values.alertmanager.config.global | nindent 6 }}
+
+    route:
+      {{- toYaml .Values.alertmanager.config.route | nindent 6 }}
+
+    receivers:
+      {{- toYaml .Values.alertmanager.config.receivers | nindent 6 }}
+{{- end }}

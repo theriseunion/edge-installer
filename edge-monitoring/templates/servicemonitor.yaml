@@ -1,0 +1,25 @@
+{{- if and .Values.global.enabled .Values.serviceMonitor.enabled }}
+{{- range .Values.serviceMonitor.targets }}
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ .name }}-servicemonitor
+  namespace: {{ $.Values.global.namespace }}
+  labels:
+    app: {{ .name }}
+    component: monitoring
+spec:
+  selector:
+    matchLabels:
+      app: {{ .service }}
+  endpoints:
+  - port: {{ .port }}
+    path: {{ .path }}
+    interval: 15s
+    scrapeTimeout: 10s
+  namespaceSelector:
+    matchNames:
+    - {{ $.Values.global.namespace }}
+{{- end }}
+{{- end }}

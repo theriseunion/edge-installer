@@ -1,0 +1,22 @@
+{{- if and .Values.global.enabled .Values.prometheus.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: edge-prometheus-config
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    app: edge-prometheus
+    component: prometheus
+data:
+  prometheus.yml: |
+    global:
+      {{- toYaml .Values.prometheus.config.global | nindent 6 }}
+
+    {{- if .Values.prometheus.config.rule_files }}
+    rule_files:
+      {{- toYaml .Values.prometheus.config.rule_files | nindent 6 }}
+    {{- end }}
+
+    scrape_configs:
+      {{- toYaml .Values.prometheus.config.scrape_configs | nindent 6 }}
+{{- end }}
