@@ -56,7 +56,7 @@ edge:
 
   # Host Cluster configuration
   cluster:
-    name: "host-cluster"
+    name: "host"
     enabled: true
     provider: "Kubernetes"
     joinFederation: false

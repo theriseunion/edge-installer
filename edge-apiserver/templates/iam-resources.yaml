@@ -1,0 +1,282 @@
+# RoleTemplates - 角色模板定义
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  name: workspace-create
+  annotations:
+    iam.theriseunion.io/role-template-rules: '{"workspaces": "create"}'
+  labels:
+    iam.theriseunion.io/category: workspace-management
+    iam.theriseunion.io/scope: platform
+    iam.theriseunion.io/scope-value: global
+spec:
+  description:
+    en: Create workspaces.
+    zh: 创建企业空间。
+  displayName:
+    en: Workspace Creation
+    zh: 企业空间创建
+  rules:
+  - apiGroups:
+    - tenant.edge.io
+    resources:
+    - workspaces
+    - workspacetemplates
+    verbs:
+    - create
+    - watch
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  name: workspace-manage
+  annotations:
+    iam.theriseunion.io/role-template-rules: '{"workspaces": "manage"}'
+  labels:
+    iam.theriseunion.io/category: workspace-management
+    iam.theriseunion.io/scope: platform
+    iam.theriseunion.io/scope-value: global
+spec:
+  description:
+    en: Manage all workspaces and workspace resources.
+    zh: 管理所有企业空间和企业空间下的资源。
+  displayName:
+    en: Workspace Management
+    zh: 企业空间管理
+  rules:
+  - apiGroups:
+    - '*'
+    resources:
+    - namespaces
+    - workspaces
+    - workspacetemplates
+    - workspaceroles
+    - workspacemembers
+    - workspacerolebindings
+    verbs:
+    - '*'
+  - apiGroups:
+    - resources.edge.io
+    resources:
+    - '*'
+    verbs:
+    - '*'
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  name: workspace-view
+  annotations:
+    iam.theriseunion.io/role-template-rules: '{"workspaces": "view"}'
+  labels:
+    iam.theriseunion.io/category: workspace-management
+    iam.theriseunion.io/scope: platform
+    iam.theriseunion.io/scope-value: global
+spec:
+  description:
+    en: View all workspaces and workspace resources.
+    zh: 查看所有工作空间和企业空间下的资源。
+  displayName:
+    en: Workspace View
+    zh: 企业空间查看
+  rules:
+  - apiGroups:
+    - '*'
+    resources:
+    - namespaces
+    - workspaces
+    - workspacetemplates
+    - workspaceroles
+    - workspacemembers
+    - workspacerolebindings
+    verbs:
+    - get
+    - list
+    - watch
+  - apiGroups:
+    - resources.edge.io
+    resources:
+    - '*'
+    verbs:
+    - get
+    - list
+    - watch
+
+# IAMRoles - 基于RoleTemplate的角色定义
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: IAMRole
+metadata:
+  name: anonymous
+  annotations:
+    edge.io/description: '{"zh": "匿名用户基础访问权限", "en": "Basic access for anonymous users"}'
+    theriseunion.io/creator: system
+    theriseunion.io/description: '{"zh": "匿名用户基础访问权限", "en": "Basic access for anonymous users"}'
+  labels:
+    iam.theriseunion.io/managed: "true"
+    iam.theriseunion.io/scope: platform
+    iam.theriseunion.io/scope-value: global
+spec:
+  rules:
+  - apiGroups:
+    - ""
+    resources:
+    - namespaces
+    verbs:
+    - get
+    - list
+  - nonResourceURLs:
+    - /api
+    - /api/v1
+    - /apis
+    - /apis/*
+    - /oapis
+    - /oapis/*
+    - /oauth/userinfo
+    verbs:
+    - get
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: IAMRole
+metadata:
+  name: cluster-admin
+  annotations:
+    edge.io/creator: system
+    edge.io/description: '{"zh": "管理集群中的所有资源。", "en": "Manage all resources in cluster."}'
+    theriseunion.io/creator: system
+    theriseunion.io/description: '{"zh": "管理集群中的所有资源。", "en": "Manage all resources in cluster."}'
+    theriseunion.io/role-templates: ""
+  labels:
+    iam.theriseunion.io/category: cluster-management
+    iam.theriseunion.io/scope: cluster
+    iam.theriseunion.io/scope-value: host
+spec:
+  rules:
+  - apiGroups:
+    - '*'
+    resources:
+    - '*'
+    verbs:
+    - '*'
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: IAMRole
+metadata:
+  name: cluster-viewer
+  annotations:
+    edge.io/creator: system
+    edge.io/description: '{"zh": "查看集群中的所有资源。", "en": "View all resources in cluster."}'
+    theriseunion.io/creator: system
+    theriseunion.io/description: '{"zh": "查看集群中的所有资源。", "en": "View all resources in cluster."}'
+    theriseunion.io/role-templates: ""
+  labels:
+    iam.theriseunion.io/category: cluster-management
+    iam.theriseunion.io/scope: cluster
+    iam.theriseunion.io/scope-value: host
+spec:
+  rules:
+  - apiGroups:
+    - '*'
+    resources:
+    - '*'
+    verbs:
+    - get
+    - list
+    - watch
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: IAMRole
+metadata:
+  name: platform-admin
+  annotations:
+    edge.io/creator: system
+    edge.io/description: '{"zh": "管理 Edge 平台上的所有资源。", "en": "Manage all resources on Edge platform."}'
+    theriseunion.io/creator: system
+    theriseunion.io/description: '{"zh": "管理 Edge 平台上的所有资源。", "en": "Manage all resources on Edge platform."}'
+    theriseunion.io/role-templates: workspace-create,workspace-manage,workspace-view
+  labels:
+    edge.io/managed: "true"
+    iam.theriseunion.io/category: platform-management
+    iam.theriseunion.io/scope: platform
+    iam.theriseunion.io/scope-value: global
+spec:
+  rules:
+  - apiGroups:
+    - '*'
+    resources:
+    - '*'
+    verbs:
+    - '*'
+  - nonResourceURLs:
+    - /api/*
+    - /apis/*
+    - /healthz
+    - /metrics
+    - /oapis/*
+    verbs:
+    - '*'
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: IAMRole
+metadata:
+  name: platform-regular
+  annotations:
+    edge.io/creator: system
+    edge.io/description: '{"zh": "被邀请加入企业空间之前无法访问任何资源。", "en": "Cannot access any resources before being invited to workspaces."}'
+    theriseunion.io/creator: system
+    theriseunion.io/description: '{"zh": "被邀请加入企业空间之前无法访问任何资源。", "en": "Cannot access any resources before being invited to workspaces."}'
+    theriseunion.io/role-templates: ""
+  labels:
+    iam.theriseunion.io/category: platform-management
+    iam.theriseunion.io/scope: platform
+    iam.theriseunion.io/scope-value: global
+spec:
+  rules: []
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: IAMRole
+metadata:
+  name: platform-self-provisioner
+  annotations:
+    edge.io/creator: system
+    edge.io/description: '{"zh": "创建企业空间并成为所创建的企业空间的管理员。", "en": "Create workspaces and become administrator of created workspaces."}'
+    theriseunion.io/creator: system
+    theriseunion.io/description: '{"zh": "创建企业空间并成为所创建的企业空间的管理员。", "en": "Create workspaces and become administrator of created workspaces."}'
+    theriseunion.io/role-templates: workspace-create
+  labels:
+    edge.io/managed: "true"
+    iam.theriseunion.io/category: cluster-management
+    iam.theriseunion.io/scope: platform
+    iam.theriseunion.io/scope-value: global
+spec:
+  rules:
+  - apiGroups:
+    - ""
+    - cluster.edge.io
+    resources:
+    - clusters
+    - clustertemplates
+    verbs:
+    - get
+    - list
+    - watch
+    - create
+  - apiGroups:
+    - tenant.edge.io
+    resources:
+    - workspaces
+    - workspacetemplates
+    verbs:
+    - get
+    - list
+    - watch
+  - apiGroups:
+    - iam.theriseunion.io
+    resources:
+    - clustermembers
+    - clusterroles
+    verbs:
+    - get
+    - list
+    - watch
