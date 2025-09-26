@@ -84,6 +84,13 @@ prometheus:
         relabel_configs:
           - action: labelmap
             regex: __meta_kubernetes_node_label_(.+)
+          # Edge 平台标签映射
+          - source_labels: [__meta_kubernetes_node_label_theriseunion_io_nodegroup]
+            target_label: nodegroup
+          - source_labels: [__meta_kubernetes_node_label_theriseunion_io_managed]
+            target_label: edge_managed
+          - source_labels: [__meta_kubernetes_node_label_theriseunion_io_username]
+            target_label: creator
           - target_label: __address__
             replacement: kubernetes.default.svc:443
           - source_labels: [__meta_kubernetes_node_name]
@@ -100,6 +107,13 @@ prometheus:
         relabel_configs:
           - action: labelmap
             regex: __meta_kubernetes_node_label_(.+)
+          # Edge 平台标签映射
+          - source_labels: [__meta_kubernetes_node_label_theriseunion_io_nodegroup]
+            target_label: nodegroup
+          - source_labels: [__meta_kubernetes_node_label_theriseunion_io_managed]
+            target_label: edge_managed
+          - source_labels: [__meta_kubernetes_node_label_theriseunion_io_username]
+            target_label: creator
           - target_label: __address__
             replacement: kubernetes.default.svc:443
           - source_labels: [__meta_kubernetes_node_name]
@@ -148,6 +162,13 @@ prometheus:
             target_label: __address__
           - action: labelmap
             regex: __meta_kubernetes_pod_label_(.+)
+          # Pod Edge 平台标签映射
+          - source_labels: [__meta_kubernetes_pod_label_theriseunion_io_workspace]
+            target_label: workspace
+          - source_labels: [__meta_kubernetes_pod_label_theriseunion_io_managed]
+            target_label: edge_managed
+          - source_labels: [__meta_kubernetes_pod_label_theriseunion_io_username]
+            target_label: creator
           - source_labels: [__meta_kubernetes_namespace]
             action: replace
             target_label: kubernetes_namespace

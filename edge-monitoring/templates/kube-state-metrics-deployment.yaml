@@ -23,6 +23,10 @@ spec:
       - name: kube-state-metrics
         image: {{ .Values.kubeStateMetrics.image.repository }}:{{ .Values.kubeStateMetrics.image.tag }}
         imagePullPolicy: {{ .Values.kubeStateMetrics.image.pullPolicy }}
+        args:
+        - --port=8080
+        - --telemetry-port=8081
+        - --metric-labels-allowlist=nodes=[theriseunion.io/nodegroup],pods=[theriseunion.io/workspace]
         ports:
         - name: http-metrics
           containerPort: 8080
