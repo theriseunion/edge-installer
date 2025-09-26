@@ -1,0 +1,23 @@
+{{- if .Values.kubeStateMetrics.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: edge-kube-state-metrics
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    app: edge-kube-state-metrics
+    component: kube-state-metrics
+spec:
+  type: {{ .Values.kubeStateMetrics.service.type }}
+  ports:
+  - name: http-metrics
+    port: {{ .Values.kubeStateMetrics.service.port }}
+    targetPort: http-metrics
+    protocol: TCP
+  - name: telemetry
+    port: 8081
+    targetPort: telemetry
+    protocol: TCP
+  selector:
+    app: edge-kube-state-metrics
+{{- end }}

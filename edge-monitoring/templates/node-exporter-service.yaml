@@ -1,0 +1,24 @@
+{{- if .Values.nodeExporter.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: edge-node-exporter
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    app: edge-node-exporter
+    component: node-exporter
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "{{ .Values.nodeExporter.service.port }}"
+    prometheus.io/path: "/metrics"
+spec:
+  type: {{ .Values.nodeExporter.service.type }}
+  clusterIP: None
+  ports:
+  - name: metrics
+    port: {{ .Values.nodeExporter.service.port }}
+    targetPort: metrics
+    protocol: TCP
+  selector:
+    app: edge-node-exporter
+{{- end }}
