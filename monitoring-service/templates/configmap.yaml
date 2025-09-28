@@ -1,0 +1,33 @@
+---
+# ConfigMap for monitoring-service configuration
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: monitoring-service-config
+  namespace: {{ .Values.namespace }}
+data:
+  config.json: |
+    {
+      "Server": {
+        "InsecurePort": {{ .Values.config.server.insecurePort }}
+      }
+    }
+---
+# ConfigMap for monitoring-service log configuration
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: monitoring-service-log-config
+  namespace: {{ .Values.namespace }}
+data:
+  log-config.yaml: |
+    Level: {{ .Values.config.logging.level }}
+    EncoderType: {{ .Values.config.logging.encoderType }}
+    Path: {{ .Values.config.logging.path }}
+    FileName: {{ .Values.config.logging.fileName }}
+    MaxSize: {{ .Values.config.logging.maxSize }}
+    MaxBackups: {{ .Values.config.logging.maxBackups }}
+    MaxAge: {{ .Values.config.logging.maxAge }}
+    LocalTime: {{ .Values.config.logging.localTime }}
+    Compress: {{ .Values.config.logging.compress }}
+    OutMod: {{ .Values.config.logging.outMod }}

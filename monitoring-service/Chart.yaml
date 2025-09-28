@@ -1,0 +1,15 @@
+apiVersion: v2
+name: monitoring-service
+description: >
+  Edge integrated monitoring service based on openFuyao monitoring-service.
+  Provides enterprise-grade monitoring capabilities with Prometheus integration.
+type: application
+version: 1.0.0
+appVersion: latest
+keywords: ["monitoring", "prometheus", "metrics", "edge"]
+maintainers:
+  - name: Edge Team
+home: https://github.com/edge/apiserver
+sources:
+  - https://github.com/edge/apiserver
+  - https://gitcode.com/openFuyao/monitoring-service

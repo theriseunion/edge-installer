@@ -1,0 +1,140 @@
+# Default values for monitoring-service
+# Edge integrated monitoring service
+
+# Image configuration
+image:
+  repository: cr.openfuyao.cn/openfuyao/monitoring-service
+  pullPolicy: Always
+  tag: latest
+
+# Service configuration
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 9083
+  name: monitoring-service
+
+# Resource limits
+resources:
+  requests:
+    cpu: 50m
+    memory: 100Mi
+  limits:
+    cpu: 200m
+    memory: 400Mi
+
+# Replica count
+replicaCount: 1
+
+# Namespace
+namespace: observability-system
+
+# Environment configuration
+env:
+  prometheusHost: "http://edge-prometheus.observability-system.svc:9090"
+  prometheusInsecureSkipVerify: "true"
+  servicePort: "9083"
+
+# ConfigMaps
+config:
+  server:
+    insecurePort: 9083
+
+  logging:
+    level: info
+    encoderType: console
+    path: /tmp
+    fileName: monitoring-service.log
+    maxSize: 20
+    maxBackups: 5
+    maxAge: 30
+    localTime: false
+    compress: true
+    outMod: both
+
+# Security context
+securityContext:
+  runAsNonRoot: true
+  runAsUser: 65532
+  runAsGroup: 65532
+
+# Service account
+serviceAccount:
+  create: true
+  annotations: {}
+  name: monitoring-service
+
+# RBAC permissions
+rbac:
+  create: true
+  rules:
+    - apiGroups: [""]
+      resources: ["nodes", "pods", "services", "endpoints"]
+      verbs: ["get", "list", "watch"]
+    - apiGroups: ["apps"]
+      resources: ["deployments", "replicasets", "statefulsets", "daemonsets"]
+      verbs: ["get", "list", "watch"]
+    - apiGroups: ["metrics.k8s.io"]
+      resources: ["*"]
+      verbs: ["get", "list"]
+
+# Pod annotations
+podAnnotations: {}
+
+# Pod security context
+podSecurityContext:
+  fsGroup: 65532
+
+# Node selector
+nodeSelector: {}
+
+# Tolerations
+tolerations: []
+
+# Affinity
+affinity: {}
+
+# Enable/disable features
+monitoring:
+  enabled: true
+
+# Network policy
+networkPolicy:
+  enabled: false
+
+# Prometheus integration
+prometheus:
+  # Prometheus service connection
+  endpoint: edge-prometheus.observability-system.svc
+  port: 9090
+  scheme: http
+
+  # Connection settings
+  timeout: 30s
+  insecureSkipVerify: true
+
+  # Query settings
+  maxSamples: 500000
+  queryTimeout: 2m
+
+# ReverseProxy configuration
+reverseProxy:
+  enabled: true
+  name: monitoring-service-proxy
+
+  # API path mapping
+  matcher:
+    path: "/oapis/monitoring.theriseunion.io/v1alpha1/*"
+    method: "*"
+
+  # Upstream configuration
+  upstream:
+    scheme: http
+    host: monitoring-service.observability-system.svc.cluster.local
+    port: 80
+    insecureSkipVerify: true
+
+  # Path rewrite rules
+  rewrite:
+    from: "^/oapis/monitoring\\.theriseunion\\.io/v1alpha1/(.*)$"
+    to: "/rest/monitoring/v1/$1"

@@ -45,13 +45,32 @@ helm upgrade --install console ./edge-console \
 # 可选部署监控套件
 if [ "$ENABLE_MONITORING" = "true" ]; then
   echo "部署监控套件 (Prometheus + Grafana + AlertManager)..."
+
+  # 创建 observability-system 命名空间
+  kubectl create namespace observability-system --dry-run=client -o yaml | kubectl apply -f -
+
+  # 先部署 Prometheus 等基础监控组件
   helm upgrade --install monitoring ./edge-monitoring \
-    --namespace $NAMESPACE \
+    --namespace observability-system \
     --wait || {
-      echo "警告：监控套件部署失败，但核心组件已正常部署"
-      echo "你可以稍后手动安装监控套件："
-      echo "  ENABLE_MONITORING=true ./deploy.sh"
+      echo "警告：基础监控套件部署失败"
     }
+
+  # 部署 monitoring-service (提供监控 API)
+  echo "部署 monitoring-service..."
+  helm upgrade --install monitoring-service ./monitoring-service \
+    --namespace observability-system \
+    --wait || {
+      echo "警告：monitoring-service 部署失败"
+    }
+
+  if [ $? -eq 0 ]; then
+    echo "✅ 完整监控环境部署成功"
+  else
+    echo "⚠️  监控套件部署有问题，但核心组件已正常部署"
+    echo "你可以稍后手动安装监控套件："
+    echo "  ENABLE_MONITORING=true ./deploy.sh"
+  fi
 fi
 
 echo "部署完成！"
@@ -61,7 +80,12 @@ kubectl get pods -n $NAMESPACE
 if [ "$ENABLE_MONITORING" = "true" ]; then
   echo ""
   echo "监控服务访问方式："
-  echo "- Prometheus: kubectl port-forward svc/edge-prometheus 9090:9090 -n $NAMESPACE"
-  echo "- Grafana: kubectl port-forward svc/edge-grafana 3000:3000 -n $NAMESPACE (admin/admin123)"
-  echo "- AlertManager: kubectl port-forward svc/edge-alertmanager 9093:9093 -n $NAMESPACE"
+  echo "- Prometheus: kubectl port-forward svc/edge-prometheus 9090:9090 -n observability-system"
+  echo "- Grafana: kubectl port-forward svc/edge-grafana 3000:3000 -n observability-system (admin/admin123)"
+  echo "- AlertManager: kubectl port-forward svc/edge-alertmanager 9093:9093 -n observability-system"
+  echo "- Monitoring API: 通过 apiserver 的 /oapis/monitoring.theriseunion.io/v1alpha1/* 访问"
+  echo ""
+  echo "检查监控服务状态："
+  echo "kubectl get pods -n observability-system"
+  echo "kubectl get reverseproxy -n observability-system monitoring-service-proxy"
 fi

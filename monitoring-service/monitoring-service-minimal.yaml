@@ -1,0 +1,123 @@
+---
+# ServiceAccount for monitoring-service
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: monitoring-service-minimal
+  namespace: edge-system
+---
+# ClusterRole for basic read permissions
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: monitoring-service-minimal
+rules:
+  - apiGroups: [""]
+    resources: ["nodes", "pods", "services", "endpoints"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: ["apps"]
+    resources: ["deployments", "replicasets", "statefulsets", "daemonsets"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: ["metrics.k8s.io"]
+    resources: ["*"]
+    verbs: ["get", "list"]
+---
+# ClusterRoleBinding
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: monitoring-service-minimal
+subjects:
+  - kind: ServiceAccount
+    name: monitoring-service-minimal
+    namespace: edge-system
+roleRef:
+  kind: ClusterRole
+  name: monitoring-service-minimal
+  apiGroup: rbac.authorization.k8s.io
+---
+# Deployment for monitoring-service (minimal)
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: monitoring-service-minimal
+  namespace: edge-system
+  labels:
+    app: monitoring-service-minimal
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: monitoring-service-minimal
+  template:
+    metadata:
+      labels:
+        app: monitoring-service-minimal
+    spec:
+      serviceAccountName: monitoring-service-minimal
+      containers:
+        - name: monitoring-service
+          image: cr.openfuyao.cn/openfuyao/monitoring-service:latest
+          imagePullPolicy: Always
+          env:
+            - name: PROMETHEUS_HOST
+              value: "http://edge-prometheus.observability-system.svc:9090"
+            - name: PROMETHEUS_INSECURE_SKIP_VERIFY
+              value: "true"
+            - name: SERVICE_PORT
+              value: "9083"
+          ports:
+            - containerPort: 9083
+              protocol: TCP
+              name: http
+          resources:
+            requests:
+              cpu: 50m
+              memory: 100Mi
+            limits:
+              cpu: 200m
+              memory: 400Mi
+          volumeMounts:
+            - name: config
+              mountPath: /config.json
+              subPath: config.json
+            - name: log-config
+              mountPath: /etc/monitoring-service
+      volumes:
+        - name: config
+          configMap:
+            name: monitoring-service-config
+        - name: log-config
+          configMap:
+            name: monitoring-service-log-config
+          # 删除探针检查，先确保服务能运行
+          # livenessProbe:
+          #   httpGet:
+          #     path: /healthz
+          #     port: 9083
+          #   initialDelaySeconds: 30
+          #   periodSeconds: 30
+          # readinessProbe:
+          #   httpGet:
+          #     path: /healthz
+          #     port: 9083
+          #   initialDelaySeconds: 5
+          #   periodSeconds: 10
+---
+# Service for monitoring-service
+apiVersion: v1
+kind: Service
+metadata:
+  name: monitoring-service-minimal
+  namespace: edge-system
+  labels:
+    app: monitoring-service-minimal
+spec:
+  ports:
+    - name: http
+      port: 80
+      protocol: TCP
+      targetPort: 9083
+  selector:
+    app: monitoring-service-minimal
+  type: ClusterIP

@@ -1,0 +1,28 @@
+{{- if .Values.reverseProxy.enabled }}
+---
+# ReverseProxy to forward monitoring API requests to openFuyao monitoring-service
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: ReverseProxy
+metadata:
+  name: {{ .Values.reverseProxy.name }}
+  namespace: {{ .Values.namespace }}
+spec:
+  # Match requests to /oapis/monitoring.theriseunion.io/v1alpha1/*
+  matcher:
+    path: {{ .Values.reverseProxy.matcher.path | quote }}
+    method: {{ .Values.reverseProxy.matcher.method | quote }}
+
+  # Forward to monitoring-service
+  upstream:
+    scheme: {{ .Values.reverseProxy.upstream.scheme }}
+    host: {{ .Values.reverseProxy.upstream.host }}
+    port: {{ .Values.reverseProxy.upstream.port }}
+    insecureSkipVerify: {{ .Values.reverseProxy.upstream.insecureSkipVerify }}
+
+  # Transform requests
+  directives:
+    # Strip the Edge API prefix and replace with openFuyao format
+    rewrite:
+      - from: {{ .Values.reverseProxy.rewrite.from | quote }}
+        to: {{ .Values.reverseProxy.rewrite.to | quote }}
+{{- end }}

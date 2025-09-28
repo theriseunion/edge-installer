@@ -6,9 +6,14 @@ Edge Platform 的一键安装工具，参考 Kubernetes 的安装模式设计。
 
 Edge Installer 提供了一个简单、可靠的方式来部署 Edge Platform 到 Kubernetes 集群。它包含以下组件：
 
+### 核心组件
 - **Edge Controller**: Kubernetes operator，管理 Edge 自定义资源
 - **Edge API Server**: REST API 服务器，提供多租户 API 端点
 - **Edge Console**: Web UI 控制台，提供图形化管理界面
+
+### 可选组件
+- **Monitoring Stack**: 包含 Prometheus、Grafana、AlertManager 的完整监控套件
+- **Monitoring Service**: 基于 openFuyao 的企业级监控 API 服务，提供丰富的监控指标查询接口
 
 ## 架构
 
@@ -68,6 +73,23 @@ cd apiserver/edge-installer
 # 预览安装 (dry-run)
 ./scripts/install.sh --dry-run
 ```
+
+### 包含监控组件的安装
+
+```bash
+# 使用 deploy.sh 脚本，启用监控组件
+ENABLE_MONITORING=true ./deploy.sh
+
+# 或者手动部署监控组件
+./deploy.sh  # 先部署核心组件
+make deploy-monitoring  # 然后部署监控服务
+```
+
+监控组件将部署到 `observability-system` 命名空间，包括：
+- Prometheus (监控数据收集)
+- Grafana (监控可视化)
+- AlertManager (告警管理)
+- Monitoring Service (监控 API，包含 ReverseProxy 配置)
 
 ## 镜像配置
 
