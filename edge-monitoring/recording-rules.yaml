@@ -127,3 +127,18 @@ groups:
           sum by (cluster, instance) (
             node_memory_MemAvailable_bytes{job="node-exporter"}
           )
+
+  # Workload-level recording rules for namespace_workload_pod metrics
+  - name: workload-aggregation-rules
+    interval: 30s
+    rules:
+      # Create workload-level metric with proper labels for cluster workload count
+      - record: namespace_workload_pod:kube_pod_owner:relabel
+        expr: |
+          label_replace(
+            kube_pod_info{job="kube-state-metrics"},
+            "workload",
+            "$1",
+            "created_by_name",
+            "(.*)"
+          )
