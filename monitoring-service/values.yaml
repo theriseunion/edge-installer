@@ -3,9 +3,9 @@
 
 # Image configuration
 image:
-  repository: cr.openfuyao.cn/openfuyao/monitoring-service
+  repository: quanzhenglong.com/edge/monitoring-service
   pullPolicy: Always
-  tag: latest
+  tag: openapi-v1.1
 
 # Service configuration
 service:

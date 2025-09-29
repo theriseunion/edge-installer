@@ -1,0 +1,20 @@
+{{- if .Values.cadvisor.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: edge-cadvisor
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: edge-cadvisor
+    component: cadvisor
+spec:
+  type: {{ .Values.cadvisor.service.type }}
+  ports:
+  - name: http-metrics
+    port: {{ .Values.cadvisor.service.port }}
+    targetPort: http-metrics
+    protocol: TCP
+  selector:
+    app: edge-cadvisor
+    component: cadvisor
+{{- end }}

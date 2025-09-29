@@ -117,41 +117,62 @@ prometheus:
             regex: (.+)
             target_label: __metrics_path__
             replacement: /api/v1/nodes/${1}/proxy/metrics
-      - job_name: 'kubernetes-cadvisor'
+      # 原 kubernetes-cadvisor job 已禁用，使用独立的 cAdvisor DaemonSet 替代
+      # 原因：kubelet 的 cAdvisor 在 Docker CRI 环境下无法提供正确的容器标签
+      # 解决方案：独立部署 cAdvisor DaemonSet，配置正确的 ServiceMonitor
+      #
+      # - job_name: 'kubernetes-cadvisor' # 已禁用
+      #   ... 原配置已移除，由独立 cAdvisor 替代 ...
+
+      # 独立 cAdvisor 采集配置 - 基于 SUSE KB 000020951 官方解决方案
+      - job_name: 'cadvisor'
         kubernetes_sd_configs:
-          - role: node
-        scheme: https
-        tls_config:
-          ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
-        bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
+          - role: endpoints
         relabel_configs:
-          - action: labelmap
-            regex: __meta_kubernetes_node_label_(.+)
-          # Edge 平台标签映射
-          - source_labels: [__meta_kubernetes_node_label_theriseunion_io_nodegroup]
-            target_label: nodegroup
-          - source_labels: [__meta_kubernetes_node_label_theriseunion_io_managed]
-            target_label: edge_managed
-          - source_labels: [__meta_kubernetes_node_label_theriseunion_io_username]
-            target_label: creator
-          # 添加节点名到 node 标签的映射 - 修复 machine_cpu_cores 指标的标签问题
-          - source_labels: [__meta_kubernetes_node_name]
-            target_label: node
-          # 添加集群标签 - 修复所有 cadvisor 指标的集群级别聚合
+          - source_labels: [__meta_kubernetes_service_name]
+            action: keep
+            regex: edge-cadvisor
+          - source_labels: [__meta_kubernetes_endpoint_port_name]
+            action: keep
+            regex: http-metrics
+          # 添加集群标签保持一致性
           - target_label: cluster
             replacement: host
-          # 修复 Pod 级别指标 - 将 job 标签重写为 kubelet (Pod指标查询要求 job="kubelet")
+          # 设置 job 标签为 kubelet 以保持 PromQL 查询兼容性
           - target_label: job
             replacement: kubelet
-          # 设置正确的 metrics_path 标签 (Pod指标查询要求 metrics_path="/metrics/cadvisor")
+          # 设置 metrics_path 标签保持 PromQL 查询兼容性
           - target_label: metrics_path
             replacement: /metrics/cadvisor
-          - target_label: __address__
-            replacement: kubernetes.default.svc:443
-          - source_labels: [__meta_kubernetes_node_name]
+          - source_labels: [__meta_kubernetes_namespace]
+            action: replace
+            target_label: kubernetes_namespace
+          - source_labels: [__meta_kubernetes_service_name]
+            action: replace
+            target_label: kubernetes_name
+        # 关键修复：使用容器标签恢复正确的 Kubernetes 元数据
+        metric_relabel_configs:
+          # 从容器标签恢复 Pod 名称
+          - source_labels: [container_label_io_kubernetes_pod_name]
             regex: (.+)
-            target_label: __metrics_path__
-            replacement: /api/v1/nodes/${1}/proxy/metrics/cadvisor
+            target_label: pod
+          # 从容器标签恢复 Container 名称 (Container API 的关键字段)
+          - source_labels: [container_label_io_kubernetes_container_name]
+            regex: (.+)
+            target_label: container
+          # 从容器标签恢复 Namespace
+          - source_labels: [container_label_io_kubernetes_pod_namespace]
+            regex: (.+)
+            target_label: namespace
+          # 兜底保护：为仍然为空的字段设置默认值
+          - source_labels: [container]
+            regex: ^$
+            target_label: container
+            replacement: unknown-container
+          - source_labels: [image]
+            regex: ^$
+            target_label: image
+            replacement: unknown-image
       - job_name: 'kubernetes-service-endpoints'
         kubernetes_sd_configs:
           - role: endpoints
@@ -352,6 +373,66 @@ nodeExporter:
     limits:
       memory: "64Mi"
       cpu: "50m"
+
+# Standalone cAdvisor 配置 - 修复 Docker CRI 环境下的容器监控问题
+# 基于 SUSE KB 000020951 官方解决方案
+cadvisor:
+  enabled: true
+  image:
+    repository: swr.cn-north-4.myhuaweicloud.com/ddn-k8s/gcr.io/cadvisor/cadvisor
+    tag: v0.47.0
+    pullPolicy: IfNotPresent
+
+  # cAdvisor 需要访问主机资源
+  hostNetwork: false
+  privileged: true
+
+  service:
+    type: ClusterIP
+    port: 8080
+
+  resources:
+    requests:
+      memory: "200Mi"
+      cpu: "150m"
+    limits:
+      memory: "400Mi"
+      cpu: "300m"
+
+  # cAdvisor 特定的挂载配置
+  volumes:
+    - name: rootfs
+      hostPath:
+        path: /
+    - name: var-run
+      hostPath:
+        path: /var/run
+    - name: sys
+      hostPath:
+        path: /sys
+    - name: docker
+      hostPath:
+        path: /var/lib/docker
+    - name: dev-disk
+      hostPath:
+        path: /dev/disk
+
+  # ServiceMonitor 配置，使用正确的 metric relabeling
+  serviceMonitor:
+    enabled: true
+    metricRelabelings:
+      # 从容器标签恢复 Pod 名称
+      - sourceLabels: [container_label_io_kubernetes_pod_name]
+        targetLabel: pod
+      # 从容器标签恢复 Container 名称 (Container API 关键字段)
+      - sourceLabels: [container_label_io_kubernetes_container_name]
+        targetLabel: container
+      # 从容器标签恢复 Namespace
+      - sourceLabels: [container_label_io_kubernetes_pod_namespace]
+        targetLabel: namespace
+      # 添加集群标签保持一致性
+      - targetLabel: cluster
+        replacement: host
 
 # ServiceMonitor 配置 - 自动发现服务
 serviceMonitor:

@@ -1,0 +1,38 @@
+{{- if .Values.cadvisor.enabled }}
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: edge-cadvisor
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: edge-cadvisor
+    component: cadvisor
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: edge-cadvisor
+  labels:
+    app: edge-cadvisor
+    component: cadvisor
+rules:
+- apiGroups: [""]
+  resources: ["nodes", "nodes/stats", "services", "endpoints", "pods"]
+  verbs: ["get", "list", "watch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: edge-cadvisor
+  labels:
+    app: edge-cadvisor
+    component: cadvisor
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: edge-cadvisor
+subjects:
+- kind: ServiceAccount
+  name: edge-cadvisor
+  namespace: {{ .Release.Namespace }}
+{{- end }}
