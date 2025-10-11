@@ -1,0 +1,19 @@
+{{- if and .Values.global.enabled .Values.monitoringService.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: monitoring-service
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    app: monitoring-service
+    component: monitoring-service
+spec:
+  type: ClusterIP
+  ports:
+  - name: http
+    port: 80
+    targetPort: 9083
+    protocol: TCP
+  selector:
+    app: monitoring-service
+{{- end }}

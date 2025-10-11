@@ -1,0 +1,10 @@
+{{- if and .Values.global.enabled .Values.monitoringService.enabled }}
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: monitoring-service
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    app: monitoring-service
+    component: monitoring-service
+{{- end }}

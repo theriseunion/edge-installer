@@ -53,6 +53,10 @@ rules:
 - apiGroups: ["tenant.theriseunion.io"]
   resources: ["*"]
   verbs: ["*"]
+# Scope resources (Cluster, Workspace, etc.)
+- apiGroups: ["scope.theriseunion.io"]
+  resources: ["*"]
+  verbs: ["*"]
 # Edge installer resources
 - apiGroups: ["installer.edge.theriseunion.io"]
   resources: ["*"]

@@ -119,6 +119,44 @@ kubectl logs -n edge-system deployment/edge-apiserver
 kubectl logs -n edge-system deployment/edge-console
 ```
 
+### 安装后配置
+
+#### ⚠️ 重要: 配置边缘运行时
+
+部署完成后,**必须**为集群配置边缘运行时类型才能添加边缘节点。
+
+**方式一: 通过 Web Console 配置 (推荐)**
+
+1. 访问 Console: http://localhost:3000
+2. 导航至: **集群管理** → 选择集群 → **基本信息**
+3. 找到 **边缘运行时** 字段,点击编辑图标
+4. 选择 `openyurt` 或 `kubeedge`
+5. 保存配置
+
+**方式二: 通过 kubectl 配置**
+
+```bash
+# 为 host 集群配置 OpenYurt 运行时
+kubectl annotate cluster host \
+  cluster.theriseunion.io/edge-runtime=openyurt
+
+# 或配置 KubeEdge 运行时
+kubectl annotate cluster host \
+  cluster.theriseunion.io/edge-runtime=kubeedge
+```
+
+**验证配置:**
+
+```bash
+# 检查边缘运行时配置
+kubectl get cluster host -o yaml | grep edge-runtime
+
+# 输出示例:
+# cluster.theriseunion.io/edge-runtime: openyurt
+```
+
+配置完成后,即可通过 Console 获取节点加入令牌并添加边缘节点。
+
 ### 访问服务
 
 #### 端口转发

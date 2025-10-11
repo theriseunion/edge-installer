@@ -14,6 +14,7 @@ Edge Installer 提供了一个简单、可靠的方式来部署 Edge Platform �
 ### 可选组件
 - **Monitoring Stack**: 包含 Prometheus、Grafana、AlertManager 的完整监控套件
 - **Monitoring Service**: 基于 openFuyao 的企业级监控 API 服务，提供丰富的监控指标查询接口
+- **OpenYurt**: 云原生边缘计算框架，支持边缘节点管理和边缘应用编排
 
 ## 架构
 
@@ -91,6 +92,39 @@ make deploy-monitoring  # 然后部署监控服务
 - AlertManager (告警管理)
 - Monitoring Service (监控 API，包含 ReverseProxy 配置)
 
+### 包含 OpenYurt 的完整安装
+
+如果你需要边缘计算能力，可以同时安装 OpenYurt：
+
+```bash
+# 一键安装 Edge Platform + OpenYurt + 监控
+export INSTALL_OPENYURT=true
+export OPENYURT_API_SERVER=https://192.168.1.102:6443
+export ENABLE_MONITORING=true
+
+./deploy.sh
+```
+
+完整示例（在 192.168.1.102 集群安装所有组件）：
+
+```bash
+export KUBECONFIG_PATH=~/.kube/192.168.1.102.config
+export NAMESPACE=edge-system
+export REGISTRY=quanzhenglong.com/edge
+export TAG=main
+export INSTALL_OPENYURT=true
+export OPENYURT_API_SERVER=https://192.168.1.102:6443
+export ENABLE_MONITORING=true
+
+./deploy.sh
+```
+
+OpenYurt 组件将安装到 `kube-system` 命名空间，包括：
+- yurt-manager (OpenYurt 控制器)
+- yurthub (边缘节点配置管理)
+
+详细的 OpenYurt 安装和配置请参考 [OPENYURT-INSTALL.md](./OPENYURT-INSTALL.md)
+
 ## 镜像配置
 
 默认使用的镜像：
@@ -114,6 +148,48 @@ kubectl port-forward -n edge-system svc/edge-console 3000:3000
 访问地址：
 - API Server: http://localhost:8080
 - Web Console: http://localhost:3000
+
+## 安装后配置
+
+### 配置边缘运行时 (Edge Runtime)
+
+**重要**: 集群安装完成后,需要为集群配置边缘运行时类型,以便支持边缘节点的加入。
+
+#### 通过 Web Console 配置
+
+1. 访问 Web Console (http://localhost:3000 或您配置的 Ingress 地址)
+2. 进入 **集群管理** → 选择目标集群 → **基本信息** 页面
+3. 找到 **边缘运行时** 字段,点击右侧的编辑图标 ✏️
+4. 从下拉菜单中选择合适的运行时:
+   - **OpenYurt** - 适用于 OpenYurt 边缘计算框架
+   - **KubeEdge** - 适用于 KubeEdge 边缘计算框架
+5. 点击 **保存** 按钮完成配置
+
+#### 通过 kubectl 配置
+
+也可以直接通过 kubectl 为集群添加 annotation:
+
+```bash
+# 配置 OpenYurt 运行时
+kubectl annotate cluster host \
+  cluster.theriseunion.io/edge-runtime=openyurt
+
+# 配置 KubeEdge 运行时
+kubectl annotate cluster host \
+  cluster.theriseunion.io/edge-runtime=kubeedge
+
+# 查看配置结果
+kubectl get cluster host -o jsonpath='{.metadata.annotations.cluster\.theriseunion\.io/edge-runtime}'
+```
+
+#### 为什么需要配置边缘运行时?
+
+配置边缘运行时后,系统会在生成节点加入命令时自动包含正确的边缘组件安装脚本。如果不配置:
+- 无法获取节点加入令牌 (join-token API 会报错)
+- 边缘节点无法正确加入集群
+- 边缘节点的管理功能将不可用
+
+更多信息请参考 [OpenYurt 安装文档](OPENYURT-SETUP.md)
 
 ### Ingress 方式
 

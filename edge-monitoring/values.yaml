@@ -434,6 +434,29 @@ cadvisor:
       - targetLabel: cluster
         replacement: host
 
+# Monitoring Service 配置 - 提供统一的监控数据 API
+monitoringService:
+  enabled: true
+  replicas: 1
+  image:
+    repository: quanzhenglong.com/edge/monitoring-service
+    tag: openapi-v1.1
+    pullPolicy: Always
+
+  service:
+    type: ClusterIP
+    port: 80
+    targetPort: 9083
+
+  # 资源限制
+  resources:
+    requests:
+      memory: "100Mi"
+      cpu: "50m"
+    limits:
+      memory: "400Mi"
+      cpu: "200m"
+
 # ServiceMonitor 配置 - 自动发现服务
 serviceMonitor:
   enabled: false

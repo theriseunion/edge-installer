@@ -1,0 +1,56 @@
+{{- if and .Values.global.enabled .Values.monitoringService.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: monitoring-service
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    app: monitoring-service
+    component: monitoring-service
+spec:
+  replicas: {{ .Values.monitoringService.replicas }}
+  selector:
+    matchLabels:
+      app: monitoring-service
+  template:
+    metadata:
+      labels:
+        app: monitoring-service
+    spec:
+      serviceAccountName: monitoring-service
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65532
+        runAsGroup: 65532
+      containers:
+      - name: monitoring-service
+        image: "{{ .Values.monitoringService.image.repository }}:{{ .Values.monitoringService.image.tag }}"
+        imagePullPolicy: {{ .Values.monitoringService.image.pullPolicy }}
+        ports:
+        - name: http
+          containerPort: 9083
+          protocol: TCP
+        env:
+        - name: PROMETHEUS_HOST
+          value: "http://edge-prometheus.{{ .Values.global.namespace }}.svc:9090"
+        - name: PROMETHEUS_INSECURE_SKIP_VERIFY
+          value: "true"
+        - name: SERVICE_PORT
+          value: "9083"
+        volumeMounts:
+        - name: config-volume
+          mountPath: /config.json
+          subPath: config.json
+        - name: log-config-volume
+          mountPath: /log-config.yaml
+          subPath: log-config.yaml
+        resources:
+          {{- toYaml .Values.monitoringService.resources | nindent 10 }}
+      volumes:
+      - name: config-volume
+        configMap:
+          name: monitoring-service-config
+      - name: log-config-volume
+        configMap:
+          name: monitoring-service-log-config
+{{- end }}

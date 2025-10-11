@@ -1,0 +1,22 @@
+{{- if and .Values.global.enabled .Values.monitoringService.enabled }}
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: ReverseProxy
+metadata:
+  name: monitoring-proxy
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    app: monitoring-service
+    component: monitoring-service
+spec:
+  matcher:
+    method: '*'
+    path: /oapis/monitoring.theriseunion.io/v1alpha1/*
+  upstream:
+    scheme: http
+    host: monitoring-service.{{ .Values.global.namespace }}.svc.cluster.local
+    port: 80
+  directives:
+    rewrite:
+    - from: ^/oapis/monitoring\.theriseunion\.io/v1alpha1/(.*)$
+      to: /rest/monitoring/v1/$1
+{{- end }}
