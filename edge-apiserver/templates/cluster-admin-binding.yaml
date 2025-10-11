@@ -1,0 +1,16 @@
+{{- if .Values.edge.rbac.clusterAdmin }}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: {{ include "edge-apiserver.fullname" . }}-cluster-admin
+  labels:
+    {{- include "edge-apiserver.labels" . | nindent 4 }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+subjects:
+- kind: ServiceAccount
+  name: {{ include "edge-apiserver.serviceAccountName" . }}
+  namespace: {{ .Release.Namespace }}
+{{- end }}

@@ -6,7 +6,7 @@ replicaCount: 1
 fullnameOverride: "controller"
 
 image:
-  repository: quanzhenglong.com/edge/edge-controller
+  repository: quanzhenglong.com/edge/controller
   pullPolicy: IfNotPresent  # Options: Always, IfNotPresent, Never
   tag: "main"
 

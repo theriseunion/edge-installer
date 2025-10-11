@@ -15,6 +15,10 @@ spec:
         {{- include "edge-apiserver.selectorLabels" . | nindent 8 }}
     spec:
       serviceAccountName: {{ include "edge-apiserver.serviceAccountName" . }}
+      {{- if .Values.hostNetwork }}
+      hostNetwork: {{ .Values.hostNetwork }}
+      dnsPolicy: {{ .Values.dnsPolicy | default "ClusterFirstWithHostNet" }}
+      {{- end }}
       securityContext:
         runAsNonRoot: {{ .Values.securityContext.runAsNonRoot }}
         runAsUser: {{ .Values.securityContext.runAsUser }}
@@ -33,6 +37,10 @@ spec:
               value: {{ .Values.edge.apiserver.logLevel }}
             - name: PORT
               value: "{{ .Values.edge.apiserver.port }}"
+            {{- if .Values.edge.monitoring.enabled }}
+            - name: MONITORING_SERVICE_ENDPOINT
+              value: {{ .Values.edge.monitoring.serviceEndpoint }}
+            {{- end }}
           livenessProbe:
             httpGet:
               path: /healthz

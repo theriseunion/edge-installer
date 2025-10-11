@@ -6,7 +6,7 @@ replicaCount: 1
 fullnameOverride: "apiserver"
 
 image:
-  repository: quanzhenglong.com/edge/edge-apiserver
+  repository: quanzhenglong.com/edge/apiserver
   pullPolicy: IfNotPresent  # Options: Always, IfNotPresent, Never
   tag: "main"
 
@@ -15,6 +15,10 @@ serviceAccount:
   create: true
   automount: true
   name: ""
+
+# Network configuration - Normal cluster networking
+hostNetwork: false
+# dnsPolicy: ClusterFirst  # Default, no need to specify
 
 # Security Context
 securityContext:
@@ -53,6 +57,8 @@ edge:
   rbac:
     # Install platform roles (admin, self-provisioner, etc.)
     installPlatformRoles: true
+    # Grant cluster-admin privileges to apiserver
+    clusterAdmin: true
 
   # Host Cluster configuration
   cluster:
@@ -73,6 +79,11 @@ edge:
     displayName: "Platform Administrator"
     email: "admin@theriseunion.com"
     lang: "zh-CN"
+
+  # Monitoring configuration
+  monitoring:
+    enabled: true
+    serviceEndpoint: "http://monitoring-service.observability-system.svc.cluster.local:80"
 
   # OAuth configuration
   oauth:

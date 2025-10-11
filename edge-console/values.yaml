@@ -6,7 +6,7 @@ replicaCount: 1
 fullnameOverride: "console"
 
 image:
-  repository: quanzhenglong.com/edge/edge-console
+  repository: quanzhenglong.com/edge/console
   pullPolicy: IfNotPresent
   tag: "main"
 
@@ -39,9 +39,10 @@ securityContext:
 
 # Service configuration
 service:
-  type: ClusterIP
+  type: NodePort
   port: 3000
   targetPort: 3000
+  nodePort: 30880
 
 # Ingress configuration
 ingress:

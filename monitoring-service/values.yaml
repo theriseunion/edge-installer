@@ -131,7 +131,7 @@ reverseProxy:
   upstream:
     scheme: http
     host: monitoring-service.observability-system.svc.cluster.local
-    port: 9083
+    port: 80
     insecureSkipVerify: true
 
   # Path rewrite rules
