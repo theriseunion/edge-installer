@@ -2,10 +2,22 @@
 # yurt-manager 是 OpenYurt 的核心控制器，负责管理边缘节点池、应用等
 
 # 镜像配置
+# 支持使用私有镜像仓库
+# 使用公共镜像: openyurt/yurt-manager
+# 使用私有镜像: quanzhenglong.com/edge/yurt-manager
 image:
-  repository: openyurt/yurt-manager
+  repository: quanzhenglong.com/edge/yurt-manager
   tag: v1.6.0
   pullPolicy: IfNotPresent
+
+# 如果使用私有镜像仓库，需要配置 imagePullSecrets
+# 创建 secret: kubectl create secret docker-registry edge-registry \
+#   --docker-server=quanzhenglong.com \
+#   --docker-username=edge_admin \
+#   --docker-password=YOUR_PASSWORD \
+#   -n kube-system
+imagePullSecrets: []
+  # - name: edge-registry
 
 # 副本数
 replicaCount: 1

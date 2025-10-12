@@ -7,10 +7,22 @@
 kubernetesServerAddr: ""
 
 # 镜像配置
+# 支持使用私有镜像仓库
+# 使用公共镜像: openyurt/yurthub
+# 使用私有镜像: quanzhenglong.com/edge/yurthub
 image:
-  repository: openyurt/yurthub
+  repository: quanzhenglong.com/edge/yurthub
   tag: v1.6.0
   pullPolicy: IfNotPresent
+
+# 如果使用私有镜像仓库，需要配置 imagePullSecrets
+# 创建 secret: kubectl create secret docker-registry edge-registry \
+#   --docker-server=quanzhenglong.com \
+#   --docker-username=edge_admin \
+#   --docker-password=YOUR_PASSWORD \
+#   -n kube-system
+imagePullSecrets: []
+  # - name: edge-registry
 
 # yurthub 工作模式
 # - edge: 边缘模式（适用于边缘节点）

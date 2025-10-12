@@ -3,10 +3,22 @@
 # 如果边缘节点需要跨不同网络域通信，建议安装此组件
 
 # 镜像配置
+# 支持使用私有镜像仓库
+# 使用公共镜像: openyurt/raven-agent
+# 使用私有镜像: quanzhenglong.com/edge/raven-agent
 image:
-  repository: openyurt/raven-agent
+  repository: quanzhenglong.com/edge/raven-agent
   tag: v0.4.1
   pullPolicy: IfNotPresent
+
+# 如果使用私有镜像仓库，需要配置 imagePullSecrets
+# 创建 secret: kubectl create secret docker-registry edge-registry \
+#   --docker-server=quanzhenglong.com \
+#   --docker-username=edge_admin \
+#   --docker-password=YOUR_PASSWORD \
+#   -n kube-system
+imagePullSecrets: []
+  # - name: edge-registry
 
 # 副本数（DaemonSet 模式，自动在所有节点上运行）
 # 注意：raven-agent 以 DaemonSet 方式运行，replicaCount 参数可能不生效

@@ -6,6 +6,7 @@ OpenYurt 1.6 使用 Helm charts 方式安装，提供更现代化的架构和更
 
 - [概述](#概述)
 - [前置要求](#前置要求)
+- [镜像准备](#镜像准备)
 - [安装方式](#安装方式)
 - [配置说明](#配置说明)
 - [验证安装](#验证安装)
@@ -20,7 +21,9 @@ OpenYurt 1.6 使用 Helm charts 方式安装，提供更现代化的架构和更
 ```
 openyurt-1.6/
 ├── README.md                    # 本文档
+├── IMAGES.md                    # 镜像列表和同步文档
 ├── install.sh                   # 自动安装脚本
+├── sync-images.sh               # 镜像同步脚本
 ├── yurt-manager-values.yaml     # yurt-manager 配置
 ├── yurthub-values.yaml          # yurthub 配置（关键配置）
 └── raven-agent-values.yaml      # raven-agent 配置（可选）
@@ -38,6 +41,62 @@ openyurt-1.6/
 - Helm 3.x
 - kubectl 已配置并能访问集群
 - 集群 API Server 地址（如 `https://192.168.1.102:6443`）
+
+## 镜像准备
+
+OpenYurt 需要的容器镜像默认配置使用私有镜像仓库 `quanzhenglong.com/edge`。
+
+### 镜像列表
+
+| 组件 | 镜像地址 | 版本 |
+|------|---------|------|
+| yurt-manager | `quanzhenglong.com/edge/yurt-manager` | v1.6.0 |
+| yurthub | `quanzhenglong.com/edge/yurthub` | v1.6.0 |
+| raven-agent | `quanzhenglong.com/edge/raven-agent` | v0.4.1 |
+
+### 同步镜像到私有仓库
+
+如果镜像尚未同步到私有仓库，使用 `sync-images.sh` 脚本：
+
+```bash
+# 1. 设置镜像仓库密码
+export REGISTRY_PASSWORD=YOUR_PASSWORD
+
+# 2. 同步所有镜像
+./sync-images.sh
+
+# 3. 仅查看将要执行的命令（不实际同步）
+./sync-images.sh --dry-run
+```
+
+详细的镜像同步说明请参考 [IMAGES.md](./IMAGES.md)。
+
+### 使用公共镜像
+
+如果希望使用 Docker Hub 公共镜像，修改 values 文件中的镜像仓库：
+
+```yaml
+# 将私有镜像
+repository: quanzhenglong.com/edge/yurt-manager
+
+# 改为公共镜像
+repository: openyurt/yurt-manager
+```
+
+### 配置 ImagePullSecret（如需要）
+
+如果私有镜像仓库需要认证：
+
+```bash
+# 创建 secret
+kubectl create secret docker-registry edge-registry \
+  --docker-server=quanzhenglong.com \
+  --docker-username=edge_admin \
+  --docker-password=YOUR_PASSWORD \
+  -n kube-system
+
+# 在 values 文件中取消注释 imagePullSecrets 配置
+```
 
 ## 安装方式
 
@@ -339,6 +398,9 @@ kubectl delete crd \
 
 ## 参考资源
 
+- [镜像列表和同步文档](./IMAGES.md)
+- [镜像同步脚本](./sync-images.sh)
+- [安装脚本](./install.sh)
 - [OpenYurt 官方文档](https://openyurt.io/docs/)
 - [OpenYurt GitHub](https://github.com/openyurtio/openyurt)
 - [OpenYurt Helm Charts](https://github.com/openyurtio/openyurt-helm)
