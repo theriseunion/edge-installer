@@ -31,6 +31,10 @@ if [ "$INSTALL_OPENYURT" = "true" ]; then
 
   echo "OpenYurt API Server: $OPENYURT_API_SERVER"
 
+  # OpenYurt 版本
+  OPENYURT_VERSION=${OPENYURT_VERSION:-v1.6.0}
+  INSTALL_RAVEN=${INSTALL_RAVEN:-false}
+
   # 添加 OpenYurt Helm 仓库
   echo "添加 OpenYurt Helm 仓库..."
   helm repo add openyurt https://openyurtio.github.io/openyurt-helm
@@ -40,6 +44,8 @@ if [ "$INSTALL_OPENYURT" = "true" ]; then
   echo "安装 yurt-manager..."
   helm upgrade --install yurt-manager openyurt/yurt-manager \
     --namespace kube-system \
+    --values ./openyurt-1.6/yurt-manager-values.yaml \
+    --set image.tag=$OPENYURT_VERSION \
     --wait \
     --timeout 5m || {
       echo "⚠️  yurt-manager 安装失败"
@@ -50,7 +56,9 @@ if [ "$INSTALL_OPENYURT" = "true" ]; then
   echo "安装 yurt-hub..."
   helm upgrade --install yurthub openyurt/yurthub \
     --namespace kube-system \
+    --values ./openyurt-1.6/yurthub-values.yaml \
     --set kubernetesServerAddr=$OPENYURT_API_SERVER \
+    --set image.tag=$OPENYURT_VERSION \
     --wait \
     --timeout 5m || {
       echo "⚠️  yurthub 安装失败"
@@ -58,15 +66,29 @@ if [ "$INSTALL_OPENYURT" = "true" ]; then
     }
 
   # 3. 可选安装 raven-agent (边缘网络通信)
-  # echo "安装 raven-agent..."
-  # helm upgrade --install raven-agent openyurt/raven-agent \
-  #   --namespace kube-system \
-  #   --wait \
-  #   --timeout 5m
+  if [ "$INSTALL_RAVEN" = "true" ]; then
+    echo "安装 raven-agent..."
+    helm upgrade --install raven-agent openyurt/raven-agent \
+      --namespace kube-system \
+      --values ./openyurt-1.6/raven-agent-values.yaml \
+      --wait \
+      --timeout 5m || {
+        echo "⚠️  raven-agent 安装失败（非关键组件，继续执行）"
+      }
+  fi
 
   echo "✅ OpenYurt 安装成功"
   echo "验证 OpenYurt 组件："
   kubectl get pods -n kube-system | grep yurt
+
+  # 验证关键配置
+  echo ""
+  echo "验证 yurt-hub 配置..."
+  if kubectl get configmap yurt-static-set-yurt-hub -n kube-system -o yaml | grep -q "hub-cert-organizations=system:nodes"; then
+    echo "✅ yurt-hub 配置包含 hub-cert-organizations 参数"
+  else
+    echo "⚠️  yurt-hub 配置缺少 hub-cert-organizations 参数"
+  fi
   echo ""
 fi
 

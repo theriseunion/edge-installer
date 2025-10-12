@@ -1,0 +1,17 @@
+# OpenYurt 1.3 yurt-hub 配置
+# 用于直接在集群安装（非虚拟控制面模式）
+
+nameOverride: ""
+
+cacheAgents: ""
+
+yurthubBindingAddr: 127.0.0.1
+# 关键配置：指向集群自己的 API Server
+kubernetesServerAddr: https://192.168.1.102:6443
+bootstrapFile: "/var/lib/yurthub/bootstrap-hub.conf"
+organizations: ""
+
+image:
+  registry: openyurt
+  repository: yurthub
+  tag: v1.3.4

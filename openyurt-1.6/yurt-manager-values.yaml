@@ -1,0 +1,52 @@
+# OpenYurt yurt-manager Helm values
+# yurt-manager 是 OpenYurt 的核心控制器，负责管理边缘节点池、应用等
+
+# 镜像配置
+image:
+  repository: openyurt/yurt-manager
+  tag: v1.6.0
+  pullPolicy: IfNotPresent
+
+# 副本数
+replicaCount: 1
+
+# 资源限制
+resources:
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+# 节点选择器 - 确保运行在控制平面节点
+nodeSelector:
+  node-role.kubernetes.io/control-plane: ""
+
+# 容忍度 - 允许调度到控制平面节点
+tolerations:
+  - key: node-role.kubernetes.io/control-plane
+    operator: Exists
+    effect: NoSchedule
+  - key: node-role.kubernetes.io/master
+    operator: Exists
+    effect: NoSchedule
+
+# 日志级别
+logLevel: 2
+
+# Webhook 配置
+webhook:
+  enabled: true
+  port: 9443
+  certDir: /tmp/k8s-webhook-server/serving-certs
+
+# Metrics 配置
+metrics:
+  enabled: true
+  port: 8080
+
+# Leader Election 配置
+leaderElection:
+  enabled: true
+  namespace: kube-system
