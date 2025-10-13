@@ -445,7 +445,7 @@ monitoringService:
 
   service:
     type: ClusterIP
-    port: 80
+    port: 9083
     targetPort: 9083
 
   # 资源限制

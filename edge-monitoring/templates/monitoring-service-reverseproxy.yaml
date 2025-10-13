@@ -14,7 +14,7 @@ spec:
   upstream:
     scheme: http
     host: monitoring-service.{{ .Values.global.namespace }}.svc.cluster.local
-    port: 80
+    port: 9083
   directives:
     rewrite:
     - from: ^/oapis/monitoring\.theriseunion\.io/v1alpha1/(.*)$
