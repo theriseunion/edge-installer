@@ -130,13 +130,6 @@ while [[ $# -gt 0 ]]; do
     esac
 done
 
-# 检查必填参数
-if [ -z "$REGISTRY_PASSWORD" ]; then
-    print_error "必须设置镜像仓库密码"
-    echo ""
-    usage
-    exit 1
-fi
 
 # 检查 skopeo 是否安装
 if ! command -v skopeo &> /dev/null; then
@@ -179,7 +172,6 @@ sync_image() {
     # 使用 skopeo 同步镜像
     if skopeo copy \
         --insecure-policy \
-        --dest-creds "$REGISTRY_USERNAME:$REGISTRY_PASSWORD" \
         --multi-arch all \
         docker://"$source_image" \
         docker://"$target_image"; then
