@@ -38,21 +38,5 @@ spec:
               value: ":{{ .Values.edge.controller.metricsPort }}"
             - name: HEALTH_ADDR
               value: ":{{ .Values.edge.controller.healthPort }}"
-          livenessProbe:
-            httpGet:
-              path: /healthz
-              port: health
-            initialDelaySeconds: 30
-            periodSeconds: 30
-            timeoutSeconds: 5
-            failureThreshold: 5
-          readinessProbe:
-            httpGet:
-              path: /readyz
-              port: health
-            initialDelaySeconds: 15
-            periodSeconds: 10
-            timeoutSeconds: 5
-            failureThreshold: 3
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
