@@ -180,6 +180,18 @@ helm upgrade --install yurt-manager openyurt/yurt-manager \
 print_info "✅ yurt-manager 安装成功"
 echo ""
 
+# 应用 RBAC 权限修复
+print_info "============================================"
+print_info "应用 RBAC 权限修复..."
+print_info "============================================"
+
+kubectl apply -f "$SCRIPT_DIR/rbac-fix.yaml" || {
+    print_warn "RBAC 权限修复应用失败（可能是权限已存在）"
+}
+
+print_info "✅ RBAC 权限修复应用成功"
+echo ""
+
 # 2. 安装 yurthub
 print_info "============================================"
 print_info "安装 yurthub (边缘节点代理组件)..."

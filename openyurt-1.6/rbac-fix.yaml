@@ -1,0 +1,66 @@
+# OpenYurt 1.6 RBAC 权限修复配置
+# 解决 yurt-manager 缺少 nodes 资源 patch/update 权限的问题
+# 这些权限是 YurtStaticSet 控制器管理节点所必需的
+
+---
+# 为 yurt-manager 添加 nodes 资源的 patch 和 update 权限
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: yurt-manager-nodes-patch
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - nodes
+  verbs:
+  - patch
+  - update
+
+---
+# 为 yurt-manager 添加 configmaps 资源的 create、delete、patch、update 权限
+# 这些权限是 yurt-manager 创建和管理 webhook 证书所必需的
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: yurt-manager-configmaps
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - configmaps
+  verbs:
+  - create
+  - delete
+  - patch
+  - update
+
+---
+# 将 nodes patch/update 权限绑定到 yurt-manager ServiceAccount
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: yurt-manager-nodes-patch-binding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: yurt-manager-nodes-patch
+subjects:
+- kind: ServiceAccount
+  name: yurt-manager
+  namespace: kube-system
+
+---
+# 将 configmaps 权限绑定到 yurt-manager ServiceAccount
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: yurt-manager-configmaps-binding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: yurt-manager-configmaps
+subjects:
+- kind: ServiceAccount
+  name: yurt-manager
+  namespace: kube-system

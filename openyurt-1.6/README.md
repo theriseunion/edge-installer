@@ -26,7 +26,8 @@ openyurt-1.6/
 ├── sync-images.sh               # 镜像同步脚本
 ├── yurt-manager-values.yaml     # yurt-manager 配置
 ├── yurthub-values.yaml          # yurthub 配置（关键配置）
-└── raven-agent-values.yaml      # raven-agent 配置（可选）
+├── raven-agent-values.yaml      # raven-agent 配置（可选）
+└── rbac-fix.yaml                # RBAC 权限修复配置
 ```
 
 ### 核心组件
@@ -339,6 +340,28 @@ kubectl logs -n kube-system deployment/yurt-manager
 - 集群版本不兼容（需要 K8s 1.20+）
 - RBAC 权限不足
 - Webhook 证书问题
+
+### 问题 5: yurt-manager RBAC 权限不足
+
+**症状**:
+```
+nodes "<node-name>" is forbidden: User "system:serviceaccount:kube-system:yurt-manager" cannot get resource "nodes"
+```
+
+**原因**: yurt-manager 缺少 nodes 资源的 patch/update 权限，这些权限是 YurtStaticSet 控制器管理节点所必需的
+
+**解决方法**:
+
+安装脚本会自动应用 RBAC 修复，如果手动安装需要：
+
+```bash
+# 应用 RBAC 权限修复
+kubectl apply -f rbac-fix.yaml
+```
+
+**RBAC 修复包含**:
+- nodes 资源的 patch 和 update 权限
+- configmaps 资源的 create、delete、patch、update 权限（webhook 证书管理）
 
 ### 问题 3: YurtStaticSet 未创建
 
