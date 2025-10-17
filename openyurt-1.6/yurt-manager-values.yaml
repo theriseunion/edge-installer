@@ -3,10 +3,11 @@
 
 # 镜像配置
 # 支持使用私有镜像仓库
-# 使用公共镜像: openyurt/yurt-manager
-# 使用私有镜像: quanzhenglong.com/edge/yurt-manager
+# 使用公共镜像: registry: openyurt, repository: yurt-manager
+# 使用私有镜像: registry: quanzhenglong.com/edge, repository: yurt-manager
 image:
-  repository: quanzhenglong.com/edge/yurt-manager
+  registry: quanzhenglong.com/edge
+  repository: yurt-manager
   tag: v1.6.0
   pullPolicy: IfNotPresent
 

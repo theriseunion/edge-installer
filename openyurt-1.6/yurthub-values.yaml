@@ -8,10 +8,11 @@ kubernetesServerAddr: ""
 
 # 镜像配置
 # 支持使用私有镜像仓库
-# 使用公共镜像: openyurt/yurthub
-# 使用私有镜像: quanzhenglong.com/edge/yurthub
+# 使用公共镜像: registry: openyurt, repository: yurthub
+# 使用私有镜像: registry: quanzhenglong.com/edge, repository: yurthub
 image:
-  repository: quanzhenglong.com/edge/yurthub
+  registry: quanzhenglong.com/edge
+  repository: yurthub
   tag: v1.6.0
   pullPolicy: IfNotPresent
 
