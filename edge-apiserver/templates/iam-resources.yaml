@@ -119,6 +119,7 @@ metadata:
     iam.theriseunion.io/scope-value: global
 spec:
   rules:
+  # 1. Kubernetes 核心资源 - 基础查询
   - apiGroups:
     - ""
     resources:
@@ -126,6 +127,8 @@ spec:
     verbs:
     - get
     - list
+
+  # 2. Edge 租户资源 - 允许查询但通过 ABAC 过滤结果
   - apiGroups:
     - "tenant"
     resources:
@@ -134,6 +137,17 @@ spec:
     - nodegroups
     verbs:
     - list
+
+  # 3. 平台配置资源 - 允许认证用户查看平台配置（主题、logo等）
+  - apiGroups:
+    - "config.theriseunion.io"
+    resources:
+    - configs
+    verbs:
+    - get
+    - list
+
+  # 4. 非资源URL - K8s 和 OIDC 标准
   - nonResourceURLs:
     - /api
     - /api/v1
@@ -142,6 +156,8 @@ spec:
     - /oapis
     - /oapis/*
     - /oauth/userinfo
+    - /version
+    - /healthz
     verbs:
     - get
 ---
