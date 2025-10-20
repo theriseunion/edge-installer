@@ -126,6 +126,14 @@ spec:
     verbs:
     - get
     - list
+  - apiGroups:
+    - "tenant"
+    resources:
+    - workspaces
+    - clusters
+    - nodegroups
+    verbs:
+    - list
   - nonResourceURLs:
     - /api
     - /api/v1
