@@ -1,0 +1,494 @@
+# Categories - 权限分类定义
+# 用于前端角色模板页面的分类展示
+---
+# ============================================
+# 集群级别 Categories (Cluster Scope)
+# ============================================
+
+# 边缘集群管理
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: Category
+metadata:
+  name: edge-cluster-management
+  labels:
+    iam.theriseunion.io/scope: cluster
+spec:
+  displayName:
+    zh: 边缘集群管理
+    en: Edge Cluster Management
+  description:
+    zh: 节点组的查看和管理权限
+    en: Permissions for viewing and managing node groups
+  icon: network
+
+# 集群资源管理
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: Category
+metadata:
+  name: cluster-resource-management
+  labels:
+    iam.theriseunion.io/scope: cluster
+spec:
+  displayName:
+    zh: 集群资源
+    en: Cluster Resources
+  description:
+    zh: 镜像、节点、定制资源定义、系统组件的查看和管理
+    en: Permissions for images, nodes, CRDs, and system components
+  icon: server
+
+# 告警管理
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: Category
+metadata:
+  name: cluster-alerting-management
+  labels:
+    iam.theriseunion.io/scope: cluster
+spec:
+  displayName:
+    zh: 告警
+    en: Alerting
+  description:
+    zh: 规则组和告警的查看和管理权限
+    en: Permissions for viewing and managing alert rule groups and alerts
+  icon: bell
+
+# 监控管理
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: Category
+metadata:
+  name: cluster-monitoring-management
+  labels:
+    iam.theriseunion.io/scope: cluster
+spec:
+  displayName:
+    zh: 监控
+    en: Monitoring
+  description:
+    zh: 集群监控数据的查看和管理权限
+    en: Permissions for viewing and managing cluster monitoring
+  icon: activity
+
+# 存储管理
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: Category
+metadata:
+  name: cluster-storage-management
+  labels:
+    iam.theriseunion.io/scope: cluster
+spec:
+  displayName:
+    zh: 存储
+    en: Storage
+  description:
+    zh: 存储类和持久卷声明的查看和管理
+    en: Permissions for storage classes and persistent volume claims
+  icon: hard-drive
+
+# 访问控制
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: Category
+metadata:
+  name: cluster-access-control
+  labels:
+    iam.theriseunion.io/scope: cluster
+spec:
+  displayName:
+    zh: 访问控制
+    en: Access Control
+  description:
+    zh: 角色和成员的查看和管理权限
+    en: Permissions for viewing and managing roles and members
+  icon: shield
+
+# 项目管理
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: Category
+metadata:
+  name: cluster-project-management
+  labels:
+    iam.theriseunion.io/scope: cluster
+spec:
+  displayName:
+    zh: 项目
+    en: Projects
+  description:
+    zh: 项目的查看和管理权限
+    en: Permissions for viewing and managing projects
+  icon: folder
+
+# 集群设置
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: Category
+metadata:
+  name: cluster-settings
+  labels:
+    iam.theriseunion.io/scope: cluster
+spec:
+  displayName:
+    zh: 集群设置
+    en: Cluster Settings
+  description:
+    zh: 集群基础设置的查看和管理
+    en: Permissions for viewing and managing cluster settings
+  icon: settings
+
+# 应用负载
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: Category
+metadata:
+  name: cluster-app-workloads-management
+  labels:
+    iam.theriseunion.io/scope: cluster
+spec:
+  displayName:
+    zh: 应用负载
+    en: Application Workloads
+  description:
+    zh: 部署、有状态副本集、守护进程集等工作负载的查看和管理
+    en: Permissions for deployments, statefulsets, daemonsets and other workloads
+  icon: box
+
+# ============================================
+# 平台级别 Categories (Global/Platform Scope)
+# ============================================
+
+# 边缘集群管理 (平台级)
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: Category
+metadata:
+  name: global-edge-cluster-management
+  labels:
+    iam.theriseunion.io/scope: global
+spec:
+  displayName:
+    zh: 边缘集群管理
+    en: Edge Cluster Management
+  description:
+    zh: 平台级别的边缘集群和节点组管理
+    en: Platform-level edge cluster and node group management
+  icon: cloud
+
+# 集群管理 (平台级)
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: Category
+metadata:
+  name: global-cluster-management
+  labels:
+    iam.theriseunion.io/scope: global
+spec:
+  displayName:
+    zh: 集群管理
+    en: Cluster Management
+  description:
+    zh: 平台级别的集群查看和管理权限
+    en: Platform-level cluster viewing and management permissions
+  icon: server
+
+# 企业空间管理
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: Category
+metadata:
+  name: global-workspace-management
+  labels:
+    iam.theriseunion.io/scope: global
+spec:
+  displayName:
+    zh: 企业空间管理
+    en: Workspace Management
+  description:
+    zh: 企业空间的创建、查看和管理权限
+    en: Permissions for creating, viewing and managing workspaces
+  icon: briefcase
+
+# 平台设置
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: Category
+metadata:
+  name: global-platform-settings
+  labels:
+    iam.theriseunion.io/scope: global
+spec:
+  displayName:
+    zh: 平台设置
+    en: Platform Settings
+  description:
+    zh: 平台级别的系统设置管理
+    en: Platform-level system settings management
+  icon: sliders
+
+# 访问控制 (平台级)
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: Category
+metadata:
+  name: global-access-control
+  labels:
+    iam.theriseunion.io/scope: global
+spec:
+  displayName:
+    zh: 访问控制
+    en: Access Control
+  description:
+    zh: 平台级别的用户和角色管理
+    en: Platform-level user and role management
+  icon: users
+
+# 应用管理 (平台级)
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: Category
+metadata:
+  name: manage-app
+  labels:
+    iam.theriseunion.io/scope: global
+spec:
+  displayName:
+    zh: 应用管理
+    en: Application Management
+  description:
+    zh: 平台级别的应用模板管理
+    en: Platform-level application template management
+  icon: package
+
+# ============================================
+# 企业空间级别 Categories (Workspace Scope)
+# ============================================
+
+# 边缘管理 (企业空间)
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: Category
+metadata:
+  name: workspace-edge-management
+  labels:
+    iam.theriseunion.io/scope: workspace
+spec:
+  displayName:
+    zh: 边缘管理
+    en: Edge Management
+  description:
+    zh: 边缘企业空间和边缘应用模板的查看和管理
+    en: Permissions for edge workspaces and edge app templates
+  icon: zap
+
+# 企业空间设置
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: Category
+metadata:
+  name: workspace-settings
+  labels:
+    iam.theriseunion.io/scope: workspace
+spec:
+  displayName:
+    zh: 企业空间设置
+    en: Workspace Settings
+  description:
+    zh: 企业空间基础设置的查看和管理
+    en: Permissions for workspace settings
+  icon: settings
+
+# 访问控制 (企业空间)
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: Category
+metadata:
+  name: workspace-access-control
+  labels:
+    iam.theriseunion.io/scope: workspace
+spec:
+  displayName:
+    zh: 访问控制
+    en: Access Control
+  description:
+    zh: 企业空间内的角色和成员管理
+    en: Permissions for roles and members within workspace
+  icon: lock
+
+# 项目 (企业空间)
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: Category
+metadata:
+  name: workspace-project-management
+  labels:
+    iam.theriseunion.io/scope: workspace
+spec:
+  displayName:
+    zh: 项目
+    en: Projects
+  description:
+    zh: 企业空间内项目的查看、创建和管理
+    en: Permissions for viewing, creating and managing projects
+  icon: folder-open
+
+# 应用管理 (企业空间)
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: Category
+metadata:
+  name: workspace-app-management
+  labels:
+    iam.theriseunion.io/scope: workspace
+spec:
+  displayName:
+    zh: 应用管理
+    en: Application Management
+  description:
+    zh: 应用、应用版本、应用实例和应用仓库的管理
+    en: Permissions for apps, app versions, releases and repositories
+  icon: grid
+
+# 监控 (企业空间)
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: Category
+metadata:
+  name: workspace-monitoring-management
+  labels:
+    iam.theriseunion.io/scope: workspace
+spec:
+  displayName:
+    zh: 监控
+    en: Monitoring
+  description:
+    zh: 企业空间级别的监控查看权限
+    en: Workspace-level monitoring viewing permissions
+  icon: bar-chart
+
+# ============================================
+# 命名空间级别 Categories (Namespace Scope)
+# ============================================
+
+# 应用 (命名空间)
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: Category
+metadata:
+  name: namespace-app
+  labels:
+    iam.theriseunion.io/scope: namespace
+spec:
+  displayName:
+    zh: 应用
+    en: Applications
+  description:
+    zh: 命名空间内应用发布的创建、查看和管理
+    en: Permissions for app releases within namespace
+  icon: package
+
+# 应用负载 (命名空间)
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: Category
+metadata:
+  name: namespace-application-workloads
+  labels:
+    iam.theriseunion.io/scope: namespace
+spec:
+  displayName:
+    zh: 应用负载
+    en: Application Workloads
+  description:
+    zh: 部署、服务、任务等工作负载的管理
+    en: Permissions for deployments, services, jobs and other workloads
+  icon: layers
+
+# 配置管理 (命名空间)
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: Category
+metadata:
+  name: namespace-configuration-management
+  labels:
+    iam.theriseunion.io/scope: namespace
+spec:
+  displayName:
+    zh: 配置管理
+    en: Configuration Management
+  description:
+    zh: ConfigMap 和 Secret 的查看和管理
+    en: Permissions for ConfigMaps and Secrets
+  icon: file-text
+
+# 访问控制 (命名空间)
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: Category
+metadata:
+  name: namespace-access-control
+  labels:
+    iam.theriseunion.io/scope: namespace
+spec:
+  displayName:
+    zh: 访问控制
+    en: Access Control
+  description:
+    zh: 命名空间内的成员和角色管理
+    en: Permissions for members and roles within namespace
+  icon: user-check
+
+# 监控告警 (命名空间)
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: Category
+metadata:
+  name: namespace-monitoring-alerting
+  labels:
+    iam.theriseunion.io/scope: namespace
+spec:
+  displayName:
+    zh: 监控告警
+    en: Monitoring & Alerting
+  description:
+    zh: 命名空间级别的监控查看和告警管理
+    en: Namespace-level monitoring viewing and alert management
+  icon: bell-ring
+
+# 项目设置 (命名空间)
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: Category
+metadata:
+  name: namespace-project-settings
+  labels:
+    iam.theriseunion.io/scope: namespace
+spec:
+  displayName:
+    zh: 项目设置
+    en: Project Settings
+  description:
+    zh: 项目基础设置的查看和管理
+    en: Permissions for project settings
+  icon: sliders
+
+# 存储 (命名空间)
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: Category
+metadata:
+  name: namespace-storage-management
+  labels:
+    iam.theriseunion.io/scope: namespace
+spec:
+  displayName:
+    zh: 存储
+    en: Storage
+  description:
+    zh: 持久卷声明的查看和管理
+    en: Permissions for persistent volume claims
+  icon: database
