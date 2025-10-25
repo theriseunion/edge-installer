@@ -30,6 +30,7 @@ metadata:
     iam.theriseunion.io/role-type: "admin"
   annotations:
     iam.theriseunion.io/creator: "system"
+    theriseunion.io/alias-name: "nodegroup-admin"
     iam.theriseunion.io/display-name-en: "NodeGroup Administrator"
     iam.theriseunion.io/display-name-zh: "节点组管理员"
     iam.theriseunion.io/description-en: "Manage all nodes in the node group"
@@ -51,6 +52,7 @@ metadata:
     iam.theriseunion.io/role-type: "viewer"
   annotations:
     iam.theriseunion.io/creator: "system"
+    theriseunion.io/alias-name: "nodegroup-viewer"
     iam.theriseunion.io/display-name-en: "NodeGroup Viewer"
     iam.theriseunion.io/display-name-zh: "节点组查看者"
     iam.theriseunion.io/description-en: "View all nodes in the node group"

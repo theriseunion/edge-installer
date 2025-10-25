@@ -30,6 +30,7 @@ metadata:
     iam.theriseunion.io/role-type: "admin"
   annotations:
     iam.theriseunion.io/creator: "system"
+    theriseunion.io/alias-name: "namespace-admin"
     iam.theriseunion.io/display-name-en: "Project Administrator"
     iam.theriseunion.io/display-name-zh: "项目管理员"
     iam.theriseunion.io/description-en: "Manage all resources in the project"
@@ -51,6 +52,7 @@ metadata:
     iam.theriseunion.io/role-type: "operator"
   annotations:
     iam.theriseunion.io/creator: "system"
+    theriseunion.io/alias-name: "namespace-operator"
     iam.theriseunion.io/display-name-en: "Project Operator"
     iam.theriseunion.io/display-name-zh: "项目操作员"
     iam.theriseunion.io/description-en: "Manage resources except users and roles"
@@ -72,6 +74,7 @@ metadata:
     iam.theriseunion.io/role-type: "viewer"
   annotations:
     iam.theriseunion.io/creator: "system"
+    theriseunion.io/alias-name: "namespace-viewer"
     iam.theriseunion.io/display-name-en: "Project Viewer"
     iam.theriseunion.io/display-name-zh: "项目查看者"
     iam.theriseunion.io/description-en: "View all resources in the project"

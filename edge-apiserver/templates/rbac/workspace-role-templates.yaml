@@ -30,6 +30,7 @@ metadata:
     iam.theriseunion.io/role-type: "admin"
   annotations:
     iam.theriseunion.io/creator: "system"
+    theriseunion.io/alias-name: "workspace-admin"
     iam.theriseunion.io/display-name-en: "Workspace Administrator"
     iam.theriseunion.io/display-name-zh: "工作空间管理员"
     iam.theriseunion.io/description-en: "Manage all resources in the workspace"
@@ -51,6 +52,7 @@ metadata:
     iam.theriseunion.io/role-type: "viewer"
   annotations:
     iam.theriseunion.io/creator: "system"
+    theriseunion.io/alias-name: "workspace-viewer"
     iam.theriseunion.io/display-name-en: "Workspace Viewer"
     iam.theriseunion.io/display-name-zh: "工作空间查看者"
     iam.theriseunion.io/description-en: "View all resources in the workspace"
@@ -72,6 +74,7 @@ metadata:
     iam.theriseunion.io/role-type: "regular"
   annotations:
     iam.theriseunion.io/creator: "system"
+    theriseunion.io/alias-name: "workspace-regular"
     iam.theriseunion.io/display-name-en: "Workspace Regular User"
     iam.theriseunion.io/display-name-zh: "工作空间普通用户"
     iam.theriseunion.io/description-en: "View workspace settings"
@@ -93,6 +96,7 @@ metadata:
     iam.theriseunion.io/role-type: "self-provisioner"
   annotations:
     iam.theriseunion.io/creator: "system"
+    theriseunion.io/alias-name: "workspace-self-provisioner"
     iam.theriseunion.io/display-name-en: "Workspace Self Provisioner"
     iam.theriseunion.io/display-name-zh: "工作空间项目创建者"
     iam.theriseunion.io/description-en: "View workspace settings and create projects"
