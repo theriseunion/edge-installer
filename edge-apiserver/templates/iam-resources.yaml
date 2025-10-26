@@ -158,7 +158,21 @@ spec:
     - get
     - list
 
-  # 5. 非资源URL - K8s 和 OIDC 标准
+  # 5. 监控资源 - 允许所有用户查看监控数据（最宽松策略）
+  - apiGroups:
+    - "monitoring.theriseunion.io"
+    resources:
+    - cluster
+    - workspaces
+    - namespaces
+    - nodegroups
+    - nodes
+    - query
+    verbs:
+    - get
+    - list
+
+  # 6. 非资源URL - K8s 和 OIDC 标准
   - nonResourceURLs:
     - /api
     - /api/v1
@@ -295,7 +309,47 @@ spec:
   # UI权限定义：基础用户只能查看自己加入的租户空间
   uiPermissions:
     - platform/workspace.view    # 查看自己加入的租户空间（后端会根据成员关系过滤）
-  rules: []
+  rules:
+  # 基础查询权限 - 允许列出资源，但后端会根据成员关系过滤结果
+  - apiGroups:
+    - ""
+    resources:
+    - namespaces
+    verbs:
+    - get
+    - list
+  - apiGroups:
+    - tenant
+    - tenant.theriseunion.io
+    resources:
+    - workspaces
+    - clusters
+    - namespaces
+    verbs:
+    - get
+    - list
+    - watch
+  # 权限查询 - 允许用户查询自己的权限
+  - apiGroups:
+    - iam.theriseunion.io
+    resources:
+    - permissions
+    verbs:
+    - get
+    - list
+  # 非资源URL访问
+  - nonResourceURLs:
+    - /api
+    - /api/v1
+    - /apis
+    - /apis/*
+    - /oapis
+    - /oapis/*
+    - /oauth/userinfo
+    - /version
+    - /healthz
+    verbs:
+    - get
 ---
 apiVersion: iam.theriseunion.io/v1alpha1
 kind: IAMRole

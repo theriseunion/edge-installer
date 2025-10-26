@@ -39,7 +39,7 @@ spec:
   aggregationRoleTemplates:
     roleSelector:
       matchLabels:
-        iam.theriseunion.io/aggregate-to-workspace-admin: "true"
+        iam.theriseunion.io/aggregate-to-admin: ""
 
 ---
 apiVersion: iam.theriseunion.io/v1alpha1
@@ -61,7 +61,7 @@ spec:
   aggregationRoleTemplates:
     roleSelector:
       matchLabels:
-        iam.theriseunion.io/aggregate-to-workspace-viewer: "true"
+        iam.theriseunion.io/aggregate-to-viewer: ""
 
 ---
 apiVersion: iam.theriseunion.io/v1alpha1
@@ -83,7 +83,7 @@ spec:
   aggregationRoleTemplates:
     roleSelector:
       matchLabels:
-        iam.theriseunion.io/aggregate-to-workspace-regular: "true"
+        iam.theriseunion.io/aggregate-to-regular: ""
 
 ---
 apiVersion: iam.theriseunion.io/v1alpha1
@@ -105,4 +105,4 @@ spec:
   aggregationRoleTemplates:
     roleSelector:
       matchLabels:
-        iam.theriseunion.io/aggregate-to-workspace-self-provisioner: "true"
+        iam.theriseunion.io/aggregate-to-self-provisioner: ""

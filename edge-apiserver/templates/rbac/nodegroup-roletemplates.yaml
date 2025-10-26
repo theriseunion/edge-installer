@@ -1,0 +1,445 @@
+# NodeGroup-Scoped RoleTemplates
+# These RoleTemplates define permissions for nodegroup-scoped operations
+# They aggregate into nodegroup-admin and nodegroup-viewer roles via label matching
+
+# =============================================================================
+# Category: nodegroup-node-management
+# Purpose: Manage and view nodes within the nodegroup
+# =============================================================================
+
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  name: nodegroup-manage-nodes
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    iam.theriseunion.io/aggregate-to-nodegroup-admin: "true"
+    iam.theriseunion.io/category: nodegroup-node-management
+    iam.theriseunion.io/scope: nodegroup
+    iam.theriseunion.io/scope-value: default
+    theriseunion.io/managed: "true"
+  annotations:
+    iam.theriseunion.io/dependencies: '["nodegroup-view-nodes"]'
+    iam.theriseunion.io/role-template-rules: '{"nodes": "manage"}'
+    iam.theriseunion.io/creator: "system"
+spec:
+  displayName:
+    en: Node Management
+    zh: 节点管理
+  description:
+    en: Create, edit, and delete nodes in the node group.
+    zh: 创建、编辑和删除节点组中的节点。
+  rules:
+  # Core node resources - full management
+  - apiGroups:
+    - ""
+    resources:
+    - nodes
+    - nodes/status
+    - nodes/proxy
+    verbs:
+    - '*'
+  # Node-related resources
+  - apiGroups:
+    - ""
+    resources:
+    - pods
+    - pods/log
+    - pods/status
+    verbs:
+    - get
+    - list
+    - watch
+  # Metrics and monitoring
+  - apiGroups:
+    - metrics.k8s.io
+    resources:
+    - nodes
+    - pods
+    verbs:
+    - get
+    - list
+  # Storage related to nodes
+  - apiGroups:
+    - ""
+    resources:
+    - persistentvolumes
+    - persistentvolumeclaims
+    verbs:
+    - get
+    - list
+    - watch
+  # Edge node management
+  - apiGroups:
+    - edge.theriseunion.io
+    - devices.kubeedge.io
+    resources:
+    - edgenodes
+    - devices
+    - devicemodels
+    verbs:
+    - '*'
+
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  name: nodegroup-view-nodes
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    iam.theriseunion.io/aggregate-to-nodegroup-viewer: "true"
+    iam.theriseunion.io/category: nodegroup-node-management
+    iam.theriseunion.io/scope: nodegroup
+    iam.theriseunion.io/scope-value: default
+    theriseunion.io/managed: "true"
+  annotations:
+    iam.theriseunion.io/role-template-rules: '{"nodes": "view"}'
+    iam.theriseunion.io/creator: "system"
+spec:
+  displayName:
+    en: Node Viewing
+    zh: 节点查看
+  description:
+    en: View all nodes and node resources in the node group.
+    zh: 查看节点组中的所有节点及节点资源。
+  rules:
+  # Core node resources - read-only
+  - apiGroups:
+    - ""
+    resources:
+    - nodes
+    - nodes/status
+    verbs:
+    - get
+    - list
+    - watch
+  # Node-related resources
+  - apiGroups:
+    - ""
+    resources:
+    - pods
+    - pods/log
+    - pods/status
+    verbs:
+    - get
+    - list
+    - watch
+  # Metrics and monitoring
+  - apiGroups:
+    - metrics.k8s.io
+    resources:
+    - nodes
+    - pods
+    verbs:
+    - get
+    - list
+  # Storage related to nodes
+  - apiGroups:
+    - ""
+    resources:
+    - persistentvolumes
+    - persistentvolumeclaims
+    verbs:
+    - get
+    - list
+    - watch
+  # Edge node viewing
+  - apiGroups:
+    - edge.theriseunion.io
+    - devices.kubeedge.io
+    resources:
+    - edgenodes
+    - devices
+    - devicemodels
+    verbs:
+    - get
+    - list
+    - watch
+
+# =============================================================================
+# Category: nodegroup-access-control
+# Purpose: Manage members and roles within the nodegroup
+# =============================================================================
+
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  name: nodegroup-manage-members
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    iam.theriseunion.io/category: nodegroup-access-control
+    iam.theriseunion.io/scope: nodegroup
+    iam.theriseunion.io/scope-value: default
+    theriseunion.io/managed: "true"
+  annotations:
+    iam.theriseunion.io/dependencies: '["nodegroup-view-members", "nodegroup-view-roles"]'
+    iam.theriseunion.io/role-template-rules: '{"members": "manage"}'
+    iam.theriseunion.io/creator: "system"
+spec:
+  displayName:
+    en: Member Management
+    zh: 成员管理
+  description:
+    en: Invite, remove, and manage members in the node group.
+    zh: 邀请、移除和管理节点组中的成员。
+  rules:
+  - apiGroups:
+    - iam.theriseunion.io
+    resources:
+    - nodegroupmembers
+    - iamrolebindings
+    verbs:
+    - '*'
+  - apiGroups:
+    - iam.theriseunion.io
+    resources:
+    - users
+    verbs:
+    - get
+    - list
+    - watch
+
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  name: nodegroup-view-members
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    iam.theriseunion.io/aggregate-to-nodegroup-viewer: "true"
+    iam.theriseunion.io/category: nodegroup-access-control
+    iam.theriseunion.io/scope: nodegroup
+    iam.theriseunion.io/scope-value: default
+    theriseunion.io/managed: "true"
+  annotations:
+    iam.theriseunion.io/role-template-rules: '{"members": "view"}'
+    iam.theriseunion.io/creator: "system"
+spec:
+  displayName:
+    en: Member Viewing
+    zh: 成员查看
+  description:
+    en: View members in the node group.
+    zh: 查看节点组中的成员。
+  rules:
+  - apiGroups:
+    - iam.theriseunion.io
+    resources:
+    - nodegroupmembers
+    - iamrolebindings
+    - users
+    verbs:
+    - get
+    - list
+    - watch
+
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  name: nodegroup-manage-roles
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    iam.theriseunion.io/category: nodegroup-access-control
+    iam.theriseunion.io/scope: nodegroup
+    iam.theriseunion.io/scope-value: default
+    theriseunion.io/managed: "true"
+  annotations:
+    iam.theriseunion.io/dependencies: '["nodegroup-view-roles"]'
+    iam.theriseunion.io/role-template-rules: '{"roles": "manage"}'
+    iam.theriseunion.io/creator: "system"
+spec:
+  displayName:
+    en: Role Management
+    zh: 角色管理
+  description:
+    en: Create, edit, and delete roles in the node group.
+    zh: 创建、编辑和删除节点组中的角色。
+  rules:
+  - apiGroups:
+    - iam.theriseunion.io
+    resources:
+    - iamroles
+    - roletemplates
+    verbs:
+    - '*'
+
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  name: nodegroup-view-roles
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    iam.theriseunion.io/aggregate-to-nodegroup-viewer: "true"
+    iam.theriseunion.io/category: nodegroup-access-control
+    iam.theriseunion.io/scope: nodegroup
+    iam.theriseunion.io/scope-value: default
+    theriseunion.io/managed: "true"
+  annotations:
+    iam.theriseunion.io/role-template-rules: '{"roles": "view"}'
+    iam.theriseunion.io/creator: "system"
+spec:
+  displayName:
+    en: Role Viewing
+    zh: 角色查看
+  description:
+    en: View roles in the node group.
+    zh: 查看节点组中的角色。
+  rules:
+  - apiGroups:
+    - iam.theriseunion.io
+    resources:
+    - iamroles
+    - roletemplates
+    verbs:
+    - get
+    - list
+    - watch
+
+# =============================================================================
+# Category: nodegroup-settings
+# Purpose: Manage and view nodegroup settings and configuration
+# =============================================================================
+
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  name: nodegroup-manage-nodegroup-settings
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    iam.theriseunion.io/category: nodegroup-settings
+    iam.theriseunion.io/scope: nodegroup
+    iam.theriseunion.io/scope-value: default
+    theriseunion.io/managed: "true"
+  annotations:
+    iam.theriseunion.io/dependencies: '["nodegroup-view-nodegroup-settings"]'
+    iam.theriseunion.io/role-template-rules: '{"settings": "manage"}'
+    iam.theriseunion.io/creator: "system"
+spec:
+  displayName:
+    en: NodeGroup Settings Management
+    zh: 节点组设置管理
+  description:
+    en: Edit node group settings and quotas.
+    zh: 编辑节点组设置及配额。
+  rules:
+  - apiGroups:
+    - tenant.theriseunion.io
+    resources:
+    - nodegroups
+    - nodegroups/status
+    verbs:
+    - get
+    - list
+    - watch
+    - update
+    - patch
+  - apiGroups:
+    - ""
+    resources:
+    - resourcequotas
+    - limitranges
+    verbs:
+    - '*'
+
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  name: nodegroup-view-nodegroup-settings
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    iam.theriseunion.io/aggregate-to-nodegroup-viewer: "true"
+    iam.theriseunion.io/category: nodegroup-settings
+    iam.theriseunion.io/scope: nodegroup
+    iam.theriseunion.io/scope-value: default
+    theriseunion.io/managed: "true"
+  annotations:
+    iam.theriseunion.io/role-template-rules: '{"settings": "view"}'
+    iam.theriseunion.io/creator: "system"
+spec:
+  displayName:
+    en: NodeGroup Settings Viewing
+    zh: 节点组设置查看
+  description:
+    en: View node group settings and quotas.
+    zh: 查看节点组设置及配额。
+  rules:
+  - apiGroups:
+    - tenant.theriseunion.io
+    resources:
+    - nodegroups
+    - nodegroups/status
+    verbs:
+    - get
+    - list
+    - watch
+  - apiGroups:
+    - ""
+    resources:
+    - resourcequotas
+    - limitranges
+    verbs:
+    - get
+    - list
+    - watch
+
+# =============================================================================
+# Category: nodegroup-monitoring
+# Purpose: View monitoring and metrics data for the nodegroup
+# =============================================================================
+
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  name: nodegroup-view-monitoring
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    iam.theriseunion.io/aggregate-to-nodegroup-viewer: "true"
+    iam.theriseunion.io/category: nodegroup-monitoring
+    iam.theriseunion.io/scope: nodegroup
+    iam.theriseunion.io/scope-value: default
+    theriseunion.io/managed: "true"
+  annotations:
+    iam.theriseunion.io/role-template-rules: '{"monitoring": "view"}'
+    iam.theriseunion.io/creator: "system"
+spec:
+  displayName:
+    en: Monitoring Viewing
+    zh: 监控查看
+  description:
+    en: View monitoring data and metrics for nodes in the node group.
+    zh: 查看节点组中节点的监控数据和指标。
+  rules:
+  # Prometheus metrics
+  - apiGroups:
+    - monitoring.coreos.com
+    resources:
+    - servicemonitors
+    - podmonitors
+    verbs:
+    - get
+    - list
+    - watch
+  # Metrics API
+  - apiGroups:
+    - metrics.k8s.io
+    resources:
+    - nodes
+    - pods
+    verbs:
+    - get
+    - list
+  # Custom metrics
+  - apiGroups:
+    - custom.metrics.k8s.io
+    resources:
+    - '*'
+    verbs:
+    - get
+    - list

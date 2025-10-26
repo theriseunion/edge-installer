@@ -1414,8 +1414,6 @@ metadata:
     iam.theriseunion.io/scope: namespace
     theriseunion.io/managed: 'true'
     iam.theriseunion.io/scope-value: default
-    iam.theriseunion.io/aggregate-to-namespace-admin: "true"
-    iam.theriseunion.io/aggregate-to-namespace-operator: "true"
   name: namespace-create-app-releases
 spec:
   description:
@@ -1448,8 +1446,6 @@ metadata:
     iam.theriseunion.io/scope: namespace
     theriseunion.io/managed: 'true'
     iam.theriseunion.io/scope-value: default
-    iam.theriseunion.io/aggregate-to-namespace-admin: "true"
-    iam.theriseunion.io/aggregate-to-namespace-operator: "true"
   name: namespace-delete-app-releases
 spec:
   description:
@@ -1483,8 +1479,6 @@ metadata:
     iam.theriseunion.io/scope: namespace
     theriseunion.io/managed: 'true'
     iam.theriseunion.io/scope-value: default
-    iam.theriseunion.io/aggregate-to-namespace-admin: "true"
-    iam.theriseunion.io/aggregate-to-namespace-operator: "true"
   name: namespace-manage-app-releases
 spec:
   description:
@@ -1517,7 +1511,6 @@ metadata:
     iam.theriseunion.io/scope: namespace
     theriseunion.io/managed: 'true'
     iam.theriseunion.io/scope-value: default
-    iam.theriseunion.io/aggregate-to-namespace-operator: "true"
   name: namespace-manage-app-workloads
 spec:
   description:
@@ -1572,7 +1565,6 @@ metadata:
     iam.theriseunion.io/scope: namespace
     theriseunion.io/managed: 'true'
     iam.theriseunion.io/scope-value: default
-    iam.theriseunion.io/aggregate-to-namespace-operator: "true"
   name: namespace-manage-configmaps
 spec:
   description:
@@ -1636,7 +1628,6 @@ metadata:
     theriseunion.io/extension-ref: monitor-monitoring
     theriseunion.io/managed: 'true'
     iam.theriseunion.io/scope-value: default
-    iam.theriseunion.io/aggregate-to-namespace-operator: "true"
   name: namespace-manage-monitoring
 spec:
   description:
@@ -1668,7 +1659,6 @@ metadata:
     iam.theriseunion.io/scope: namespace
     theriseunion.io/managed: 'true'
     iam.theriseunion.io/scope-value: default
-    iam.theriseunion.io/aggregate-to-namespace-operator: "true"
   name: namespace-manage-persistentvolumeclaims
 spec:
   description:
@@ -1705,7 +1695,6 @@ metadata:
     iam.theriseunion.io/scope: namespace
     theriseunion.io/managed: 'true'
     iam.theriseunion.io/scope-value: default
-    iam.theriseunion.io/aggregate-to-namespace-admin: "true"
   name: namespace-manage-project-settings
 spec:
   description:
@@ -1767,7 +1756,6 @@ metadata:
     iam.theriseunion.io/scope: namespace
     theriseunion.io/managed: 'true'
     iam.theriseunion.io/scope-value: default
-    iam.theriseunion.io/aggregate-to-namespace-operator: "true"
   name: namespace-manage-secrets
 spec:
   description:
@@ -1829,7 +1817,6 @@ metadata:
     iam.theriseunion.io/scope: namespace
     theriseunion.io/managed: 'true'
     iam.theriseunion.io/scope-value: default
-    iam.theriseunion.io/aggregate-to-namespace-operator: "true"
   name: namespace-manage-workloadtemplates
 spec:
   description:
@@ -1862,8 +1849,6 @@ metadata:
     theriseunion.io/extension-ref: monitor-notification
     theriseunion.io/managed: 'true'
     iam.theriseunion.io/scope-value: default
-    iam.theriseunion.io/aggregate-to-namespace-operator: "true"
-    iam.theriseunion.io/aggregate-to-namespace-viewer: "true"
   name: namespace-receive-notification
 spec:
   description:
@@ -1896,7 +1881,6 @@ metadata:
     iam.theriseunion.io/scope: namespace
     theriseunion.io/managed: 'true'
     iam.theriseunion.io/scope-value: default
-    iam.theriseunion.io/aggregate-to-namespace-viewer: "true"
   name: namespace-view-app-releases
 spec:
   description:
@@ -1931,8 +1915,6 @@ metadata:
     iam.theriseunion.io/scope: namespace
     theriseunion.io/managed: 'true'
     iam.theriseunion.io/scope-value: default
-    iam.theriseunion.io/aggregate-to-namespace-operator: "true"
-    iam.theriseunion.io/aggregate-to-namespace-viewer: "true"
   name: namespace-view-app-workloads
 spec:
   description:
@@ -1983,8 +1965,6 @@ metadata:
     iam.theriseunion.io/scope: namespace
     theriseunion.io/managed: 'true'
     iam.theriseunion.io/scope-value: default
-    iam.theriseunion.io/aggregate-to-namespace-operator: "true"
-    iam.theriseunion.io/aggregate-to-namespace-viewer: "true"
   name: namespace-view-configmaps
 spec:
   description:
@@ -2018,8 +1998,6 @@ metadata:
     iam.theriseunion.io/scope: namespace
     theriseunion.io/managed: 'true'
     iam.theriseunion.io/scope-value: default
-    iam.theriseunion.io/aggregate-to-namespace-operator: "true"
-    iam.theriseunion.io/aggregate-to-namespace-viewer: "true"
   name: namespace-view-members
 spec:
   description:
@@ -2055,8 +2033,6 @@ metadata:
     theriseunion.io/extension-ref: monitor-monitoring
     theriseunion.io/managed: 'true'
     iam.theriseunion.io/scope-value: default
-    iam.theriseunion.io/aggregate-to-namespace-operator: "true"
-    iam.theriseunion.io/aggregate-to-namespace-viewer: "true"
   name: namespace-view-monitoring
 spec:
   description:
@@ -2096,8 +2072,6 @@ metadata:
     iam.theriseunion.io/scope: namespace
     theriseunion.io/managed: 'true'
     iam.theriseunion.io/scope-value: default
-    iam.theriseunion.io/aggregate-to-namespace-operator: "true"
-    iam.theriseunion.io/aggregate-to-namespace-viewer: "true"
   name: namespace-view-persistentvolumeclaims
 spec:
   description:
@@ -2139,8 +2113,6 @@ metadata:
     iam.theriseunion.io/scope: namespace
     theriseunion.io/managed: 'true'
     iam.theriseunion.io/scope-value: default
-    iam.theriseunion.io/aggregate-to-namespace-operator: "true"
-    iam.theriseunion.io/aggregate-to-namespace-viewer: "true"
   name: namespace-view-project-settings
 spec:
   description:
@@ -2186,8 +2158,6 @@ metadata:
     iam.theriseunion.io/scope: namespace
     theriseunion.io/managed: 'true'
     iam.theriseunion.io/scope-value: default
-    iam.theriseunion.io/aggregate-to-namespace-operator: "true"
-    iam.theriseunion.io/aggregate-to-namespace-viewer: "true"
   name: namespace-view-roles
 spec:
   description:
@@ -2221,8 +2191,6 @@ metadata:
     iam.theriseunion.io/scope: namespace
     theriseunion.io/managed: 'true'
     iam.theriseunion.io/scope-value: default
-    iam.theriseunion.io/aggregate-to-namespace-operator: "true"
-    iam.theriseunion.io/aggregate-to-namespace-viewer: "true"
   name: namespace-view-secrets
 spec:
   description:
@@ -2257,8 +2225,6 @@ metadata:
     iam.theriseunion.io/scope: namespace
     theriseunion.io/managed: 'true'
     iam.theriseunion.io/scope-value: default
-    iam.theriseunion.io/aggregate-to-namespace-operator: "true"
-    iam.theriseunion.io/aggregate-to-namespace-viewer: "true"
   name: namespace-view-serviceaccount
 spec:
   description:
@@ -2293,8 +2259,6 @@ metadata:
     iam.theriseunion.io/scope: namespace
     theriseunion.io/managed: 'true'
     iam.theriseunion.io/scope-value: default
-    iam.theriseunion.io/aggregate-to-namespace-operator: "true"
-    iam.theriseunion.io/aggregate-to-namespace-viewer: "true"
   name: namespace-view-workloadtemplates
 spec:
   description:
@@ -2519,7 +2483,6 @@ metadata:
     theriseunion.io/extension-ref: monitor-alerting
     theriseunion.io/managed: 'true'
     iam.theriseunion.io/scope-value: default
-    iam.theriseunion.io/aggregate-to-namespace-operator: "true"
   name: monitor-alerting-agent-namespace-manage-rulegroups
 spec:
   description:
@@ -2552,8 +2515,6 @@ metadata:
     theriseunion.io/extension-ref: monitor-alerting
     theriseunion.io/managed: 'true'
     iam.theriseunion.io/scope-value: default
-    iam.theriseunion.io/aggregate-to-namespace-operator: "true"
-    iam.theriseunion.io/aggregate-to-namespace-viewer: "true"
   name: monitor-alerting-agent-namespace-view-alerts
 spec:
   description:
@@ -2586,8 +2547,6 @@ metadata:
     theriseunion.io/extension-ref: monitor-alerting
     theriseunion.io/managed: 'true'
     iam.theriseunion.io/scope-value: default
-    iam.theriseunion.io/aggregate-to-namespace-operator: "true"
-    iam.theriseunion.io/aggregate-to-namespace-viewer: "true"
   name: monitor-alerting-agent-namespace-view-rulegroups
 spec:
   description:

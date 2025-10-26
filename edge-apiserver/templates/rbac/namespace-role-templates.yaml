@@ -53,7 +53,7 @@ spec:
   aggregationRoleTemplates:
     roleSelector:
       matchLabels:
-        iam.theriseunion.io/aggregate-to-namespace-admin: "true"
+        iam.theriseunion.io/aggregate-to-admin: ""
 
 ---
 apiVersion: iam.theriseunion.io/v1alpha1
@@ -85,7 +85,7 @@ spec:
   aggregationRoleTemplates:
     roleSelector:
       matchLabels:
-        iam.theriseunion.io/aggregate-to-namespace-operator: "true"
+        iam.theriseunion.io/aggregate-to-operator: ""
 
 ---
 apiVersion: iam.theriseunion.io/v1alpha1
@@ -114,4 +114,4 @@ spec:
   aggregationRoleTemplates:
     roleSelector:
       matchLabels:
-        iam.theriseunion.io/aggregate-to-namespace-viewer: "true"
+        iam.theriseunion.io/aggregate-to-viewer: ""
