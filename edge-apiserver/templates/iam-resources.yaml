@@ -13,18 +13,20 @@ metadata:
 spec:
   description:
     en: Create workspaces.
-    zh: 创建企业空间。
+    zh: 创建租户空间。
   displayName:
     en: Workspace Creation
-    zh: 企业空间创建
+    zh: 租户空间创建
   rules:
   - apiGroups:
-    - tenant.edge.io
+    - scope.theriseunion.io
     resources:
     - workspaces
     - workspacetemplates
     verbs:
     - create
+    - get
+    - list
     - watch
 ---
 apiVersion: iam.theriseunion.io/v1alpha1
@@ -40,10 +42,10 @@ metadata:
 spec:
   description:
     en: Manage all workspaces and workspace resources.
-    zh: 管理所有企业空间和企业空间下的资源。
+    zh: 管理所有租户空间和租户空间下的资源。
   displayName:
     en: Workspace Management
-    zh: 企业空间管理
+    zh: 租户空间管理
   rules:
   - apiGroups:
     - '*'
@@ -57,7 +59,7 @@ spec:
     verbs:
     - '*'
   - apiGroups:
-    - resources.edge.io
+    - resources.theriseunion.io
     resources:
     - '*'
     verbs:
@@ -76,10 +78,10 @@ metadata:
 spec:
   description:
     en: View all workspaces and workspace resources.
-    zh: 查看所有工作空间和企业空间下的资源。
+    zh: 查看所有工作空间和租户空间下的资源。
   displayName:
     en: Workspace View
-    zh: 企业空间查看
+    zh: 租户空间查看
   rules:
   - apiGroups:
     - '*'
@@ -95,7 +97,7 @@ spec:
     - list
     - watch
   - apiGroups:
-    - resources.edge.io
+    - resources.theriseunion.io
     resources:
     - '*'
     verbs:
@@ -147,7 +149,16 @@ spec:
     - get
     - list
 
-  # 4. 非资源URL - K8s 和 OIDC 标准
+  # 4. IAM 权限查询 - 允许用户查询自己的权限
+  - apiGroups:
+    - "iam.theriseunion.io"
+    resources:
+    - permissions
+    verbs:
+    - get
+    - list
+
+  # 5. 非资源URL - K8s 和 OIDC 标准
   - nonResourceURLs:
     - /api
     - /api/v1
@@ -208,6 +219,14 @@ spec:
     - get
     - list
     - watch
+  uiPermissions:
+  - cluster/node.view
+  - cluster/namespace.view
+  - cluster/workload.view
+  - cluster/storage.view
+  - cluster/network.view
+  - cluster/config.view
+  - cluster/monitoring.view
 ---
 apiVersion: iam.theriseunion.io/v1alpha1
 kind: IAMRole
@@ -225,6 +244,23 @@ metadata:
     iam.theriseunion.io/scope: platform
     iam.theriseunion.io/scope-value: global
 spec:
+  # 平台管理员UI权限
+  uiPermissions:
+    # 用户管理权限
+    - platform/user.view
+    - platform/user.manage
+    # 角色管理权限
+    - platform/role.view
+    - platform/role.manage
+    # 工作空间管理权限
+    - platform/workspace.view
+    - platform/workspace.manage
+    # 集群管理权限
+    - platform/cluster.view
+    - platform/cluster.manage
+    # 平台设置权限
+    - platform/settings.view
+    - platform/settings.manage
   rules:
   - apiGroups:
     - '*'
@@ -247,15 +283,18 @@ metadata:
   name: platform-regular
   annotations:
     edge.io/creator: system
-    edge.io/description: '{"zh": "被邀请加入企业空间之前无法访问任何资源。", "en": "Cannot access any resources before being invited to workspaces."}'
+    edge.io/description: '{"zh": "被邀请加入租户空间之前无法访问任何资源。", "en": "Cannot access any resources before being invited to workspaces."}'
     theriseunion.io/creator: system
-    theriseunion.io/description: '{"zh": "被邀请加入企业空间之前无法访问任何资源。", "en": "Cannot access any resources before being invited to workspaces."}'
+    theriseunion.io/description: '{"zh": "被邀请加入租户空间之前无法访问任何资源。", "en": "Cannot access any resources before being invited to workspaces."}'
     theriseunion.io/role-templates: ""
   labels:
     iam.theriseunion.io/category: platform-management
     iam.theriseunion.io/scope: platform
     iam.theriseunion.io/scope-value: global
 spec:
+  # UI权限定义：基础用户只能查看自己加入的租户空间
+  uiPermissions:
+    - platform/workspace.view    # 查看自己加入的租户空间（后端会根据成员关系过滤）
   rules: []
 ---
 apiVersion: iam.theriseunion.io/v1alpha1
@@ -264,9 +303,9 @@ metadata:
   name: platform-self-provisioner
   annotations:
     edge.io/creator: system
-    edge.io/description: '{"zh": "创建企业空间并成为所创建的企业空间的管理员。", "en": "Create workspaces and become administrator of created workspaces."}'
+    edge.io/description: '{"zh": "创建租户空间并成为所创建的租户空间的管理员。", "en": "Create workspaces and become administrator of created workspaces."}'
     theriseunion.io/creator: system
-    theriseunion.io/description: '{"zh": "创建企业空间并成为所创建的企业空间的管理员。", "en": "Create workspaces and become administrator of created workspaces."}'
+    theriseunion.io/description: '{"zh": "创建租户空间并成为所创建的租户空间的管理员。", "en": "Create workspaces and become administrator of created workspaces."}'
     theriseunion.io/role-templates: workspace-create
   labels:
     edge.io/managed: "true"
@@ -274,10 +313,15 @@ metadata:
     iam.theriseunion.io/scope: platform
     iam.theriseunion.io/scope-value: global
 spec:
+  # UI权限定义：允许查看和创建租户空间
+  uiPermissions:
+    - platform/workspace.view    # 查看租户空间列表
+    - platform/workspace.create  # 创建新租户空间
+    - platform/cluster.view      # 查看集群列表（创建租户空间时需要选择集群）
   rules:
   - apiGroups:
     - ""
-    - cluster.edge.io
+    - cluster.theriseunion.io
     resources:
     - clusters
     - clustertemplates
@@ -287,7 +331,8 @@ spec:
     - watch
     - create
   - apiGroups:
-    - tenant.edge.io
+    - scope.theriseunion.io
+    - tenant.theriseunion.io
     resources:
     - workspaces
     - workspacetemplates
@@ -295,6 +340,7 @@ spec:
     - get
     - list
     - watch
+    - create
   - apiGroups:
     - iam.theriseunion.io
     resources:

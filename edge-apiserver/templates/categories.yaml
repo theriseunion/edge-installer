@@ -196,7 +196,7 @@ spec:
     en: Platform-level cluster viewing and management permissions
   icon: server
 
-# 企业空间管理
+# 租户空间管理
 ---
 apiVersion: iam.theriseunion.io/v1alpha1
 kind: Category
@@ -206,10 +206,10 @@ metadata:
     iam.theriseunion.io/scope: global
 spec:
   displayName:
-    zh: 企业空间管理
+    zh: 租户空间管理
     en: Workspace Management
   description:
-    zh: 企业空间的创建、查看和管理权限
+    zh: 租户空间的创建、查看和管理权限
     en: Permissions for creating, viewing and managing workspaces
   icon: briefcase
 
@@ -265,10 +265,10 @@ spec:
   icon: package
 
 # ============================================
-# 企业空间级别 Categories (Workspace Scope)
+# 租户空间级别 Categories (Workspace Scope)
 # ============================================
 
-# 边缘管理 (企业空间)
+# 边缘管理 (租户空间)
 ---
 apiVersion: iam.theriseunion.io/v1alpha1
 kind: Category
@@ -281,11 +281,11 @@ spec:
     zh: 边缘管理
     en: Edge Management
   description:
-    zh: 边缘企业空间和边缘应用模板的查看和管理
+    zh: 边缘租户空间和边缘应用模板的查看和管理
     en: Permissions for edge workspaces and edge app templates
   icon: zap
 
-# 企业空间设置
+# 租户空间设置
 ---
 apiVersion: iam.theriseunion.io/v1alpha1
 kind: Category
@@ -295,14 +295,14 @@ metadata:
     iam.theriseunion.io/scope: workspace
 spec:
   displayName:
-    zh: 企业空间设置
+    zh: 租户空间设置
     en: Workspace Settings
   description:
-    zh: 企业空间基础设置的查看和管理
+    zh: 租户空间基础设置的查看和管理
     en: Permissions for workspace settings
   icon: settings
 
-# 访问控制 (企业空间)
+# 访问控制 (租户空间)
 ---
 apiVersion: iam.theriseunion.io/v1alpha1
 kind: Category
@@ -315,11 +315,11 @@ spec:
     zh: 访问控制
     en: Access Control
   description:
-    zh: 企业空间内的角色和成员管理
+    zh: 租户空间内的角色和成员管理
     en: Permissions for roles and members within workspace
   icon: lock
 
-# 项目 (企业空间)
+# 项目 (租户空间)
 ---
 apiVersion: iam.theriseunion.io/v1alpha1
 kind: Category
@@ -332,11 +332,11 @@ spec:
     zh: 项目
     en: Projects
   description:
-    zh: 企业空间内项目的查看、创建和管理
+    zh: 租户空间内项目的查看、创建和管理
     en: Permissions for viewing, creating and managing projects
   icon: folder-open
 
-# 应用管理 (企业空间)
+# 应用管理 (租户空间)
 ---
 apiVersion: iam.theriseunion.io/v1alpha1
 kind: Category
@@ -353,7 +353,7 @@ spec:
     en: Permissions for apps, app versions, releases and repositories
   icon: grid
 
-# 监控 (企业空间)
+# 监控 (租户空间)
 ---
 apiVersion: iam.theriseunion.io/v1alpha1
 kind: Category
@@ -366,7 +366,7 @@ spec:
     zh: 监控
     en: Monitoring
   description:
-    zh: 企业空间级别的监控查看权限
+    zh: 租户空间级别的监控查看权限
     en: Workspace-level monitoring viewing permissions
   icon: bar-chart
 

@@ -36,6 +36,20 @@ metadata:
     iam.theriseunion.io/description-en: "Manage all resources in the project"
     iam.theriseunion.io/description-zh: "管理项目中的所有资源"
 spec:
+  # UI权限定义：项目管理员拥有完全控制权限
+  uiPermissions:
+    - "namespace/role.view"        # 查看角色
+    - "namespace/role.create"      # 创建角色
+    - "namespace/role.edit"        # 编辑角色
+    - "namespace/role.delete"      # 删除角色
+    - "namespace/member.view"      # 查看成员
+    - "namespace/member.manage"    # 管理成员
+    - "namespace/workload.view"    # 查看工作负载
+    - "namespace/workload.manage"  # 管理工作负载
+    - "namespace/config.view"      # 查看配置
+    - "namespace/config.manage"    # 管理配置
+    - "namespace/resource.view"    # 查看资源
+    - "namespace/resource.manage"  # 管理资源
   aggregationRoleTemplates:
     roleSelector:
       matchLabels:
@@ -58,6 +72,16 @@ metadata:
     iam.theriseunion.io/description-en: "Manage resources except users and roles"
     iam.theriseunion.io/description-zh: "管理项目中除用户和角色之外的资源"
 spec:
+  # UI权限定义：项目运维人员可以管理工作负载和配置，但不能管理成员和角色
+  uiPermissions:
+    - "namespace/role.view"        # 查看角色（只读）
+    - "namespace/member.view"      # 查看成员（只读）
+    - "namespace/workload.view"    # 查看工作负载
+    - "namespace/workload.manage"  # 管理工作负载
+    - "namespace/config.view"      # 查看配置
+    - "namespace/config.manage"    # 管理配置
+    - "namespace/resource.view"    # 查看资源
+    - "namespace/resource.manage"  # 管理资源
   aggregationRoleTemplates:
     roleSelector:
       matchLabels:
@@ -80,6 +104,13 @@ metadata:
     iam.theriseunion.io/description-en: "View all resources in the project"
     iam.theriseunion.io/description-zh: "查看项目中的所有资源"
 spec:
+  # UI权限定义：项目观察者只能查看，没有任何修改权限
+  uiPermissions:
+    - "namespace/role.view"        # 查看角色
+    - "namespace/member.view"      # 查看成员
+    - "namespace/workload.view"    # 查看工作负载
+    - "namespace/config.view"      # 查看配置
+    - "namespace/resource.view"    # 查看资源
   aggregationRoleTemplates:
     roleSelector:
       matchLabels:

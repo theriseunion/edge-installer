@@ -671,10 +671,10 @@ metadata:
 spec:
   description:
     en: Create workspaces and become an administrator of the created projects.
-    zh: 创建企业空间。
+    zh: 创建租户空间。
   displayName:
     en: Workspace Creation
-    zh: 企业空间创建
+    zh: 租户空间创建
   rules:
   - apiGroups:
     - tenant.theriseunion.io
@@ -968,10 +968,10 @@ metadata:
 spec:
   description:
     en: Manage all workspaces and workspace resources.
-    zh: 管理所有企业空间和企业空间下的资源。
+    zh: 管理所有租户空间和租户空间下的资源。
   displayName:
     en: Workspace Management
-    zh: 企业空间管理
+    zh: 租户空间管理
   rules:
   - apiGroups:
     - '*'
@@ -1330,10 +1330,10 @@ metadata:
 spec:
   description:
     en: View all workspaces and workspace resources.
-    zh: 查看所有工作空间和企业空间下的资源。
+    zh: 查看所有工作空间和租户空间下的资源。
   displayName:
     en: Workspace Viewing
-    zh: 企业空间查看
+    zh: 租户空间查看
   rules:
   - apiGroups:
     - '*'
@@ -2661,7 +2661,7 @@ metadata:
 spec:
   description:
     en: Workspace App Repos Management
-    zh: 企业空间应用仓库管理。
+    zh: 租户空间应用仓库管理。
   displayName:
     en: Workspace App Repos Management
     zh: 应用仓库管理
@@ -2727,7 +2727,7 @@ metadata:
 spec:
   description:
     en: Manage edge-app-templates in workspace.
-    zh: 管理企业空间中所有边缘应用模板。
+    zh: 管理租户空间中所有边缘应用模板。
   displayName:
     en: EdgeAppTemplate Management
     zh: 边缘应用模板管理
@@ -2763,10 +2763,10 @@ metadata:
 spec:
   description:
     en: Manage edge workspace.
-    zh: 管理边缘企业空间。
+    zh: 管理边缘租户空间。
   displayName:
     en: Edge Workspace Management
-    zh: 边缘企业空间管理
+    zh: 边缘租户空间管理
   rules:
   - apiGroups:
     - ''
@@ -2798,7 +2798,7 @@ metadata:
 spec:
   description:
     en: Manage workspace members.
-    zh: 管理企业空间成员。
+    zh: 管理租户空间成员。
   displayName:
     en: Member Management
     zh: 成员管理
@@ -2836,7 +2836,7 @@ metadata:
 spec:
   description:
     en: Create, edit, and delete projects in the workspace.
-    zh: 创建、编辑和删除企业空间中的项目。
+    zh: 创建、编辑和删除租户空间中的项目。
   displayName:
     en: Project Management
     zh: 项目管理
@@ -2918,7 +2918,7 @@ metadata:
 spec:
   description:
     en: Manage workspace roles.
-    zh: 管理企业空间角色。
+    zh: 管理租户空间角色。
   displayName:
     en: Role Management
     zh: 角色管理
@@ -2948,10 +2948,10 @@ metadata:
 spec:
   description:
     en: Manage workspace settings and edit workspace information and network policies.
-    zh: 管理企业空间的基本信息、网络策略等设置。
+    zh: 管理租户空间的基本信息、网络策略等设置。
   displayName:
     en: Workspace Settings Management
-    zh: 企业空间设置管理
+    zh: 租户空间设置管理
   rules:
   - apiGroups:
     - '*'
@@ -2980,7 +2980,7 @@ metadata:
 spec:
   description:
     en: Workspace App Repos View
-    zh: 企业空间应用仓库查看。
+    zh: 租户空间应用仓库查看。
   displayName:
     en: Workspace App Repos View
     zh: 应用仓库查看
@@ -3086,7 +3086,7 @@ metadata:
 spec:
   description:
     en: View all edge-app-template in workspace.
-    zh: 查看企业空间中所有边缘应用模板。
+    zh: 查看租户空间中所有边缘应用模板。
   displayName:
     en: EdgeAppTemplate Viewing
     zh: 边缘应用模板查看
@@ -3124,10 +3124,10 @@ metadata:
 spec:
   description:
     en: View edge workspaces and edge workspaces resources.
-    zh: 查看所有边缘企业空间和边缘企业空间资源。
+    zh: 查看所有边缘租户空间和边缘租户空间资源。
   displayName:
     en: Edge Workspace Viewing
-    zh: 边缘企业空间查看
+    zh: 边缘租户空间查看
   rules:
   - apiGroups:
     - ''
@@ -3163,7 +3163,7 @@ metadata:
 spec:
   description:
     en: View workspace members.
-    zh: 查看企业空间成员。
+    zh: 查看租户空间成员。
   displayName:
     en: Member Viewing
     zh: 成员查看
@@ -3195,7 +3195,7 @@ metadata:
 spec:
   description:
     en: View workspace monitoring.
-    zh: 查看企业空间监控。
+    zh: 查看租户空间监控。
   displayName:
     en: Monitoring Viewing
     zh: 监控查看
@@ -3234,7 +3234,7 @@ metadata:
 spec:
   description:
     en: View all projects and project resources.
-    zh: 查看企业空间中的所有项目及项目下的资源。
+    zh: 查看租户空间中的所有项目及项目下的资源。
   displayName:
     en: Project Viewing
     zh: 项目查看
@@ -3321,7 +3321,7 @@ metadata:
 spec:
   description:
     en: View workspace roles.
-    zh: 查看企业空间角色。
+    zh: 查看租户空间角色。
   displayName:
     en: Role Viewing
     zh: 角色查看
@@ -3357,10 +3357,10 @@ metadata:
 spec:
   description:
     en: View workspace settings.
-    zh: 查看企业空间设置。
+    zh: 查看租户空间设置。
   displayName:
     en: Workspace Settings Viewing
-    zh: 企业空间设置查看
+    zh: 租户空间设置查看
   rules:
   - apiGroups:
     - '*'
