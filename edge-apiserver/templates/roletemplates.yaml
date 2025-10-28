@@ -8,8 +8,6 @@ metadata:
   annotations:
     iam.theriseunion.io/dependencies: '["cluster-view-app-workloads", "cluster-view-projects"]'
     iam.theriseunion.io/role-template-rules: '{"deployments":"manage","statefulsets":"manage", "daemonsets":"manage","jobs":"manage","cronjobs":"manage","pods":"manage","services":"manage", "ingresses":"manage","configmaps":"manage","secrets":"manage","serviceaccounts":"manage"}'
-    meta.helm.sh/release-name: ks-core
-    meta.helm.sh/release-namespace: edge-system
   labels:
     app.kubernetes.io/managed-by: Helm
     iam.theriseunion.io/category: cluster-app-workloads-management
@@ -28,8 +26,6 @@ kind: RoleTemplate
 metadata:
   annotations:
     iam.theriseunion.io/role-template-rules: '{"cluster-settings": "manage"}'
-    meta.helm.sh/release-name: ks-core
-    meta.helm.sh/release-namespace: edge-system
   labels:
     app.kubernetes.io/managed-by: Helm
     iam.theriseunion.io/category: cluster-settings
@@ -48,8 +44,6 @@ kind: RoleTemplate
 metadata:
   annotations:
     iam.theriseunion.io/role-template-rules: '{"customresources": "manage"}'
-    meta.helm.sh/release-name: ks-core
-    meta.helm.sh/release-namespace: edge-system
   labels:
     app.kubernetes.io/managed-by: Helm
     iam.theriseunion.io/category: cluster-resource-management
@@ -69,7 +63,6 @@ metadata:
   annotations:
     iam.theriseunion.io/role-template-rules: '{"customresources": "manage"}'
     meta.helm.sh/release-name: imagemanager
-    meta.helm.sh/release-namespace: edge-system
   labels:
     app.kubernetes.io/managed-by: Helm
     iam.theriseunion.io/category: cluster-resource-management
@@ -89,8 +82,6 @@ metadata:
   annotations:
     iam.theriseunion.io/dependencies: '["cluster-view-roles", "cluster-view-members"]'
     iam.theriseunion.io/role-template-rules: '{"members": "manage"}'
-    meta.helm.sh/release-name: ks-core
-    meta.helm.sh/release-namespace: edge-system
   labels:
     app.kubernetes.io/managed-by: Helm
     iam.theriseunion.io/category: cluster-access-control
@@ -122,10 +113,7 @@ metadata:
   name: cluster-manage-monitoring
 spec:
   description:
-    en: cluster monitoring management.
-    zh: 集群监控管理。
   displayName:
-    en: Monitoring Management
     zh: 监控管理
   rules:
   - apiGroups:
@@ -160,8 +148,6 @@ metadata:
   annotations:
     iam.theriseunion.io/dependencies: '["cluster-view-nodes"]'
     iam.theriseunion.io/role-template-rules: '{"nodes": "manage"}'
-    meta.helm.sh/release-name: ks-core
-    meta.helm.sh/release-namespace: edge-system
   labels:
     app.kubernetes.io/managed-by: Helm
     iam.theriseunion.io/category: cluster-resource-management
@@ -181,8 +167,6 @@ metadata:
   annotations:
     iam.theriseunion.io/dependencies: '["cluster-view-persistentvolumeclaims", "cluster-view-storageclasses"]'
     iam.theriseunion.io/role-template-rules: '{"persistentvolumeclaims": "manage"}'
-    meta.helm.sh/release-name: ks-core
-    meta.helm.sh/release-namespace: edge-system
   labels:
     app.kubernetes.io/managed-by: Helm
     iam.theriseunion.io/category: cluster-storage-management
@@ -202,8 +186,6 @@ metadata:
   annotations:
     iam.theriseunion.io/dependencies: '["cluster-view-projects"]'
     iam.theriseunion.io/role-template-rules: '{"projects": "manage"}'
-    meta.helm.sh/release-name: ks-core
-    meta.helm.sh/release-namespace: edge-system
   labels:
     app.kubernetes.io/managed-by: Helm
     iam.theriseunion.io/category: cluster-project-management
@@ -223,8 +205,6 @@ metadata:
   annotations:
     iam.theriseunion.io/dependencies: '["cluster-view-roles"]'
     iam.theriseunion.io/role-template-rules: '{"roles": "manage"}'
-    meta.helm.sh/release-name: ks-core
-    meta.helm.sh/release-namespace: edge-system
   labels:
     app.kubernetes.io/managed-by: Helm
     iam.theriseunion.io/category: cluster-access-control
@@ -244,8 +224,6 @@ metadata:
   annotations:
     iam.theriseunion.io/dependencies: '["cluster-view-persistentvolumeclaims", "cluster-view-storageclasses"]'
     iam.theriseunion.io/role-template-rules: '{"storageclasses": "manage"}'
-    meta.helm.sh/release-name: ks-core
-    meta.helm.sh/release-namespace: edge-system
   labels:
     app.kubernetes.io/managed-by: Helm
     iam.theriseunion.io/category: cluster-storage-management
@@ -265,8 +243,6 @@ metadata:
   annotations:
     iam.theriseunion.io/dependencies: '["cluster-view-projects"]'
     iam.theriseunion.io/role-template-rules: '{"deployments":"view","statefulsets":"view", "daemonsets":"view","jobs":"view","cronjobs":"view","pods":"view","services":"view","ingresses":"view", "configmaps":"view","secrets":"view","serviceaccounts":"view"}'
-    meta.helm.sh/release-name: ks-core
-    meta.helm.sh/release-namespace: edge-system
   labels:
     app.kubernetes.io/managed-by: Helm
     iam.theriseunion.io/category: cluster-app-workloads-management
@@ -285,8 +261,6 @@ kind: RoleTemplate
 metadata:
   annotations:
     iam.theriseunion.io/role-template-rules: '{"cluster-settings": "view"}'
-    meta.helm.sh/release-name: ks-core
-    meta.helm.sh/release-namespace: edge-system
   labels:
     app.kubernetes.io/managed-by: Helm
     iam.theriseunion.io/aggregate-to-cluster-viewer: ''
@@ -306,8 +280,6 @@ kind: RoleTemplate
 metadata:
   annotations:
     iam.theriseunion.io/role-template-rules: '{"components": "view"}'
-    meta.helm.sh/release-name: ks-core
-    meta.helm.sh/release-namespace: edge-system
   labels:
     app.kubernetes.io/managed-by: Helm
     iam.theriseunion.io/aggregate-to-cluster-viewer: ''
@@ -327,8 +299,6 @@ kind: RoleTemplate
 metadata:
   annotations:
     iam.theriseunion.io/role-template-rules: '{"customresources": "view"}'
-    meta.helm.sh/release-name: ks-core
-    meta.helm.sh/release-namespace: edge-system
   labels:
     app.kubernetes.io/managed-by: Helm
     iam.theriseunion.io/aggregate-to-cluster-viewer: ''
@@ -349,7 +319,6 @@ metadata:
   annotations:
     iam.theriseunion.io/role-template-rules: '{"customresources": "view"}'
     meta.helm.sh/release-name: imagemanager
-    meta.helm.sh/release-namespace: edge-system
   labels:
     app.kubernetes.io/managed-by: Helm
     iam.theriseunion.io/aggregate-to-cluster-viewer: ''
@@ -369,8 +338,6 @@ kind: RoleTemplate
 metadata:
   annotations:
     iam.theriseunion.io/role-template-rules: '{"members": "view"}'
-    meta.helm.sh/release-name: ks-core
-    meta.helm.sh/release-namespace: edge-system
   labels:
     app.kubernetes.io/managed-by: Helm
     iam.theriseunion.io/aggregate-to-cluster-viewer: ''
@@ -381,7 +348,6 @@ metadata:
   name: cluster-view-members
 spec:
   displayName:
-    en: Member Viewing
     zh: 成员查看
   rules: []
 ---
@@ -403,10 +369,7 @@ metadata:
   name: cluster-view-monitoring
 spec:
   description:
-    en: View cluster monitoring.
-    zh: 集群监控查看。
   displayName:
-    en: Monitoring Viewing
     zh: 监控查看
   rules:
   - apiGroups:
@@ -468,7 +431,6 @@ metadata:
   name: cluster-view-nodegroup
 spec:
   displayName:
-    en: NodeGroup Viewing
     zh: 节点组查看
   rules: []
 ---
@@ -477,8 +439,6 @@ kind: RoleTemplate
 metadata:
   annotations:
     iam.theriseunion.io/role-template-rules: '{"nodes": "view"}'
-    meta.helm.sh/release-name: ks-core
-    meta.helm.sh/release-namespace: edge-system
   labels:
     app.kubernetes.io/managed-by: Helm
     iam.theriseunion.io/aggregate-to-cluster-viewer: ''
@@ -489,7 +449,6 @@ metadata:
   name: cluster-view-nodes
 spec:
   displayName:
-    en: Node Viewing
     zh: 节点查看
   rules: []
 ---
@@ -498,8 +457,6 @@ kind: RoleTemplate
 metadata:
   annotations:
     iam.theriseunion.io/role-template-rules: '{"persistentvolumeclaims": "view"}'
-    meta.helm.sh/release-name: ks-core
-    meta.helm.sh/release-namespace: edge-system
   labels:
     app.kubernetes.io/managed-by: Helm
     iam.theriseunion.io/aggregate-to-cluster-viewer: ''
@@ -510,7 +467,6 @@ metadata:
   name: cluster-view-persistentvolumeclaims
 spec:
   displayName:
-    en: Persistent Volume Claim Viewing
     zh: 持久卷声明查看
   rules: []
 ---
@@ -519,8 +475,6 @@ kind: RoleTemplate
 metadata:
   annotations:
     iam.theriseunion.io/role-template-rules: '{"projects": "view"}'
-    meta.helm.sh/release-name: ks-core
-    meta.helm.sh/release-namespace: edge-system
   labels:
     app.kubernetes.io/managed-by: Helm
     iam.theriseunion.io/aggregate-to-cluster-viewer: ''
@@ -531,7 +485,6 @@ metadata:
   name: cluster-view-projects
 spec:
   displayName:
-    en: Project Viewing
     zh: 项目查看
   rules: []
 ---
@@ -541,8 +494,6 @@ metadata:
   annotations:
     iam.theriseunion.io/dependencies: '["cluster-view-members"]'
     iam.theriseunion.io/role-template-rules: '{"roles": "view"}'
-    meta.helm.sh/release-name: ks-core
-    meta.helm.sh/release-namespace: edge-system
   labels:
     app.kubernetes.io/managed-by: Helm
     iam.theriseunion.io/aggregate-to-cluster-viewer: ''
@@ -553,7 +504,6 @@ metadata:
   name: cluster-view-roles
 spec:
   displayName:
-    en: Role Viewing
     zh: 角色查看
   rules: []
 ---
@@ -563,8 +513,6 @@ metadata:
   annotations:
     iam.theriseunion.io/dependencies: '["cluster-view-persistentvolumeclaims"]'
     iam.theriseunion.io/role-template-rules: '{"storageclasses": "view"}'
-    meta.helm.sh/release-name: ks-core
-    meta.helm.sh/release-namespace: edge-system
   labels:
     app.kubernetes.io/managed-by: Helm
     iam.theriseunion.io/aggregate-to-cluster-viewer: ''
@@ -575,7 +523,6 @@ metadata:
   name: cluster-view-storageclasses
 spec:
   displayName:
-    en: Storage Class Viewing
     zh: 存储类查看
   rules: []
 ---
@@ -584,7 +531,6 @@ kind: RoleTemplate
 metadata:
   annotations:
     meta.helm.sh/release-name: edge-platform
-    meta.helm.sh/release-namespace: edge-system
   labels:
     app.kubernetes.io/managed-by: Helm
     iam.theriseunion.io/aggregate-to-authenticated: ''
@@ -659,8 +605,6 @@ kind: RoleTemplate
 metadata:
   annotations:
     iam.theriseunion.io/role-template-rules: '{"workspaces": "create"}'
-    meta.helm.sh/release-name: ks-core
-    meta.helm.sh/release-namespace: edge-system
   labels:
     app.kubernetes.io/managed-by: Helm
     iam.theriseunion.io/category: global-workspace-management
@@ -670,10 +614,7 @@ metadata:
   name: global-create-workspaces
 spec:
   description:
-    en: Create workspaces and become an administrator of the created projects.
-    zh: 创建租户空间。
   displayName:
-    en: Workspace Creation
     zh: 租户空间创建
   rules:
   - apiGroups:
@@ -692,9 +633,7 @@ metadata:
     iam.theriseunion.io/dependencies: '["global-view-clusters"]'
     iam.theriseunion.io/rego-override: "package authz\ndefault allow = false\nallow = true {\n  allowedScopes := [\"Workspace\",\"Namespace\",\"Cluster\"]\n  allowedScopes[_] == input.ResourceScope\n}"
     iam.theriseunion.io/role-template-rules: '{"clusters": "manage"}'
-    theriseunion.io/description: '{"zh":"创建集群、删除集群和管理集群中的所有资源。"}'
-    meta.helm.sh/release-name: ks-core
-    meta.helm.sh/release-namespace: edge-system
+    theriseunion.io/description: 创建集群、删除集群和管理集群中的所有资源。
   labels:
     app.kubernetes.io/managed-by: Helm
     iam.theriseunion.io/category: global-cluster-management
@@ -704,10 +643,7 @@ metadata:
   name: global-manage-clusters
 spec:
   description:
-    en: Create clusters, delete clusters, and manage resources in all clusters.
-    zh: 创建集群、删除集群和管理集群中的所有资源。
   displayName:
-    en: Cluster Management
     zh: 集群管理
   rules:
   - apiGroups:
@@ -758,7 +694,6 @@ metadata:
     iam.theriseunion.io/rego-override: "package authz\ndefault allow = false\nallow = true {\n  allowedScopes := [\"Workspace\",\"Namespace\",\"Cluster\"]\n  allowedScopes[_] == input.ResourceScope\n}"
     iam.theriseunion.io/role-template-rules: '{"edge-clusters": "manage"}'
     meta.helm.sh/release-name: edge-platform
-    meta.helm.sh/release-namespace: edge-system
   labels:
     app.kubernetes.io/managed-by: Helm
     iam.theriseunion.io/category: global-edge-cluster-management
@@ -769,10 +704,7 @@ metadata:
   name: global-manage-edge-clusters
 spec:
   description:
-    en: Create edge clusters, delete edge clusters, and manage resources in all edge clusters.
-    zh: 创建边缘集群、删除边缘集群和管理边缘集群中的所有资源。
   displayName:
-    en: Edge Cluster Management
     zh: 边缘集群管理
   rules:
   - apiGroups:
@@ -824,7 +756,6 @@ metadata:
     iam.theriseunion.io/rego-override: "package authz\ndefault allow = false\nallow = true {\n  allowedScopes := [\"Workspace\",\"Namespace\",\"Cluster\"]\n  allowedScopes[_] == input.ResourceScope\n}"
     iam.theriseunion.io/role-template-rules: '{"edge-nodegroups": "manage"}'
     meta.helm.sh/release-name: edge-platform
-    meta.helm.sh/release-namespace: edge-system
   labels:
     app.kubernetes.io/managed-by: Helm
     iam.theriseunion.io/category: global-edge-cluster-management
@@ -835,10 +766,7 @@ metadata:
   name: global-manage-edge-nodegroups
 spec:
   description:
-    en: Create edge nodegroups, delete edge nodegroups, and manage resources in all edge nodegroups.
-    zh: 创建边缘节点组、删除边缘节点组和管理边缘节点组中的所有资源。
   displayName:
-    en: Edge Cluster Management
     zh: 边缘节点组管理
   rules:
   - apiGroups:
@@ -858,8 +786,6 @@ kind: RoleTemplate
 metadata:
   annotations:
     iam.theriseunion.io/role-template-rules: '{"platform-settings": "manage"}'
-    meta.helm.sh/release-name: ks-core
-    meta.helm.sh/release-namespace: edge-system
   labels:
     app.kubernetes.io/managed-by: Helm
     iam.theriseunion.io/category: global-platform-settings
@@ -870,10 +796,7 @@ metadata:
   name: global-manage-platform-settings
 spec:
   description:
-    en: View and edit settings of the Kubernetes platform.
-    zh: 查看和编辑 Kubernetes 平台的设置。
   displayName:
-    en: Platform Settings Management
     zh: 平台设置管理
   rules:
   - apiGroups:
@@ -894,8 +817,6 @@ kind: RoleTemplate
 metadata:
   annotations:
     iam.theriseunion.io/role-template-rules: '{"roles": "manage"}'
-    meta.helm.sh/release-name: ks-core
-    meta.helm.sh/release-namespace: edge-system
   labels:
     app.kubernetes.io/managed-by: Helm
     iam.theriseunion.io/category: global-access-control
@@ -906,10 +827,7 @@ metadata:
   name: global-manage-roles
 spec:
   description:
-    en: Manage platform roles.
-    zh: 管理平台角色。
   displayName:
-    en: Role Management
     zh: 角色管理
   rules:
   - apiGroups:
@@ -924,8 +842,6 @@ kind: RoleTemplate
 metadata:
   annotations:
     iam.theriseunion.io/role-template-rules: '{"users": "manage"}'
-    meta.helm.sh/release-name: ks-core
-    meta.helm.sh/release-namespace: edge-system
   labels:
     app.kubernetes.io/managed-by: Helm
     iam.theriseunion.io/category: global-access-control
@@ -936,10 +852,7 @@ metadata:
   name: global-manage-users
 spec:
   description:
-    en: Manage users.
-    zh: 管理用户。
   displayName:
-    en: User Management
     zh: 用户管理
   rules:
   - apiGroups:
@@ -956,8 +869,6 @@ kind: RoleTemplate
 metadata:
   annotations:
     iam.theriseunion.io/role-template-rules: '{"workspaces": "manage"}'
-    meta.helm.sh/release-name: ks-core
-    meta.helm.sh/release-namespace: edge-system
   labels:
     app.kubernetes.io/managed-by: Helm
     iam.theriseunion.io/category: global-workspace-management
@@ -967,10 +878,7 @@ metadata:
   name: global-manage-workspaces
 spec:
   description:
-    en: Manage all workspaces and workspace resources.
-    zh: 管理所有租户空间和租户空间下的资源。
   displayName:
-    en: Workspace Management
     zh: 租户空间管理
   rules:
   - apiGroups:
@@ -1038,8 +946,6 @@ kind: RoleTemplate
 metadata:
   annotations:
     iam.theriseunion.io/role-template-rules: '{"manage-app": "manage"}'
-    meta.helm.sh/release-name: ks-core
-    meta.helm.sh/release-namespace: edge-system
   labels:
     app.kubernetes.io/managed-by: Helm
     iam.theriseunion.io/aggregate-to-admin: ''
@@ -1050,10 +956,7 @@ metadata:
   name: global-role-template-manage-app
 spec:
   description:
-    en: AppStore Management
-    zh: 应用商店管理
   displayName:
-    en: AppStore Management
     zh: 应用商店管理
   rules:
   - apiGroups:
@@ -1069,8 +972,6 @@ metadata:
   annotations:
     iam.theriseunion.io/rego-override: "package authz\ndefault allow = false\nallow = true {\n  allowedScopes := [\"Workspace\",\"Namespace\",\"Cluster\"]\n  allowedScopes[_] == input.ResourceScope\n  allowedVerbs := [\"get\",\"list\",\"watch\"]\n  allowedVerbs[_] == input.Verb\n}"
     iam.theriseunion.io/role-template-rules: '{"clusters": "view"}'
-    meta.helm.sh/release-name: ks-core
-    meta.helm.sh/release-namespace: edge-system
   labels:
     app.kubernetes.io/managed-by: Helm
     iam.theriseunion.io/category: global-cluster-management
@@ -1080,10 +981,7 @@ metadata:
   name: global-view-clusters
 spec:
   description:
-    en: View all clusters and cluster resources.
-    zh: 查看所有集群和集群资源。
   displayName:
-    en: Cluster Viewing
     zh: 集群查看
   rules:
   - apiGroups:
@@ -1143,7 +1041,6 @@ metadata:
     iam.theriseunion.io/rego-override: "package authz\ndefault allow = false\nallow = true {\n  allowedScopes := [\"Workspace\",\"Namespace\",\"Cluster\"]\n  allowedScopes[_] == input.ResourceScope\n  allowedVerbs := [\"get\",\"list\",\"watch\"]\n  allowedVerbs[_] == input.Verb\n}"
     iam.theriseunion.io/role-template-rules: '{"edge-clusters": "view"}'
     meta.helm.sh/release-name: edge-platform
-    meta.helm.sh/release-namespace: edge-system
   labels:
     app.kubernetes.io/managed-by: Helm
     iam.theriseunion.io/category: global-edge-cluster-management
@@ -1154,10 +1051,7 @@ metadata:
   name: global-view-edge-clusters
 spec:
   description:
-    en: View all edge clusters and edge cluster resources.
-    zh: 查看所有边缘集群和边缘集群资源。
   displayName:
-    en: Edge Cluster Viewing
     zh: 边缘集群查看
   rules:
   - apiGroups:
@@ -1218,7 +1112,6 @@ metadata:
     iam.theriseunion.io/rego-override: "package authz\ndefault allow = false\nallow = true {\n  allowedScopes := [\"Workspace\",\"Namespace\",\"Cluster\"]\n  allowedScopes[_] == input.ResourceScope\n  allowedVerbs := [\"get\",\"list\",\"watch\"]\n  allowedVerbs[_] == input.Verb\n}"
     iam.theriseunion.io/role-template-rules: '{"edge-nodegroups": "view"}'
     meta.helm.sh/release-name: edge-platform
-    meta.helm.sh/release-namespace: edge-system
   labels:
     app.kubernetes.io/managed-by: Helm
     iam.theriseunion.io/category: global-edge-cluster-management
@@ -1229,10 +1122,7 @@ metadata:
   name: global-view-edge-nodegroups
 spec:
   description:
-    en: View all edge nodegroups and edge nodegroups resources.
-    zh: 查看所有边缘节点组和边缘节点组资源。
   displayName:
-    en: Edge NodeGroup Viewing
     zh: 边缘节点组查看
   rules:
   - apiGroups:
@@ -1255,8 +1145,6 @@ metadata:
   annotations:
     iam.theriseunion.io/dependencies: '["global-view-users"]'
     iam.theriseunion.io/role-template-rules: '{"roles": "view"}'
-    meta.helm.sh/release-name: ks-core
-    meta.helm.sh/release-namespace: edge-system
   labels:
     app.kubernetes.io/managed-by: Helm
     iam.theriseunion.io/category: global-access-control
@@ -1266,10 +1154,7 @@ metadata:
   name: global-view-roles
 spec:
   description:
-    en: View platform roles.
-    zh: 查看平台角色。
   displayName:
-    en: Role Viewing
     zh: 角色查看
   rules:
   - apiGroups:
@@ -1286,8 +1171,6 @@ kind: RoleTemplate
 metadata:
   annotations:
     iam.theriseunion.io/role-template-rules: '{"users": "view"}'
-    meta.helm.sh/release-name: ks-core
-    meta.helm.sh/release-namespace: edge-system
   labels:
     app.kubernetes.io/managed-by: Helm
     iam.theriseunion.io/category: global-access-control
@@ -1297,10 +1180,7 @@ metadata:
   name: global-view-users
 spec:
   description:
-    en: View users.
-    zh: 查看用户。
   displayName:
-    en: User Viewing
     zh: 用户查看
   rules:
   - apiGroups:
@@ -1318,8 +1198,6 @@ kind: RoleTemplate
 metadata:
   annotations:
     iam.theriseunion.io/role-template-rules: '{"workspaces": "view"}'
-    meta.helm.sh/release-name: ks-core
-    meta.helm.sh/release-namespace: edge-system
   labels:
     app.kubernetes.io/managed-by: Helm
     iam.theriseunion.io/category: global-workspace-management
@@ -1329,10 +1207,7 @@ metadata:
   name: global-view-workspaces
 spec:
   description:
-    en: View all workspaces and workspace resources.
-    zh: 查看所有工作空间和租户空间下的资源。
   displayName:
-    en: Workspace Viewing
     zh: 租户空间查看
   rules:
   - apiGroups:
@@ -1404,8 +1279,6 @@ kind: RoleTemplate
 metadata:
   annotations:
     iam.theriseunion.io/role-template-rules: '{"app-releases": "manage"}'
-    meta.helm.sh/release-name: ks-core
-    meta.helm.sh/release-namespace: edge-system
   labels:
     app.kubernetes.io/managed-by: Helm
     iam.theriseunion.io/aggregate-to-admin: ''
@@ -1419,10 +1292,7 @@ metadata:
   name: namespace-create-app-releases
 spec:
   description:
-    en: Namespace Application instance create
-    zh: 项目下应用实例创建
   displayName:
-    en: Namespace Application instance create
     zh: 应用实例创建
   rules:
   - apiGroups:
@@ -1438,8 +1308,6 @@ kind: RoleTemplate
 metadata:
   annotations:
     iam.theriseunion.io/role-template-rules: '{"app-releases": "manage"}'
-    meta.helm.sh/release-name: ks-core
-    meta.helm.sh/release-namespace: edge-system
   labels:
     app.kubernetes.io/managed-by: Helm
     iam.theriseunion.io/aggregate-to-admin: ''
@@ -1453,10 +1321,7 @@ metadata:
   name: namespace-delete-app-releases
 spec:
   description:
-    en: Namespace Application instance deletion
-    zh: 项目下应用实例删除
   displayName:
-    en: Namespace Application instance deletion
     zh: 应用实例删除
   rules:
   - apiGroups:
@@ -1473,8 +1338,6 @@ metadata:
   annotations:
     iam.theriseunion.io/dependencies: '["namespace-view-app-releases","namespace-delete-app-releases","namespace-create-app-releases"]'
     iam.theriseunion.io/role-template-rules: '{"app-releases": "manage"}'
-    meta.helm.sh/release-name: ks-core
-    meta.helm.sh/release-namespace: edge-system
   labels:
     app.kubernetes.io/managed-by: Helm
     iam.theriseunion.io/aggregate-to-admin: ''
@@ -1488,10 +1351,7 @@ metadata:
   name: namespace-manage-app-releases
 spec:
   description:
-    en: Namespace App Releases Management
-    zh: 项目下应用实例管理
   displayName:
-    en: Namespace App Releases Management
     zh: 应用实例管理
   rules:
   - apiGroups:
@@ -1508,8 +1368,6 @@ metadata:
   annotations:
     iam.theriseunion.io/dependencies: '["namespace-view-app-workloads"]'
     iam.theriseunion.io/role-template-rules: '{"applications":"manage","deployments":"manage","statefulsets":"manage", "daemonsets":"manage","jobs":"manage","cronjobs":"manage","pods":"manage","services":"manage","ingresses":"manage"}'
-    meta.helm.sh/release-name: ks-core
-    meta.helm.sh/release-namespace: edge-system
   labels:
     app.kubernetes.io/managed-by: Helm
     iam.theriseunion.io/aggregate-to-operator: ''
@@ -1521,10 +1379,7 @@ metadata:
   name: namespace-manage-app-workloads
 spec:
   description:
-    en: Manage resources such as applications, services, workloads and jobs in the project.
-    zh: 管理项目中的应用、服务、工作负载和任务等资源。
   displayName:
-    en: Application Workload Management
     zh: 应用负载管理
   rules:
   - apiGroups:
@@ -1563,8 +1418,6 @@ metadata:
   annotations:
     iam.theriseunion.io/dependencies: '["namespace-view-configmaps"]'
     iam.theriseunion.io/role-template-rules: '{"configmaps": "manage"}'
-    meta.helm.sh/release-name: ks-core
-    meta.helm.sh/release-namespace: edge-system
   labels:
     app.kubernetes.io/managed-by: Helm
     iam.theriseunion.io/aggregate-to-operator: ''
@@ -1576,10 +1429,7 @@ metadata:
   name: namespace-manage-configmaps
 spec:
   description:
-    en: Create, edit, and delete configmaps in the project.
-    zh: 创建、编辑和删除项目中的配置字典。
   displayName:
-    en: ConfigMap Management
     zh: 配置字典管理
   rules:
   - apiGroups:
@@ -1594,8 +1444,6 @@ kind: RoleTemplate
 metadata:
   annotations:
     iam.theriseunion.io/role-template-rules: '{"members": "manage"}'
-    meta.helm.sh/release-name: ks-core
-    meta.helm.sh/release-namespace: edge-system
   labels:
     app.kubernetes.io/managed-by: Helm
     iam.theriseunion.io/category: namespace-access-control
@@ -1606,10 +1454,7 @@ metadata:
   name: namespace-manage-members
 spec:
   description:
-    en: Manage project members.
-    zh: 管理项目成员。
   displayName:
-    en: Member Management
     zh: 成员管理
   rules:
   - apiGroups:
@@ -1640,10 +1485,7 @@ metadata:
   name: namespace-manage-monitoring
 spec:
   description:
-    en: Namespace monitoring management.
-    zh: 项目监控管理。
   displayName:
-    en: Monitoring Management
     zh: 监控管理
   rules:
   - apiGroups:
@@ -1659,8 +1501,6 @@ metadata:
   annotations:
     iam.theriseunion.io/dependencies: '["namespace-view-persistentvolumeclaims"]'
     iam.theriseunion.io/role-template-rules: '{"persistentvolumeclaims": "manage"}'
-    meta.helm.sh/release-name: ks-core
-    meta.helm.sh/release-namespace: edge-system
   labels:
     app.kubernetes.io/managed-by: Helm
     iam.theriseunion.io/aggregate-to-operator: ''
@@ -1672,10 +1512,7 @@ metadata:
   name: namespace-manage-persistentvolumeclaims
 spec:
   description:
-    en: Create, edit, and delete persistent volume claims in the project.
-    zh: 创建、编辑和删除项目中的持久卷声明。
   displayName:
-    en: PersistentVolumeClaims Management
     zh: 持久卷声明管理
   rules:
   - apiGroups:
@@ -1696,8 +1533,6 @@ kind: RoleTemplate
 metadata:
   annotations:
     iam.theriseunion.io/role-template-rules: '{"project-settings": "manage"}'
-    meta.helm.sh/release-name: ks-core
-    meta.helm.sh/release-namespace: edge-system
   labels:
     app.kubernetes.io/managed-by: Helm
     iam.theriseunion.io/category: namespace-settings
@@ -1709,10 +1544,7 @@ metadata:
   name: namespace-manage-project-settings
 spec:
   description:
-    en: Manage project settings including project basic information, external access settings and resource quotas settings.
-    zh: 管理项目设置，包括项目基本信息、外部访问设置、资源配额等。
   displayName:
-    en: Project Settings Management
     zh: 项目设置管理
   rules:
   - apiGroups:
@@ -1727,8 +1559,6 @@ kind: RoleTemplate
 metadata:
   annotations:
     iam.theriseunion.io/role-template-rules: '{"roles": "manage"}'
-    meta.helm.sh/release-name: ks-core
-    meta.helm.sh/release-namespace: edge-system
   labels:
     app.kubernetes.io/managed-by: Helm
     iam.theriseunion.io/category: namespace-access-control
@@ -1739,10 +1569,7 @@ metadata:
   name: namespace-manage-roles
 spec:
   description:
-    en: Manage project roles.
-    zh: 管理项目角色。
   displayName:
-    en: Role Management
     zh: 角色管理
   rules:
   - apiGroups:
@@ -1758,8 +1585,6 @@ metadata:
   annotations:
     iam.theriseunion.io/dependencies: '["namespace-view-secrets"]'
     iam.theriseunion.io/role-template-rules: '{"secrets": "manage"}'
-    meta.helm.sh/release-name: ks-core
-    meta.helm.sh/release-namespace: edge-system
   labels:
     app.kubernetes.io/managed-by: Helm
     iam.theriseunion.io/aggregate-to-operator: ''
@@ -1771,10 +1596,7 @@ metadata:
   name: namespace-manage-secrets
 spec:
   description:
-    en: Create, edit, and delete secrets in the project.
-    zh: 创建、编辑和删除项目中的保密字典。
   displayName:
-    en: Secret Management
     zh: 保密字典管理
   rules:
   - apiGroups:
@@ -1790,8 +1612,6 @@ metadata:
   annotations:
     iam.theriseunion.io/dependencies: '["namespace-view-serviceaccount"]'
     iam.theriseunion.io/role-template-rules: '{"serviceaccounts": "manage"}'
-    meta.helm.sh/release-name: ks-core
-    meta.helm.sh/release-namespace: edge-system
   labels:
     app.kubernetes.io/managed-by: Helm
     iam.theriseunion.io/category: namespace-configuration-management
@@ -1801,10 +1621,7 @@ metadata:
   name: namespace-manage-serviceaccount
 spec:
   description:
-    en: Create, edit, and delete service accounts in the project.
-    zh: 创建、编辑和删除项目中的服务帐户。
   displayName:
-    en: Service Account Management
     zh: 服务账户管理
   rules:
   - apiGroups:
@@ -1820,8 +1637,6 @@ metadata:
   annotations:
     iam.theriseunion.io/dependencies: '["namespace-view-workloadtemplates"]'
     iam.theriseunion.io/role-template-rules: '{"workloadtemplates": "manage"}'
-    meta.helm.sh/release-name: ks-core
-    meta.helm.sh/release-namespace: edge-system
   labels:
     app.kubernetes.io/managed-by: Helm
     iam.theriseunion.io/aggregate-to-operator: ''
@@ -1833,10 +1648,7 @@ metadata:
   name: namespace-manage-workloadtemplates
 spec:
   description:
-    en: Create, edit, and delete workloadtemplates in the project.
-    zh: 创建、编辑和删除项目中的工作负载模板。
   displayName:
-    en: WorkloadTemplate Management
     zh: 工作负载模板管理
   rules:
   - apiGroups:
@@ -1867,10 +1679,7 @@ metadata:
   name: namespace-receive-notification
 spec:
   description:
-    en: Receive notification.
-    zh: 接收 namespace 相关通知
   displayName:
-    en: Notification Receive
     zh: 接收通知
   rules:
   - apiGroups:
@@ -1887,8 +1696,6 @@ kind: RoleTemplate
 metadata:
   annotations:
     iam.theriseunion.io/role-template-rules: '{"app-releases": "view"}'
-    meta.helm.sh/release-name: ks-core
-    meta.helm.sh/release-namespace: edge-system
   labels:
     app.kubernetes.io/managed-by: Helm
     iam.theriseunion.io/aggregate-to-viewer: ''
@@ -1900,10 +1707,7 @@ metadata:
   name: namespace-view-app-releases
 spec:
   description:
-    en: Namespace App Releases View
-    zh: 项目下查看应用实例等。
   displayName:
-    en: Namespace App Releases View
     zh: 应用实例查看
   rules:
   - apiGroups:
@@ -1921,8 +1725,6 @@ metadata:
   annotations:
     iam.theriseunion.io/dependencies: '["namespace-view-volumes","namespace-view-secrets","namespace-view-configmaps"]'
     iam.theriseunion.io/role-template-rules: '{"applications":"view","deployments":"view","statefulsets":"view", "daemonsets":"view","jobs":"view","cronjobs":"view","pods":"view","services":"view","ingresses":"view"}'
-    meta.helm.sh/release-name: ks-core
-    meta.helm.sh/release-namespace: edge-system
   labels:
     app.kubernetes.io/managed-by: Helm
     iam.theriseunion.io/aggregate-to-operator: ''
@@ -1936,10 +1738,7 @@ metadata:
   name: namespace-view-app-workloads
 spec:
   description:
-    en: View resources such as applications, services, workloads and jobs in the project.
-    zh: 查看项目中的应用、服务、工作负载和任务等资源。
   displayName:
-    en: Application Workload Viewing
     zh: 应用负载查看
   rules:
   - apiGroups:
@@ -1973,8 +1772,6 @@ kind: RoleTemplate
 metadata:
   annotations:
     iam.theriseunion.io/role-template-rules: '{"configmaps": "view"}'
-    meta.helm.sh/release-name: ks-core
-    meta.helm.sh/release-namespace: edge-system
   labels:
     app.kubernetes.io/managed-by: Helm
     iam.theriseunion.io/aggregate-to-operator: ''
@@ -1988,10 +1785,7 @@ metadata:
   name: namespace-view-configmaps
 spec:
   description:
-    en: View configmaps in the project.
-    zh: 查看项目中的配置字典。
   displayName:
-    en: ConfigMap Viewing
     zh: 配置字典查看
   rules:
   - apiGroups:
@@ -2008,8 +1802,6 @@ kind: RoleTemplate
 metadata:
   annotations:
     iam.theriseunion.io/role-template-rules: '{"members": "view"}'
-    meta.helm.sh/release-name: ks-core
-    meta.helm.sh/release-namespace: edge-system
   labels:
     app.kubernetes.io/managed-by: Helm
     iam.theriseunion.io/aggregate-to-operator: ''
@@ -2023,10 +1815,7 @@ metadata:
   name: namespace-view-members
 spec:
   description:
-    en: View project members.
-    zh: 查看项目成员。
   displayName:
-    en: Member Viewing
     zh: 成员查看
   rules:
   - apiGroups:
@@ -2060,10 +1849,7 @@ metadata:
   name: namespace-view-monitoring
 spec:
   description:
-    en: View namespace monitoring.
-    zh: 查看项目监控。
   displayName:
-    en: Monitoring Viewing
     zh: 监控查看
   rules:
   - apiGroups:
@@ -2086,8 +1872,6 @@ kind: RoleTemplate
 metadata:
   annotations:
     iam.theriseunion.io/role-template-rules: '{"persistentvolumeclaims": "view"}'
-    meta.helm.sh/release-name: ks-core
-    meta.helm.sh/release-namespace: edge-system
   labels:
     app.kubernetes.io/managed-by: Helm
     iam.theriseunion.io/aggregate-to-operator: ''
@@ -2101,10 +1885,7 @@ metadata:
   name: namespace-view-persistentvolumeclaims
 spec:
   description:
-    en: View persistent volume claims in the project.
-    zh: 查看项目中的持久卷声明。
   displayName:
-    en: PersistentVolumeClaims Viewing
     zh: 持久卷声明查看
   rules:
   - apiGroups:
@@ -2127,8 +1908,6 @@ kind: RoleTemplate
 metadata:
   annotations:
     iam.theriseunion.io/role-template-rules: '{"project-settings": "view"}'
-    meta.helm.sh/release-name: ks-core
-    meta.helm.sh/release-namespace: edge-system
   labels:
     app.kubernetes.io/managed-by: Helm
     iam.theriseunion.io/aggregate-to-operator: ''
@@ -2144,10 +1923,7 @@ metadata:
   name: namespace-view-project-settings
 spec:
   description:
-    en: View project settings including project basic information, external access settings and resource quotas settings.
-    zh: 查看项目设置，包括项目基本信息、外部访问设置、资源配额等。
   displayName:
-    en: Project Settings Viewing
     zh: 项目设置查看
   rules:
   - apiGroups:
@@ -2176,8 +1952,6 @@ metadata:
   annotations:
     iam.theriseunion.io/dependencies: '["namespace-view-members"]'
     iam.theriseunion.io/role-template-rules: '{"roles": "view"}'
-    meta.helm.sh/release-name: ks-core
-    meta.helm.sh/release-namespace: edge-system
   labels:
     app.kubernetes.io/managed-by: Helm
     iam.theriseunion.io/aggregate-to-operator: ''
@@ -2191,10 +1965,7 @@ metadata:
   name: namespace-view-roles
 spec:
   description:
-    en: View project roles.
-    zh: 查看项目角色。
   displayName:
-    en: Role Viewing
     zh: 角色查看
   rules:
   - apiGroups:
@@ -2211,8 +1982,6 @@ kind: RoleTemplate
 metadata:
   annotations:
     iam.theriseunion.io/role-template-rules: '{"secrets": "view"}'
-    meta.helm.sh/release-name: ks-core
-    meta.helm.sh/release-namespace: edge-system
   labels:
     app.kubernetes.io/managed-by: Helm
     iam.theriseunion.io/aggregate-to-operator: ''
@@ -2226,10 +1995,7 @@ metadata:
   name: namespace-view-secrets
 spec:
   description:
-    en: View secrets in the project.
-    zh: 查看项目中的保密字典。
   displayName:
-    en: Secret Viewing
     zh: 保密字典查看
   rules:
   - apiGroups:
@@ -2247,8 +2013,6 @@ metadata:
   annotations:
     iam.theriseunion.io/dependencies: '["namespace-view-roles","namespace-view-secrets"]'
     iam.theriseunion.io/role-template-rules: '{"serviceaccounts": "view"}'
-    meta.helm.sh/release-name: ks-core
-    meta.helm.sh/release-namespace: edge-system
   labels:
     app.kubernetes.io/managed-by: Helm
     iam.theriseunion.io/aggregate-to-operator: ''
@@ -2262,10 +2026,7 @@ metadata:
   name: namespace-view-serviceaccount
 spec:
   description:
-    en: View service accounts in the project.
-    zh: 查看项目中的服务账户。
   displayName:
-    en: Service Account Viewing
     zh: 服务账户查看
   rules:
   - apiGroups:
@@ -2282,8 +2043,6 @@ kind: RoleTemplate
 metadata:
   annotations:
     iam.theriseunion.io/role-template-rules: '{"workloadtemplates": "view"}'
-    meta.helm.sh/release-name: ks-core
-    meta.helm.sh/release-namespace: edge-system
   labels:
     app.kubernetes.io/managed-by: Helm
     iam.theriseunion.io/aggregate-to-operator: ''
@@ -2298,10 +2057,7 @@ metadata:
   name: namespace-view-workloadtemplates
 spec:
   description:
-    en: View workloadtemplates in the project.
-    zh: 查看项目中的工作负载模板。
   displayName:
-    en: WorkloadTemplate Viewing
     zh: 工作负载模板查看
   rules:
   - apiGroups:
@@ -2331,10 +2087,7 @@ metadata:
   name: monitor-alerting-agent-cluster-manage-rulegroups
 spec:
   description:
-    en: Create, edit, and delete cluster-level rule groups.
-    zh: 创建、编辑和删除集群层级的规则组。
   displayName:
-    en: Rule Group Management
     zh: 规则组管理
   rules:
   - apiGroups:
@@ -2362,10 +2115,7 @@ metadata:
   name: monitor-alerting-agent-cluster-view-alerts
 spec:
   description:
-    en: View alerts trigged by cluster-level rule groups.
-    zh: 查看集群层级规则组触发的告警。
   displayName:
-    en: Alert Viewing
     zh: 告警查看
   rules:
   - apiGroups:
@@ -2393,10 +2143,7 @@ metadata:
   name: monitor-alerting-agent-cluster-view-rulegroups
 spec:
   description:
-    en: View cluster-level rule groups.
-    zh: 查看集群层级的规则组。
   displayName:
-    en: Rule Group Viewing
     zh: 规则组查看
   rules:
   - apiGroups:
@@ -2426,10 +2173,7 @@ metadata:
   name: monitor-alerting-agent-global-manage-rulegroups
 spec:
   description:
-    en: Create, edit, and delete global-level rule groups.
-    zh: 创建、编辑和删除平台层级的规则组。
   displayName:
-    en: Rule Group Management
     zh: 规则组管理
   rules:
   - apiGroups:
@@ -2457,10 +2201,7 @@ metadata:
   name: monitor-alerting-agent-global-view-alerts
 spec:
   description:
-    en: View alerts trigged by global-level rule groups.
-    zh: 查看平台层级规则组所触发的告警。
   displayName:
-    en: Alert Viewing
     zh: 告警查看
   rules:
   - apiGroups:
@@ -2488,10 +2229,7 @@ metadata:
   name: monitor-alerting-agent-global-view-rulegroups
 spec:
   description:
-    en: View global-level rule groups.
-    zh: 查看平台层级的规则组。
   displayName:
-    en: Rule Group Viewing
     zh: 规则组查看
   rules:
   - apiGroups:
@@ -2523,10 +2261,7 @@ metadata:
   name: monitor-alerting-agent-namespace-manage-rulegroups
 spec:
   description:
-    en: Create, edit, and delete rule groups in the project.
-    zh: 创建、编辑和删除项目中的规则组。
   displayName:
-    en: Rule Group Management
     zh: 规则组管理
   rules:
   - apiGroups:
@@ -2557,10 +2292,7 @@ metadata:
   name: monitor-alerting-agent-namespace-view-alerts
 spec:
   description:
-    en: View alerts in the project.
-    zh: 查看项目中的告警。
   displayName:
-    en: Alert Viewing
     zh: 告警查看
   rules:
   - apiGroups:
@@ -2591,10 +2323,7 @@ metadata:
   name: monitor-alerting-agent-namespace-view-rulegroups
 spec:
   description:
-    en: View rule groups in the project.
-    zh: 查看项目中的规则组。
   displayName:
-    en: Rule Group Viewing
     zh: 规则组查看
   rules:
   - apiGroups:
@@ -2611,8 +2340,6 @@ kind: RoleTemplate
 metadata:
   annotations:
     iam.theriseunion.io/role-template-rules: '{"projects": "create"}'
-    meta.helm.sh/release-name: ks-core
-    meta.helm.sh/release-namespace: edge-system
   labels:
     app.kubernetes.io/managed-by: Helm
     iam.theriseunion.io/aggregate-to-self-provisioner: ''
@@ -2623,10 +2350,7 @@ metadata:
   name: workspace-create-projects
 spec:
   description:
-    en: Create projects and become an administrator of the created projects.
-    zh: 创建项目并成为所创建的项目的管理员。
   displayName:
-    en: Project Creation
     zh: 项目创建
   rules:
   - apiGroups:
@@ -2655,8 +2379,6 @@ kind: RoleTemplate
 metadata:
   annotations:
     iam.theriseunion.io/role-template-rules: '{"app-templates": "view"}'
-    meta.helm.sh/release-name: ks-core
-    meta.helm.sh/release-namespace: edge-system
   labels:
     app.kubernetes.io/managed-by: Helm
     iam.theriseunion.io/aggregate-to-viewer: ''
@@ -2667,10 +2389,7 @@ metadata:
   name: workspace-delete-app-templates
 spec:
   description:
-    en: Workspace Application/application version/application instance deletion
-    zh: 应用/应用版本/应用实例删除
   displayName:
-    en: Application/application version/application instance deletion
     zh: 应用/应用版本/应用实例删除
   rules:
   - apiGroups:
@@ -2689,8 +2408,6 @@ metadata:
   annotations:
     iam.theriseunion.io/dependencies: '["workspace-view-app-repos"]'
     iam.theriseunion.io/role-template-rules: '{"app-repos": "manage"}'
-    meta.helm.sh/release-name: ks-core
-    meta.helm.sh/release-namespace: edge-system
   labels:
     app.kubernetes.io/managed-by: Helm
     iam.theriseunion.io/aggregate-to-admin: ''
@@ -2701,10 +2418,7 @@ metadata:
   name: workspace-manage-app-repos
 spec:
   description:
-    en: Workspace App Repos Management
-    zh: 租户空间应用仓库管理。
   displayName:
-    en: Workspace App Repos Management
     zh: 应用仓库管理
   rules:
   - apiGroups:
@@ -2721,8 +2435,6 @@ metadata:
   annotations:
     iam.theriseunion.io/dependencies: '["workspace-view-app-templates","workspace-view-create-app-templates","workspace-delete-app-templates"]'
     iam.theriseunion.io/role-template-rules: '{"app-templates": "manage"}'
-    meta.helm.sh/release-name: ks-core
-    meta.helm.sh/release-namespace: edge-system
   labels:
     app.kubernetes.io/managed-by: Helm
     iam.theriseunion.io/aggregate-to-admin: ''
@@ -2733,10 +2445,7 @@ metadata:
   name: workspace-manage-app-templates
 spec:
   description:
-    en: Workspace applications/application versions/application instance management
-    zh: 应用/应用版本/应用实例管理
   displayName:
-    en: Workspace applications/application versions/application instance management
     zh: 应用/应用版本/应用实例管理
   rules:
   - apiGroups:
@@ -2756,7 +2465,6 @@ metadata:
     iam.theriseunion.io/dependencies: '["workspace-view-edge-app-templates"]'
     iam.theriseunion.io/role-template-rules: '{"edge-app-templates": "manage"}'
     meta.helm.sh/release-name: edge-platform
-    meta.helm.sh/release-namespace: edge-system
   labels:
     app.kubernetes.io/managed-by: Helm
     iam.theriseunion.io/category: workspace-edge-management
@@ -2767,10 +2475,7 @@ metadata:
   name: workspace-manage-edge-app-templates
 spec:
   description:
-    en: Manage edge-app-templates in workspace.
-    zh: 管理租户空间中所有边缘应用模板。
   displayName:
-    en: EdgeAppTemplate Management
     zh: 边缘应用模板管理
   rules:
   - apiGroups:
@@ -2792,7 +2497,6 @@ metadata:
     iam.theriseunion.io/dependencies: '["workspace-view-edge-workspaces"]'
     iam.theriseunion.io/role-template-rules: '{"edge-workspaces": "manage"}'
     meta.helm.sh/release-name: edge-platform
-    meta.helm.sh/release-namespace: edge-system
   labels:
     app.kubernetes.io/managed-by: Helm
     iam.theriseunion.io/category: workspace-edge-management
@@ -2803,10 +2507,7 @@ metadata:
   name: workspace-manage-edge-workspaces
 spec:
   description:
-    en: Manage edge workspace.
-    zh: 管理边缘租户空间。
   displayName:
-    en: Edge Workspace Management
     zh: 边缘租户空间管理
   rules:
   - apiGroups:
@@ -2826,8 +2527,6 @@ kind: RoleTemplate
 metadata:
   annotations:
     iam.theriseunion.io/role-template-rules: '{"members": "manage"}'
-    meta.helm.sh/release-name: ks-core
-    meta.helm.sh/release-namespace: edge-system
   labels:
     app.kubernetes.io/managed-by: Helm
     iam.theriseunion.io/category: workspace-access-control
@@ -2838,10 +2537,7 @@ metadata:
   name: workspace-manage-members
 spec:
   description:
-    en: Manage workspace members.
-    zh: 管理租户空间成员。
   displayName:
-    en: Member Management
     zh: 成员管理
   rules:
   - apiGroups:
@@ -2865,8 +2561,6 @@ metadata:
   annotations:
     iam.theriseunion.io/dependencies: '["workspace-view-projects","workspace-view-members","workspace-create-projects"]'
     iam.theriseunion.io/role-template-rules: '{"projects": "manage"}'
-    meta.helm.sh/release-name: ks-core
-    meta.helm.sh/release-namespace: edge-system
   labels:
     app.kubernetes.io/managed-by: Helm
     iam.theriseunion.io/category: workspace-project-management
@@ -2876,10 +2570,7 @@ metadata:
   name: workspace-manage-projects
 spec:
   description:
-    en: Create, edit, and delete projects in the workspace.
-    zh: 创建、编辑和删除租户空间中的项目。
   displayName:
-    en: Project Management
     zh: 项目管理
   rules:
   - apiGroups:
@@ -2946,8 +2637,6 @@ kind: RoleTemplate
 metadata:
   annotations:
     iam.theriseunion.io/role-template-rules: '{"roles": "manage"}'
-    meta.helm.sh/release-name: ks-core
-    meta.helm.sh/release-namespace: edge-system
   labels:
     app.kubernetes.io/managed-by: Helm
     iam.theriseunion.io/aggregate-to-admin: ""
@@ -2959,10 +2648,7 @@ metadata:
   name: workspace-manage-roles
 spec:
   description:
-    en: Manage workspace roles.
-    zh: 管理租户空间角色。
   displayName:
-    en: Role Management
     zh: 角色管理
   rules:
   - apiGroups:
@@ -2977,8 +2663,6 @@ kind: RoleTemplate
 metadata:
   annotations:
     iam.theriseunion.io/role-template-rules: '{"workspace-settings": "manage"}'
-    meta.helm.sh/release-name: ks-core
-    meta.helm.sh/release-namespace: edge-system
   labels:
     app.kubernetes.io/managed-by: Helm
     iam.theriseunion.io/category: workspace-settings
@@ -2989,10 +2673,7 @@ metadata:
   name: workspace-manage-workspace-settings
 spec:
   description:
-    en: Manage workspace settings and edit workspace information and network policies.
-    zh: 管理租户空间的基本信息、网络策略等设置。
   displayName:
-    en: Workspace Settings Management
     zh: 租户空间设置管理
   rules:
   - apiGroups:
@@ -3007,8 +2688,6 @@ kind: RoleTemplate
 metadata:
   annotations:
     iam.theriseunion.io/role-template-rules: '{"app-repos": "view"}'
-    meta.helm.sh/release-name: ks-core
-    meta.helm.sh/release-namespace: edge-system
   labels:
     app.kubernetes.io/managed-by: Helm
     iam.theriseunion.io/aggregate-to-regular: ''
@@ -3021,10 +2700,7 @@ metadata:
   name: workspace-view-app-repos
 spec:
   description:
-    en: Workspace App Repos View
-    zh: 租户空间应用仓库查看。
   displayName:
-    en: Workspace App Repos View
     zh: 应用仓库查看
   rules:
   - apiGroups:
@@ -3041,8 +2717,6 @@ kind: RoleTemplate
 metadata:
   annotations:
     iam.theriseunion.io/role-template-rules: '{"app-templates": "view"}'
-    meta.helm.sh/release-name: ks-core
-    meta.helm.sh/release-namespace: edge-system
   labels:
     app.kubernetes.io/managed-by: Helm
     iam.theriseunion.io/aggregate-to-regular: ''
@@ -3055,10 +2729,7 @@ metadata:
   name: workspace-view-app-templates
 spec:
   description:
-    en: Application/application version/application instance view
-    zh: 应用/应用版本/应用实例查看
   displayName:
-    en: Application/application version/application instance view
     zh: 应用/应用版本/应用实例查看
   rules:
   - apiGroups:
@@ -3077,8 +2748,6 @@ kind: RoleTemplate
 metadata:
   annotations:
     iam.theriseunion.io/role-template-rules: '{"app-templates": "view"}'
-    meta.helm.sh/release-name: ks-core
-    meta.helm.sh/release-namespace: edge-system
   labels:
     app.kubernetes.io/managed-by: Helm
     iam.theriseunion.io/aggregate-to-viewer: ''
@@ -3089,10 +2758,7 @@ metadata:
   name: workspace-view-create-app-templates
 spec:
   description:
-    en: Workspace Application/application version/application instance view and create
-    zh: 应用/应用版本/应用实例查看和创建
   displayName:
-    en: Workspace Application/application version/application instance view and create
     zh: 应用/应用版本/应用实例查看和创建
   rules:
   - apiGroups:
@@ -3115,7 +2781,6 @@ metadata:
   annotations:
     iam.theriseunion.io/role-template-rules: '{"edge-app-templates": "view"}'
     meta.helm.sh/release-name: edge-platform
-    meta.helm.sh/release-namespace: edge-system
   labels:
     app.kubernetes.io/managed-by: Helm
     iam.theriseunion.io/aggregate-to-viewer: ''
@@ -3127,10 +2792,7 @@ metadata:
   name: workspace-view-edge-app-templates
 spec:
   description:
-    en: View all edge-app-template in workspace.
-    zh: 查看租户空间中所有边缘应用模板。
   displayName:
-    en: EdgeAppTemplate Viewing
     zh: 边缘应用模板查看
   rules:
   - apiGroups:
@@ -3153,7 +2815,6 @@ metadata:
   annotations:
     iam.theriseunion.io/role-template-rules: '{"edge-workspaces": "view"}'
     meta.helm.sh/release-name: edge-platform
-    meta.helm.sh/release-namespace: edge-system
   labels:
     app.kubernetes.io/managed-by: Helm
     iam.theriseunion.io/aggregate-to-viewer: ''
@@ -3165,10 +2826,7 @@ metadata:
   name: workspace-view-edge-workspaces
 spec:
   description:
-    en: View edge workspaces and edge workspaces resources.
-    zh: 查看所有边缘租户空间和边缘租户空间资源。
   displayName:
-    en: Edge Workspace Viewing
     zh: 边缘租户空间查看
   rules:
   - apiGroups:
@@ -3190,8 +2848,6 @@ kind: RoleTemplate
 metadata:
   annotations:
     iam.theriseunion.io/role-template-rules: '{"members": "view"}'
-    meta.helm.sh/release-name: ks-core
-    meta.helm.sh/release-namespace: edge-system
   labels:
     app.kubernetes.io/managed-by: Helm
     iam.theriseunion.io/aggregate-to-regular: ''
@@ -3204,10 +2860,7 @@ metadata:
   name: workspace-view-members
 spec:
   description:
-    en: View workspace members.
-    zh: 查看租户空间成员。
   displayName:
-    en: Member Viewing
     zh: 成员查看
   rules:
   - apiGroups:
@@ -3236,10 +2889,7 @@ metadata:
   name: workspace-view-monitoring
 spec:
   description:
-    en: View workspace monitoring.
-    zh: 查看租户空间监控。
   displayName:
-    en: Monitoring Viewing
     zh: 监控查看
   rules:
   - apiGroups:
@@ -3263,8 +2913,6 @@ kind: RoleTemplate
 metadata:
   annotations:
     iam.theriseunion.io/role-template-rules: '{"projects": "view"}'
-    meta.helm.sh/release-name: ks-core
-    meta.helm.sh/release-namespace: edge-system
   labels:
     app.kubernetes.io/managed-by: Helm
     iam.theriseunion.io/aggregate-to-viewer: ''
@@ -3275,10 +2923,7 @@ metadata:
   name: workspace-view-projects
 spec:
   description:
-    en: View all projects and project resources.
-    zh: 查看租户空间中的所有项目及项目下的资源。
   displayName:
-    en: Project Viewing
     zh: 项目查看
   rules:
   - apiGroups:
@@ -3348,8 +2993,6 @@ metadata:
   annotations:
     iam.theriseunion.io/dependencies: '["workspace-view-members"]'
     iam.theriseunion.io/role-template-rules: '{"roles": "view"}'
-    meta.helm.sh/release-name: ks-core
-    meta.helm.sh/release-namespace: edge-system
   labels:
     app.kubernetes.io/managed-by: Helm
     iam.theriseunion.io/aggregate-to-regular: ''
@@ -3362,10 +3005,7 @@ metadata:
   name: workspace-view-roles
 spec:
   description:
-    en: View workspace roles.
-    zh: 查看租户空间角色。
   displayName:
-    en: Role Viewing
     zh: 角色查看
   rules:
   - apiGroups:
@@ -3382,8 +3022,6 @@ kind: RoleTemplate
 metadata:
   annotations:
     iam.theriseunion.io/role-template-rules: '{"workspace-settings": "view"}'
-    meta.helm.sh/release-name: ks-core
-    meta.helm.sh/release-namespace: edge-system
   labels:
     app.kubernetes.io/managed-by: Helm
     iam.theriseunion.io/aggregate-to-regular: ''
@@ -3398,10 +3036,7 @@ metadata:
   name: workspace-view-workspace-settings
 spec:
   description:
-    en: View workspace settings.
-    zh: 查看租户空间设置。
   displayName:
-    en: Workspace Settings Viewing
     zh: 租户空间设置查看
   rules:
   - apiGroups:

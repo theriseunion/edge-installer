@@ -1,10 +1,10 @@
 # Edge Platform Installer
 
-Edge Platform 的一键安装工具，参考 Kubernetes 的安装模式设计。
+Edge Platform 一键部署工具，基于 Kubernetes 和 Helm。
 
 ## 概述
 
-Edge Installer 提供了一个简单、可靠的方式来部署 Edge Platform 到 Kubernetes 集群。它包含以下组件：
+Edge Installer 可以快速部署以下组件：
 
 ### 核心组件
 - **Edge Controller**: Kubernetes operator，管理 Edge 自定义资源
@@ -12,29 +12,8 @@ Edge Installer 提供了一个简单、可靠的方式来部署 Edge Platform �
 - **Edge Console**: Web UI 控制台，提供图形化管理界面
 
 ### 可选组件
-- **Monitoring Stack**: 包含 Prometheus、Grafana、AlertManager 的完整监控套件
-- **Monitoring Service**: 基于 openFuyao 的企业级监控 API 服务，提供丰富的监控指标查询接口
-- **OpenYurt**: 云原生边缘计算框架，支持边缘节点管理和边缘应用编排
-
-## 架构
-
-```
-┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│ Edge        │    │ Edge        │    │ Edge        │
-│ Console         │    │ API Server      │    │ Controller      │
-│ (Web UI)        │    │ (REST API)      │    │ (Operator)      │
-│                 │    │                 │    │                 │
-│ Port: 3000      │    │ Port: 8080      │    │ Port: 8080      │
-└─────────────────┘    └─────────────────┘    └─────────────────┘
-        │                       │                       │
-        └───────────────────────┼───────────────────────┘
-                                │
-                    ┌─────────────────┐
-                    │ Kubernetes      │
-                    │ Cluster         │
-                    │                 │
-                    └─────────────────┘
-```
+- **OpenYurt**: 云原生边缘计算框架 (v1.6)
+- **Monitoring Stack**: Prometheus + Grafana + AlertManager + Monitoring Service
 
 ## 快速开始
 
@@ -43,229 +22,144 @@ Edge Installer 提供了一个简单、可靠的方式来部署 Edge Platform �
 - Kubernetes 集群 (v1.24+)
 - kubectl 已配置
 - Helm 3.8+
-- 足够的集群权限
 
-### 基本安装
+### 基本部署
 
 ```bash
 # 克隆仓库
 git clone https://github.com/edge/apiserver.git
 cd apiserver/edge-installer
 
-# 运行安装脚本
-./scripts/install.sh
+# 使用默认配置部署
+./deploy.sh
 ```
 
-### 指定 kubeconfig 安装
+默认配置：
+- 命名空间: `edge-system`
+- 镜像仓库: `quanzhenglong.com/edge`
+- 镜像标签: `main`
+
+### 配置参数
+
+deploy.sh 使用环境变量配置：
 
 ```bash
-./scripts/install.sh -k ~/.kube/116.63.161.198.config
+# 基本配置
+export NAMESPACE=edge-system              # 安装命名空间
+export KUBECONFIG_PATH=~/.kube/config    # kubeconfig 文件路径
+export REGISTRY=quanzhenglong.com/edge   # 镜像仓库地址
+export TAG=main                          # 镜像标签
+export PULL_POLICY=Always                # 镜像拉取策略
+
+# 功能开关
+export ENABLE_MONITORING=false           # 启用监控套件
+export INSTALL_OPENYURT=false            # 安装 OpenYurt
 ```
 
-### 自定义配置安装
+### 常见部署场景
 
+#### 1. 指定集群部署
 ```bash
-# 自定义命名空间
-./scripts/install.sh -n my-edge-system
-
-# 自定义镜像仓库
-./scripts/install.sh -r your-registry.com/edge
-
-# 预览安装 (dry-run)
-./scripts/install.sh --dry-run
+export KUBECONFIG_PATH=~/.kube/prod.config
+./deploy.sh
 ```
 
-### 包含监控组件的安装
-
+#### 2. 启用监控套件
 ```bash
-# 使用 deploy.sh 脚本，启用监控组件
-ENABLE_MONITORING=true ./deploy.sh
-
-# 或者手动部署监控组件
-./deploy.sh  # 先部署核心组件
-make deploy-monitoring  # 然后部署监控服务
+export ENABLE_MONITORING=true
+./deploy.sh
 ```
 
-监控组件将部署到 `observability-system` 命名空间，包括：
-- Prometheus (监控数据收集)
-- Grafana (监控可视化)
-- AlertManager (告警管理)
-- Monitoring Service (监控 API，包含 ReverseProxy 配置)
-
-### 包含 OpenYurt 的完整安装
-
-如果你需要边缘计算能力，可以同时安装 OpenYurt：
-
+#### 3. 完整部署（Edge Platform + OpenYurt + 监控）
 ```bash
-# 一键安装 Edge Platform + OpenYurt + 监控
+export KUBECONFIG_PATH=~/.kube/your-cluster.config
 export INSTALL_OPENYURT=true
-export OPENYURT_API_SERVER=https://192.168.1.102:6443
+export OPENYURT_API_SERVER=$(kubectl config view --minify | grep server | awk '{print $2}')
 export ENABLE_MONITORING=true
 
 ./deploy.sh
 ```
 
-完整示例（在 192.168.1.102 集群安装所有组件）：
+## 脚本说明
+
+### deploy.sh - 主部署脚本
+
+一键部署 Edge Platform，支持 OpenYurt 和监控组件。
+
+**特点:**
+- 参数确认机制，避免误操作
+- 支持环境变量配置
+- 错误处理完善
+- 用户交互友好
+
+### update.sh - 更新脚本
+
+用于升级现有部署，支持 CRD 更新和单个组件升级。
 
 ```bash
-export KUBECONFIG_PATH=~/.kube/192.168.1.102.config
+# 更新 API Server（默认）
+./update.sh
+
+# 更新指定组件
+export COMPONENT=controller  # 可选: apiserver, controller, console
+./update.sh
+
+# 自定义配置更新
+export TAG=v1.0.0
 export NAMESPACE=edge-system
-export REGISTRY=quanzhenglong.com/edge
-export TAG=main
-export INSTALL_OPENYURT=true
-export OPENYURT_API_SERVER=https://192.168.1.102:6443
-export ENABLE_MONITORING=true
-
-./deploy.sh
+export COMPONENT=console
+./update.sh
 ```
 
-OpenYurt 组件将安装到 `kube-system` 命名空间，包括：
-- yurt-manager (OpenYurt 控制器)
-- yurthub (边缘节点配置管理)
+### scripts/uninstall.sh - 卸载脚本
 
-详细的 OpenYurt 安装和配置请参考 [OPENYURT-INSTALL.md](./OPENYURT-INSTALL.md)
+```bash
+# 基本卸载（保留命名空间和 CRD）
+./scripts/uninstall.sh
 
-## 镜像配置
-
-默认使用的镜像：
-
-- `quanzhenglong.com/edge/edge-apiserver:main`
-- `quanzhenglong.com/edge/edge-controller:main`
-- `quanzhenglong.com/edge/edge-console:main`
+# 完全卸载
+./scripts/uninstall.sh --delete-namespace --delete-crd
+```
 
 ## 访问 Edge Platform
 
-### 端口转发方式
+### 端口转发
 
 ```bash
 # API Server
-kubectl port-forward -n edge-system svc/edge-apiserver 8080:8080
+kubectl port-forward -n edge-system svc/apiserver 8080:8080
 
 # Web Console
-kubectl port-forward -n edge-system svc/edge-console 3000:3000
+kubectl port-forward -n edge-system svc/console 3000:3000
 ```
 
 访问地址：
 - API Server: http://localhost:8080
 - Web Console: http://localhost:3000
 
-## 安装后配置
+## 配置边缘运行时
 
-### 配置边缘运行时 (Edge Runtime)
+**重要**: 部署完成后必须配置边缘运行时，否则无法添加边缘节点。
 
-**重要**: 集群安装完成后,需要为集群配置边缘运行时类型,以便支持边缘节点的加入。
+### 通过 Web Console（推荐）
 
-#### 通过 Web Console 配置
+1. 访问 Console: http://localhost:3000
+2. 进入 **集群管理** → 选择集群 → **基本信息**
+3. 找到 **边缘运行时** 字段，点击编辑
+4. 选择 `OpenYurt` 或 `KubeEdge`
+5. 保存配置
 
-1. 访问 Web Console (http://localhost:3000 或您配置的 Ingress 地址)
-2. 进入 **集群管理** → 选择目标集群 → **基本信息** 页面
-3. 找到 **边缘运行时** 字段,点击右侧的编辑图标 ✏️
-4. 从下拉菜单中选择合适的运行时:
-   - **OpenYurt** - 适用于 OpenYurt 边缘计算框架
-   - **KubeEdge** - 适用于 KubeEdge 边缘计算框架
-5. 点击 **保存** 按钮完成配置
-
-#### 通过 kubectl 配置
-
-也可以直接通过 kubectl 为集群添加 annotation:
+### 通过 kubectl
 
 ```bash
-# 配置 OpenYurt 运行时
-kubectl annotate cluster host \
-  cluster.theriseunion.io/edge-runtime=openyurt
+# 配置 OpenYurt
+kubectl annotate cluster host cluster.theriseunion.io/edge-runtime=openyurt
 
-# 配置 KubeEdge 运行时
-kubectl annotate cluster host \
-  cluster.theriseunion.io/edge-runtime=kubeedge
-
-# 查看配置结果
-kubectl get cluster host -o jsonpath='{.metadata.annotations.cluster\.theriseunion\.io/edge-runtime}'
+# 配置 KubeEdge
+kubectl annotate cluster host cluster.theriseunion.io/edge-runtime=kubeedge
 ```
 
-#### 为什么需要配置边缘运行时?
-
-配置边缘运行时后,系统会在生成节点加入命令时自动包含正确的边缘组件安装脚本。如果不配置:
-- 无法获取节点加入令牌 (join-token API 会报错)
-- 边缘节点无法正确加入集群
-- 边缘节点的管理功能将不可用
-
-更多信息请参考 [OpenYurt 安装文档](OPENYURT-SETUP.md)
-
-### Ingress 方式
-
-修改 `edge-console` chart 的 values.yaml：
-
-```yaml
-ingress:
-  enabled: true
-  className: "nginx"
-  annotations:
-    kubernetes.io/ingress.class: nginx
-  hosts:
-    - host: edge.yourdomain.com
-      paths:
-        - path: /
-          pathType: Prefix
-```
-
-## 配置文件
-
-### EdgeConfiguration CRD
-
-通过 `deploy/edge-configuration.yaml` 配置 Edge 平台：
-
-```yaml
-apiVersion: installer.edge.theriseunion.io/v1alpha1
-kind: EdgeConfiguration
-metadata:
-  name: edge-installer
-  namespace: edge-system
-spec:
-  edge:
-    apiserver:
-      enabled: true
-      replicas: 1
-    controller:
-      enabled: true
-      replicas: 1
-    console:
-      enabled: true
-      replicas: 1
-```
-
-## 脚本选项
-
-### 安装脚本 (install.sh)
-
-```bash
-用法: ./scripts/install.sh [OPTIONS]
-
-选项:
-    -n, --namespace NAMESPACE       安装命名空间 (默认: edge-system)
-    -k, --kubeconfig FILE          kubeconfig 文件路径
-    -r, --registry REGISTRY        镜像仓库地址 (默认: quanzhenglong.com/edge)
-    --dry-run                      执行 dry-run，不实际安装
-    --skip-crd-install             跳过 CRD 安装 (用于升级)
-    -t, --timeout TIMEOUT         安装超时时间 (默认: 600s)
-    -h, --help                     显示帮助信息
-```
-
-### 卸载脚本 (uninstall.sh)
-
-```bash
-用法: ./scripts/uninstall.sh [OPTIONS]
-
-选项:
-    -n, --namespace NAMESPACE       卸载命名空间 (默认: edge-system)
-    -k, --kubeconfig FILE          kubeconfig 文件路径
-    --delete-namespace             删除命名空间
-    --delete-crd                   删除 CRD 资源
-    -h, --help                     显示帮助信息
-```
-
-## 监控和日志
-
-### 检查部署状态
+## 验证部署
 
 ```bash
 # 查看 Pod 状态
@@ -275,109 +169,92 @@ kubectl get pods -n edge-system
 kubectl get svc -n edge-system
 
 # 查看日志
-kubectl logs -n edge-system deployment/edge-controller
-kubectl logs -n edge-system deployment/edge-apiserver
-kubectl logs -n edge-system deployment/edge-console
-```
-
-### 健康检查
-
-```bash
-# API Server 健康检查
-curl http://localhost:8080/healthz
-
-# 指标监控
-curl http://localhost:8080/metrics
+kubectl logs -n edge-system deployment/apiserver
+kubectl logs -n edge-system deployment/controller
+kubectl logs -n edge-system deployment/console
 ```
 
 ## 故障排除
 
 ### 常见问题
 
-1. **镜像拉取失败**
+1. **资源冲突**
    ```bash
-   # 检查镜像是否存在
-   docker pull quanzhenglong.com/edge/edge-apiserver:main
+   # 检查现有资源
+   kubectl get roletemplates.iam.theriseunion.io
 
-   # 配置镜像拉取 Secret
-   kubectl create secret docker-registry edge-registry \
-     --docker-server=quanzhenglong.com \
-     --docker-username=your-username \
-     --docker-password=your-password \
-     -n edge-system
+   # 清理冲突资源
+   kubectl delete roletemplates.iam.theriseunion.io --all --all-namespaces
    ```
 
-2. **CRD 冲突**
+2. **权限不足**
    ```bash
-   # 查看现有 CRD
-   kubectl get crd | grep edge
-
-   # 删除冲突的 CRD
-   kubectl delete crd edgeconfigurations.installer.edge.theriseunion.io
+   kubectl auth can-i create namespace
+   kubectl auth can-i create deployment
    ```
 
-3. **权限不足**
+3. **集群不可达**
    ```bash
-   # 检查当前用户权限
-   kubectl auth can-i "*" "*" --all-namespaces
+   kubectl cluster-info
    ```
 
-### 日志分析
+4. **镜像不存在**
+   ```bash
+   docker pull quanzhenglong.com/edge/apiserver:main
+   ```
+
+### 监控服务访问
+
+如果启用了监控套件：
 
 ```bash
-# 获取详细日志
-kubectl describe pod -n edge-system -l app.kubernetes.io/name=edge-controller
-kubectl describe pod -n edge-system -l app.kubernetes.io/name=edge-apiserver
-kubectl describe pod -n edge-system -l app.kubernetes.io/name=edge-console
+# Prometheus
+kubectl port-forward svc/edge-prometheus 9090:9090 -n observability-system
+
+# Grafana (admin/admin123)
+kubectl port-forward svc/edge-grafana 3000:3000 -n observability-system
+
+# AlertManager
+kubectl port-forward svc/edge-alertmanager 9093:9093 -n observability-system
 ```
 
-## 卸载
+## OpenYurt 支持
 
-### 基本卸载 (保留命名空间和 CRD)
+### 自动配置 OpenYurt
 
 ```bash
-./scripts/uninstall.sh
+export INSTALL_OPENYURT=true
+export OPENYURT_API_SERVER=https://your-api-server:6443
+./deploy.sh
 ```
 
-### 完全卸载
+### 手动设置 API Server 地址
 
 ```bash
-./scripts/uninstall.sh --delete-namespace --delete-crd
+# 自动获取（推荐）
+export OPENYURT_API_SERVER=$(kubectl config view --minify | grep server | awk '{print $2}')
+
+# 手动设置
+export OPENYURT_API_SERVER=https://192.168.1.102:6443
 ```
 
-## 开发和定制
+详细的 OpenYurt 配置请参考 [OPENYURT.md](./OPENYURT.md)
 
-### 修改 Helm Charts
+## 最佳实践
 
-Edge 使用标准 Helm charts，位于 `../charts/` 目录：
-
-- `../charts/edge-controller/`
-- `../charts/edge-apiserver/`
-- `../charts/edge-console/`
-
-### 构建自定义镜像
-
-```bash
-# 构建 API Server
-cd ../edge-apiserver
-make docker-build
-
-# 构建 Controller
-cd ../edge-apiserver
-make docker-build-controller
-
-# 构建 Console
-cd ../edge-console
-make docker-build
-```
+1. **开发环境**: 使用 `PULL_POLICY=Always` 确保获取最新镜像
+2. **生产环境**: 使用 `PULL_POLICY=IfNotPresent` 避免不必要的镜像拉取
+3. **版本管理**: 通过 `TAG` 参数控制部署版本
+4. **监控**: 生产环境建议启用 `ENABLE_MONITORING=true`
+5. **边缘计算**: 如需边缘节点管理，启用 `INSTALL_OPENYURT=true`
 
 ## 支持
 
 如有问题，请：
 
-1. 检查日志和事件
-2. 查看 GitHub Issues
-3. 提交新的 Issue 并附上详细信息
+1. 检查日志和集群状态
+2. 查看故障排除章节
+3. 提交 GitHub Issue 并附上详细信息
 
 ## 许可证
 

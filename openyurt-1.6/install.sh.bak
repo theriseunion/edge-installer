@@ -28,11 +28,9 @@ print_error() {
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # 默认配置
-# OpenYurt 核心组件默认安装在 kube-system 命名空间，可通过环境变量覆盖
-OPENYURT_NAMESPACE=${OPENYURT_NAMESPACE:-kube-system}
+NAMESPACE=${NAMESPACE:-kube-system}
 OPENYURT_API_SERVER=${OPENYURT_API_SERVER:-""}
 INSTALL_RAVEN=${INSTALL_RAVEN:-false}
-SKIP_HELM_UPDATE=${SKIP_HELM_UPDATE:-false}
 HELM_TIMEOUT=${HELM_TIMEOUT:-5m}
 OPENYURT_VERSION=${OPENYURT_VERSION:-v1.6.0}
 
@@ -48,9 +46,9 @@ OpenYurt 1.6 安装脚本
     -a, --api-server    Kubernetes API Server 地址 (必填)
                         示例: https://192.168.1.102:6443
 
-    -r, --install-raven 是否安装 raven-agent (默认: false)
+    -n, --namespace     安装命名空间 (默认: kube-system)
 
-    -s, --skip-update   跳过 Helm repo update (默认: false)
+    -r, --install-raven 是否安装 raven-agent (默认: false)
 
     -t, --timeout       Helm 安装超时时间 (默认: 5m)
 
@@ -60,15 +58,10 @@ OpenYurt 1.6 安装脚本
 
 环境变量:
     OPENYURT_API_SERVER  Kubernetes API Server 地址
-    OPENYURT_NAMESPACE   安装命名空间 (默认: kube-system)
+    NAMESPACE            安装命名空间
     INSTALL_RAVEN        是否安装 raven-agent
-    SKIP_HELM_UPDATE     跳过 Helm repo update (默认: false)
     HELM_TIMEOUT         Helm 安装超时时间
     OPENYURT_VERSION     OpenYurt 版本
-
-注意:
-- 默认安装在 kube-system 命名空间，可通过 OPENYURT_NAMESPACE 环境变量修改
-- 使用 --skip-update 可跳过 Helm repo update，加快安装速度
 
 示例:
     # 基本安装
@@ -92,12 +85,12 @@ while [[ $# -gt 0 ]]; do
             OPENYURT_API_SERVER="$2"
             shift 2
             ;;
-        -r|--install-raven)
-            INSTALL_RAVEN="$2"
+        -n|--namespace)
+            NAMESPACE="$2"
             shift 2
             ;;
-        -s|--skip-update)
-            SKIP_HELM_UPDATE="$2"
+        -r|--install-raven)
+            INSTALL_RAVEN="$2"
             shift 2
             ;;
         -t|--timeout)
@@ -148,11 +141,10 @@ fi
 
 # 显示配置信息
 print_info "============ 安装配置 ============"
-echo "  命名空间:          $OPENYURT_NAMESPACE"
+echo "  命名空间:          $NAMESPACE"
 echo "  API Server:        $OPENYURT_API_SERVER"
 echo "  OpenYurt 版本:     $OPENYURT_VERSION"
 echo "  安装 raven-agent:  $INSTALL_RAVEN"
-echo "  跳过 Helm update:  $SKIP_HELM_UPDATE"
 echo "  Helm 超时:         $HELM_TIMEOUT"
 echo "===================================="
 echo ""
@@ -168,14 +160,7 @@ fi
 # 添加 OpenYurt Helm 仓库
 print_info "添加 OpenYurt Helm 仓库..."
 helm repo add openyurt https://openyurtio.github.io/openyurt-helm 2>/dev/null || true
-
-# 根据 SKIP_HELM_UPDATE 参数决定是否更新
-if [ "$SKIP_HELM_UPDATE" = "true" ]; then
-    print_info "跳过 Helm repo update (SKIP_HELM_UPDATE=true)"
-else
-    print_info "更新 Helm 仓库..."
-    helm repo update
-fi
+helm repo update
 
 # 1. 安装 yurt-manager
 print_info "============================================"
@@ -183,10 +168,7 @@ print_info "安装 yurt-manager (OpenYurt 核心控制器)..."
 print_info "============================================"
 
 helm upgrade --install yurt-manager openyurt/yurt-manager \
-    --set image.registry=quanzhenglong.com/edge \
-    --set image.repository=yurt-manager \
-    --set image.tag=v1.6.0 \
-    --namespace "$OPENYURT_NAMESPACE" \
+    --namespace "$NAMESPACE" \
     --values "$SCRIPT_DIR/yurt-manager-values.yaml" \
     --set image.tag="$OPENYURT_VERSION" \
     --wait \
