@@ -5,7 +5,7 @@
 
 # 默认参数设置
 NAMESPACE=${NAMESPACE:-edge-system}
-KUBECONFIG_PATH=${KUBECONFIG_PATH:-~/.kube/config}
+KUBECONFIG_PATH=${KUBECONFIG:-~/.kube/config}
 REGISTRY=${REGISTRY:-quanzhenglong.com/edge}
 TAG=${TAG:-main}
 PULL_POLICY=${PULL_POLICY:-Always}
