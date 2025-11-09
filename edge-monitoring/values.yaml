@@ -338,6 +338,12 @@ kubeStateMetrics:
     tag: v2.10.0
     pullPolicy: IfNotPresent
 
+  # kube-state-metrics arguments to expose namespace labels
+  args:
+    - --port=8080
+    - --telemetry-port=8081
+    - --metric-labels-allowlist=nodes=[theriseunion.io/nodegroup],pods=[theriseunion.io/workspace],namespaces=[theriseunion.io/workspace,theriseunion.io/managed]
+
   service:
     type: ClusterIP
     port: 8080
