@@ -24,7 +24,7 @@ spec:
       hostPID: true
       containers:
       - name: cadvisor
-        image: "{{ .Values.cadvisor.image.repository }}:{{ .Values.cadvisor.image.tag }}"
+        image: "{{ .Values.global.imageRegistry }}/{{ .Values.cadvisor.image.name }}:{{ .Values.cadvisor.image.tag }}"
         imagePullPolicy: {{ .Values.cadvisor.image.pullPolicy }}
         ports:
         - name: http-metrics

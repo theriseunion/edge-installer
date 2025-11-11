@@ -21,7 +21,7 @@ spec:
       serviceAccountName: edge-prometheus
       containers:
       - name: prometheus
-        image: {{ .Values.prometheus.image.repository }}:{{ .Values.prometheus.image.tag }}
+        image: {{ .Values.global.imageRegistry }}/{{ .Values.prometheus.image.name }}:{{ .Values.prometheus.image.tag }}
         imagePullPolicy: {{ .Values.prometheus.image.pullPolicy }}
         ports:
         - containerPort: 9090
