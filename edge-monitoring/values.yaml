@@ -7,12 +7,15 @@ global:
   enabled: true
   # 命名空间
   namespace: observability-system
+  # 镜像仓库地址（可通过 Helm 参数覆盖）
+  imageRegistry: quanzhenglong.com/edge
 
 # Prometheus 配置
 prometheus:
   enabled: true
   image:
-    repository: prom/prometheus
+    # 镜像名称（会自动拼接 global.imageRegistry）
+    name: prometheus
     tag: v2.45.0
     pullPolicy: IfNotPresent
 
@@ -259,7 +262,8 @@ prometheus:
 grafana:
   enabled: true
   image:
-    repository: grafana/grafana
+    # 镜像名称（会自动拼接 global.imageRegistry）
+    name: grafana
     tag: 10.0.0
     pullPolicy: IfNotPresent
 
@@ -297,7 +301,8 @@ grafana:
 alertmanager:
   enabled: true
   image:
-    repository: prom/alertmanager
+    # 镜像名称（会自动拼接 global.imageRegistry）
+    name: alertmanager
     tag: v0.25.0
     pullPolicy: IfNotPresent
 
@@ -334,7 +339,8 @@ alertmanager:
 kubeStateMetrics:
   enabled: true
   image:
-    repository: registry.k8s.io/kube-state-metrics/kube-state-metrics
+    # 镜像名称（会自动拼接 global.imageRegistry）
+    name: kube-state-metrics
     tag: v2.10.0
     pullPolicy: IfNotPresent
 
@@ -360,7 +366,8 @@ kubeStateMetrics:
 nodeExporter:
   enabled: true
   image:
-    repository: prom/node-exporter
+    # 镜像名称（会自动拼接 global.imageRegistry）
+    name: node-exporter
     tag: v1.6.0
     pullPolicy: IfNotPresent
 
@@ -385,7 +392,8 @@ nodeExporter:
 cadvisor:
   enabled: true
   image:
-    repository: swr.cn-north-4.myhuaweicloud.com/ddn-k8s/gcr.io/cadvisor/cadvisor
+    # 镜像名称（会自动拼接 global.imageRegistry）
+    name: cadvisor
     tag: v0.47.0
     pullPolicy: IfNotPresent
 
@@ -447,7 +455,7 @@ monitoringService:
   image:
     repository: quanzhenglong.com/edge/monitoring-service
     tag: openapi-v1.1
-    pullPolicy: Always
+    pullPolicy: IfNotPresent
 
   service:
     type: ClusterIP

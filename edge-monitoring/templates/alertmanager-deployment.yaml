@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
       - name: alertmanager
-        image: {{ .Values.alertmanager.image.repository }}:{{ .Values.alertmanager.image.tag }}
+        image: {{ .Values.global.imageRegistry }}/{{ .Values.alertmanager.image.name }}:{{ .Values.alertmanager.image.tag }}
         imagePullPolicy: {{ .Values.alertmanager.image.pullPolicy }}
         ports:
         - containerPort: 9093

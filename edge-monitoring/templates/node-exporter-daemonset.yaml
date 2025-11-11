@@ -31,7 +31,7 @@ spec:
         operator: Exists
       containers:
       - name: node-exporter
-        image: {{ .Values.nodeExporter.image.repository }}:{{ .Values.nodeExporter.image.tag }}
+        image: {{ .Values.global.imageRegistry }}/{{ .Values.nodeExporter.image.name }}:{{ .Values.nodeExporter.image.tag }}
         imagePullPolicy: {{ .Values.nodeExporter.image.pullPolicy }}
         ports:
         - name: metrics

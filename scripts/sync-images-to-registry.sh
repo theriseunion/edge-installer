@@ -208,10 +208,73 @@ SUCCESS_COUNT=0
 FAILED_COUNT=0
 
 # ============================================================================
-# 1. 同步 yurt-iot-dock 镜像
+# 1. 同步 OpenYurt 1.6.0 核心组件镜像
 # ============================================================================
 print_info "============================================"
-print_info "第 1 步: 同步 yurt-iot-dock 镜像"
+print_info "第 1 步: 同步 OpenYurt 1.6.0 核心组件镜像"
+print_info "============================================"
+echo ""
+
+# yurt-manager v1.6.0
+TOTAL_IMAGES=$((TOTAL_IMAGES + 1))
+if sync_image \
+    "openyurt/yurt-manager:v1.6.0" \
+    "$PRIVATE_REGISTRY/openyurt/yurt-manager:v1.6.0" \
+    "yurt-manager v1.6.0"; then
+    SUCCESS_COUNT=$((SUCCESS_COUNT + 1))
+else
+    FAILED_COUNT=$((FAILED_COUNT + 1))
+fi
+
+# yurthub v1.6.0
+TOTAL_IMAGES=$((TOTAL_IMAGES + 1))
+if sync_image \
+    "openyurt/yurthub:v1.6.0" \
+    "$PRIVATE_REGISTRY/openyurt/yurthub:v1.6.0" \
+    "yurthub v1.6.0"; then
+    SUCCESS_COUNT=$((SUCCESS_COUNT + 1))
+else
+    FAILED_COUNT=$((FAILED_COUNT + 1))
+fi
+
+# raven-agent v0.4.3
+TOTAL_IMAGES=$((TOTAL_IMAGES + 1))
+if sync_image \
+    "openyurt/raven-agent:0.4.3" \
+    "$PRIVATE_REGISTRY/openyurt/raven-agent:0.4.3" \
+    "raven-agent v0.4.3"; then
+    SUCCESS_COUNT=$((SUCCESS_COUNT + 1))
+else
+    FAILED_COUNT=$((FAILED_COUNT + 1))
+fi
+
+# kube-apiserver v1.22.0 (for yurt-coordinator)
+TOTAL_IMAGES=$((TOTAL_IMAGES + 1))
+if sync_image \
+    "registry.k8s.io/kube-apiserver:v1.22.0" \
+    "$PRIVATE_REGISTRY/openyurt/kube-apiserver:v1.22.0" \
+    "kube-apiserver v1.22.0 (yurt-coordinator)"; then
+    SUCCESS_COUNT=$((SUCCESS_COUNT + 1))
+else
+    FAILED_COUNT=$((FAILED_COUNT + 1))
+fi
+
+# etcd 3.5.0-0 (for yurt-coordinator)
+TOTAL_IMAGES=$((TOTAL_IMAGES + 1))
+if sync_image \
+    "registry.k8s.io/etcd:3.5.0-0" \
+    "$PRIVATE_REGISTRY/openyurt/etcd:3.5.0-0" \
+    "etcd 3.5.0-0 (yurt-coordinator)"; then
+    SUCCESS_COUNT=$((SUCCESS_COUNT + 1))
+else
+    FAILED_COUNT=$((FAILED_COUNT + 1))
+fi
+
+# ============================================================================
+# 2. 同步 yurt-iot-dock 镜像
+# ============================================================================
+print_info "============================================"
+print_info "第 2 步: 同步 yurt-iot-dock 镜像"
 print_info "============================================"
 echo ""
 
@@ -238,10 +301,10 @@ else
 fi
 
 # ============================================================================
-# 2. 同步 EdgeX 核心服务镜像
+# 3. 同步 EdgeX 核心服务镜像
 # ============================================================================
 print_info "============================================"
-print_info "第 2 步: 同步 EdgeX 核心服务镜像"
+print_info "第 3 步: 同步 EdgeX 核心服务镜像"
 print_info "============================================"
 echo ""
 
@@ -301,10 +364,10 @@ else
 fi
 
 # ============================================================================
-# 3. 同步 EdgeX 设备服务镜像
+# 4. 同步 EdgeX 设备服务镜像
 # ============================================================================
 print_info "============================================"
-print_info "第 3 步: 同步 EdgeX 设备服务镜像"
+print_info "第 4 步: 同步 EdgeX 设备服务镜像"
 print_info "============================================"
 echo ""
 
@@ -353,10 +416,10 @@ else
 fi
 
 # ============================================================================
-# 4. 同步 EdgeX 基础设施镜像
+# 5. 同步 EdgeX 基础设施镜像
 # ============================================================================
 print_info "============================================"
-print_info "第 4 步: 同步 EdgeX 基础设施镜像"
+print_info "第 5 步: 同步 EdgeX 基础设施镜像"
 print_info "============================================"
 echo ""
 
@@ -383,10 +446,10 @@ else
 fi
 
 # ============================================================================
-# 5. 同步 EdgeX 配置引导镜像
+# 6. 同步 EdgeX 配置引导镜像
 # ============================================================================
 print_info "============================================"
-print_info "第 5 步: 同步 EdgeX 配置引导镜像"
+print_info "第 6 步: 同步 EdgeX 配置引导镜像"
 print_info "============================================"
 echo ""
 
@@ -396,6 +459,80 @@ if sync_image \
     "edgexfoundry/core-common-config-bootstrapper:$EDGEX_VERSION" \
     "$PRIVATE_REGISTRY/edgexfoundry/core-common-config-bootstrapper:$EDGEX_VERSION" \
     "edgex-core-common-config-bootstrapper $EDGEX_VERSION"; then
+    SUCCESS_COUNT=$((SUCCESS_COUNT + 1))
+else
+    FAILED_COUNT=$((FAILED_COUNT + 1))
+fi
+
+# ============================================================================
+# 7. 同步监控组件镜像
+# ============================================================================
+print_info "============================================"
+print_info "第 7 步: 同步监控组件镜像"
+print_info "============================================"
+echo ""
+
+# Prometheus
+TOTAL_IMAGES=$((TOTAL_IMAGES + 1))
+if sync_image \
+    "prom/prometheus:v2.45.0" \
+    "$PRIVATE_REGISTRY/edge/prometheus:v2.45.0" \
+    "prometheus v2.45.0"; then
+    SUCCESS_COUNT=$((SUCCESS_COUNT + 1))
+else
+    FAILED_COUNT=$((FAILED_COUNT + 1))
+fi
+
+# Grafana
+TOTAL_IMAGES=$((TOTAL_IMAGES + 1))
+if sync_image \
+    "grafana/grafana:10.0.0" \
+    "$PRIVATE_REGISTRY/edge/grafana:10.0.0" \
+    "grafana 10.0.0"; then
+    SUCCESS_COUNT=$((SUCCESS_COUNT + 1))
+else
+    FAILED_COUNT=$((FAILED_COUNT + 1))
+fi
+
+# AlertManager
+TOTAL_IMAGES=$((TOTAL_IMAGES + 1))
+if sync_image \
+    "prom/alertmanager:v0.25.0" \
+    "$PRIVATE_REGISTRY/edge/alertmanager:v0.25.0" \
+    "alertmanager v0.25.0"; then
+    SUCCESS_COUNT=$((SUCCESS_COUNT + 1))
+else
+    FAILED_COUNT=$((FAILED_COUNT + 1))
+fi
+
+# Kube-state-metrics
+TOTAL_IMAGES=$((TOTAL_IMAGES + 1))
+if sync_image \
+    "registry.k8s.io/kube-state-metrics/kube-state-metrics:v2.10.0" \
+    "$PRIVATE_REGISTRY/edge/kube-state-metrics:v2.10.0" \
+    "kube-state-metrics v2.10.0"; then
+    SUCCESS_COUNT=$((SUCCESS_COUNT + 1))
+else
+    FAILED_COUNT=$((FAILED_COUNT + 1))
+fi
+
+# Node-exporter
+TOTAL_IMAGES=$((TOTAL_IMAGES + 1))
+if sync_image \
+    "prom/node-exporter:v1.6.0" \
+    "$PRIVATE_REGISTRY/edge/node-exporter:v1.6.0" \
+    "node-exporter v1.6.0"; then
+    SUCCESS_COUNT=$((SUCCESS_COUNT + 1))
+else
+    FAILED_COUNT=$((FAILED_COUNT + 1))
+fi
+
+# cAdvisor
+TOTAL_IMAGES=$((TOTAL_IMAGES + 1))
+if sync_image \
+    "swr.cn-north-4.myhuaweicloud.com/ddn-k8s/gcr.io/cadvisor/cadvisor:v0.47.0" \
+    "$PRIVATE_REGISTRY/edge/cadvisor:v0.47.0" \
+    "cadvisor v0.47.0"; then
     SUCCESS_COUNT=$((SUCCESS_COUNT + 1))
 else
     FAILED_COUNT=$((FAILED_COUNT + 1))
@@ -431,6 +568,11 @@ cat <<EOF
 后续步骤:
 
 1. 验证镜像已上传到私有仓库:
+   # 验证 OpenYurt 核心组件
+   skopeo list-tags docker://$PRIVATE_REGISTRY/openyurt/yurt-manager
+   skopeo list-tags docker://$PRIVATE_REGISTRY/openyurt/yurthub
+   skopeo list-tags docker://$PRIVATE_REGISTRY/openyurt/raven-agent
+
    # 验证 yurt-iot-dock
    skopeo list-tags docker://$PRIVATE_REGISTRY/openyurt/yurt-iot-dock
 
@@ -439,7 +581,11 @@ cat <<EOF
    skopeo list-tags docker://$PRIVATE_REGISTRY/edgexfoundry/core-metadata
    skopeo list-tags docker://$PRIVATE_REGISTRY/edgexfoundry/device-virtual
 
-2. 创建 PlatformAdmin CR 使用私有镜像仓库:
+2. 安装 OpenYurt 1.6.0:
+   cd edge-installer/openyurt-1.6
+   ./install.sh -a https://YOUR_API_SERVER:6443 -y
+
+3. 创建 PlatformAdmin CR 使用私有镜像仓库:
    apiVersion: iot.openyurt.io/v1beta1
    kind: PlatformAdmin
    metadata:
@@ -455,15 +601,16 @@ cat <<EOF
        - name: edgex-device-virtual
        - name: edgex-device-rest
 
-3. 部署 EdgeX Foundry:
+4. 部署 EdgeX Foundry:
    kubectl apply -f platformadmin.yaml
 
-4. 验证部署:
+5. 验证部署:
    kubectl get pods -l iot.openyurt.io/platform=edgex
    kubectl get platformadmin edgex-sample
 
 镜像路径说明:
-  - yurt-iot-dock: $PRIVATE_REGISTRY/openyurt/yurt-iot-dock:latest
-  - EdgeX 组件:    $PRIVATE_REGISTRY/edgexfoundry/<component>:$EDGEX_VERSION
+  - OpenYurt 核心组件: $PRIVATE_REGISTRY/openyurt/<component>:v1.6.0
+  - yurt-iot-dock:    $PRIVATE_REGISTRY/openyurt/yurt-iot-dock:latest
+  - EdgeX 组件:       $PRIVATE_REGISTRY/edgexfoundry/<component>:$EDGEX_VERSION
 
 EOF
