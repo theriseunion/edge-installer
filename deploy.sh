@@ -154,6 +154,7 @@ if [ "$ENABLE_MONITORING" = "true" ]; then
   helm upgrade --install edge-monitoring ./edge-monitoring \
     --namespace observability-system \
     --create-namespace \
+    --set monitoringService.image.tag=$TAG \
     --wait \
     --timeout 10m || {
       echo "⚠️  监控套件部署失败"
