@@ -1,0 +1,788 @@
+# RoleTemplates - 角色模板定义
+# 自动从 Kubernetes RoleTemplate 转换生成
+# 包含集群管理、平台管理、命名空间管理等权限模板
+---
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  annotations:
+    iam.theriseunion.io/role-template-rules: '{"projects": "create"}'
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    iam.theriseunion.io/aggregate-to-self-provisioner: ''
+    iam.theriseunion.io/category: workspace-project-management
+    iam.theriseunion.io/scope: workspace
+    theriseunion.io/managed: 'true'
+    iam.theriseunion.io/scope-value: default
+  name: workspace-create-projects
+spec:
+  description:
+  displayName:
+    zh: 项目创建
+  rules:
+  - apiGroups:
+    - '*'
+    resources:
+    - workspaces
+    - workspacemembers
+    - quotas
+    - abnormalworkloads
+    - pods
+    verbs:
+    - get
+    - list
+    - watch
+  - apiGroups:
+    - '*'
+    resources:
+    - namespaces
+    - federatednamespaces
+    verbs:
+    - create
+    - watch
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  annotations:
+    iam.theriseunion.io/role-template-rules: '{"app-templates": "view"}'
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    iam.theriseunion.io/aggregate-to-viewer: ''
+    iam.theriseunion.io/category: workspace-app
+    iam.theriseunion.io/scope: workspace
+    theriseunion.io/managed: 'true'
+    iam.theriseunion.io/scope-value: default
+  name: workspace-delete-app-templates
+spec:
+  description:
+  displayName:
+    zh: 应用/应用版本/应用实例删除
+  rules:
+  - apiGroups:
+    - application.theriseunion.io
+    resources:
+    - apps
+    - apps/versions
+    - applications
+    - attachments
+    verbs:
+    - delete
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  annotations:
+    iam.theriseunion.io/dependencies: '["workspace-view-app-repos"]'
+    iam.theriseunion.io/role-template-rules: '{"app-repos": "manage"}'
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    iam.theriseunion.io/aggregate-to-admin: ''
+    iam.theriseunion.io/category: workspace-app
+    iam.theriseunion.io/scope: workspace
+    theriseunion.io/managed: 'true'
+    iam.theriseunion.io/scope-value: default
+  name: workspace-manage-app-repos
+spec:
+  description:
+  displayName:
+    zh: 应用仓库管理
+  rules:
+  - apiGroups:
+    - application.theriseunion.io
+    resources:
+    - repos
+    - repos/events
+    verbs:
+    - '*'
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  annotations:
+    iam.theriseunion.io/dependencies: '["workspace-view-app-templates","workspace-view-create-app-templates","workspace-delete-app-templates"]'
+    iam.theriseunion.io/role-template-rules: '{"app-templates": "manage"}'
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    iam.theriseunion.io/aggregate-to-admin: ''
+    iam.theriseunion.io/category: workspace-app
+    iam.theriseunion.io/scope: workspace
+    theriseunion.io/managed: 'true'
+    iam.theriseunion.io/scope-value: default
+  name: workspace-manage-app-templates
+spec:
+  uiPermissions:
+    - workspace/app-template.view
+    - workspace/app-template.create
+    - workspace/app-template.edit
+    - workspace/app-template.delete
+    - workspace/app-template.version.create
+    - workspace/app-template.submit
+  description:
+  displayName:
+    zh: 应用/应用版本/应用实例管理
+  rules:
+  - apiGroups:
+    - application.theriseunion.io
+    resources:
+    - apps
+    - apps/versions
+    - applications
+    - attachments
+    verbs:
+    - '*'
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  annotations:
+    iam.theriseunion.io/dependencies: '["workspace-view-edge-app-templates"]'
+    iam.theriseunion.io/role-template-rules: '{"edge-app-templates": "manage"}'
+    meta.helm.sh/release-name: edge-platform
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    iam.theriseunion.io/category: workspace-edge-management
+    iam.theriseunion.io/scope: workspace
+    theriseunion.io/extension-ref: edge-platform
+    theriseunion.io/managed: 'true'
+    iam.theriseunion.io/scope-value: default
+  name: workspace-manage-edge-app-templates
+spec:
+  description:
+  displayName:
+    zh: 边缘应用模板管理
+  rules:
+  - apiGroups:
+    - ''
+    - apps.theriseunion.io
+    resources:
+    - '*'
+    verbs:
+    - '*'
+  - nonResourceURLs:
+    - '*'
+    verbs:
+    - GET
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  annotations:
+    iam.theriseunion.io/dependencies: '["workspace-view-edge-workspaces"]'
+    iam.theriseunion.io/role-template-rules: '{"edge-workspaces": "manage"}'
+    meta.helm.sh/release-name: edge-platform
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    iam.theriseunion.io/category: workspace-edge-management
+    iam.theriseunion.io/scope: workspace
+    theriseunion.io/extension-ref: edge-platform
+    theriseunion.io/managed: 'true'
+    iam.theriseunion.io/scope-value: default
+  name: workspace-manage-edge-workspaces
+spec:
+  description:
+  displayName:
+    zh: 边缘租户空间管理
+  rules:
+  - apiGroups:
+    - ''
+    - infra.theriseunion.io
+    resources:
+    - '*'
+    verbs:
+    - '*'
+  - nonResourceURLs:
+    - '*'
+    verbs:
+    - GET
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  annotations:
+    iam.theriseunion.io/role-template-rules: '{"members": "manage"}'
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    iam.theriseunion.io/category: workspace-access-control
+    iam.theriseunion.io/hidden-role-template: 'true'
+    iam.theriseunion.io/scope: workspace
+    theriseunion.io/managed: 'true'
+    iam.theriseunion.io/scope-value: default
+  name: workspace-manage-members
+spec:
+  uiPermissions:
+    - workspace/member.view
+    - workspace/member.manage
+  description:
+  displayName:
+    zh: 成员管理
+  rules:
+  - apiGroups:
+    - '*'
+    resources:
+    - workspacemembers
+    verbs:
+    - '*'
+  - apiGroups:
+    - '*'
+    resources:
+    - workspaceroles
+    verbs:
+    - list
+    - get
+    - watch
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  annotations:
+    iam.theriseunion.io/dependencies: '["workspace-view-projects","workspace-view-members","workspace-create-projects"]'
+    iam.theriseunion.io/role-template-rules: '{"projects": "manage"}'
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    iam.theriseunion.io/category: workspace-project-management
+    iam.theriseunion.io/scope: workspace
+    theriseunion.io/managed: 'true'
+    iam.theriseunion.io/scope-value: default
+  name: workspace-manage-projects
+spec:
+  uiPermissions:
+    - workspace/project.view
+    - workspace/project.manage
+  description:
+  displayName:
+    zh: 项目管理
+  rules:
+  - apiGroups:
+    - apps
+    - extensions
+    - batch
+    - autoscaling
+    - app.k8s.io
+    - operations.theriseunion.io
+    - resources.theriseunion.io
+    resources:
+    - '*'
+    verbs:
+    - '*'
+  - apiGroups:
+    - '*'
+    resources:
+    - namespaces
+    - configmaps
+    - endpoints
+    - events
+    - limitranges
+    - persistentvolumeclaims
+    - podtemplates
+    - replicationcontrollers
+    - resourcequotas
+    - secrets
+    - serviceaccounts
+    - services
+    - applications
+    - controllerrevisions
+    - deployments
+    - replicasets
+    - statefulsets
+    - daemonsets
+    - meshpolicies
+    - cronjobs
+    - jobs
+    - events
+    - ingresses
+    - router
+    - pods
+    - pods/log
+    - pods/exec
+    - pods/containers
+    - namespacenetworkpolicies
+    - networkpolicies
+    - podsecuritypolicies
+    - rolebindings
+    - roles
+    - namespacemembers
+    - servicepolicies
+    - workspaces
+    - quotas
+    - abnormalworkloads
+    - workloads
+    - router
+    - strategies
+    verbs:
+    - '*'
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  annotations:
+    iam.theriseunion.io/role-template-rules: '{"roles": "manage"}'
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    iam.theriseunion.io/aggregate-to-admin: ""
+    iam.theriseunion.io/category: workspace-access-control
+    iam.theriseunion.io/hidden-role-template: 'true'
+    iam.theriseunion.io/scope: workspace
+    theriseunion.io/managed: 'true'
+    iam.theriseunion.io/scope-value: default
+  name: workspace-manage-roles
+spec:
+  uiPermissions:
+    - workspace/role.view
+    - workspace/role.manage
+  description:
+  displayName:
+    zh: 角色管理
+  rules:
+  - apiGroups:
+    - '*'
+    resources:
+    - workspaceroles
+    verbs:
+    - '*'
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  annotations:
+    iam.theriseunion.io/role-template-rules: '{"workspace-settings": "manage"}'
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    iam.theriseunion.io/category: workspace-settings
+    iam.theriseunion.io/hidden-role-template: 'true'
+    iam.theriseunion.io/scope: workspace
+    theriseunion.io/managed: 'true'
+    iam.theriseunion.io/scope-value: default
+  name: workspace-manage-workspace-settings
+spec:
+  description:
+  displayName:
+    zh: 租户空间设置管理
+  rules:
+  - apiGroups:
+    - '*'
+    resources:
+    - workspaces
+    verbs:
+    - '*'
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  annotations:
+    iam.theriseunion.io/role-template-rules: '{"app-repos": "view"}'
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    iam.theriseunion.io/aggregate-to-regular: ''
+    iam.theriseunion.io/aggregate-to-self-provisioner: ''
+    iam.theriseunion.io/aggregate-to-viewer: ''
+    iam.theriseunion.io/category: workspace-app
+    iam.theriseunion.io/scope: workspace
+    theriseunion.io/managed: 'true'
+    iam.theriseunion.io/scope-value: default
+  name: workspace-view-app-repos
+spec:
+  description:
+  displayName:
+    zh: 应用仓库查看
+  rules:
+  - apiGroups:
+    - application.theriseunion.io
+    resources:
+    - repos
+    - repos/events
+    verbs:
+    - get
+    - list
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  annotations:
+    iam.theriseunion.io/role-template-rules: '{"app-templates": "view"}'
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    iam.theriseunion.io/aggregate-to-regular: ''
+    iam.theriseunion.io/aggregate-to-self-provisioner: ''
+    iam.theriseunion.io/aggregate-to-viewer: ''
+    iam.theriseunion.io/category: workspace-app
+    iam.theriseunion.io/scope: workspace
+    theriseunion.io/managed: 'true'
+    iam.theriseunion.io/scope-value: default
+  name: workspace-view-app-templates
+spec:
+  uiPermissions:
+    - workspace/app-template.view
+  description:
+  displayName:
+    zh: 应用/应用版本/应用实例查看
+  rules:
+  - apiGroups:
+    - application.theriseunion.io
+    resources:
+    - apps
+    - apps/versions
+    - applications
+    - attachments
+    verbs:
+    - get
+    - list
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  annotations:
+    iam.theriseunion.io/role-template-rules: '{"app-templates": "view"}'
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    iam.theriseunion.io/aggregate-to-viewer: ''
+    iam.theriseunion.io/category: workspace-app
+    iam.theriseunion.io/scope: workspace
+    theriseunion.io/managed: 'true'
+    iam.theriseunion.io/scope-value: default
+  name: workspace-view-create-app-templates
+spec:
+  description:
+  displayName:
+    zh: 应用/应用版本/应用实例查看和创建
+  rules:
+  - apiGroups:
+    - application.theriseunion.io
+    resources:
+    - apps
+    - apps/versions
+    - applications
+    - attachments
+    verbs:
+    - get
+    - list
+    - create
+    - update
+    - patch
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  annotations:
+    iam.theriseunion.io/role-template-rules: '{"edge-app-templates": "view"}'
+    meta.helm.sh/release-name: edge-platform
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    iam.theriseunion.io/aggregate-to-viewer: ''
+    iam.theriseunion.io/category: workspace-edge-management
+    iam.theriseunion.io/scope: workspace
+    theriseunion.io/extension-ref: edge-platform
+    theriseunion.io/managed: 'true'
+    iam.theriseunion.io/scope-value: default
+  name: workspace-view-edge-app-templates
+spec:
+  description:
+  displayName:
+    zh: 边缘应用模板查看
+  rules:
+  - apiGroups:
+    - ''
+    - apps.theriseunion.io
+    resources:
+    - '*'
+    verbs:
+    - get
+    - list
+    - watch
+  - nonResourceURLs:
+    - '*'
+    verbs:
+    - GET
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  annotations:
+    iam.theriseunion.io/role-template-rules: '{"edge-workspaces": "view"}'
+    meta.helm.sh/release-name: edge-platform
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    iam.theriseunion.io/aggregate-to-viewer: ''
+    iam.theriseunion.io/category: workspace-edge-management
+    iam.theriseunion.io/scope: workspace
+    theriseunion.io/extension-ref: edge-platform
+    theriseunion.io/managed: 'true'
+    iam.theriseunion.io/scope-value: default
+  name: workspace-view-edge-workspaces
+spec:
+  description:
+  displayName:
+    zh: 边缘租户空间查看
+  rules:
+  - apiGroups:
+    - ''
+    - infra.theriseunion.io
+    resources:
+    - '*'
+    verbs:
+    - get
+    - list
+    - watch
+  - nonResourceURLs:
+    - '*'
+    verbs:
+    - GET
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  annotations:
+    iam.theriseunion.io/role-template-rules: '{"members": "view"}'
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    iam.theriseunion.io/aggregate-to-regular: ''
+    iam.theriseunion.io/aggregate-to-self-provisioner: ''
+    iam.theriseunion.io/aggregate-to-viewer: ''
+    iam.theriseunion.io/category: workspace-access-control
+    iam.theriseunion.io/scope: workspace
+    theriseunion.io/managed: 'true'
+    iam.theriseunion.io/scope-value: default
+  name: workspace-view-members
+spec:
+  uiPermissions:
+    - workspace/member.view
+  description:
+  displayName:
+    zh: 成员查看
+  rules:
+  - apiGroups:
+    - '*'
+    resources:
+    - workspacemembers
+    verbs:
+    - get
+    - list
+    - watch
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  annotations:
+    iam.theriseunion.io/role-template-rules: '{"monitoring": "view"}'
+    meta.helm.sh/release-name: monitor-monitoring-agent
+    meta.helm.sh/release-namespace: observability-system
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    iam.theriseunion.io/aggregate-to-viewer: ''
+    iam.theriseunion.io/scope: workspace
+    theriseunion.io/extension-ref: monitor-monitoring
+    theriseunion.io/managed: 'true'
+    iam.theriseunion.io/scope-value: default
+  name: workspace-view-monitoring
+spec:
+  description:
+  displayName:
+    zh: 监控查看
+  rules:
+  - apiGroups:
+    - monitoring.theriseunion.io
+    resources:
+    - metrics
+    - workspace_metrics
+    - namespace_metrics
+    - workload_metrics
+    - pod_metrics
+    - container_metrics
+    - pvc_metrics
+    - component_metrics
+    verbs:
+    - get
+    - list
+    - watch
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  annotations:
+    iam.theriseunion.io/role-template-rules: '{"projects": "view"}'
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    iam.theriseunion.io/aggregate-to-viewer: ''
+    iam.theriseunion.io/category: workspace-project-management
+    iam.theriseunion.io/scope: workspace
+    theriseunion.io/managed: 'true'
+    iam.theriseunion.io/scope-value: default
+  name: workspace-view-projects
+spec:
+  uiPermissions:
+    - workspace/project.view
+  description:
+  displayName:
+    zh: 项目查看
+  rules:
+  - apiGroups:
+    - '*'
+    resources:
+    - namespaces
+    - configmaps
+    - endpoints
+    - events
+    - limitranges
+    - persistentvolumeclaims
+    - podtemplates
+    - replicationcontrollers
+    - resourcequotas
+    - secrets
+    - serviceaccounts
+    - services
+    - applications
+    - controllerrevisions
+    - deployments
+    - replicasets
+    - statefulsets
+    - daemonsets
+    - cronjobs
+    - jobs
+    - events
+    - ingresses
+    - router
+    - pods
+    - pods/log
+    - pods/containers
+    - namespacenetworkpolicies
+    - networkpolicies
+    - podsecuritypolicies
+    - rolebindings
+    - roles
+    - namespacemembers
+    - servicepolicies
+    - workspaces
+    - quotas
+    - abnormalworkloads
+    - workloads
+    - router
+    - strategies
+    verbs:
+    - get
+    - list
+    - watch
+  - apiGroups:
+    - apps
+    - extensions
+    - batch
+    - autoscaling
+    - app.k8s.io
+    - operations.theriseunion.io
+    - resources.theriseunion.io
+    resources:
+    - '*'
+    verbs:
+    - list
+    - get
+    - watch
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  annotations:
+    iam.theriseunion.io/dependencies: '["workspace-view-members"]'
+    iam.theriseunion.io/role-template-rules: '{"roles": "view"}'
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    iam.theriseunion.io/aggregate-to-regular: ''
+    iam.theriseunion.io/aggregate-to-self-provisioner: ''
+    iam.theriseunion.io/aggregate-to-viewer: ''
+    iam.theriseunion.io/category: workspace-access-control
+    iam.theriseunion.io/scope: workspace
+    theriseunion.io/managed: 'true'
+    iam.theriseunion.io/scope-value: default
+  name: workspace-view-roles
+spec:
+  uiPermissions:
+    - workspace/role.view
+  description:
+  displayName:
+    zh: 角色查看
+  rules:
+  - apiGroups:
+    - '*'
+    resources:
+    - workspaceroles
+    verbs:
+    - get
+    - list
+    - watch
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  annotations:
+    iam.theriseunion.io/role-template-rules: '{"workspace-settings": "view"}'
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    iam.theriseunion.io/aggregate-to-regular: ''
+    iam.theriseunion.io/aggregate-to-self-provisioner: ''
+    iam.theriseunion.io/aggregate-to-viewer: ''
+    iam.theriseunion.io/basic-role-template: 'true'
+    iam.theriseunion.io/category: workspace-settings
+    iam.theriseunion.io/hidden-role-template: 'true'
+    iam.theriseunion.io/scope: workspace
+    theriseunion.io/managed: 'true'
+    iam.theriseunion.io/scope-value: default
+  name: workspace-view-workspace-settings
+spec:
+  description:
+  displayName:
+    zh: 租户空间设置查看
+  rules:
+  - apiGroups:
+    - '*'
+    resources:
+    - workspaces
+    verbs:
+    - get
+    - list
+    - watch
+# 新增的 Workspace Scope RoleTemplates
+# Story 2: Workspace & NodeGroup 层级 RoleTemplate 标准化
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    iam.theriseunion.io/category: workspace-devops-management
+    iam.theriseunion.io/scope: workspace
+    iam.theriseunion.io/scope-value: ""
+    theriseunion.io/managed: 'true'
+  name: workspace-view-devops
+spec:
+  displayName:
+    zh: 查看 DevOps
+    en: View DevOps
+  description:
+    zh: 允许查看工作空间的 DevOps 配置和流水线
+    en: Allows viewing DevOps configurations and pipelines in the workspace
+  uiPermissions:
+    - workspace/devops.view
+  rules: []
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  annotations:
+    iam.theriseunion.io/dependencies: '["workspace-view-devops"]'
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    iam.theriseunion.io/category: workspace-devops-management
+    iam.theriseunion.io/scope: workspace
+    iam.theriseunion.io/scope-value: ""
+    theriseunion.io/managed: 'true'
+  name: workspace-manage-devops
+spec:
+  displayName:
+    zh: 管理 DevOps
+    en: Manage DevOps
+  description:
+    zh: 允许配置和管理工作空间的 DevOps 流水线和设置
+    en: Allows configuring and managing DevOps pipelines and settings in the workspace
+  uiPermissions:
+    - workspace/devops.view
+    - workspace/devops.manage
+  rules: []

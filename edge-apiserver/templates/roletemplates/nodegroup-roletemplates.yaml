@@ -1,0 +1,155 @@
+# RoleTemplates - 角色模板定义
+# 自动从 Kubernetes RoleTemplate 转换生成
+# 包含集群管理、平台管理、命名空间管理等权限模板
+---
+# NodeGroup Scope RoleTemplates
+# Story 2: Workspace & NodeGroup 层级 RoleTemplate 标准化
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    iam.theriseunion.io/category: nodegroup-resource-management
+    iam.theriseunion.io/scope: nodegroup
+    iam.theriseunion.io/scope-value: ""
+    theriseunion.io/managed: 'true'
+  name: nodegroup-view-nodes
+spec:
+  displayName:
+    zh: 查看节点
+    en: View Nodes
+  description:
+    zh: 允许查看节点组内的节点列表和详情
+    en: Allows viewing nodes within the nodegroup
+  uiPermissions:
+    - nodegroup/node.view
+  rules:
+    - apiGroups:
+        - ""
+      resources:
+        - nodes
+      verbs:
+        - get
+        - list
+        - watch
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  annotations:
+    iam.theriseunion.io/dependencies: '["nodegroup-view-nodes"]'
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    iam.theriseunion.io/category: nodegroup-resource-management
+    iam.theriseunion.io/scope: nodegroup
+    iam.theriseunion.io/scope-value: ""
+    theriseunion.io/managed: 'true'
+  name: nodegroup-manage-nodes
+spec:
+  displayName:
+    zh: 管理节点
+    en: Manage Nodes
+  description:
+    zh: 允许管理节点组内的节点，包括添加、删除和配置节点
+    en: Allows managing nodes within the nodegroup, including adding, removing and configuring nodes
+  uiPermissions:
+    - nodegroup/node.view
+    - nodegroup/node.manage
+  rules:
+    - apiGroups:
+        - ""
+      resources:
+        - nodes
+      verbs:
+        - "*"
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    iam.theriseunion.io/category: nodegroup-monitoring-management
+    iam.theriseunion.io/scope: nodegroup
+    iam.theriseunion.io/scope-value: ""
+    theriseunion.io/managed: 'true'
+  name: nodegroup-view-monitoring
+spec:
+  displayName:
+    zh: 查看监控
+    en: View Monitoring
+  description:
+    zh: 允许查看节点组的监控指标和性能数据
+    en: Allows viewing monitoring metrics and performance data of the nodegroup
+  uiPermissions:
+    - nodegroup/monitoring.view
+  rules: []
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  annotations:
+    iam.theriseunion.io/dependencies: '["nodegroup-view-monitoring"]'
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    iam.theriseunion.io/category: nodegroup-monitoring-management
+    iam.theriseunion.io/scope: nodegroup
+    iam.theriseunion.io/scope-value: ""
+    theriseunion.io/managed: 'true'
+  name: nodegroup-manage-monitoring
+spec:
+  displayName:
+    zh: 管理监控
+    en: Manage Monitoring
+  description:
+    zh: 允许配置和管理节点组的监控系统和告警规则
+    en: Allows configuring and managing monitoring system and alert rules of the nodegroup
+  uiPermissions:
+    - nodegroup/monitoring.view
+    - nodegroup/monitoring.manage
+  rules: []
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    iam.theriseunion.io/category: nodegroup-gpu-management
+    iam.theriseunion.io/scope: nodegroup
+    iam.theriseunion.io/scope-value: ""
+    theriseunion.io/managed: 'true'
+  name: nodegroup-view-gpu
+spec:
+  displayName:
+    zh: 查看 GPU
+    en: View GPU
+  description:
+    zh: 允许查看节点组内的 GPU 资源和使用情况
+    en: Allows viewing GPU resources and usage within the nodegroup
+  uiPermissions:
+    - nodegroup/gpu.view
+  rules: []
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  annotations:
+    iam.theriseunion.io/dependencies: '["nodegroup-view-gpu"]'
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    iam.theriseunion.io/category: nodegroup-gpu-management
+    iam.theriseunion.io/scope: nodegroup
+    iam.theriseunion.io/scope-value: ""
+    theriseunion.io/managed: 'true'
+  name: nodegroup-manage-gpu
+spec:
+  displayName:
+    zh: 管理 GPU
+    en: Manage GPU
+  description:
+    zh: 允许配置和管理节点组内的 GPU 资源分配
+    en: Allows configuring and managing GPU resource allocation within the nodegroup
+  uiPermissions:
+    - nodegroup/gpu.view
+    - nodegroup/gpu.manage
+  rules: []

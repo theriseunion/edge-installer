@@ -1,0 +1,759 @@
+# RoleTemplates - 角色模板定义
+# 自动从 Kubernetes RoleTemplate 转换生成
+# 包含集群管理、平台管理、命名空间管理等权限模板
+---
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  annotations:
+    iam.theriseunion.io/dependencies: '["cluster-view-app-workloads", "cluster-view-projects"]'
+    iam.theriseunion.io/role-template-rules: '{"deployments":"manage","statefulsets":"manage", "daemonsets":"manage","jobs":"manage","cronjobs":"manage","pods":"manage","services":"manage", "ingresses":"manage","configmaps":"manage","secrets":"manage","serviceaccounts":"manage"}'
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    iam.theriseunion.io/category: cluster-app-workloads-management
+    iam.theriseunion.io/scope: cluster
+    theriseunion.io/managed: 'true'
+    iam.theriseunion.io/scope-value: host
+  name: cluster-manage-app-workloads
+spec:
+  displayName:
+    en: Application Workload Management
+    zh: 应用负载管理
+  rules: []
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  annotations:
+    iam.theriseunion.io/role-template-rules: '{"cluster-settings": "manage"}'
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    iam.theriseunion.io/category: cluster-settings
+    iam.theriseunion.io/scope: cluster
+    theriseunion.io/managed: 'true'
+    iam.theriseunion.io/scope-value: host
+  name: cluster-manage-cluster-settings
+spec:
+  displayName:
+    en: Cluster Settings Management
+    zh: 集群设置管理
+  rules: []
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  annotations:
+    iam.theriseunion.io/role-template-rules: '{"customresources": "manage"}'
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    iam.theriseunion.io/category: cluster-resource-management
+    iam.theriseunion.io/scope: cluster
+    theriseunion.io/managed: 'true'
+    iam.theriseunion.io/scope-value: host
+  name: cluster-manage-crds
+spec:
+  displayName:
+    en: Custom Resource Definition Management
+    zh: 定制资源定义管理
+  rules: []
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  annotations:
+    iam.theriseunion.io/role-template-rules: '{"customresources": "manage"}'
+    meta.helm.sh/release-name: imagemanager
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    iam.theriseunion.io/category: cluster-resource-management
+    iam.theriseunion.io/scope: cluster
+    theriseunion.io/managed: 'true'
+    iam.theriseunion.io/scope-value: host
+  name: cluster-manage-image-manager
+spec:
+  displayName:
+    en: Image Manager Management
+    zh: 镜像管理
+  rules: []
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  annotations:
+    iam.theriseunion.io/dependencies: '["cluster-view-roles", "cluster-view-members"]'
+    iam.theriseunion.io/role-template-rules: '{"members": "manage"}'
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    iam.theriseunion.io/category: cluster-access-control
+    iam.theriseunion.io/scope: cluster
+    theriseunion.io/managed: 'true'
+    iam.theriseunion.io/scope-value: host
+  name: cluster-manage-members
+spec:
+  uiPermissions:
+    - cluster/member.view
+    - cluster/member.manage
+  displayName:
+    en: Member Management
+    zh: 成员管理
+  rules: []
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  annotations:
+    iam.theriseunion.io/dependencies: '["cluster-view-monitoring"]'
+    iam.theriseunion.io/role-template-rules: '{"monitoring": "manage"}'
+    meta.helm.sh/release-name: monitor-monitoring-agent
+    meta.helm.sh/release-namespace: observability-system
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    iam.theriseunion.io/category: cluster-monitoring-management
+    iam.theriseunion.io/scope: cluster
+    theriseunion.io/extension-ref: monitor-monitoring
+    theriseunion.io/managed: 'true'
+    iam.theriseunion.io/scope-value: host
+  name: cluster-manage-monitoring
+spec:
+  uiPermissions:
+    - cluster/monitoring.view
+    - cluster/monitoring.manage
+  description:
+  displayName:
+    zh: 监控管理
+  rules:
+  - apiGroups:
+    - monitoring.theriseunion.io
+    resources:
+    - clusterdashboards
+    verbs:
+    - '*'
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  annotations:
+    helm.sh/hook: pre-install,pre-upgrade
+    iam.theriseunion.io/dependencies: '["cluster-view-nodegroups"]'
+    iam.theriseunion.io/role-template-rules: '{"nodegroup": "manage"}'
+  labels:
+    iam.theriseunion.io/category: edge-cluster-management
+    iam.theriseunion.io/scope: cluster
+    theriseunion.io/managed: 'true'
+    iam.theriseunion.io/scope-value: host
+  name: cluster-manage-nodegroup
+spec:
+  uiPermissions:
+    - cluster/nodegroup.view
+    - cluster/nodegroup.manage
+  displayName:
+    en: NodeGroup Management
+    zh: 节点组管理
+  rules: []
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  annotations:
+    iam.theriseunion.io/dependencies: '["cluster-view-nodes"]'
+    iam.theriseunion.io/role-template-rules: '{"nodes": "manage"}'
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    iam.theriseunion.io/category: cluster-resource-management
+    iam.theriseunion.io/scope: cluster
+    theriseunion.io/managed: 'true'
+    iam.theriseunion.io/scope-value: host
+  name: cluster-manage-nodes
+spec:
+  uiPermissions:
+    - cluster/node.view
+    - cluster/node.manage
+    - cluster/node.terminal
+  displayName:
+    en: Node Management
+    zh: 节点管理
+  rules: []
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  annotations:
+    iam.theriseunion.io/dependencies: '["cluster-view-persistentvolumeclaims", "cluster-view-storageclasses"]'
+    iam.theriseunion.io/role-template-rules: '{"persistentvolumeclaims": "manage"}'
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    iam.theriseunion.io/category: cluster-storage-management
+    iam.theriseunion.io/scope: cluster
+    theriseunion.io/managed: 'true'
+    iam.theriseunion.io/scope-value: host
+  name: cluster-manage-persistentvolumeclaims
+spec:
+  displayName:
+    en: Persistent Volume Claim Management
+    zh: 持久卷声明管理
+  rules: []
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  annotations:
+    iam.theriseunion.io/dependencies: '["cluster-view-projects"]'
+    iam.theriseunion.io/role-template-rules: '{"projects": "manage"}'
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    iam.theriseunion.io/category: cluster-project-management
+    iam.theriseunion.io/scope: cluster
+    theriseunion.io/managed: 'true'
+    iam.theriseunion.io/scope-value: host
+  name: cluster-manage-projects
+spec:
+  uiPermissions:
+    - cluster/namespace.view
+    - cluster/namespace.manage
+  displayName:
+    en: Project Management
+    zh: 项目管理
+  rules: []
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  annotations:
+    iam.theriseunion.io/dependencies: '["cluster-view-roles"]'
+    iam.theriseunion.io/role-template-rules: '{"roles": "manage"}'
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    iam.theriseunion.io/category: cluster-access-control
+    iam.theriseunion.io/scope: cluster
+    theriseunion.io/managed: 'true'
+    iam.theriseunion.io/scope-value: host
+  name: cluster-manage-roles
+spec:
+  uiPermissions:
+    - cluster/role.view
+    - cluster/role.manage
+  displayName:
+    en: Role Management
+    zh: 角色管理
+  rules: []
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  annotations:
+    iam.theriseunion.io/dependencies: '["cluster-view-persistentvolumeclaims", "cluster-view-storageclasses"]'
+    iam.theriseunion.io/role-template-rules: '{"storageclasses": "manage"}'
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    iam.theriseunion.io/category: cluster-storage-management
+    iam.theriseunion.io/scope: cluster
+    theriseunion.io/managed: 'true'
+    iam.theriseunion.io/scope-value: host
+  name: cluster-manage-storageclasses
+spec:
+  displayName:
+    en: Storage Class Management
+    zh: 存储类管理
+  rules: []
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  annotations:
+    iam.theriseunion.io/dependencies: '["cluster-view-projects"]'
+    iam.theriseunion.io/role-template-rules: '{"deployments":"view","statefulsets":"view", "daemonsets":"view","jobs":"view","cronjobs":"view","pods":"view","services":"view","ingresses":"view", "configmaps":"view","secrets":"view","serviceaccounts":"view"}'
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    iam.theriseunion.io/category: cluster-app-workloads-management
+    iam.theriseunion.io/scope: cluster
+    theriseunion.io/managed: 'true'
+    iam.theriseunion.io/scope-value: host
+  name: cluster-view-app-workloads
+spec:
+  displayName:
+    en: Application Workload Viewing
+    zh: 应用负载查看
+  rules: []
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  annotations:
+    iam.theriseunion.io/role-template-rules: '{"cluster-settings": "view"}'
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    iam.theriseunion.io/aggregate-to-cluster-viewer: ''
+    iam.theriseunion.io/category: cluster-settings
+    iam.theriseunion.io/scope: cluster
+    theriseunion.io/managed: 'true'
+    iam.theriseunion.io/scope-value: host
+  name: cluster-view-cluster-settings
+spec:
+  displayName:
+    en: Cluster Settings View
+    zh: 集群设置查看
+  rules: []
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  annotations:
+    iam.theriseunion.io/role-template-rules: '{"components": "view"}'
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    iam.theriseunion.io/aggregate-to-cluster-viewer: ''
+    iam.theriseunion.io/category: cluster-resource-management
+    iam.theriseunion.io/scope: cluster
+    theriseunion.io/managed: 'true'
+    iam.theriseunion.io/scope-value: host
+  name: cluster-view-components
+spec:
+  displayName:
+    en: System Component Viewing
+    zh: 系统组件查看
+  rules: []
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  annotations:
+    iam.theriseunion.io/role-template-rules: '{"customresources": "view"}'
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    iam.theriseunion.io/aggregate-to-cluster-viewer: ''
+    iam.theriseunion.io/category: cluster-resource-management
+    iam.theriseunion.io/scope: cluster
+    theriseunion.io/managed: 'true'
+    iam.theriseunion.io/scope-value: host
+  name: cluster-view-crds
+spec:
+  displayName:
+    en: Custom Resource Definition Viewing
+    zh: 定制资源定义查看
+  rules: []
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  annotations:
+    iam.theriseunion.io/role-template-rules: '{"customresources": "view"}'
+    meta.helm.sh/release-name: imagemanager
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    iam.theriseunion.io/aggregate-to-cluster-viewer: ''
+    iam.theriseunion.io/category: cluster-resource-management
+    iam.theriseunion.io/scope: cluster
+    theriseunion.io/managed: 'true'
+    iam.theriseunion.io/scope-value: host
+  name: cluster-view-image-manager
+spec:
+  displayName:
+    en: Image Manager Viewing
+    zh: 镜像查看
+  rules: []
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  annotations:
+    iam.theriseunion.io/role-template-rules: '{"members": "view"}'
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    iam.theriseunion.io/aggregate-to-cluster-viewer: ''
+    iam.theriseunion.io/category: cluster-access-control
+    iam.theriseunion.io/scope: cluster
+    theriseunion.io/managed: 'true'
+    iam.theriseunion.io/scope-value: host
+  name: cluster-view-members
+spec:
+  uiPermissions:
+    - cluster/member.view
+  displayName:
+    zh: 成员查看
+  rules: []
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  annotations:
+    iam.theriseunion.io/role-template-rules: '{"monitoring": "view"}'
+    meta.helm.sh/release-name: monitor-monitoring-agent
+    meta.helm.sh/release-namespace: observability-system
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    iam.theriseunion.io/aggregate-to-cluster-viewer: ''
+    iam.theriseunion.io/category: cluster-monitoring-management
+    iam.theriseunion.io/scope: cluster
+    theriseunion.io/extension-ref: monitor-monitoring
+    theriseunion.io/managed: 'true'
+    iam.theriseunion.io/scope-value: host
+  name: cluster-view-monitoring
+spec:
+  uiPermissions:
+    - cluster/monitoring.view
+  description:
+  displayName:
+    zh: 监控查看
+  rules:
+  - apiGroups:
+    - monitoring.theriseunion.io
+    resources:
+    - metrics
+    - cluster_metrics
+    - node_metrics
+    - workspace_metrics
+    - namespace_metrics
+    - workload_metrics
+    - pod_metrics
+    - container_metrics
+    - pvc_metrics
+    - component_metrics
+    verbs:
+    - get
+    - list
+    - watch
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  annotations:
+    helm.sh/hook: pre-install,pre-upgrade
+    iam.theriseunion.io/role-template-rules: '{"nodegroup": "view"}'
+  labels:
+    iam.theriseunion.io/aggregate-to-cluster-viewer: ''
+    iam.theriseunion.io/category: edge-cluster-management
+    iam.theriseunion.io/scope: cluster
+    theriseunion.io/managed: 'true'
+    iam.theriseunion.io/scope-value: host
+  name: cluster-view-nodegroup
+spec:
+  uiPermissions:
+    - cluster/nodegroup.view
+  displayName:
+    zh: 节点组查看
+  rules: []
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  annotations:
+    iam.theriseunion.io/role-template-rules: '{"nodes": "view"}'
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    iam.theriseunion.io/aggregate-to-cluster-viewer: ''
+    iam.theriseunion.io/category: cluster-resource-management
+    iam.theriseunion.io/scope: cluster
+    theriseunion.io/managed: 'true'
+    iam.theriseunion.io/scope-value: host
+  name: cluster-view-nodes
+spec:
+  uiPermissions:
+    - cluster/node.view
+  displayName:
+    zh: 节点查看
+  rules: []
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  annotations:
+    iam.theriseunion.io/role-template-rules: '{"persistentvolumeclaims": "view"}'
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    iam.theriseunion.io/aggregate-to-cluster-viewer: ''
+    iam.theriseunion.io/category: cluster-storage-management
+    iam.theriseunion.io/scope: cluster
+    theriseunion.io/managed: 'true'
+    iam.theriseunion.io/scope-value: host
+  name: cluster-view-persistentvolumeclaims
+spec:
+  displayName:
+    zh: 持久卷声明查看
+  rules: []
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  annotations:
+    iam.theriseunion.io/role-template-rules: '{"projects": "view"}'
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    iam.theriseunion.io/aggregate-to-cluster-viewer: ''
+    iam.theriseunion.io/category: cluster-project-management
+    iam.theriseunion.io/scope: cluster
+    theriseunion.io/managed: 'true'
+    iam.theriseunion.io/scope-value: host
+  name: cluster-view-projects
+spec:
+  uiPermissions:
+    - cluster/namespace.view
+  displayName:
+    zh: 项目查看
+  rules: []
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  annotations:
+    iam.theriseunion.io/dependencies: '["cluster-view-members"]'
+    iam.theriseunion.io/role-template-rules: '{"roles": "view"}'
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    iam.theriseunion.io/aggregate-to-cluster-viewer: ''
+    iam.theriseunion.io/category: cluster-access-control
+    iam.theriseunion.io/scope: cluster
+    theriseunion.io/managed: 'true'
+    iam.theriseunion.io/scope-value: host
+  name: cluster-view-roles
+spec:
+  uiPermissions:
+    - cluster/role.view
+  displayName:
+    zh: 角色查看
+  rules: []
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  annotations:
+    iam.theriseunion.io/dependencies: '["cluster-view-persistentvolumeclaims"]'
+    iam.theriseunion.io/role-template-rules: '{"storageclasses": "view"}'
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    iam.theriseunion.io/aggregate-to-cluster-viewer: ''
+    iam.theriseunion.io/category: cluster-storage-management
+    iam.theriseunion.io/scope: cluster
+    theriseunion.io/managed: 'true'
+    iam.theriseunion.io/scope-value: host
+  name: cluster-view-storageclasses
+spec:
+  displayName:
+    zh: 存储类查看
+  rules: []
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  annotations:
+    iam.theriseunion.io/dependencies: '["monitor-alerting-agent-cluster-view-rulegroups"]'
+    iam.theriseunion.io/role-template-rules: '{"clusterrulegroups": "manage"}'
+    meta.helm.sh/release-name: monitor-alerting-agent
+    meta.helm.sh/release-namespace: extension-monitor-alerting
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    iam.theriseunion.io/category: monitor-alerting-agent-cluster-alerting
+    iam.theriseunion.io/scope: cluster
+    theriseunion.io/extension-ref: monitor-alerting
+    theriseunion.io/managed: 'true'
+    iam.theriseunion.io/scope-value: host
+  name: monitor-alerting-agent-cluster-manage-rulegroups
+spec:
+  description:
+  displayName:
+    zh: 规则组管理
+  rules:
+  - apiGroups:
+    - alerting.theriseunion.io
+    resources:
+    - clusterrulegroups
+    verbs:
+    - '*'
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  annotations:
+    iam.theriseunion.io/role-template-rules: '{"clusteralerts": "view"}'
+    meta.helm.sh/release-name: monitor-alerting-agent
+    meta.helm.sh/release-namespace: extension-monitor-alerting
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    iam.theriseunion.io/aggregate-to-cluster-viewer: ''
+    iam.theriseunion.io/category: monitor-alerting-agent-cluster-alerting
+    iam.theriseunion.io/scope: cluster
+    theriseunion.io/extension-ref: monitor-alerting
+    theriseunion.io/managed: 'true'
+    iam.theriseunion.io/scope-value: host
+  name: monitor-alerting-agent-cluster-view-alerts
+spec:
+  description:
+  displayName:
+    zh: 告警查看
+  rules:
+  - apiGroups:
+    - alerting.theriseunion.io
+    resources:
+    - clusteralerts
+    verbs:
+    - '*'
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  annotations:
+    iam.theriseunion.io/role-template-rules: '{"clusterrulegroups": "view"}'
+    meta.helm.sh/release-name: monitor-alerting-agent
+    meta.helm.sh/release-namespace: extension-monitor-alerting
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    iam.theriseunion.io/aggregate-to-cluster-viewer: ''
+    iam.theriseunion.io/category: monitor-alerting-agent-cluster-alerting
+    iam.theriseunion.io/scope: cluster
+    theriseunion.io/extension-ref: monitor-alerting
+    theriseunion.io/managed: 'true'
+    iam.theriseunion.io/scope-value: host
+  name: monitor-alerting-agent-cluster-view-rulegroups
+spec:
+  description:
+  displayName:
+    zh: 规则组查看
+  rules:
+  - apiGroups:
+    - alerting.theriseunion.io
+    resources:
+    - clusterrulegroups
+    verbs:
+    - get
+    - list
+    - watch
+# 新增的 Cluster Scope RoleTemplates
+# Story 1: Platform & Cluster 层级 RoleTemplate 标准化
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    iam.theriseunion.io/category: cluster-storage-management
+    iam.theriseunion.io/scope: cluster
+    iam.theriseunion.io/scope-value: host
+    theriseunion.io/managed: 'true'
+  name: cluster-view-storage
+spec:
+  displayName:
+    zh: 查看存储
+    en: View Storage
+  description:
+    zh: 允许查看集群的存储类和持久卷
+    en: Allows viewing storage classes and persistent volumes in the cluster
+  uiPermissions:
+    - cluster/storageclass.view
+    - cluster/persistentvolume.view
+  rules: []
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  annotations:
+    iam.theriseunion.io/dependencies: '["cluster-view-storage"]'
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    iam.theriseunion.io/category: cluster-storage-management
+    iam.theriseunion.io/scope: cluster
+    iam.theriseunion.io/scope-value: host
+    theriseunion.io/managed: 'true'
+  name: cluster-manage-storage
+spec:
+  displayName:
+    zh: 管理存储
+    en: Manage Storage
+  description:
+    zh: 允许创建、编辑和删除集群的存储类和持久卷
+    en: Allows creating, editing and deleting storage classes and persistent volumes in the cluster
+  uiPermissions:
+    - cluster/storageclass.view
+    - cluster/storageclass.manage
+    - cluster/persistentvolume.view
+    - cluster/persistentvolume.manage
+  rules: []
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    iam.theriseunion.io/category: cluster-monitoring-management
+    iam.theriseunion.io/scope: cluster
+    iam.theriseunion.io/scope-value: host
+    theriseunion.io/managed: 'true'
+  name: cluster-view-alerts
+spec:
+  displayName:
+    zh: 查看告警
+    en: View Alerts
+  description:
+    zh: 允许查看集群的告警规则和告警记录
+    en: Allows viewing alert rules and alert records in the cluster
+  uiPermissions:
+    - cluster/alert.view
+  rules: []
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  annotations:
+    iam.theriseunion.io/dependencies: '["cluster-view-alerts"]'
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    iam.theriseunion.io/category: cluster-monitoring-management
+    iam.theriseunion.io/scope: cluster
+    iam.theriseunion.io/scope-value: host
+    theriseunion.io/managed: 'true'
+  name: cluster-manage-alerts
+spec:
+  displayName:
+    zh: 管理告警
+    en: Manage Alerts
+  description:
+    zh: 允许配置和管理集群的告警规则
+    en: Allows configuring and managing alert rules in the cluster
+  uiPermissions:
+    - cluster/alert.view
+    - cluster/alert.manage
+  rules: []
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    iam.theriseunion.io/category: cluster-node-management
+    iam.theriseunion.io/scope: cluster
+    iam.theriseunion.io/scope-value: host
+    theriseunion.io/managed: 'true'
+  name: cluster-view-nodegroups
+spec:
+  displayName:
+    zh: 查看节点组
+    en: View Node Groups
+  description:
+    zh: 允许查看集群的节点组列表和详情
+    en: Allows viewing node groups in the cluster
+  uiPermissions:
+    - cluster/nodegroup.view
+  rules: []
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  annotations:
+    iam.theriseunion.io/dependencies: '["cluster-view-nodegroups"]'
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    iam.theriseunion.io/category: cluster-node-management
+    iam.theriseunion.io/scope: cluster
+    iam.theriseunion.io/scope-value: host
+    theriseunion.io/managed: 'true'
+  name: cluster-manage-nodegroups
+spec:
+  displayName:
+    zh: 管理节点组
+    en: Manage Node Groups
+  description:
+    zh: 允许创建、编辑和删除集群的节点组
+    en: Allows creating, editing and deleting node groups in the cluster
+  uiPermissions:
+    - cluster/nodegroup.view
+    - cluster/nodegroup.manage
+  rules: []
