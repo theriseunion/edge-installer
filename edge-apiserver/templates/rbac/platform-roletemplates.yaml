@@ -1,0 +1,408 @@
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  annotations:
+    theriseunion.io/creator: system
+    theriseunion.io/description: "允许查看所有租户空间信息"
+    theriseunion.io/alias-name: "租户空间查看"
+  labels:
+    theriseunion.io/managed: 'true'
+    iam.theriseunion.io/category: global-workspace-management
+    iam.theriseunion.io/scope: platform
+    iam.theriseunion.io/aggregate-to-admin: ""
+  name: platform-view-workspaces
+spec:
+  uiPermissions:
+    - platform/workspace.view    # 查看租户空间列表
+  rules:
+    - apiGroups:
+        - tenant.theriseunion.io
+        - resources.theriseunion.io
+        - iam.theriseunion.io
+      resources:
+        - '*'
+      verbs:
+        - list
+        - get
+        - watch
+    - apiGroups:
+        - '*'
+      resources:
+        - configmaps
+        - endpoints
+        - events
+        - namespaces
+        - persistentvolumeclaims
+        - resourcequotas
+        - secrets
+        - serviceaccounts
+        - services
+        - applications
+        - deployments
+        - replicasets
+        - statefulsets
+        - daemonsets
+        - cronjobs
+        - jobs
+        - horizontalpodautoscalers
+        - events
+        - ingresses
+        - pods
+        - networkpolicies
+        - podsecuritypolicies
+        - rolebindings
+        - roles
+      verbs:
+        - get
+        - list
+        - watch
+    - nonResourceURLs:
+        - '*'
+      verbs:
+        - GET
+
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  annotations:
+    theriseunion.io/creator: system
+    theriseunion.io/description: "允许创建租户空间"
+    theriseunion.io/alias-name: "租户空间创建"
+  labels:
+    theriseunion.io/managed: 'true'
+    iam.theriseunion.io/category: global-workspace-management
+    iam.theriseunion.io/scope: platform
+    iam.theriseunion.io/aggregate-to-admin: ""
+  name: platform-create-workspaces
+spec:
+  uiPermissions:
+    - platform/workspace.view    # 查看租户空间列表
+    - platform/workspace.create  # 创建新租户空间
+  rules:
+    - apiGroups:
+      - tenant.theriseunion.io
+      resources:
+      - workspaces
+      verbs:
+      - watch
+      - create
+    - apiGroups:
+      - tenant.theriseunion.io
+      resources:
+      - clusters
+      verbs:
+      - list
+
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  annotations:
+    theriseunion.io/creator: system
+    theriseunion.io/description: "拥有租户空间的所有权限"
+    theriseunion.io/alias-name: "租户空间管理"
+  labels:
+    theriseunion.io/managed: 'true'
+    iam.theriseunion.io/category: global-workspace-management
+    iam.theriseunion.io/scope: platform
+    iam.theriseunion.io/aggregate-to-admin: ""
+  name: platform-manage-workspaces
+spec:
+  uiPermissions:
+    - platform/workspace.view    # 查看租户空间列表
+    - platform/workspace.create  # 创建新租户空间
+  rules:
+    - apiGroups:
+        - tenant.theriseunion.io
+        - resources.theriseunion.io
+      resources:
+        - '*'
+      verbs:
+        - '*'
+    - apiGroups:
+        - '*'
+      resources:
+        - configmaps
+        - endpoints
+        - events
+        - namespaces
+        - persistentvolumeclaims
+        - resourcequotas
+        - secrets
+        - serviceaccounts
+        - services
+        - applications
+        - deployments
+        - replicasets
+        - statefulsets
+        - daemonsets
+        - cronjobs
+        - jobs
+        - horizontalpodautoscalers
+        - events
+        - ingresses
+        - pods
+        - networkpolicies
+        - podsecuritypolicies
+        - rolebindings
+        - roles
+      verbs:
+        - '*'
+    - apiGroups:
+      - tenant.theriseunion.io
+      resources:
+      - clusters
+      verbs:
+      - list
+
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  annotations:
+    theriseunion.io/creator: system
+    theriseunion.io/description: "允许查看所有集群信息"
+    theriseunion.io/alias-name: "集群查看"
+  labels:
+    theriseunion.io/managed: 'true'
+    iam.theriseunion.io/category: global-cluster-management
+    iam.theriseunion.io/scope: platform
+    iam.theriseunion.io/aggregate-to-admin: ""
+  name: platform-view-clusters
+spec:
+  uiPermissions:
+    - platform/cluster.view
+  rules:
+  - apiGroups:
+    - ''
+    - apiextensions.k8s.io
+    - app.k8s.io
+    - apps
+    - autoscaling
+    - batch
+    - config.istio.io
+    - events.k8s.io
+    - events.theriseunion.io
+    - extensions
+    - metrics.k8s.io
+    - networking.k8s.io
+    - node.k8s.io
+    - rbac.istio.io
+    - scheduling.k8s.io
+    - security.istio.io
+    - storage.k8s.io
+    - storage.theriseunion.io
+    - resources.theriseunion.io
+    - cluster.theriseunion.io
+    resources:
+    - '*'
+    verbs:
+    - get
+    - list
+    - watch
+  - apiGroups:
+    - tenant.theriseunion.io
+    - resource.theriseunion.io
+    - iam.theriseunion.io
+    resources:
+    - '*'
+    verbs:
+    - get
+    - list
+    - watch
+  - nonResourceURLs:
+    - '*'
+    verbs:
+    - GET
+
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  annotations:
+    theriseunion.io/creator: system
+    theriseunion.io/alias-name: "集群管理"
+    theriseunion.io/description: 创建集群、删除集群和管理集群中的所有资源。
+  labels:
+    theriseunion.io/managed: 'true'
+    iam.theriseunion.io/scope: platform
+    iam.theriseunion.io/category: global-cluster-management
+    iam.theriseunion.io/aggregate-to-admin: ""
+  name: platform-manage-clusters
+spec:
+  uiPermissions:
+    - platform/cluster.view
+    - platform/cluster.manage
+  rules:
+  - apiGroups:
+    - ''
+    - apiextensions.k8s.io
+    - app.k8s.io
+    - apps
+    - autoscaling
+    - batch
+    - config.istio.io
+    - events.k8s.io
+    - events.theriseunion.io
+    - extensions
+    - metrics.k8s.io
+    - networking.k8s.io
+    - node.k8s.io
+    - rbac.istio.io
+    - scheduling.k8s.io
+    - security.istio.io
+    - storage.k8s.io
+    - storage.theriseunion.io
+    - resources.theriseunion.io
+    - cluster.theriseunion.io
+    resources:
+    - '*'
+    verbs:
+    - '*'
+  - apiGroups:
+    - tenant.theriseunion.io
+    - resource.theriseunion.io
+    - iam.theriseunion.io
+    resources:
+    - '*'
+    verbs:
+    - '*'
+  - nonResourceURLs:
+    - '*'
+    verbs:
+    - '*'
+
+# TODO: update the nonResourceURLs and apiGroups/*.theriseunion.io
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  annotations:
+    theriseunion.io/creator: system
+    theriseunion.io/alias-name: "用户查看"
+    theriseunion.io/description: "允许查看所有用户信息"
+  labels:
+    theriseunion.io/managed: 'true'
+    iam.theriseunion.io/scope: platform
+    iam.theriseunion.io/category: global-access-control
+    iam.theriseunion.io/aggregate-to-admin: ""
+  name: platform-view-users
+spec:
+  uiPermissions:
+    - platform/user.view
+  rules:
+  - apiGroups:
+    - '*'
+    resources:
+    - users
+    - loginrecords
+    verbs:
+    - get
+    - list
+    - watch
+  - nonResourceURLs:
+      - /boss/access/users
+    verbs:
+      - GET
+
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  annotations:
+    theriseunion.io/creator: system
+    theriseunion.io/alias-name: "用户管理"
+    theriseunion.io/description: "管理所有用户信息"
+  labels:
+    theriseunion.io/managed: 'true'
+    iam.theriseunion.io/scope: platform
+    iam.theriseunion.io/category: global-access-control
+    iam.theriseunion.io/aggregate-to-admin: ""
+  name: platform-manage-users
+spec:
+  uiPermissions:
+    - platform/user.view
+    - platform/user.manage
+  rules:
+  - apiGroups:
+    - '*'
+    resources:
+    - users
+    - users/password
+    - loginrecords
+    verbs:
+    - '*'
+  - nonResourceURLs:
+      - /boss/access/users
+    verbs:
+      - '*'
+
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  annotations:
+    theriseunion.io/creator: system
+    theriseunion.io/alias-name: "角色查看"
+    theriseunion.io/description: "允许查看所有角色信息"
+    iam.theriseunion.io/dependencies: '["platform-view-users"]'
+  labels:
+    theriseunion.io/managed: 'true'
+    iam.theriseunion.io/scope: platform
+    iam.theriseunion.io/category: global-access-control
+    iam.theriseunion.io/aggregate-to-admin: ""
+  name: platform-view-roles
+spec:
+  uiPermissions:
+    - platform/role.view
+  rules:
+  - apiGroups:
+    - iam.theriseunion.io
+    resources:
+    - iamroles
+    - iamrolebindings
+    - categories
+    - roletemplates
+    verbs:
+    - get
+    - list
+    - watch
+  - nonResourceURLs:
+      - /boss/access/roles
+    verbs:
+      - GET
+
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  annotations:
+    theriseunion.io/creator: system
+    theriseunion.io/alias-name: "角色管理"
+    theriseunion.io/description: "允许管理所有角色信息"
+    iam.theriseunion.io/dependencies: '["platform-view-users"]'
+  labels:
+    theriseunion.io/managed: 'true'
+    iam.theriseunion.io/scope: platform
+    iam.theriseunion.io/category: global-access-control
+    iam.theriseunion.io/aggregate-to-admin: ""
+  name: platform-manage-roles
+spec:
+  uiPermissions:
+    - platform/role.view
+    - platform/role.manage
+  rules:
+  - apiGroups:
+    - iam.theriseunion.io
+    resources:
+    - iamroles
+    - iamrolebindings
+    - categories
+    - roletemplates
+    verbs:
+    - '*'
+  - nonResourceURLs:
+      - /boss/access/roles
+    verbs:
+      - '*'
