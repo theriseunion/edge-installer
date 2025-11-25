@@ -6,7 +6,6 @@ set -e
 
 # 配置变量
 NAMESPACE="edge-system"
-RELEASE_NAME="edge"
 KUBECONFIG_FILE=""
 DELETE_NAMESPACE="false"
 DELETE_CRD="false"
@@ -111,7 +110,7 @@ setup_kubectl() {
 uninstall_helm_releases() {
     print_info "卸载 Edge 组件..."
 
-    local releases=("$RELEASE_NAME-console" "$RELEASE_NAME-apiserver" "$RELEASE_NAME-controller")
+    local releases=("console" "apiserver" "controller")
 
     for release in "${releases[@]}"; do
         if helm list -n "$NAMESPACE" | grep -q "$release"; then
