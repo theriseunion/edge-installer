@@ -4,10 +4,9 @@ metadata:
   name: platform-admin
   annotations:
     theriseunion.io/creator: system
-    theriseunion.io/description: "管理 Edge 平台上的所有资源。"
+    theriseunion.io/description: "管理 Edge 平台上的所有资源"
   labels:
-    edge.io/managed: "true"
-    iam.theriseunion.io/builtin: "true"
+    theriseunion.io/managed: "true"
     iam.theriseunion.io/scope: platform
     iam.theriseunion.io/scope-value: global
 spec:
@@ -47,19 +46,12 @@ metadata:
   name: platform-self-provisioner
   annotations:
     theriseunion.io/creator: system
-    theriseunion.io/description: "创建租户空间并成为所创建的租户空间的管理员。"
+    theriseunion.io/description: "创建租户空间并成为所创建的租户空间的管理员"
   labels:
-    edge.io/managed: "true"
-    iam.theriseunion.io/builtin: "true"
+    theriseunion.io/managed: "true"
     iam.theriseunion.io/scope: platform
     iam.theriseunion.io/scope-value: global
 spec:
-  rules:
-    - nonResourceURLs:
-      - /oauth/userinfo
-      - /oapis/iam.theriseunion.io/v1alpha1/permissions
-      verbs:
-      - GET
   aggregationRoleTemplates:
     templateNames:
       - platform-create-workspaces
@@ -71,19 +63,14 @@ metadata:
   name: platform-regular
   annotations:
     theriseunion.io/creator: system
-    theriseunion.io/description: "被邀请加入租户空间之前无法访问任何资源。"
+    theriseunion.io/description: "被邀请加入租户空间之前无法访问任何资源"
   labels:
-    edge.io/managed: "true"
-    iam.theriseunion.io/builtin: "true"
+    theriseunion.io/managed: "true"
     iam.theriseunion.io/scope: platform
     iam.theriseunion.io/scope-value: global
 spec:
-  # UI权限定义：基础用户只能查看自己加入的租户空间
-  uiPermissions:
-    - platform/workspace.view
-  rules:
-    - nonResourceURLs:
-      - /oauth/userinfo
-      - /oapis/iam.theriseunion.io/v1alpha1/permissions
-      verbs:
-      - GET
+  aggregationRoleTemplates:
+    roleSelector:
+      matchLabels:
+        iam.theriseunion.io/aggregate-to-regular: ""
+        iam.theriseunion.io/scope: platform
