@@ -25,21 +25,18 @@ kind: IAMRole
 metadata:
   name: workspace-admin
   labels:
-    iam.theriseunion.io/builtin: "true"
-    iam.theriseunion.io/scope: "workspace"
-    iam.theriseunion.io/role-type: "admin"
+    theriseunion.io/managed: "true"
+    theriseunion.io/builtin: "true"
+    iam.theriseunion.io/scope: workspace
   annotations:
     iam.theriseunion.io/creator: "system"
-    theriseunion.io/alias-name: "workspace-admin"
-    iam.theriseunion.io/display-name-en: "Workspace Administrator"
-    iam.theriseunion.io/display-name-zh: "工作空间管理员"
-    iam.theriseunion.io/description-en: "Manage all resources in the workspace"
-    iam.theriseunion.io/description-zh: "管理工作空间中的所有资源"
+    iam.theriseunion.io/description: "管理工作空间中的所有资源"
 spec:
   aggregationRoleTemplates:
     roleSelector:
       matchLabels:
         iam.theriseunion.io/aggregate-to-admin: ""
+        iam.theriseunion.io/scope: workspace
 
 ---
 apiVersion: iam.theriseunion.io/v1alpha1
@@ -47,21 +44,18 @@ kind: IAMRole
 metadata:
   name: workspace-viewer
   labels:
+    theriseunion.io/managed: "true"
     iam.theriseunion.io/builtin: "true"
     iam.theriseunion.io/scope: "workspace"
-    iam.theriseunion.io/role-type: "viewer"
   annotations:
     iam.theriseunion.io/creator: "system"
-    theriseunion.io/alias-name: "workspace-viewer"
-    iam.theriseunion.io/display-name-en: "Workspace Viewer"
-    iam.theriseunion.io/display-name-zh: "工作空间查看者"
-    iam.theriseunion.io/description-en: "View all resources in the workspace"
-    iam.theriseunion.io/description-zh: "查看工作空间中的所有资源"
+    iam.theriseunion.io/description: "查看工作空间中的所有资源"
 spec:
   aggregationRoleTemplates:
     roleSelector:
       matchLabels:
         iam.theriseunion.io/aggregate-to-viewer: ""
+        iam.theriseunion.io/scope: workspace
 
 ---
 apiVersion: iam.theriseunion.io/v1alpha1
@@ -69,21 +63,18 @@ kind: IAMRole
 metadata:
   name: workspace-regular
   labels:
+    theriseunion.io/managed: "true"
     iam.theriseunion.io/builtin: "true"
     iam.theriseunion.io/scope: "workspace"
-    iam.theriseunion.io/role-type: "regular"
   annotations:
     iam.theriseunion.io/creator: "system"
-    theriseunion.io/alias-name: "workspace-regular"
-    iam.theriseunion.io/display-name-en: "Workspace Regular User"
-    iam.theriseunion.io/display-name-zh: "工作空间普通用户"
-    iam.theriseunion.io/description-en: "View workspace settings"
-    iam.theriseunion.io/description-zh: "查看工作空间设置"
+    iam.theriseunion.io/description: "查看工作空间设置"
 spec:
   aggregationRoleTemplates:
     roleSelector:
       matchLabels:
         iam.theriseunion.io/aggregate-to-regular: ""
+        iam.theriseunion.io/scope: workspace
 
 ---
 apiVersion: iam.theriseunion.io/v1alpha1
@@ -91,18 +82,15 @@ kind: IAMRole
 metadata:
   name: workspace-self-provisioner
   labels:
+    theriseunion.io/managed: "true"
     iam.theriseunion.io/builtin: "true"
     iam.theriseunion.io/scope: "workspace"
-    iam.theriseunion.io/role-type: "self-provisioner"
   annotations:
     iam.theriseunion.io/creator: "system"
-    theriseunion.io/alias-name: "workspace-self-provisioner"
-    iam.theriseunion.io/display-name-en: "Workspace Self Provisioner"
-    iam.theriseunion.io/display-name-zh: "工作空间项目创建者"
-    iam.theriseunion.io/description-en: "View workspace settings and create projects"
-    iam.theriseunion.io/description-zh: "查看工作空间设置、创建项目"
+    iam.theriseunion.io/description: "查看工作空间设置、创建项目"
 spec:
   aggregationRoleTemplates:
     roleSelector:
       matchLabels:
         iam.theriseunion.io/aggregate-to-self-provisioner: ""
+        iam.theriseunion.io/scope: workspace

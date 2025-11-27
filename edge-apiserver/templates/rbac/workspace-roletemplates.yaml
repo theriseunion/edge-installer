@@ -1,0 +1,401 @@
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  name: workspace-basic
+  annotations:
+    theriseunion.io/creator: system
+    theriseunion.io/description: "Workspace 级基础权限"
+  labels:
+    theriseunion.io/managed: 'true'
+    iam.theriseunion.io/scope: workspace
+    iam.theriseunion.io/aggregate-to-regular: ""
+spec:
+  uiPermissions:
+    - workspace/basic.view
+  rules:
+  - apiGroups:
+    - '*'
+    resources:
+    - '*'
+    verbs:
+    - get
+    - watch
+    - list
+  - nonResourceURLs:
+      - /api/v1alpha1/events
+    verbs:
+      - get
+      - list
+      - watch
+
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  name: workspace-view-projects
+  annotations:
+    theriseunion.io/creator: system
+    theriseunion.io/alias-name: "项目查看"
+    theriseunion.io/description: "允许查看当前租户空间下的项目"
+    iam.theriseunion.io/dependencies: "workspace-basic"
+  labels:
+    theriseunion.io/managed: 'true'
+    iam.theriseunion.io/scope: workspace
+    iam.theriseunion.io/category: workspace-project-management
+    iam.theriseunion.io/aggregate-to-admin: ""
+    iam.theriseunion.io/aggregate-to-viewer: ""
+spec:
+  uiPermissions:
+    - workspace/projects.view
+  rules:
+  - apiGroups:
+    - '*'
+    resources:
+    - namespaces
+    - configmaps
+    - endpoints
+    - limitranges
+    - persistentvolumeclaims
+    - podtemplates
+    - replicationcontrollers
+    - resourcequotas
+    - secrets
+    - serviceaccounts
+    - services
+    - applications
+    - controllerrevisions
+    - deployments
+    - replicasets
+    - statefulsets
+    - daemonsets
+    - cronjobs
+    - jobs
+    - events
+    - ingresses
+    - router
+    - pods
+    - pods/log
+    - pods/containers
+    - namespacenetworkpolicies
+    - networkpolicies
+    - podsecuritypolicies
+    - rolebindings
+    - roles
+    - namespacemembers
+    - servicepolicies
+    - workspaces
+    - quotas
+    - abnormalworkloads
+    - workloads
+    - strategies
+    verbs:
+    - get
+    - list
+    - watch
+  - apiGroups:
+    - apps
+    - extensions
+    - batch
+    - autoscaling
+    - app.k8s.io
+    - operations.theriseunion.io
+    - resources.theriseunion.io
+    resources:
+    - '*'
+    verbs:
+    - list
+    - get
+    - watch
+
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  name: workspace-create-projects
+  annotations:
+    theriseunion.io/creator: system
+    theriseunion.io/alias-name: "项目管理"
+    theriseunion.io/description: "允许在当前租户空间下创建项目并成为此项目管理员"
+    iam.theriseunion.io/dependencies: "workspace-view-projects"
+  labels:
+    theriseunion.io/managed: 'true'
+    iam.theriseunion.io/scope: workspace
+    iam.theriseunion.io/category: workspace-project-management
+    iam.theriseunion.io/aggregate-to-admin: ""
+    iam.theriseunion.io/aggregate-to-self-provisioner: ''
+spec:
+  uiPermissions:
+    - workspace/projects.create
+  rules:
+  - apiGroups:
+    - '*'
+    resources:
+    - workspaces
+    - workspacemembers
+    - quotas
+    - abnormalworkloads
+    - pods
+    verbs:
+    - get
+    - list
+    - watch
+  - apiGroups:
+    - '*'
+    resources:
+    - namespaces
+    verbs:
+    - create
+    - watch
+
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  name: workspace-manage-projects
+  annotations:
+    theriseunion.io/creator: system
+    theriseunion.io/alias-name: "项目管理"
+    theriseunion.io/description: "管理当前租户空间下项目"
+    iam.theriseunion.io/dependencies: "workspace-create-projects"
+  labels:
+    theriseunion.io/managed: 'true'
+    iam.theriseunion.io/scope: workspace
+    iam.theriseunion.io/category: workspace-project-management
+    iam.theriseunion.io/aggregate-to-admin: ""
+spec:
+  uiPermissions:
+    - workspace/projects.manage
+  rules:
+  - apiGroups:
+    - apps
+    - extensions
+    - batch
+    - autoscaling
+    - app.k8s.io
+    - operations.theriseunion.io
+    - resources.theriseunion.io
+    resources:
+    - '*'
+    verbs:
+    - '*'
+  - apiGroups:
+    - '*'
+    resources:
+    - namespaces
+    - configmaps
+    - endpoints
+    - events
+    - limitranges
+    - persistentvolumeclaims
+    - podtemplates
+    - replicationcontrollers
+    - resourcequotas
+    - secrets
+    - serviceaccounts
+    - services
+    - applications
+    - controllerrevisions
+    - deployments
+    - replicasets
+    - statefulsets
+    - daemonsets
+    - meshpolicies
+    - cronjobs
+    - jobs
+    - events
+    - ingresses
+    - router
+    - pods
+    - pods/log
+    - pods/exec
+    - pods/containers
+    - namespacenetworkpolicies
+    - networkpolicies
+    - podsecuritypolicies
+    - rolebindings
+    - roles
+    - namespacemembers
+    - servicepolicies
+    - workspaces
+    - quotas
+    - abnormalworkloads
+    - workloads
+    - router
+    - strategies
+    verbs:
+    - '*'
+
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  name: workspace-view-settings
+  annotations:
+    theriseunion.io/creator: system
+    theriseunion.io/alias-name: "设置查看"
+    theriseunion.io/description: "查看当前租户空间的设置"
+    iam.theriseunion.io/dependencies: "workspace-basic"
+  labels:
+    theriseunion.io/managed: 'true'
+    iam.theriseunion.io/scope: workspace
+    iam.theriseunion.io/category: workspace-settings
+    iam.theriseunion.io/aggregate-to-admin: ""
+    iam.theriseunion.io/aggregate-to-regular: ''
+    iam.theriseunion.io/aggregate-to-self-provisioner: ''
+    iam.theriseunion.io/aggregate-to-viewer: ''
+spec:
+  uiPermissions:
+    - workspace/settings.view
+  rules:
+  - apiGroups:
+    - '*'
+    resources:
+    - workspaces
+    verbs:
+    - get
+    - list
+    - watch
+
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  name: workspace-manage-settings
+  annotations:
+    theriseunion.io/creator: system
+    theriseunion.io/alias-name: "设置管理"
+    theriseunion.io/description: "管理当前租户空间的设置"
+    iam.theriseunion.io/dependencies: "workspace-view-settings"
+  labels:
+    theriseunion.io/managed: 'true'
+    iam.theriseunion.io/scope: workspace
+    iam.theriseunion.io/category: workspace-settings
+    iam.theriseunion.io/aggregate-to-admin: ""
+spec:
+  uiPermissions:
+    - workspace/settings.manage
+  rules:
+  - apiGroups:
+    - '*'
+    resources:
+    - workspaces
+    verbs:
+    - '*'
+
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  name: workspace-view-roles
+  annotations:
+    theriseunion.io/creator: system
+    theriseunion.io/alias-name: "角色查看"
+    theriseunion.io/description: "查看当前租户空间下的角色"
+    iam.theriseunion.io/dependencies: "workspace-basic"
+  labels:
+    theriseunion.io/managed: 'true'
+    iam.theriseunion.io/scope: workspace
+    iam.theriseunion.io/category: workspace-access-control
+    iam.theriseunion.io/aggregate-to-admin: ""
+    iam.theriseunion.io/aggregate-to-regular: ''
+    iam.theriseunion.io/aggregate-to-self-provisioner: ''
+    iam.theriseunion.io/aggregate-to-viewer: ''
+spec:
+  uiPermissions:
+    - workspace/role.view
+  rules:
+  - apiGroups:
+    - '*'
+    resources:
+    - roles
+    - workspaceroles
+    verbs:
+    - get
+    - list
+    - watch
+
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  name: workspace-manage-roles
+  annotations:
+    theriseunion.io/creator: system
+    theriseunion.io/alias-name: "角色管理"
+    theriseunion.io/description: "管理当前租户空间下的角色"
+    iam.theriseunion.io/dependencies: "workspace-view-roles"
+  labels:
+    theriseunion.io/managed: 'true'
+    iam.theriseunion.io/scope: workspace
+    iam.theriseunion.io/category: workspace-access-control
+    iam.theriseunion.io/aggregate-to-admin: ""
+spec:
+  uiPermissions:
+    - workspace/roles.manage
+  rules:
+  - apiGroups:
+    - '*'
+    resources:
+    - roles
+    - workspaceroles
+    verbs:
+    - '*'
+
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  name: workspace-view-members
+  annotations:
+    theriseunion.io/creator: system
+    theriseunion.io/alias-name: "成员查看"
+    theriseunion.io/description: "查看当前租户空间下的成员"
+    iam.theriseunion.io/dependencies: "workspace-basic"
+  labels:
+    theriseunion.io/managed: 'true'
+    iam.theriseunion.io/scope: workspace
+    iam.theriseunion.io/category: workspace-access-control
+    iam.theriseunion.io/aggregate-to-admin: ""
+    iam.theriseunion.io/aggregate-to-regular: ''
+    iam.theriseunion.io/aggregate-to-self-provisioner: ''
+    iam.theriseunion.io/aggregate-to-viewer: ''
+spec:
+  uiPermissions:
+    - workspace/members.view
+  rules:
+  - apiGroups:
+    - '*'
+    resources:
+    - workspacemembers
+    - members
+    verbs:
+    - get
+    - list
+    - watch
+
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  name: workspace-manage-members
+  annotations:
+    theriseunion.io/creator: system
+    theriseunion.io/alias-name: "成员管理"
+    theriseunion.io/description: "管理当前租户空间下的成员"
+    iam.theriseunion.io/dependencies: "workspace-view-members"
+  labels:
+    theriseunion.io/managed: 'true'
+    iam.theriseunion.io/scope: workspace
+    iam.theriseunion.io/category: workspace-access-control
+    iam.theriseunion.io/aggregate-to-admin: ""
+spec:
+  uiPermissions:
+    - workspace/members.manage
+  rules:
+  - apiGroups:
+    - '*'
+    resources:
+    - workspacemembers
+    - members
+    verbs:
+    - '*'
