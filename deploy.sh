@@ -104,18 +104,6 @@ if [ "$INSTALL_OPENYURT" = "true" ]; then
 fi
 
 
-# 部署 Controller
-echo "部署 Controller..."
-helm upgrade --install controller ./edge-controller \
-  --namespace $NAMESPACE \
-  --set image.repository=$REGISTRY/controller \
-  --set image.tag=$TAG \
-  --set image.pullPolicy=$PULL_POLICY \
-  --wait || {
-    echo "❌ Controller 部署失败"
-    exit 1
-  }
-
 # 部署 API Server
 echo "部署 API Server..."
 helm upgrade --install apiserver ./edge-apiserver \
@@ -126,6 +114,18 @@ helm upgrade --install apiserver ./edge-apiserver \
   --wait || {
     echo "❌ API Server 部署失败"
     echo "请检查镜像是否存在以及集群连接状态"
+    exit 1
+  }
+
+# 部署 Controller
+echo "部署 Controller..."
+helm upgrade --install controller ./edge-controller \
+  --namespace $NAMESPACE \
+  --set image.repository=$REGISTRY/controller \
+  --set image.tag=$TAG \
+  --set image.pullPolicy=$PULL_POLICY \
+  --wait || {
+    echo "❌ Controller 部署失败"
     exit 1
   }
 

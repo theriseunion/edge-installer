@@ -1,0 +1,717 @@
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  name: cluster-basic
+  annotations:
+    theriseunion.io/creator: system
+    theriseunion.io/description: "Cluster 级基础权限"
+  labels:
+    theriseunion.io/managed: 'true'
+    iam.theriseunion.io/scope: cluster
+spec:
+  rules:
+  - apiGroups:
+    - resources.theriseunion.io
+    - iam.theriseunion.io
+    - tenant.theriseunion.io
+    resources:
+    - clusters
+    verbs:
+    - get
+    - watch
+  - nonResourceURLs:
+      - /api/v1alpha1/events
+    verbs:
+      - get
+      - list
+      - watch
+
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  annotations:
+    theriseunion.io/creator: system
+    theriseunion.io/alias-name: "集群节点查看"
+    theriseunion.io/description: "允许查看当前集群里的集群节点"
+    iam.theriseunion.io/dependencies: "cluster-basic"
+  labels:
+    theriseunion.io/managed: 'true'
+    iam.theriseunion.io/scope: cluster
+    iam.theriseunion.io/category: cluster-resource
+    iam.theriseunion.io/aggregate-to-admin: ""
+    iam.theriseunion.io/aggregate-to-viewer: ""
+  name: cluster-view-nodes
+spec:
+  uiPermissions:
+    - cluster/nodes.view
+  rules:
+  - apiGroups:
+    - resources.theriseunion.io
+    resources:
+    - nodes
+    - pods
+    verbs:
+    - get
+    - list
+    - watch
+
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  annotations:
+    theriseunion.io/creator: system
+    theriseunion.io/alias-name: "集群节点管理"
+    theriseunion.io/description: "管理当前集群里的集群节点"
+    iam.theriseunion.io/dependencies: "cluster-view-nodes"
+  labels:
+    theriseunion.io/managed: 'true'
+    iam.theriseunion.io/scope: cluster
+    iam.theriseunion.io/category: cluster-resource
+    iam.theriseunion.io/aggregate-to-admin: ""
+  name: cluster-manage-nodes
+spec:
+  uiPermissions:
+    - cluster/nodes.manage
+  rules:
+  - apiGroups:
+    - resources.theriseunion.io
+    resources:
+    - nodes
+    - pods
+    verbs:
+    - '*'
+
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  annotations:
+    theriseunion.io/creator: system
+    theriseunion.io/alias-name: "边缘节点查看"
+    theriseunion.io/description: "允许查看当前集群里的边缘节点"
+    iam.theriseunion.io/dependencies: "cluster-basic"
+  labels:
+    theriseunion.io/managed: 'true'
+    iam.theriseunion.io/scope: cluster
+    iam.theriseunion.io/category: cluster-resource
+    iam.theriseunion.io/aggregate-to-admin: ""
+    iam.theriseunion.io/aggregate-to-viewer: ""
+  name: cluster-view-edgenodes
+spec:
+  uiPermissions:
+    - cluster/nodes.view
+    - cluster/edgenodes.view
+  rules:
+  - apiGroups:
+    - resources.theriseunion.io
+    resources:
+    - nodes
+    - pods
+    verbs:
+    - get
+    - list
+    - watch
+
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  annotations:
+    theriseunion.io/creator: system
+    theriseunion.io/alias-name: "边缘节点管理"
+    theriseunion.io/description: "管理当前集群里的边缘节点"
+    iam.theriseunion.io/dependencies: "cluster-view-edgenodes"
+  labels:
+    theriseunion.io/managed: 'true'
+    iam.theriseunion.io/scope: cluster
+    iam.theriseunion.io/category: cluster-resource
+    iam.theriseunion.io/aggregate-to-admin: ""
+  name: cluster-manage-edgenodes
+spec:
+  uiPermissions:
+    - cluster/edgenodes.manage
+  rules:
+  - apiGroups:
+    - resources.theriseunion.io
+    resources:
+    - nodes
+    - pods
+    verbs:
+    - '*'
+
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  annotations:
+    theriseunion.io/creator: system
+    theriseunion.io/alias-name: "节点组查看"
+    theriseunion.io/description: "允许查看当前集群里的节点组"
+    iam.theriseunion.io/dependencies: "cluster-basic"
+  labels:
+    theriseunion.io/managed: 'true'
+    iam.theriseunion.io/scope: cluster
+    iam.theriseunion.io/category: cluster-resource
+    iam.theriseunion.io/aggregate-to-admin: ""
+    iam.theriseunion.io/aggregate-to-viewer: ""
+  name: cluster-view-nodegroups
+spec:
+  uiPermissions:
+    - cluster/nodegroups.view
+  rules:
+  - apiGroups:
+    - tenant.theriseunion.io
+    resources:
+    - nodegroups
+    verbs:
+    - get
+    - list
+    - watch
+
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  annotations:
+    theriseunion.io/creator: system
+    theriseunion.io/alias-name: "节点组管理"
+    theriseunion.io/description: "管理当前集群里的节点组"
+    iam.theriseunion.io/dependencies: "cluster-view-nodegroups"
+  labels:
+    theriseunion.io/managed: 'true'
+    iam.theriseunion.io/scope: cluster
+    iam.theriseunion.io/category: cluster-resource
+    iam.theriseunion.io/aggregate-to-admin: ""
+  name: cluster-manage-nodegroups
+spec:
+  uiPermissions:
+    - cluster/nodegroups.manage
+  rules:
+  - apiGroups:
+    - tenant.theriseunion.io
+    resources:
+    - nodegroups
+    verbs:
+    - '*'
+
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  annotations:
+    theriseunion.io/creator: system
+    theriseunion.io/alias-name: "配置查看"
+    theriseunion.io/description: "查看当前集群里的配置资源"
+    iam.theriseunion.io/dependencies: "cluster-basic"
+  labels:
+    theriseunion.io/managed: 'true'
+    iam.theriseunion.io/scope: cluster
+    iam.theriseunion.io/category: cluster-resource
+    iam.theriseunion.io/aggregate-to-admin: ""
+    iam.theriseunion.io/aggregate-to-viewer: ""
+  name: cluster-view-configurations
+spec:
+  uiPermissions:
+    - cluster/configurations.view
+  rules:
+  - apiGroups:
+    - resources.theriseunion.io
+    resources:
+    - configmaps
+    - secrets
+    - serviceaccounts
+    verbs:
+    - get
+    - list
+    - watch
+
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  annotations:
+    theriseunion.io/creator: system
+    theriseunion.io/alias-name: "配置管理"
+    theriseunion.io/description: "管理当前集群里的配置资源"
+    iam.theriseunion.io/dependencies: "cluster-view-configurations"
+  labels:
+    theriseunion.io/managed: 'true'
+    iam.theriseunion.io/scope: cluster
+    iam.theriseunion.io/category: cluster-resource
+    iam.theriseunion.io/aggregate-to-admin: ""
+  name: cluster-manage-configurations
+spec:
+  uiPermissions:
+    - cluster/configurations.manage
+  rules:
+  - apiGroups:
+    - resources.theriseunion.io
+    resources:
+    - configmaps
+    - secrets
+    - serviceaccounts
+    verbs:
+    - '*'
+
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  annotations:
+    theriseunion.io/creator: system
+    theriseunion.io/alias-name: "应用负载查看"
+    theriseunion.io/description: "允许查看当前集群里的应用负载资源"
+    iam.theriseunion.io/dependencies: "cluster-view-configurations, cluster-view-pv"
+  labels:
+    theriseunion.io/managed: 'true'
+    iam.theriseunion.io/scope: cluster
+    iam.theriseunion.io/category: cluster-workload
+    iam.theriseunion.io/aggregate-to-admin: ""
+    iam.theriseunion.io/aggregate-to-viewer: ""
+  name: cluster-view-workloads
+spec:
+  uiPermissions:
+    - cluster/workloads.view
+  rules:
+  - apiGroups:
+    - '*'
+    resources:
+    - applications
+    - controllerrevisions
+    - deployments
+    - replicasets
+    - statefulsets
+    - daemonsets
+    - jobs
+    - cronjobs
+    - pods
+    - pods/log
+    - pods/containers
+    - services
+    - ingresses
+    - router
+    - horizontalpodautoscalers
+    - configmaps
+    - secrets
+    verbs:
+    - get
+    - list
+    - watch
+
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  annotations:
+    theriseunion.io/creator: system
+    theriseunion.io/alias-name: "应用负载管理"
+    theriseunion.io/description: "管理当前集群里的应用负载资源"
+    iam.theriseunion.io/dependencies: "cluster-view-workloads"
+  labels:
+    theriseunion.io/managed: 'true'
+    iam.theriseunion.io/scope: cluster
+    iam.theriseunion.io/category: cluster-workload
+    iam.theriseunion.io/aggregate-to-admin: ""
+  name: cluster-manage-workloads
+spec:
+  uiPermissions:
+    - cluster/workloads.manage
+  rules:
+  - apiGroups:
+    - '*'
+    resources:
+    - applications
+    - controllerrevisions
+    - deployments
+    - replicasets
+    - statefulsets
+    - daemonsets
+    - jobs
+    - cronjobs
+    - pods
+    - pods/log
+    - pods/containers
+    - services
+    - ingresses
+    - router
+    - horizontalpodautoscalers
+    - configmaps
+    - secrets
+    verbs:
+    - '*'
+
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  annotations:
+    theriseunion.io/creator: system
+    theriseunion.io/alias-name: "项目查看"
+    theriseunion.io/description: "允许查看当前集群里的项目信息"
+    iam.theriseunion.io/dependencies: "cluster-basic"
+  labels:
+    theriseunion.io/managed: 'true'
+    iam.theriseunion.io/scope: cluster
+    iam.theriseunion.io/category: cluster-namespace
+    iam.theriseunion.io/aggregate-to-admin: ""
+    iam.theriseunion.io/aggregate-to-viewer: ""
+  name: cluster-view-namespaces
+spec:
+  uiPermissions:
+    - cluster/namespaces.view
+  rules:
+  - apiGroups:
+    - resources.theriseunion.io
+    resources:  
+    - pods
+    - deployments
+    - statefulsets
+    - daemonsets
+    - replicasets
+    - jobs
+    - cronjobs
+    - services
+    - secrets
+    - configmaps
+    - serviceaccounts
+    - storageclasses
+    - persistentvolumes
+    - persistentvolumeclaims
+    verbs:
+    - get
+    - list
+    - watch
+
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  annotations:
+    theriseunion.io/creator: system
+    theriseunion.io/alias-name: "项目管理"
+    theriseunion.io/description: "管理当前集群里的项目信息"
+    iam.theriseunion.io/dependencies: "cluster-view-namespaces"
+  labels:
+    theriseunion.io/managed: 'true'
+    iam.theriseunion.io/scope: cluster
+    iam.theriseunion.io/category: cluster-namespace
+    iam.theriseunion.io/aggregate-to-admin: ""
+  name: cluster-manage-namespaces
+spec:
+  uiPermissions:
+    - cluster/namespaces.manage
+  rules:
+  - apiGroups:
+    - resources.theriseunion.io
+    resources:  
+    - pods
+    - deployments
+    - statefulsets
+    - daemonsets
+    - replicasets
+    - jobs
+    - cronjobs
+    - services
+    - secrets
+    - configmaps
+    - serviceaccounts
+    - storageclasses
+    - persistentvolumes
+    - persistentvolumeclaims
+    verbs:
+    - '*'
+
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  annotations:
+    theriseunion.io/creator: system
+    theriseunion.io/alias-name: "存储类查看"
+    theriseunion.io/description: "允许查看存储类信息"
+    iam.theriseunion.io/dependencies: "cluster-basic"
+  labels:
+    theriseunion.io/managed: 'true'
+    iam.theriseunion.io/category: cluster-storage
+    iam.theriseunion.io/scope: cluster
+    iam.theriseunion.io/aggregate-to-admin: ""
+    iam.theriseunion.io/aggregate-to-viewer: ""
+  name: cluster-view-sc
+spec:
+  uiPermissions:
+    - cluster/storages.view
+    - cluster/sc.view
+  rules:
+    - apiGroups:
+        - resources.theriseunion.io
+      resources:
+        - storageclasses
+      verbs:
+        - list
+        - get
+        - watch
+
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  annotations:
+    theriseunion.io/creator: system
+    theriseunion.io/alias-name: "存储类管理"
+    theriseunion.io/description: "管理存储类"
+    iam.theriseunion.io/dependencies: "cluster-view-sc"
+  labels:
+    theriseunion.io/managed: 'true'
+    iam.theriseunion.io/category: cluster-storage
+    iam.theriseunion.io/scope: cluster
+    iam.theriseunion.io/aggregate-to-admin: ""
+  name: cluster-manage-sc
+spec:
+  uiPermissions:
+    - cluster/sc.manage 
+  rules:
+    - apiGroups:
+        - resources.theriseunion.io
+      resources:
+        - 'storageclasses'
+      verbs:
+        - '*'
+
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  annotations:
+    theriseunion.io/creator: system
+    theriseunion.io/alias-name: "持久卷查看"
+    theriseunion.io/description: "允许查看持久卷相关信息"
+    iam.theriseunion.io/dependencies: "cluster-view-sc"
+  labels:
+    theriseunion.io/managed: 'true'
+    iam.theriseunion.io/category: cluster-storage
+    iam.theriseunion.io/scope: cluster
+    iam.theriseunion.io/aggregate-to-admin: ""
+    iam.theriseunion.io/aggregate-to-viewer: ""
+  name: cluster-view-pv
+spec:
+  uiPermissions:
+    - cluster/storages.view
+    - cluster/pv.view
+  rules:
+    - apiGroups:
+        - resources.theriseunion.io
+      resources:
+        - 'persistentvolumes'
+        - 'persistentvolumeclaims'
+      verbs:
+        - list
+        - get
+        - watch
+
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  annotations:
+    theriseunion.io/creator: system
+    theriseunion.io/alias-name: "持久卷管理"
+    theriseunion.io/description: "管理持久卷相关信息"
+    iam.theriseunion.io/dependencies: "cluster-view-pv"
+  labels:
+    theriseunion.io/managed: 'true'
+    iam.theriseunion.io/category: cluster-storage
+    iam.theriseunion.io/scope: cluster
+    iam.theriseunion.io/aggregate-to-admin: ""
+  name: cluster-manage-pv
+spec:
+  uiPermissions:
+    - cluster/pv.manage
+  rules:
+    - apiGroups:
+        - resources.theriseunion.io
+      resources:
+        - 'persistentvolumes'
+        - 'persistentvolumeclaims'
+      verbs:
+        - "*"
+
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  annotations:
+    theriseunion.io/creator: system
+    theriseunion.io/alias-name: "集群设置"
+    theriseunion.io/description: "允许查看集群设置信息"
+    iam.theriseunion.io/dependencies: "cluster-basic"
+  labels:
+    theriseunion.io/managed: 'true'
+    iam.theriseunion.io/scope: cluster
+    iam.theriseunion.io/category: cluster-settings
+    iam.theriseunion.io/aggregate-to-admin: ""
+    iam.theriseunion.io/aggregate-to-viewer: ""
+  name: cluster-view-settings
+spec:
+  uiPermissions:
+    - cluster/settings.view
+  rules:
+  - apiGroups:
+    - tenant.theriseunion.io
+    resources:
+    - clusters
+    verbs:
+    - get
+
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  annotations:
+    theriseunion.io/creator: system
+    theriseunion.io/alias-name: "集群设置管理"
+    theriseunion.io/description: "管理集群配置信息"
+    iam.theriseunion.io/dependencies: "cluster-view-settings"
+  labels:
+    theriseunion.io/managed: 'true'
+    iam.theriseunion.io/scope: cluster
+    iam.theriseunion.io/category: cluster-settings
+    iam.theriseunion.io/aggregate-to-admin: ""
+  name: cluster-manage-settings
+spec:
+  uiPermissions:
+    - cluster/settings.manage
+  rules:
+  - apiGroups:
+    - tenant.theriseunion.io
+    resources:
+    - clusters
+    verbs:
+    - '*'
+
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  annotations:
+    theriseunion.io/creator: system
+    theriseunion.io/alias-name: "角色查看"
+    theriseunion.io/description: "允许查看集群下角色"
+    iam.theriseunion.io/dependencies: "cluster-basic"
+  labels:
+    theriseunion.io/managed: 'true'
+    iam.theriseunion.io/scope: cluster
+    iam.theriseunion.io/category: cluster-access-control
+    iam.theriseunion.io/aggregate-to-admin: ""
+    iam.theriseunion.io/aggregate-to-viewer: ""
+  name: cluster-view-roles
+spec:
+  uiPermissions:
+    - cluster/settings.view
+    - cluster/roles.view
+  rules:
+  - apiGroups:
+    - '*'
+    resources:
+    - roles
+    - iamroles
+    - iamrolebindings
+    - categories
+    - roletemplates
+    verbs:
+    - get
+    - list
+    - watch
+  - nonResourceURLs:
+      - /boss/access/roles
+    verbs:
+      - get
+
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  annotations:
+    theriseunion.io/creator: system
+    theriseunion.io/alias-name: "角色管理"
+    theriseunion.io/description: "管理集群下角色"
+    iam.theriseunion.io/dependencies: "cluster-view-roles"
+  labels:
+    theriseunion.io/managed: 'true'
+    iam.theriseunion.io/scope: cluster
+    iam.theriseunion.io/category: cluster-access-control
+    iam.theriseunion.io/aggregate-to-admin: ""
+  name: cluster-manage-roles
+spec:
+  uiPermissions:
+    - cluster/roles.manage
+  rules:
+  - apiGroups:
+    - '*'
+    resources:
+    - roles
+    - iamroles
+    - iamrolebindings
+    - categories
+    - roletemplates
+    verbs:
+    - '*'
+
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  annotations:
+    theriseunion.io/creator: system
+    theriseunion.io/alias-name: "成员查看"
+    theriseunion.io/description: "允许查看集群下成员信息"
+    iam.theriseunion.io/dependencies: "cluster-view-roles"
+  labels:
+    theriseunion.io/managed: 'true'
+    iam.theriseunion.io/scope: cluster
+    iam.theriseunion.io/category: cluster-access-control
+    iam.theriseunion.io/aggregate-to-admin: ""
+    iam.theriseunion.io/aggregate-to-viewer: ""
+  name: cluster-view-members
+spec:
+  uiPermissions:
+    - cluster/settings.view
+    - cluster/members.view
+  rules:
+  - apiGroups:
+    - '*'
+    resources:
+    - members
+    - users
+    verbs:
+    - get
+    - list
+    - watch
+
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  annotations:
+    theriseunion.io/creator: system
+    theriseunion.io/alias-name: "成员管理"
+    theriseunion.io/description: "管理集群下所有成员"
+    iam.theriseunion.io/dependencies: "cluster-view-members"
+  labels:
+    theriseunion.io/managed: 'true'
+    iam.theriseunion.io/scope: cluster
+    iam.theriseunion.io/category: cluster-access-control
+    iam.theriseunion.io/aggregate-to-admin: ""
+  name: cluster-manage-members
+spec:
+  uiPermissions:
+    - cluster/members.manage
+  rules:
+  - apiGroups:
+    - '*'
+    resources:
+    - members
+    - users
+    verbs:
+    - '*'

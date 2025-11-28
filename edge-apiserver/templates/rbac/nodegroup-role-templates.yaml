@@ -19,46 +19,41 @@
         The hash suffix ensures uniqueness even when name-prefix is identical.
 */ -}}
 
----
 apiVersion: iam.theriseunion.io/v1alpha1
 kind: IAMRole
 metadata:
-  name: nodegroup-admin
-  labels:
-    iam.theriseunion.io/builtin: "true"
-    iam.theriseunion.io/scope: "nodegroup"
-    iam.theriseunion.io/role-type: "admin"
+  name: nodegroup-viewer
   annotations:
-    iam.theriseunion.io/creator: "system"
-    theriseunion.io/alias-name: "nodegroup-admin"
-    iam.theriseunion.io/display-name-en: "NodeGroup Administrator"
-    iam.theriseunion.io/display-name-zh: "节点组管理员"
-    iam.theriseunion.io/description-en: "Manage all nodes in the node group"
-    iam.theriseunion.io/description-zh: "管理节点组中的所有节点"
+    theriseunion.io/creator: system
+    theriseunion.io/description: "查看节点组中的所有节点"
+  labels:
+    theriseunion.io/managed: "true"
+    theriseunion.io/builtin: "true"
+    iam.theriseunion.io/scope: nodegroup
 spec:
   aggregationRoleTemplates:
     roleSelector:
       matchLabels:
-        iam.theriseunion.io/aggregate-to-nodegroup-admin: "true"
+        iam.theriseunion.io/aggregate-to-viewer: ""
+        iam.theriseunion.io/scope: nodegroup
 
 ---
 apiVersion: iam.theriseunion.io/v1alpha1
 kind: IAMRole
 metadata:
-  name: nodegroup-viewer
-  labels:
-    iam.theriseunion.io/builtin: "true"
-    iam.theriseunion.io/scope: "nodegroup"
-    iam.theriseunion.io/role-type: "viewer"
+  name: nodegroup-admin
   annotations:
-    iam.theriseunion.io/creator: "system"
-    theriseunion.io/alias-name: "nodegroup-viewer"
-    iam.theriseunion.io/display-name-en: "NodeGroup Viewer"
-    iam.theriseunion.io/display-name-zh: "节点组查看者"
-    iam.theriseunion.io/description-en: "View all nodes in the node group"
-    iam.theriseunion.io/description-zh: "查看节点组中的所有节点"
+    theriseunion.io/creator: system
+    theriseunion.io/description: "管理当前节点组里的所有资源"
+  labels:
+    theriseunion.io/managed: "true"
+    theriseunion.io/builtin: "true"
+    iam.theriseunion.io/scope: nodegroup
 spec:
+  uiPermissions:
+    - cluster/nodegroup.manage
   aggregationRoleTemplates:
     roleSelector:
       matchLabels:
-        iam.theriseunion.io/aggregate-to-nodegroup-viewer: "true"
+        iam.theriseunion.io/aggregate-to-admin: ""
+        iam.theriseunion.io/scope: nodegroup

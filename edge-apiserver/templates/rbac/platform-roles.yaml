@@ -3,51 +3,41 @@ kind: IAMRole
 metadata:
   name: platform-admin
   annotations:
-    edge.io/creator: system
-    edge.io/description: '{"zh": "管理 Edge 平台上的所有资源。", "en": "Manage all resources on Edge platform."}'
     theriseunion.io/creator: system
-    theriseunion.io/description: '{"zh": "管理 Edge 平台上的所有资源。", "en": "Manage all resources on Edge platform."}'
-    theriseunion.io/role-templates: workspace-create,workspace-manage,workspace-view
+    theriseunion.io/description: "管理 Edge 平台上的所有资源"
   labels:
-    edge.io/managed: "true"
-    iam.theriseunion.io/builtin: "true"
-    iam.theriseunion.io/category: platform-management
+    theriseunion.io/managed: "true"
     iam.theriseunion.io/scope: platform
     iam.theriseunion.io/scope-value: global
 spec:
+  #TODO: update uiPermissions to platform/*.* when frontend supports it
   uiPermissions:
-    - platform/user.view
-    - platform/user.manage
-    - platform/role.view
-    - platform/role.manage
-    - platform/workspace.view
-    - platform/workspace.manage
-    - platform/cluster.view
-    - platform/cluster.manage
-    - platform/settings.view
-    - platform/settings.manage
     - platform/admin.view
   rules:
-  - apiGroups:
-    - '*'
-    resources:
-    - '*'
-    verbs:
-    - '*'
-  # 非资源URL访问
-  - nonResourceURLs:
-    - /api
-    - /api/v1
-    - /apis
-    - /apis/*
-    - /oapis
-    - /oapis/*
-    - /oauth/userinfo
-    - /version
-    - /healthz
-    - /metrics
-    verbs:
-    - '*'
+    - apiGroups:
+      - '*'
+      resources:
+      - '*'
+      verbs:
+      - '*'
+    # 非资源URL访问
+    - nonResourceURLs:
+      - /api
+      - /api/v1
+      - /apis
+      - /apis/*
+      - /oapis
+      - /oapis/*
+      - /oauth/userinfo
+      - /version
+      - /healthz
+      - /metrics
+      verbs:
+      - '*'
+  aggregationRoleTemplates:
+    roleSelector:
+      matchLabels:
+        iam.theriseunion.io/aggregate-to-admin: ""
 
 ---
 apiVersion: iam.theriseunion.io/v1alpha1
@@ -55,44 +45,16 @@ kind: IAMRole
 metadata:
   name: platform-self-provisioner
   annotations:
-    edge.io/creator: system
-    edge.io/description: '{"zh": "创建租户空间并成为所创建的租户空间的管理员。", "en": "Create workspaces and become administrator of created workspaces."}'
     theriseunion.io/creator: system
-    theriseunion.io/description: '{"zh": "创建租户空间并成为所创建的租户空间的管理员。", "en": "Create workspaces and become administrator of created workspaces."}'
-    theriseunion.io/role-templates: workspace-create
+    theriseunion.io/description: "创建租户空间并成为所创建的租户空间的管理员"
   labels:
-    edge.io/managed: "true"
-    iam.theriseunion.io/builtin: "true"
-    iam.theriseunion.io/category: cluster-management
+    theriseunion.io/managed: "true"
     iam.theriseunion.io/scope: platform
     iam.theriseunion.io/scope-value: global
 spec:
-  # UI权限定义：允许查看和创建租户空间
-  uiPermissions:
-    - platform/workspace.view    # 查看租户空间列表
-    - platform/workspace.create  # 创建新租户空间
-  rules:
-  - apiGroups:
-    - tenant.theriseunion.io
-    resources:
-    - workspaces
-    verbs:
-    - list
-    - get
-    - watch
-    - create
-  - apiGroups:
-    - tenant.theriseunion.io
-    resources:
-    - clusters
-    verbs:
-    - list
-  # 非资源URL访问
-  - nonResourceURLs:
-    - /oauth/userinfo
-    - /oapis/iam.theriseunion.io/v1alpha1/permissions
-    verbs:
-    - get
+  aggregationRoleTemplates:
+    templateNames:
+      - platform-create-workspaces
 
 ---
 apiVersion: iam.theriseunion.io/v1alpha1
@@ -100,33 +62,15 @@ kind: IAMRole
 metadata:
   name: platform-regular
   annotations:
-    edge.io/creator: system
-    edge.io/description: '{"zh": "被邀请加入租户空间之前无法访问任何资源。", "en": "Cannot access any resources before being invited to workspaces."}'
     theriseunion.io/creator: system
-    theriseunion.io/description: '{"zh": "被邀请加入租户空间之前无法访问任何资源。", "en": "Cannot access any resources before being invited to workspaces."}'
-    theriseunion.io/role-templates: ""
+    theriseunion.io/description: "被邀请加入租户空间之前无法访问任何资源"
   labels:
-    edge.io/managed: "true"
-    iam.theriseunion.io/builtin: "true"
-    iam.theriseunion.io/category: platform-management
+    theriseunion.io/managed: "true"
     iam.theriseunion.io/scope: platform
     iam.theriseunion.io/scope-value: global
 spec:
-  # UI权限定义：基础用户只能查看自己加入的租户空间
-  uiPermissions:
-    - platform/workspace.view    # 查看自己加入的租户空间（后端会根据成员关系过滤）
-  rules:
-  # 基础查询权限 - 允许列出资源，但后端会根据成员关系过滤结果
-  - apiGroups:
-    - tenant.theriseunion.io
-    resources:
-    - workspaces
-    verbs:
-    - get
-    - list
-  # 非资源URL访问
-  - nonResourceURLs:
-    - /oauth/userinfo
-    - /oapis/iam.theriseunion.io/v1alpha1/permissions
-    verbs:
-    - get
+  aggregationRoleTemplates:
+    roleSelector:
+      matchLabels:
+        iam.theriseunion.io/aggregate-to-regular: ""
+        iam.theriseunion.io/scope: platform

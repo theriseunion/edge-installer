@@ -1,0 +1,447 @@
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  annotations:
+    theriseunion.io/creator: system
+    theriseunion.io/description: "Namespace 级基础权限"
+  labels:
+    theriseunion.io/managed: 'true'
+    iam.theriseunion.io/scope: namespace
+  name: project-basic
+spec:
+  uiPermissions:
+    - project/basic.view
+  rules:
+  - apiGroups:
+    - '*'
+    resources:
+    - '*'
+    verbs:
+    - get
+    - watch
+  - nonResourceURLs:
+      - /api/v1alpha1/events
+    verbs:
+      - get
+      - list
+      - watch
+
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  annotations:
+    theriseunion.io/creator: system
+    theriseunion.io/alias-name: "应用负载查看"
+    theriseunion.io/description: "允许查看当前项目下的应用负载资源"
+    iam.theriseunion.io/dependencies: "project-basic"
+  labels:
+    theriseunion.io/managed: 'true'
+    iam.theriseunion.io/scope: namespace
+    iam.theriseunion.io/category: project-workload
+    iam.theriseunion.io/aggregate-to-admin: ""
+    iam.theriseunion.io/aggregate-to-operator: ""
+    iam.theriseunion.io/aggregate-to-viewer: ""
+  name: project-view-workloads
+spec:
+  uiPermissions:
+    - project/workloads.view
+  rules:
+    - apiGroups:
+      - '*'
+      resources:
+      - applications
+      - controllerrevisions
+      - deployments
+      - replicasets
+      - statefulsets
+      - daemonsets
+      - jobs
+      - cronjobs
+      - pods
+      - pods/log
+      - pods/containers
+      - services
+      - ingresses
+      - router
+      - horizontalpodautoscalers
+      - configmaps
+      - secrets
+      verbs:
+      - get
+      - list
+      - watch
+
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  annotations:
+    theriseunion.io/creator: system
+    theriseunion.io/alias-name: "应用负载管理"
+    theriseunion.io/description: "管理当前项目下的应用负载"
+    iam.theriseunion.io/dependencies: "project-view-workloads"
+  labels:
+    theriseunion.io/managed: 'true'
+    iam.theriseunion.io/scope: namespace
+    iam.theriseunion.io/category: project-workload
+    iam.theriseunion.io/aggregate-to-admin: ""
+    iam.theriseunion.io/aggregate-to-operator: ""
+  name: project-manage-workloads
+spec:
+  uiPermissions:
+    - project/workloads.manage
+  rules:
+    - apiGroups:
+      - '*'
+      resources:
+      - services
+      - applications
+      - controllerrevisions
+      - deployments
+      - replicasets
+      - statefulsets
+      - daemonsets
+      - jobs
+      - cronjobs
+      - pods
+      - pods/log
+      - pods/containers
+      - services
+      - ingresses
+      - router
+      - horizontalpodautoscalers
+      - configmaps
+      - secrets
+      verbs:
+      - '*'
+
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  annotations:
+    theriseunion.io/creator: system
+    theriseunion.io/alias-name: "持久卷查看"
+    theriseunion.io/description: "允许查看持久卷相关信息"
+    iam.theriseunion.io/dependencies: "project-basic"
+  labels:
+    theriseunion.io/managed: 'true'
+    iam.theriseunion.io/category: project-storage
+    iam.theriseunion.io/scope: namespace
+    iam.theriseunion.io/aggregate-to-admin: ""
+    iam.theriseunion.io/aggregate-to-operator: ""
+    iam.theriseunion.io/aggregate-to-viewer: ""
+  name: project-view-pv
+spec:
+  uiPermissions:
+    - project/pv.view
+  rules:
+    - apiGroups:
+        - resources.theriseunion.io
+      resources:
+        - 'storageclasses'
+        - 'persistentvolumes'
+        - 'persistentvolumeclaims'
+      verbs:
+        - list
+        - get
+        - watch
+
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  annotations:
+    theriseunion.io/creator: system
+    theriseunion.io/alias-name: "持久卷管理"
+    theriseunion.io/description: "管理持久卷相关信息"
+    iam.theriseunion.io/dependencies: "project-view-pv"
+  labels:
+    theriseunion.io/managed: 'true'
+    iam.theriseunion.io/category: project-storage
+    iam.theriseunion.io/scope: namespace
+    iam.theriseunion.io/aggregate-to-admin: ""
+    iam.theriseunion.io/aggregate-to-operator: ""
+  name: project-manage-pv
+spec:
+  uiPermissions:
+    - project/pv.manage
+  rules:
+    - apiGroups:
+        - resources.theriseunion.io
+      resources:
+        - 'persistentvolumes'
+        - 'persistentvolumeclaims'
+      verbs:
+        - "*"
+
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  name: project-view-configurations
+  annotations:
+    theriseunion.io/creator: system
+    theriseunion.io/alias-name: "配置查看"
+    theriseunion.io/description: "查看当前项目里的配置资源"
+    iam.theriseunion.io/dependencies: "project-basic"
+  labels:
+    theriseunion.io/managed: 'true'
+    iam.theriseunion.io/scope: namespace
+    iam.theriseunion.io/category: project-resource
+    iam.theriseunion.io/aggregate-to-admin: ""
+    iam.theriseunion.io/aggregate-to-operator: ""
+    iam.theriseunion.io/aggregate-to-viewer: ""
+spec:
+  uiPermissions:
+    - project/configurations.view
+  rules:
+  - apiGroups:
+    - resources.theriseunion.io
+    - tenant.theriseunion.io
+    resources:
+    - configmaps
+    - secrets
+    - serviceaccounts
+    verbs:
+    - get
+    - list
+    - watch
+
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  name: project-manage-configurations
+  annotations:
+    theriseunion.io/creator: system
+    theriseunion.io/alias-name: "配置管理"
+    theriseunion.io/description: "管理当前项目里的配置资源"
+    iam.theriseunion.io/dependencies: "project-view-configurations"
+  labels:
+    theriseunion.io/managed: 'true'
+    iam.theriseunion.io/scope: namespace
+    iam.theriseunion.io/category: project-resource
+    iam.theriseunion.io/aggregate-to-admin: ""
+    iam.theriseunion.io/aggregate-to-operator: ""
+spec:
+  uiPermissions:
+    - project/configurations.manage
+  rules:
+  - apiGroups:
+    - resources.theriseunion.io
+    - tenant.theriseunion.io
+    resources:
+    - configmaps
+    - secrets
+    - serviceaccounts
+    verbs:
+    - '*'
+
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  name: project-view-settings
+  annotations:
+    theriseunion.io/creator: system
+    theriseunion.io/alias-name: "项目设置查看"
+    theriseunion.io/description: "允许查看当前项目的设置信息"
+    iam.theriseunion.io/dependencies: "project-basic"
+  labels:
+    theriseunion.io/managed: 'true'
+    iam.theriseunion.io/scope: namespace
+    iam.theriseunion.io/category: project-settings
+    iam.theriseunion.io/aggregate-to-admin: ''
+    iam.theriseunion.io/aggregate-to-operator: ''
+    iam.theriseunion.io/aggregate-to-viewer: ''
+spec:
+  uiPermissions:
+    - project/settings.view
+  rules:
+  - apiGroups:
+    - '*'
+    resources:
+    - namespaces
+    verbs:
+    - get
+  - apiGroups:
+    - resources.theriseunion.io
+    resources:
+    - quotas
+    - metrics
+    verbs:
+    - list
+  - apiGroups:
+    - ''
+    resources:
+    - limitranges
+    verbs:
+    - list
+
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  name: project-manage-settings
+  annotations:
+    theriseunion.io/creator: system
+    theriseunion.io/alias-name: "项目设置管理"
+    theriseunion.io/description: "管理当前项目的设置信息"
+    iam.theriseunion.io/dependencies: "project-view-settings"
+  labels:
+    theriseunion.io/managed: 'true'
+    iam.theriseunion.io/scope: namespace
+    iam.theriseunion.io/category: project-settings
+    iam.theriseunion.io/aggregate-to-admin: ''
+spec:
+  uiPermissions:
+    - project/settings.manage
+  rules:
+  - apiGroups:
+    - '*'
+    resources:
+    - namespaces
+    verbs:
+    - '*'
+  - apiGroups:
+    - resources.theriseunion.io
+    resources:
+    - quotas
+    - metrics
+    verbs:
+    - '*'
+  - apiGroups:
+    - ''
+    resources:
+    - limitranges
+    verbs:
+    - '*'
+
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  annotations:
+    theriseunion.io/creator: system
+    theriseunion.io/alias-name: "角色查看"
+    theriseunion.io/description: "允许查看项目下角色"
+    iam.theriseunion.io/dependencies: "project-basic"
+  labels:
+    theriseunion.io/managed: 'true'
+    iam.theriseunion.io/scope: namespace
+    iam.theriseunion.io/category: project-access-control
+    iam.theriseunion.io/aggregate-to-admin: ""
+    iam.theriseunion.io/aggregate-to-operator: ""
+    iam.theriseunion.io/aggregate-to-viewer: ""
+  name: project-view-roles
+spec:
+  uiPermissions:
+    - project/settings.view
+    - project/roles.view
+  rules:
+  - apiGroups:
+    - '*'
+    resources:
+    - roles
+    - iamroles
+    - iamrolebindings
+    - categories
+    - roletemplates
+    verbs:
+    - get
+    - list
+    - watch
+  - nonResourceURLs:
+      - /boss/access/roles
+    verbs:
+      - get
+
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  annotations:
+    theriseunion.io/creator: system
+    theriseunion.io/alias-name: "角色管理"
+    theriseunion.io/description: "管理项目下角色"
+    iam.theriseunion.io/dependencies: "project-view-roles"
+  labels:
+    theriseunion.io/managed: 'true'
+    iam.theriseunion.io/scope: namespace
+    iam.theriseunion.io/category: project-access-control
+    iam.theriseunion.io/aggregate-to-admin: ""
+  name: project-manage-roles
+spec:
+  uiPermissions:
+    - project/roles.manage
+  rules:
+  - apiGroups:
+    - '*'
+    resources:
+    - roles
+    - iamroles
+    - iamrolebindings
+    - categories
+    - roletemplates
+    verbs:
+    - '*'
+
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  annotations:
+    theriseunion.io/creator: system
+    theriseunion.io/alias-name: "成员查看"
+    theriseunion.io/description: "允许查看项目下成员信息"
+    iam.theriseunion.io/dependencies: "project-view-roles"
+  labels:
+    theriseunion.io/managed: 'true'
+    iam.theriseunion.io/scope: namespace
+    iam.theriseunion.io/category: project-access-control
+    iam.theriseunion.io/aggregate-to-admin: ""
+    iam.theriseunion.io/aggregate-to-operator: ""
+    iam.theriseunion.io/aggregate-to-viewer: ""
+  name: project-view-members
+spec:
+  uiPermissions:
+    - project/members.view 
+  rules:
+  - apiGroups:
+    - iam.theriseunion.io
+    resources:
+    - members
+    - users
+    verbs:
+    - get
+    - list
+    - watch
+
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  annotations:
+    theriseunion.io/creator: system
+    theriseunion.io/alias-name: "成员管理"
+    theriseunion.io/description: "管理项目下所有成员"
+    iam.theriseunion.io/dependencies: "project-view-members"
+  labels:
+    theriseunion.io/managed: 'true'
+    iam.theriseunion.io/scope: namespace
+    iam.theriseunion.io/category: project-access-control
+    iam.theriseunion.io/aggregate-to-admin: ""
+  name: project-manage-members
+spec:
+  uiPermissions:
+    - project/members.manage
+  rules:
+  - apiGroups:
+    - '*'
+    resources:
+    - members
+    - users
+    verbs:
+    - '*'
