@@ -51,7 +51,7 @@ metadata:
   name: platform-view-workspaces
 spec:
   uiPermissions:
-    - platform/workspace.view    # 查看租户空间列表
+    - platform/workspaces.view    # 查看租户空间列表
   rules:
     - apiGroups:
         - tenant.theriseunion.io
@@ -105,7 +105,7 @@ metadata:
   name: platform-create-workspaces
 spec:
   uiPermissions:
-    - platform/workspace.create  # 创建新租户空间
+    - platform/workspaces.create  # 创建新租户空间
   rules:
     - apiGroups:
       - tenant.theriseunion.io
@@ -137,8 +137,7 @@ metadata:
   name: platform-manage-workspaces
 spec:
   uiPermissions:
-    - platform/workspace.view    # 查看租户空间列表
-    - platform/workspace.manage  # 创建新租户空间
+    - platform/workspaces.manage  # 创建新租户空间
   rules:
     - apiGroups:
         - tenant.theriseunion.io
@@ -200,7 +199,7 @@ metadata:
   name: platform-view-clusters
 spec:
   uiPermissions:
-    - platform/cluster.view
+    - platform/clusters.view
   rules:
   - apiGroups:
     - ''
@@ -261,7 +260,7 @@ metadata:
   name: platform-manage-clusters
 spec:
   uiPermissions:
-    - platform/cluster.manage
+    - platform/clusters.manage
   rules:
   - apiGroups:
     - ''
@@ -319,7 +318,7 @@ metadata:
   name: platform-view-users
 spec:
   uiPermissions:
-    - platform/user.view
+    - platform/users.view
   rules:
   - apiGroups:
     - '*'
@@ -352,7 +351,7 @@ metadata:
   name: platform-manage-users
 spec:
   uiPermissions:
-    - platform/user.manage
+    - platform/users.manage
   rules:
   - apiGroups:
     - '*'
@@ -384,7 +383,7 @@ metadata:
   name: platform-view-roles
 spec:
   uiPermissions:
-    - platform/role.view
+    - platform/roles.view
   rules:
   - apiGroups:
     - iam.theriseunion.io
@@ -419,7 +418,7 @@ metadata:
   name: platform-manage-roles
 spec:
   uiPermissions:
-    - platform/role.manage
+    - platform/roles.manage
   rules:
   - apiGroups:
     - iam.theriseunion.io

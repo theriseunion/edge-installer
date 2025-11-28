@@ -441,7 +441,7 @@ metadata:
   name: cluster-view-sc
 spec:
   uiPermissions:
-    - cluster/storage.view
+    - cluster/storages.view
     - cluster/sc.view
   rules:
     - apiGroups:
@@ -497,7 +497,7 @@ metadata:
   name: cluster-view-pv
 spec:
   uiPermissions:
-    - cluster/storage.view
+    - cluster/storages.view
     - cluster/pv.view
   rules:
     - apiGroups:
@@ -677,7 +677,7 @@ metadata:
 spec:
   uiPermissions:
     - cluster/settings.view
-    - cluster/member.view 
+    - cluster/members.view
   rules:
   - apiGroups:
     - '*'
@@ -706,7 +706,7 @@ metadata:
   name: cluster-manage-members
 spec:
   uiPermissions:
-    - cluster/member.manage
+    - cluster/members.manage
   rules:
   - apiGroups:
     - '*'

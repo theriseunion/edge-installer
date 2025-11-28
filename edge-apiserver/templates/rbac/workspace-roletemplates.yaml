@@ -302,7 +302,7 @@ metadata:
     iam.theriseunion.io/aggregate-to-viewer: ''
 spec:
   uiPermissions:
-    - workspace/role.view
+    - workspace/roles.view
   rules:
   - apiGroups:
     - '*'
