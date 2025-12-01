@@ -9,7 +9,6 @@ metadata:
     theriseunion.io/managed: "true"
     iam.theriseunion.io/builtin: "true"
     iam.theriseunion.io/scope: cluster
-    iam.theriseunion.io/scope-value: host
 spec:
   aggregationRoleTemplates:
     roleSelector:
@@ -29,7 +28,6 @@ metadata:
     theriseunion.io/managed: "true"
     iam.theriseunion.io/builtin: "true"
     iam.theriseunion.io/scope: cluster
-    iam.theriseunion.io/scope-value: host
 spec:
   aggregationRoleTemplates:
     roleSelector:
