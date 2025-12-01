@@ -23,10 +23,10 @@
 apiVersion: iam.theriseunion.io/v1alpha1
 kind: IAMRole
 metadata:
-  name: project-admin
+  name: namespace-admin
   labels:
     theriseunion.io/managed: "true"
-    theriseunion.io/builtin: "true"
+    iam.theriseunion.io/builtin: "true"
     iam.theriseunion.io/scope: namespace
   annotations:
     iam.theriseunion.io/creator: "system"
@@ -42,10 +42,10 @@ spec:
 apiVersion: iam.theriseunion.io/v1alpha1
 kind: IAMRole
 metadata:
-  name: project-operator
+  name: namespace-operator
   labels:
     theriseunion.io/managed: "true"
-    theriseunion.io/builtin: "true"
+    iam.theriseunion.io/builtin: "true"
     iam.theriseunion.io/scope: "namespace"
   annotations:
     iam.theriseunion.io/creator: "system"
@@ -61,10 +61,10 @@ spec:
 apiVersion: iam.theriseunion.io/v1alpha1
 kind: IAMRole
 metadata:
-  name: project-viewer
+  name: namespace-viewer
   labels:
     theriseunion.io/managed: "true"
-    theriseunion.io/builtin: "true"
+    iam.theriseunion.io/builtin: "true"
     iam.theriseunion.io/scope: "namespace"
   annotations:
     iam.theriseunion.io/creator: "system"

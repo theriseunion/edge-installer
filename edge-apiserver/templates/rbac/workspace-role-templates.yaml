@@ -26,7 +26,7 @@ metadata:
   name: workspace-admin
   labels:
     theriseunion.io/managed: "true"
-    theriseunion.io/builtin: "true"
+    iam.theriseunion.io/builtin: "true"
     iam.theriseunion.io/scope: workspace
   annotations:
     iam.theriseunion.io/creator: "system"

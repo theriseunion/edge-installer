@@ -28,7 +28,7 @@ metadata:
     theriseunion.io/description: "查看节点组中的所有节点"
   labels:
     theriseunion.io/managed: "true"
-    theriseunion.io/builtin: "true"
+    iam.theriseunion.io/builtin: "true"
     iam.theriseunion.io/scope: nodegroup
 spec:
   aggregationRoleTemplates:
@@ -47,7 +47,7 @@ metadata:
     theriseunion.io/description: "管理当前节点组里的所有资源"
   labels:
     theriseunion.io/managed: "true"
-    theriseunion.io/builtin: "true"
+    iam.theriseunion.io/builtin: "true"
     iam.theriseunion.io/scope: nodegroup
 spec:
   uiPermissions:

@@ -13,11 +13,12 @@ spec:
     - project/basic.view
   rules:
   - apiGroups:
-    - '*'
+    - 'resources.theriseunion.io'
     resources:
-    - '*'
+    - 'namespaces'
     verbs:
     - get
+    - list
     - watch
   - nonResourceURLs:
       - /api/v1alpha1/events
@@ -260,12 +261,6 @@ spec:
   uiPermissions:
     - project/settings.view
   rules:
-  - apiGroups:
-    - '*'
-    resources:
-    - namespaces
-    verbs:
-    - get
   - apiGroups:
     - resources.theriseunion.io
     resources:
