@@ -48,18 +48,6 @@ spec:
           spec:
             description: RoleTemplateSpec defines the desired state of RoleTemplate
             properties:
-              description:
-                additionalProperties:
-                  type: string
-                description: Description represents description for this template,
-                  this field supports localization
-                type: object
-              displayName:
-                additionalProperties:
-                  type: string
-                description: DisplayName represents the name displays at console,
-                  this field supports localization
-                type: object
               rules:
                 description: Rules holds all the PolicyRules for this RoleTemplate
                 items:
