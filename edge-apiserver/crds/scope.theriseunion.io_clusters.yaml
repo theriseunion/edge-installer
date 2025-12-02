@@ -21,6 +21,9 @@ spec:
     - jsonPath: .status.kubernetesVersion
       name: Version
       type: string
+    - jsonPath: .status.conditions[?(@.type=="Ready")].status
+      name: Status
+      type: string
     name: v1alpha1
     schema:
       openAPIV3Schema:
@@ -82,10 +85,28 @@ spec:
                       Should provide this field explicitly if connection type is direct.
                       Will be populated by apiserver if connection type is proxy.
                     type: string
+                  theriseunionAPIServerNamespace:
+                    description: |-
+                      Theriseunion API Server namespace. Example: edge-system
+                      Default value is "edge-system"
+                      Should provide this field explicitly if connection type is direct.
+                    type: string
                   theriseunionAPIServerPort:
                     description: |-
                       TheriseunionAPIServerPort is the port which listens for forwarding theriseunion apigateway traffic
                       Only applicable when connection type is proxy.
+                    type: integer
+                  theriseunionAPIServerServiceName:
+                    description: |-
+                      Theriseunion API Server service name. Example: apiserver
+                      Default value is "apiserver"
+                      Should provide this field explicitly if connection type is direct.
+                    type: string
+                  theriseunionAPIServerServicePort:
+                    description: |-
+                      Theriseunion API Server service port. Example: 8080
+                      Default value is 8080
+                      Should provide this field explicitly if connection type is direct.
                     type: integer
                   token:
                     description: |-

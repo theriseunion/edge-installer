@@ -26,10 +26,10 @@ spec:
     - jsonPath: .status.phase
       name: Phase
       type: string
-    - jsonPath: .status.nodeCount
+    - jsonPath: .metadata.annotations['theriseunion\.io/node-count']
       name: Nodes
       type: integer
-    - jsonPath: .status.readyNodeCount
+    - jsonPath: .metadata.annotations['theriseunion\.io/ready-node-count']
       name: Ready
       type: integer
     name: v1alpha1
@@ -194,19 +194,9 @@ spec:
                   - type
                   type: object
                 type: array
-              nodeCount:
-                description: NodeCount tracks the number of nodes in this group (optimized
-                  for 1000+ scale)
-                format: int32
-                type: integer
               phase:
                 description: Phase represents the current phase of node group lifecycle
                 type: string
-              readyNodeCount:
-                description: ReadyNodeCount tracks the number of ready nodes in this
-                  group
-                format: int32
-                type: integer
             type: object
         type: object
     served: true
