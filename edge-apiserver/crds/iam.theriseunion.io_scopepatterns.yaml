@@ -72,15 +72,10 @@ spec:
                     - "/api/edge/{nodegroup}/management/*" (extract nodegroup)
                     - "/apis/custom.io/{_}/workspaces/{workspace}/apps/*" (skip version, extract workspace)
                     - "/api/clusters/{_}/regions/{_}/nodegroups/{nodegroup}/*" (skip cluster and region)
-                pattern: ^/.*
                 type: string
               scopeType:
                 description: Type of scope to extract, must match a named parameter
                   in pattern (not {_})
-                enum:
-                - workspace
-                - cluster
-                - nodegroup
                 type: string
             required:
             - pattern
