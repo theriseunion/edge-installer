@@ -49,6 +49,10 @@ rules:
 - apiGroups: ["iam.theriseunion.io"]
   resources: ["*"]
   verbs: ["*"]
+# Edge APP resources
+- apiGroups: ["app.theriseunion.io"]
+  resources: ["*"]
+  verbs: ["*"]
 # Tenant resources
 - apiGroups: ["tenant.theriseunion.io"]
   resources: ["*"]
