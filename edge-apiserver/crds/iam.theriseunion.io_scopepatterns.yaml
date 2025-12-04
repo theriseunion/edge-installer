@@ -3,7 +3,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.14.0
+    controller-gen.kubebuilder.io/version: v0.16.1
   name: scopepatterns.iam.theriseunion.io
 spec:
   group: iam.theriseunion.io
@@ -66,7 +66,6 @@ spec:
                   Supports named parameters: {workspace}, {cluster}, {nodegroup}
                   Supports anonymous placeholders: {_} to skip unwanted path segments
                   Supports wildcards: * to match remaining path segments
-
 
                   Examples:
                     - "/api/edge/{nodegroup}/management/*" (extract nodegroup)

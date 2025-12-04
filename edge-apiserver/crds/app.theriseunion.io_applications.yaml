@@ -4,35 +4,40 @@ kind: CustomResourceDefinition
 metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.16.1
-  name: workspaces.scope.theriseunion.io
+  name: applications.app.theriseunion.io
 spec:
-  group: scope.theriseunion.io
+  group: app.theriseunion.io
   names:
     categories:
-    - scope
-    kind: Workspace
-    listKind: WorkspaceList
-    plural: workspaces
-    singular: workspace
+    - app
+    kind: Application
+    listKind: ApplicationList
+    plural: applications
+    singular: application
   scope: Cluster
   versions:
   - additionalPrinterColumns:
-    - jsonPath: .spec.displayName
+    - jsonPath: .metadata.annotations['theriseunion\.io/display-name']
       name: DisplayName
       type: string
-    - jsonPath: .spec.manager
-      name: Manager
+    - jsonPath: .metadata.labels['app\.theriseunion\.io/provisioner']
+      name: Provisioner
       type: string
-    - jsonPath: .metadata.labels['scope\.theriseunion\.io/cluster']
-      name: Cluster
+    - jsonPath: .metadata.labels['app\.theriseunion\.io/category']
+      name: Category
       type: string
-    - jsonPath: .status.phase
-      name: Phase
+    - jsonPath: .metadata.labels['theriseunion\.io/workspace']
+      name: Workspace
       type: string
+    - jsonPath: .metadata.creationTimestamp
+      name: Age
+      type: date
     name: v1alpha1
     schema:
       openAPIV3Schema:
-        description: Workspace is the Schema for the workspaces API
+        description: |-
+          Application is the Schema for the applications API
+          Application 定义应用（类似 PVC）
         properties:
           apiVersion:
             description: |-
@@ -52,34 +57,25 @@ spec:
           metadata:
             type: object
           spec:
-            description: WorkspaceSpec defines the desired state of Workspace
-            properties:
-              manager:
-                description: Manager specifies the workspace manager
-                type: string
-              template:
-                description: Template defines workspace resource template for initialization
-                properties:
-                  namespaces:
-                    description: Namespaces defines the namespaces to be created within
-                      this workspace
-                    items:
-                      type: string
-                    type: array
-                  resourceQuotas:
-                    additionalProperties:
-                      type: string
-                    description: ResourceQuotas defines default resource quotas for
-                      the workspace
-                    type: object
-                type: object
+            description: |-
+              ApplicationSpec defines the desired state of Application
+              Application 类似 PVC，用户申请的应用定义
+
+              注意：
+               1. Provisioner 类型通过 Label app.theriseunion.io/provisioner 指定
+                  有效值：workload、helm、model
+                  该 Label 必需且不可变（通过 Webhook 验证）
+
+              2. DisplayName 和 Description 应存储在 Annotations 中：
+                - theriseunion.io/display-name: 应用显示名称
+                - theriseunion.io/description: 应用描述信息
             type: object
           status:
-            description: WorkspaceStatus defines the observed state of Workspace
+            description: ApplicationStatus defines the observed state of Application
             properties:
               conditions:
                 description: Conditions represent the latest available observations
-                  of workspace state
+                  of application state
                 items:
                   description: Condition contains details for one aspect of the current
                     state of this API Resource.
@@ -135,17 +131,8 @@ spec:
                   - type
                   type: object
                 type: array
-              memberCount:
-                description: MemberCount tracks the number of members in this workspace
-                format: int32
-                type: integer
-              namespaceCount:
-                description: NamespaceCount tracks the number of namespaces in this
-                  workspace
-                format: int32
-                type: integer
               phase:
-                description: Phase represents the current phase of workspace lifecycle
+                description: Phase represents the current phase of application lifecycle
                 type: string
             type: object
         type: object
