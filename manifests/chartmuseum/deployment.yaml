@@ -1,0 +1,77 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: edge-museum
+  namespace: edge-system
+  labels:
+    app: edge-museum
+    component: chartmuseum
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: edge-museum
+  template:
+    metadata:
+      labels:
+        app: edge-museum
+        component: chartmuseum
+    spec:
+      containers:
+      - name: chartmuseum
+        image: quanzhenglong.com/edge/edge-museum:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+          name: http
+          protocol: TCP
+        env:
+        - name: STORAGE
+          value: "local"
+        - name: STORAGE_LOCAL_ROOTDIR
+          value: "/charts"
+        - name: PORT
+          value: "8080"
+        - name: DEBUG
+          value: "true"
+        - name: LOG_JSON
+          value: "true"
+        - name: DISABLE_METRICS
+          value: "false"
+        - name: DISABLE_API
+          value: "false"
+        - name: ALLOW_OVERWRITE
+          value: "false"
+        - name: CHART_POST_FORM_FIELD_NAME
+          value: "chart"
+        - name: PROV_POST_FORM_FIELD_NAME
+          value: "prov"
+        - name: CONTEXT_PATH
+          value: ""
+        - name: INDEX_LIMIT
+          value: "0"
+        - name: DEPTH
+          value: "0"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: http
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: http
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 3
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 500m
+            memory: 512Mi

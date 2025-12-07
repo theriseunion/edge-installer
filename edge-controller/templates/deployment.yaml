@@ -38,5 +38,23 @@ spec:
               value: ":{{ .Values.edge.controller.metricsPort }}"
             - name: HEALTH_ADDR
               value: ":{{ .Values.edge.controller.healthPort }}"
+            - name: HOME
+              value: /tmp
+            - name: HELM_CACHE_HOME
+              value: /tmp/.helm/cache
+            - name: HELM_CONFIG_HOME
+              value: /tmp/.helm/config
+            - name: HELM_DATA_HOME
+              value: /tmp/.helm/data
+            {{- if .Values.chartRepository.url }}
+            - name: CHART_REPO_URL
+              value: {{ .Values.chartRepository.url }}
+            {{- end }}
+          volumeMounts:
+            - name: helm-cache
+              mountPath: /tmp/.helm
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
+      volumes:
+        - name: helm-cache
+          emptyDir: {}
