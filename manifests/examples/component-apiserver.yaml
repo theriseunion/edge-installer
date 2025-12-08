@@ -5,7 +5,7 @@ metadata:
   namespace: edge-system
 spec:
   # Component type - must match chart name in ChartMuseum
-  componentType: edge-apiserver
+  type: edge-apiserver
 
   # Namespace where component will be deployed
   namespace: edge-system
