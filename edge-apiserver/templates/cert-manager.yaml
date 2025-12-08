@@ -1,23 +1,24 @@
+---
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
   labels:
     app.kubernetes.io/component: certificate
     app.kubernetes.io/created-by: apiserver-project
-    app.kubernetes.io/instance: serving-cert
+    app.kubernetes.io/instance: apiserver-cert
     app.kubernetes.io/managed-by: kustomize
     app.kubernetes.io/name: certificate
     app.kubernetes.io/part-of: apiserver-project
-  name: edge-serving-cert
+  name: edge-apiserver-cert
   namespace: edge-system
 spec:
   dnsNames:
-  - controller.edge-system.svc
-  - controller.edge-system.svc.cluster.local
+  - {{ include "edge-apiserver.fullname" . }}.edge-system.svc
+  - {{ include "edge-apiserver.fullname" . }}.edge-system.svc.cluster.local
   issuerRef:
     kind: Issuer
     name: edge-selfsigned-issuer
-  secretName: webhook-server-cert
+  secretName: apiserver-cert
 ---
 apiVersion: cert-manager.io/v1
 kind: Issuer
