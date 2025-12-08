@@ -44,6 +44,7 @@ jobs:
           registry: ${{ env.REGISTRY }}
           username: ${{ secrets.REGISTRY_USERNAME }}
           password: ${{ secrets.REGISTRY_PASSWORD }}
+          logout: false
 
       - name: Install Helm
         uses: azure/setup-helm@v4
@@ -66,6 +67,7 @@ jobs:
           fi
           echo "version=${VERSION}" >> $GITHUB_OUTPUT
           echo "tags=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${VERSION}" >> $GITHUB_OUTPUT
+          echo "Full image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${VERSION}"
 
       - name: Build and push multi-arch image
         uses: docker/build-push-action@v5

@@ -1,5 +1,5 @@
 # Dockerfile.museum - Package all charts into ChartMuseum image
-FROM chartmuseum/chartmuseum:v0.15.0
+FROM ghcr.io/helm/chartmuseum:v0.16.3
 
 # Copy all packaged charts to chartmuseum storage
 COPY bin/_output/*.tgz /charts/
