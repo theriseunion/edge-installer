@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sleep-deploy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sleep
+  template:
+    metadata:
+      labels:
+        app: sleep
+    spec:
+      containers:
+      - name: api
+        image: quanzhenglong.com/edge/apiserver:v0.0.7
+        command: ["sleep"]
+        args: ["infinity"]

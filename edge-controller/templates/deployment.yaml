@@ -26,7 +26,7 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - name: https
-              containerPort: {{ .Values.service.port }}
+              containerPort: {{ .Values.service.targetPort }}
               protocol: TCP
             - name: health
               containerPort: {{ .Values.edge.controller.healthPort }}
@@ -57,7 +57,7 @@ spec:
           name: kube-rbac-proxy
           ports:
           - containerPort: 8443
-            name: https
+            name: proxy-https
             protocol: TCP
           resources:
             limits:

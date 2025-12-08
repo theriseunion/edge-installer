@@ -12,8 +12,8 @@ metadata:
   namespace: edge-system
 spec:
   dnsNames:
-  - edge-webhook-service.edge-system.svc
-  - edge-webhook-service.edge-system.svc.cluster.local
+  - controller.edge-system.svc
+  - controller.edge-system.svc.cluster.local
   issuerRef:
     kind: Issuer
     name: edge-selfsigned-issuer

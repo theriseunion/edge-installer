@@ -17,7 +17,7 @@ webhooks:
   - v1
   clientConfig:
     service:
-      name: edge-webhook-service
+      name: controller
       namespace: edge-system
       path: /mutate-infra-theriseunion-io-v1alpha1-clusterregistry
   failurePolicy: Fail
@@ -42,7 +42,7 @@ webhooks:
   - v1
   clientConfig:
     service:
-      name: edge-webhook-service
+      name: controller
       namespace: edge-system
       path: /mutate-infra-theriseunion-io-v1alpha1-registry
   failurePolicy: Fail
@@ -67,7 +67,7 @@ webhooks:
   - v1
   clientConfig:
     service:
-      name: edge-webhook-service
+      name: controller
       namespace: edge-system
       path: /mutate-core-v1-pod
   failurePolicy: Fail
