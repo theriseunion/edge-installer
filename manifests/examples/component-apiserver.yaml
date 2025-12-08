@@ -1,0 +1,48 @@
+apiVersion: ext.theriseunion.io/v1alpha1
+kind: Component
+metadata:
+  name: edge-apiserver
+  namespace: edge-system
+spec:
+  # Component type - must match chart name in ChartMuseum
+  type: edge-apiserver
+
+  # Namespace where component will be deployed
+  namespace: edge-system
+
+  # Helm release name
+  releaseName: edge-apiserver
+
+  # Chart name in ChartMuseum repository
+  # When CHART_REPO_NAME env is set, format will be: {CHART_REPO_NAME}/edge-apiserver
+  chartName: edge-apiserver
+
+  # Chart version (optional, leave empty for latest)
+  version: ""
+
+  # Helm values for chart installation
+  values:
+    image:
+      repository: quanzhenglong.com/edge/edge-apiserver
+      tag: main
+      pullPolicy: Always
+
+    replicaCount: 1
+
+    service:
+      type: ClusterIP
+      port: 8080
+
+    resources:
+      requests:
+        cpu: 100m
+        memory: 256Mi
+      limits:
+        cpu: 1000m
+        memory: 1Gi
+
+    env:
+    - name: LOG_LEVEL
+      value: "info"
+    - name: CHART_REPO_NAME
+      value: "edge-charts"

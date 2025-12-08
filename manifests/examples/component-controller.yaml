@@ -1,0 +1,35 @@
+apiVersion: ext.theriseunion.io/v1alpha1
+kind: Component
+metadata:
+  name: edge-controller
+  namespace: edge-system
+spec:
+  type: edge-controller
+  namespace: edge-system
+  releaseName: edge-controller
+  chartName: edge-controller
+  version: ""
+
+  values:
+    image:
+      repository: quanzhenglong.com/edge/edge-controller
+      tag: main
+      pullPolicy: Always
+
+    replicaCount: 1
+
+    resources:
+      requests:
+        cpu: 100m
+        memory: 256Mi
+      limits:
+        cpu: 500m
+        memory: 512Mi
+
+    env:
+    - name: LOG_LEVEL
+      value: "info"
+    - name: METRICS_ADDR
+      value: ":8081"
+    - name: CHART_REPO_NAME
+      value: "edge-charts"

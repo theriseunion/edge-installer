@@ -55,3 +55,9 @@ edge:
     enabled: true
     # Watch all namespaces for RBAC resources
     watchNamespace: ""
+
+# Chart Repository configuration (for Component CR installation)
+chartRepository:
+  # ChartMuseum URL for HTTP direct download
+  # Example: "http://edge-museum.edge-system.svc:8080"
+  url: ""

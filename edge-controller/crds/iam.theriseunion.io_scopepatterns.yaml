@@ -99,9 +99,6 @@ spec:
                 type: boolean
             type: object
         type: object
-        x-kubernetes-validations:
-        - message: scopeType must match a named parameter in pattern
-          rule: self.spec.pattern.contains('{' + self.spec.scopeType + '}')
     served: true
     storage: true
     subresources:

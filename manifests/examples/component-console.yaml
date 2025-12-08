@@ -1,0 +1,35 @@
+apiVersion: ext.theriseunion.io/v1alpha1
+kind: Component
+metadata:
+  name: edge-console
+  namespace: edge-system
+spec:
+  type: edge-console
+  namespace: edge-system
+  releaseName: edge-console
+  chartName: edge-console
+  version: ""
+
+  values:
+    image:
+      repository: quanzhenglong.com/edge/edge-console
+      tag: main
+      pullPolicy: Always
+
+    replicaCount: 1
+
+    service:
+      type: ClusterIP
+      port: 3000
+
+    resources:
+      requests:
+        cpu: 100m
+        memory: 256Mi
+      limits:
+        cpu: 500m
+        memory: 512Mi
+
+    env:
+    - name: NEXT_PUBLIC_API_BASE_URL
+      value: "http://edge-apiserver:8080"

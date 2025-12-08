@@ -1,0 +1,75 @@
+# Edge Installer Makefile
+# ChartMuseum + Component CR 架构
+
+# CONTAINER_TOOL defines the container tool to be used for building images.
+CONTAINER_TOOL ?= docker
+
+# Setting SHELL to bash allows bash commands to be executed by recipes.
+SHELL = /usr/bin/env bash -o pipefail
+.SHELLFLAGS = -ec
+
+##@ General
+
+.PHONY: help
+help: ## Display this help.
+	@awk 'BEGIN {FS = ":.*##"; printf "\nUsage:\n  make \033[36m<target>\033[0m\n"} /^[a-zA-Z_0-9-]+:.*?##/ { printf "  \033[36m%-15s\033[0m %s\n", $$1, $$2 } /^##@/ { printf "\n\033[1m%s\033[0m\n", substr($$0, 5) } ' $(MAKEFILE_LIST)
+
+##@ ChartMuseum
+
+MUSEUM_IMG ?= quanzhenglong.com/edge/edge-museum:latest
+CHARTS_OUTPUT := bin/_output
+CHARTS_SOURCE := .
+# List of charts to package - modify this when adding/removing charts
+CHARTS := edge-controller edge-apiserver edge-console edge-monitoring
+
+.PHONY: package-charts
+package-charts: ## Package all Helm charts into tgz files
+	@echo "Packaging charts from $(CHARTS_SOURCE)..."
+	@mkdir -p $(CHARTS_OUTPUT)
+	@for chart in $(CHARTS); do \
+		echo "Packaging $$chart..."; \
+		helm package $(CHARTS_SOURCE)/$$chart -d $(CHARTS_OUTPUT); \
+	done
+	@echo "Charts packaged to $(CHARTS_OUTPUT)/"
+	@ls -lh $(CHARTS_OUTPUT)/*.tgz
+
+.PHONY: clean-charts
+clean-charts: ## Clean packaged charts
+	@rm -rf $(CHARTS_OUTPUT)/*.tgz
+	@echo "Cleaned packaged charts"
+
+.PHONY: docker-build-museum
+docker-build-museum: package-charts ## Build ChartMuseum docker image
+	$(CONTAINER_TOOL) build -f Dockerfile.museum -t ${MUSEUM_IMG} .
+
+.PHONY: docker-push-museum
+docker-push-museum: ## Push ChartMuseum docker image
+	$(CONTAINER_TOOL) push ${MUSEUM_IMG}
+
+.PHONY: docker-buildx-museum
+docker-buildx-museum: package-charts ## Build and push ChartMuseum image for cross-platform
+	$(CONTAINER_TOOL) buildx build --platform linux/amd64,linux/arm64 -f Dockerfile.museum -t ${MUSEUM_IMG} --push .
+
+##@ Deployment
+
+.PHONY: install-chartmuseum
+install-chartmuseum: ## Install ChartMuseum to K8s cluster
+	@./scripts/install-chartmuseum.sh
+
+.PHONY: uninstall-chartmuseum
+uninstall-chartmuseum: ## Uninstall ChartMuseum from K8s cluster
+	@./scripts/uninstall-chartmuseum.sh
+
+##@ Component Management
+
+.PHONY: apply-host-components
+apply-host-components: ## Apply Host cluster components
+	kubectl apply -f components/host-components.yaml
+
+.PHONY: apply-member-components
+apply-member-components: ## Apply Member cluster components
+	kubectl apply -f components/member-components.yaml
+
+.PHONY: delete-host-components
+delete-host-components: ## Delete Host cluster components
+	kubectl delete -f components/host-components.yaml --ignore-not-found=true

@@ -1,0 +1,13 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: edge-system
+
+resources:
+- deployment.yaml
+- service.yaml
+
+commonLabels:
+  app.kubernetes.io/name: edge-museum
+  app.kubernetes.io/component: chartmuseum
+  app.kubernetes.io/part-of: edge-platform

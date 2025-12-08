@@ -1,0 +1,11 @@
+# Dockerfile.museum - Package all charts into ChartMuseum image
+FROM chartmuseum/chartmuseum:v0.15.0
+
+# Copy all packaged charts to chartmuseum storage
+COPY bin/_output/*.tgz /charts/
+
+# ChartMuseum will serve charts from /charts directory
+ENTRYPOINT ["/chartmuseum"]
+CMD ["--storage", "local", \
+     "--storage-local-rootdir", "/charts", \
+     "--port", "8080"]
