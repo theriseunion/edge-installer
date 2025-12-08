@@ -65,3 +65,11 @@ rules:
 - apiGroups: ["installer.edge.theriseunion.io"]
   resources: ["*"]
   verbs: ["*"]
+# Edge device resources
+- apiGroups: ["device.theriseunion.io"]
+  resources: ["*"]
+  verbs: ["*"]
+# Edge registry resources
+- apiGroups: ["registry.theriseunion.io"]
+  resources: ["*"]
+  verbs: ["*"]

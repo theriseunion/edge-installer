@@ -29,7 +29,7 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
-            - name: http
+            - name: https
               containerPort: {{ .Values.service.port }}
               protocol: TCP
           env:
@@ -43,8 +43,9 @@ spec:
             {{- end }}
           livenessProbe:
             httpGet:
-              path: /healthz
-              port: http
+              path: /livez
+              port: https
+              scheme: HTTPS
             initialDelaySeconds: 30
             periodSeconds: 30
             timeoutSeconds: 5
@@ -52,10 +53,19 @@ spec:
           readinessProbe:
             httpGet:
               path: /readyz
-              port: http
+              port: https
+              scheme: HTTPS
             initialDelaySeconds: 15
             periodSeconds: 10
             timeoutSeconds: 5
             failureThreshold: 3
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+          - mountPath: /tmp/k8s-webhook-server/serving-certs
+            name: cert
+            readOnly: true
+      volumes:
+      - name: cert
+        secret:
+          secretName: webhook-server-cert

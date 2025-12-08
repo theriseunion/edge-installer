@@ -7,11 +7,15 @@
 NAMESPACE=${NAMESPACE:-edge-system}
 KUBECONFIG_PATH=${KUBECONFIG:-~/.kube/config}
 REGISTRY=${REGISTRY:-quanzhenglong.com/edge}
-TAG=${TAG:-main}
+TAG=${TAG:-latest}
 PULL_POLICY=${PULL_POLICY:-Always}
 ENABLE_MONITORING=${ENABLE_MONITORING:-false}
 INSTALL_OPENYURT=${INSTALL_OPENYURT:-false}
 OPENYURT_API_SERVER=${OPENYURT_API_SERVER:-""}
+# Cert-Manager 版本与安装地址
+CERT_MANAGER_VERSION=${CERT_MANAGER_VERSION:-1.14.4}
+CERT_MANAGER_INSTALL_YAML="https://gh-proxy.net/https://github.com/cert-manager/cert-manager/releases/download/v${CERT_MANAGER_VERSION}/cert-manager.yaml"
+
 
 # 显示所有部署参数
 echo "==================== Edge Platform 部署参数确认 ===================="
@@ -102,6 +106,17 @@ if [ "$INSTALL_OPENYURT" = "true" ]; then
   fi
   echo ""
 fi
+
+# 部署Cert-Manger
+echo "部署 Cert-Manager..."
+curl -sL "$CERT_MANAGER_INSTALL_YAML" \
+  | sed -E "s|\"quay.io/jetstack/cert-manager-controller:[^\"]+\"|\"quanzhenglong.com/camp/cert-manager-controller:v${CERT_MANAGER_VERSION}\"|g" \
+  | sed -E "s|\"quay.io/jetstack/cert-manager-cainjector:[^\"]+\"|\"quanzhenglong.com/camp/cert-manager-cainjector:v${CERT_MANAGER_VERSION}\"|g" \
+  | sed -E "s|\"quay.io/jetstack/cert-manager-webhook:[^\"]+\"|\"quanzhenglong.com/camp/cert-manager-webhook:v${CERT_MANAGER_VERSION}\"|g" \
+  | kubectl apply -f -
+kubectl -n cert-manager wait --for=condition=Available deploy --all --timeout=300s
+echo "✅ Cert-Manager 部署成功"
+
 
 
 # 部署 API Server

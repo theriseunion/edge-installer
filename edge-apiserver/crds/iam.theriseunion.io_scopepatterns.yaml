@@ -1,8 +1,8 @@
----
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
+    cert-manager.io/inject-ca-from: edge-system/edge-serving-cert
     controller-gen.kubebuilder.io/version: v0.16.1
   name: scopepatterns.iam.theriseunion.io
 spec:
@@ -71,10 +71,16 @@ spec:
                     - "/api/edge/{nodegroup}/management/*" (extract nodegroup)
                     - "/apis/custom.io/{_}/workspaces/{workspace}/apps/*" (skip version, extract workspace)
                     - "/api/clusters/{_}/regions/{_}/nodegroups/{nodegroup}/*" (skip cluster and region)
+                maxLength: 512
+                pattern: ^/.*
                 type: string
               scopeType:
                 description: Type of scope to extract, must match a named parameter
                   in pattern (not {_})
+                enum:
+                - workspace
+                - cluster
+                - nodegroup
                 type: string
             required:
             - pattern
@@ -101,7 +107,9 @@ spec:
         type: object
         x-kubernetes-validations:
         - message: scopeType must match a named parameter in pattern
-          rule: self.spec.pattern.contains('{' + self.spec.scopeType + '}')
+          rule: (self.spec.scopeType == 'workspace' && self.spec.pattern.contains('{workspace}'))
+            || (self.spec.scopeType == 'cluster' && self.spec.pattern.contains('{cluster}'))
+            || (self.spec.scopeType == 'nodegroup' && self.spec.pattern.contains('{nodegroup}'))
     served: true
     storage: true
     subresources:

@@ -1,0 +1,250 @@
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    cert-manager.io/inject-ca-from: edge-system/edge-serving-cert
+    controller-gen.kubebuilder.io/version: v0.16.1
+  name: devicemodels.device.theriseunion.io
+spec:
+  group: device.theriseunion.io
+  names:
+    kind: DeviceModel
+    listKind: DeviceModelList
+    plural: devicemodels
+    singular: devicemodel
+  scope: Cluster
+  versions:
+  - additionalPrinterColumns:
+    - description: The manufacturer of the device model
+      jsonPath: .spec.manufacturer
+      name: Manufacturer
+      type: string
+    - description: The model of the device model
+      jsonPath: .spec.model
+      name: Model
+      type: string
+    - description: The core size of the device model in percent
+      jsonPath: .spec.core
+      name: Core
+      type: integer
+    - description: The memory size of the device model in MB
+      jsonPath: .spec.memorySize
+      name: MemorySize
+      type: integer
+    - description: The memory step of the device model in MB
+      jsonPath: .spec.memoryStep
+      name: MemoryStep
+      type: integer
+    - description: Whether the device model supports virtual device
+      jsonPath: .spec.supportVirtualDevice
+      name: SupportVirtualDevice
+      type: boolean
+    - description: The compute split mode supported by the device model
+      jsonPath: .spec.supportComputeSplitMode
+      name: SupportComputeSplitMode
+      type: string
+    - description: The family of the device model
+      jsonPath: .spec.family
+      name: Family
+      type: string
+    - description: The compute architecture of the device model
+      jsonPath: .spec.compute
+      name: Compute
+      type: string
+    name: v1alpha1
+    schema:
+      openAPIV3Schema:
+        description: DeviceModel is the Schema for the devicemodels API
+        properties:
+          apiVersion:
+            description: |-
+              APIVersion defines the versioned schema of this representation of an object.
+              Servers should convert recognized schemas to the latest internal value, and
+              may reject unrecognized values.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+            type: string
+          kind:
+            description: |-
+              Kind is a string value representing the REST resource this object represents.
+              Servers may infer this from the endpoint the client submits requests to.
+              Cannot be updated.
+              In CamelCase.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
+            type: string
+          metadata:
+            type: object
+          spec:
+            description: DeviceModelSpec defines the desired state of DeviceModel
+            properties:
+              alias:
+                description: Alias of the device model
+                items:
+                  type: string
+                type: array
+              compute:
+                description: |-
+                  Compute represents the compute architecture of the GPU card.
+                  例如 "8.0" 表示 Ampere 架构，"7.0" 表示 Volta 架构等。
+                type: string
+              computeCapabilities:
+                description: |-
+                  ComputeCapabilities stores the compute capabilities of the GPU at different precisions.
+                  Each entry represents the compute capability (in FLOPS) for a specific precision type.
+                items:
+                  description: ComputeCapability represents the compute capability
+                    of a GPU at a specific precision.
+                  properties:
+                    precision:
+                      description: Precision specifies the floating-point precision
+                        type (FP32, FP16, BF16, FP8).
+                      enum:
+                      - FP32
+                      - FP16
+                      - BF16
+                      - FP8
+                      type: string
+                    unit:
+                      description: |-
+                        Unit specifies the unit of measurement (TFLOPS, GFLOPS, MFLOPS).
+                        Defaults to TFLOPS if not specified.
+                      enum:
+                      - TFLOPS
+                      - GFLOPS
+                      - MFLOPS
+                      type: string
+                    value:
+                      description: |-
+                        Value represents the compute capability value as a string (e.g., "19.5", "312").
+                        Using string type to avoid precision issues across different languages in CRD.
+                      type: string
+                  required:
+                  - precision
+                  - value
+                  type: object
+                type: array
+              core:
+                default: 100
+                description: |-
+                  算力大小百分比。 如果是物理卡，那么算力必须是100
+                  如果是虚拟卡，那么算力大小必须小于100
+                maximum: 100
+                minimum: 0
+                type: integer
+              description:
+                description: Description of the device model
+                type: string
+              family:
+                description: Family of the device model
+                type: string
+              manufacturer:
+                description: Manufacturer of the device model
+                type: string
+              memorySize:
+                default: 1
+                description: |-
+                  MemorySize of the device model, unit is MB
+                  当IsVirtualModel=true时，代表虚拟型号的显存大小。
+                minimum: 1
+                type: integer
+              memoryStep:
+                default: 0
+                description: |-
+                  显存步长，单位是MB。 有些显卡的最小使用单位是256MB， 512MB
+                  当IsVirtualModel=true时，代表虚拟型号的显存步长。
+                maximum: 65536
+                minimum: 0
+                type: integer
+              migTemplates:
+                description: MigTemplates specifies the MIG (Multi-Instance GPU) templates
+                  to use for this device model. 如果为空，说明当前型号不支持MIG切分。
+                items:
+                  items:
+                    properties:
+                      count:
+                        description: Count of MIG instances
+                        format: int32
+                        type: integer
+                      memory:
+                        description: Memory in MB
+                        format: int32
+                        type: integer
+                      name:
+                        description: Name of the MIG template, eg "1g.10gb, 2g.10gb,
+                          3g.10gb"
+                        type: string
+                    required:
+                    - count
+                    - memory
+                    - name
+                    type: object
+                  type: array
+                type: array
+              model:
+                description: Model of the device model，如果是物理型号，那么一个型号原则上只有一个
+                type: string
+              supportComputeSplitMode:
+                description: SupportComputeSplitMode represents the compute split
+                  mode supported by the device model.
+                items:
+                  type: string
+                type: array
+              supportVirtualDevice:
+                description: 是否支持虚拟卡。
+                type: boolean
+            type: object
+          status:
+            description: DeviceModelStatus defines the observed state of DeviceModel
+            properties:
+              physicalComputeCapabilities:
+                description: |-
+                  PhysicalComputeCapabilities stores the compute capabilities of the GPU at different precisions.
+                  Each entry represents the compute capability (in FLOPS) for a specific precision type.
+                items:
+                  description: ComputeCapability represents the compute capability
+                    of a GPU at a specific precision.
+                  properties:
+                    precision:
+                      description: Precision specifies the floating-point precision
+                        type (FP32, FP16, BF16, FP8).
+                      enum:
+                      - FP32
+                      - FP16
+                      - BF16
+                      - FP8
+                      type: string
+                    unit:
+                      description: |-
+                        Unit specifies the unit of measurement (TFLOPS, GFLOPS, MFLOPS).
+                        Defaults to TFLOPS if not specified.
+                      enum:
+                      - TFLOPS
+                      - GFLOPS
+                      - MFLOPS
+                      type: string
+                    value:
+                      description: |-
+                        Value represents the compute capability value as a string (e.g., "19.5", "312").
+                        Using string type to avoid precision issues across different languages in CRD.
+                      type: string
+                  required:
+                  - precision
+                  - value
+                  type: object
+                type: array
+              physicalCore:
+                description: PhysicalCore represents the number of physical cores
+                  on the GPU card.
+                type: integer
+              physicalMemorySize:
+                description: 物理卡的显存大小，单位是MB。
+                type: integer
+              status:
+                default: Unavailable
+                description: 设备型号在集群中的状态。Available表示集群中存在这个卡，NotExist表示集群中不存在这个卡。
+                type: string
+            type: object
+        type: object
+    served: true
+    storage: true
+    subresources:
+      status: {}

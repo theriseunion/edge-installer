@@ -23,7 +23,8 @@ hostNetwork: false
 # Security Context
 securityContext:
   runAsNonRoot: true
-  runAsUser: 65532
+  runAsGroup: 10001
+  runAsUser: 10001
   allowPrivilegeEscalation: false
   capabilities:
     drop:
@@ -32,8 +33,8 @@ securityContext:
 # Service configuration
 service:
   type: ClusterIP
-  port: 8080
-  targetPort: 8080
+  port: 8443
+  targetPort: 8443
 
 # Resource limits and requests
 resources:
@@ -51,7 +52,7 @@ edge:
     # Log level (debug, info, warn, error)
     logLevel: info
     # API Server port
-    port: 8080
+    port: 8443
 
   # RBAC configuration - Core functionality
   rbac:

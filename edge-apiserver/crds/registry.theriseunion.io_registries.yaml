@@ -4,41 +4,37 @@ metadata:
   annotations:
     cert-manager.io/inject-ca-from: edge-system/edge-serving-cert
     controller-gen.kubebuilder.io/version: v0.16.1
-  name: loginrecords.iam.theriseunion.io
+  name: registries.registry.theriseunion.io
 spec:
-  group: iam.theriseunion.io
+  group: registry.theriseunion.io
   names:
-    categories:
-    - iam
-    kind: LoginRecord
-    listKind: LoginRecordList
-    plural: loginrecords
-    singular: loginrecord
-  scope: Cluster
+    kind: Registry
+    listKind: RegistryList
+    plural: registries
+    singular: registry
+  scope: Namespaced
   versions:
   - additionalPrinterColumns:
-    - jsonPath: .spec.type
-      name: Type
+    - description: The namespace of the registry
+      jsonPath: .metadata.namespace
+      name: Namespace
       type: string
-    - jsonPath: .spec.provider
+    - description: The domain of the registry
+      jsonPath: .spec.domain
+      name: Domain
+      type: string
+    - description: The provider of the registry
+      jsonPath: .spec.provider
       name: Provider
       type: string
-    - jsonPath: .spec.sourceIP
-      name: From
+    - description: The username for the registry
+      jsonPath: .spec.userName
+      name: Username
       type: string
-    - jsonPath: .spec.success
-      name: Success
-      type: string
-    - jsonPath: .spec.reason
-      name: Reason
-      type: string
-    - jsonPath: .metadata.creationTimestamp
-      name: Age
-      type: date
     name: v1alpha1
     schema:
       openAPIV3Schema:
-        description: LoginRecord is the Schema for the loginrecords API
+        description: Registry is the Schema for the registries API
         properties:
           apiVersion:
             description: |-
@@ -58,35 +54,20 @@ spec:
           metadata:
             type: object
           spec:
-            description: LoginRecordSpec defines the desired state of LoginRecord
             properties:
-              provider:
-                description: Provider of authentication, LDAP/GitHub/etc.
+              domain:
                 type: string
-              reason:
-                description: Reason states failed login attempt reason
-                type: string
-              sourceIP:
-                description: SourceIP of client
-                type: string
-              success:
-                description: Success indicates whether the login attempt was successful
+              enabled:
                 type: boolean
-              type:
-                description: Type of authentication method used, Password/OAuth/Token
+              password:
                 type: string
-              userAgent:
-                description: UserAgent of login attempt
+              provider:
                 type: string
-            required:
-            - provider
-            - reason
-            - sourceIP
-            - success
-            - type
+              userName:
+                type: string
             type: object
           status:
-            description: LoginRecordStatus defines the observed state of LoginRecord
+            description: RegistryStatus defines the observed state of Registry
             type: object
         type: object
     served: true

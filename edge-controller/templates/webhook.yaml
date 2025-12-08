@@ -1,0 +1,97 @@
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: MutatingWebhookConfiguration
+metadata:
+  annotations:
+    cert-manager.io/inject-ca-from: edge-system/edge-serving-cert
+  labels:
+    app.kubernetes.io/component: webhook
+    app.kubernetes.io/created-by: apiserver-project
+    app.kubernetes.io/instance: mutating-webhook-configuration
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/name: mutatingwebhookconfiguration
+    app.kubernetes.io/part-of: apiserver-project
+  name: edge-mutating-webhook-configuration
+webhooks:
+- admissionReviewVersions:
+  - v1
+  clientConfig:
+    service:
+      name: edge-webhook-service
+      namespace: edge-system
+      path: /mutate-infra-theriseunion-io-v1alpha1-clusterregistry
+  failurePolicy: Fail
+  name: mclusterregistry.theriseunion.io
+  namespaceSelector:
+    matchExpressions:
+    - key: kubernetes.io/metadata.name
+      operator: NotIn
+      values:
+      - edge-system
+  rules:
+  - apiGroups:
+    - infra.theriseunion.io
+    apiVersions:
+    - v1alpha1
+    operations:
+    - CREATE
+    resources:
+    - clusterregistries
+  sideEffects: None
+- admissionReviewVersions:
+  - v1
+  clientConfig:
+    service:
+      name: edge-webhook-service
+      namespace: edge-system
+      path: /mutate-infra-theriseunion-io-v1alpha1-registry
+  failurePolicy: Fail
+  name: mregistry.theriseunion.io
+  namespaceSelector:
+    matchExpressions:
+    - key: kubernetes.io/metadata.name
+      operator: NotIn
+      values:
+      - edge-system
+  rules:
+  - apiGroups:
+    - infra.theriseunion.io
+    apiVersions:
+    - v1alpha1
+    operations:
+    - CREATE
+    resources:
+    - registries
+  sideEffects: None
+- admissionReviewVersions:
+  - v1
+  clientConfig:
+    service:
+      name: edge-webhook-service
+      namespace: edge-system
+      path: /mutate-core-v1-pod
+  failurePolicy: Fail
+  name: pod.theriseunion.io
+  namespaceSelector:
+    matchExpressions:
+    - key: kubernetes.io/metadata.name
+      operator: NotIn
+      values:
+      - edge-system
+  objectSelector:
+    matchExpressions:
+    - key: control-plane
+      operator: NotIn
+      values:
+      - controller-manager
+  rules:
+  - apiGroups:
+    - ""
+    apiVersions:
+    - v1
+    operations:
+    - CREATE
+    - UPDATE
+    resources:
+    - pods
+  sideEffects: None

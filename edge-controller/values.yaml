@@ -19,7 +19,8 @@ serviceAccount:
 # Security Context
 securityContext:
   runAsNonRoot: true
-  runAsUser: 65532
+  runAsGroup: 10001
+  runAsUser: 10001
   allowPrivilegeEscalation: false
   capabilities:
     drop:
@@ -28,8 +29,8 @@ securityContext:
 # Service configuration
 service:
   type: ClusterIP
-  port: 8080
-  targetPort: 8080
+  port: 443
+  targetPort: 9443
 
 # Resource limits and requests
 resources:

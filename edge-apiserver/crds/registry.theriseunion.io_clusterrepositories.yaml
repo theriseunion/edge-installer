@@ -4,29 +4,29 @@ metadata:
   annotations:
     cert-manager.io/inject-ca-from: edge-system/edge-serving-cert
     controller-gen.kubebuilder.io/version: v0.16.1
-  name: categories.iam.theriseunion.io
+  name: clusterrepositories.registry.theriseunion.io
 spec:
-  group: iam.theriseunion.io
+  group: registry.theriseunion.io
   names:
-    categories:
-    - iam
-    kind: Category
-    listKind: CategoryList
-    plural: categories
-    singular: category
+    kind: ClusterRepository
+    listKind: ClusterRepositoryList
+    plural: clusterrepositories
+    singular: clusterrepository
   scope: Cluster
   versions:
   - additionalPrinterColumns:
-    - jsonPath: .spec.icon
-      name: Icon
+    - description: The name of the registry
+      jsonPath: .spec.registryName
+      name: RegistryName
       type: string
-    - jsonPath: .metadata.creationTimestamp
-      name: Age
-      type: date
+    - description: The name of the repository
+      jsonPath: .spec.repositoryName
+      name: RepositoryName
+      type: string
     name: v1alpha1
     schema:
       openAPIV3Schema:
-        description: Category is the Schema for the categories API
+        description: ClusterRepository is the Schema for the clusterrepositories API
         properties:
           apiVersion:
             description: |-
@@ -46,25 +46,17 @@ spec:
           metadata:
             type: object
           spec:
-            description: CategorySpec defines the desired state of Category
             properties:
-              description:
-                additionalProperties:
-                  type: string
-                description: Description represents description for this category,
-                  this field supports localization
-                type: object
-              displayName:
-                additionalProperties:
-                  type: string
-                description: DisplayName represents the name displays at console,
-                  this field supports localization
-                type: object
-              icon:
-                description: Icon represents the icon for this category
+              registryName:
                 type: string
+              repositoryName:
+                type: string
+            type: object
+          status:
+            description: ClusterRepositoryStatus defines the observed state of ClusterRepository
             type: object
         type: object
     served: true
     storage: true
-    subresources: {}
+    subresources:
+      status: {}
