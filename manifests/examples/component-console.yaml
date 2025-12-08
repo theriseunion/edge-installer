@@ -4,7 +4,7 @@ metadata:
   name: edge-console
   namespace: edge-system
 spec:
-  componentType: edge-console
+  type: edge-console
   namespace: edge-system
   releaseName: edge-console
   chartName: edge-console

@@ -19,12 +19,14 @@ help: ## Display this help.
 MUSEUM_IMG ?= quanzhenglong.com/edge/edge-museum:latest
 CHARTS_OUTPUT := bin/_output
 CHARTS_SOURCE := .
+# List of charts to package - modify this when adding/removing charts
+CHARTS := edge-controller edge-apiserver edge-console edge-monitoring
 
 .PHONY: package-charts
 package-charts: ## Package all Helm charts into tgz files
 	@echo "Packaging charts from $(CHARTS_SOURCE)..."
 	@mkdir -p $(CHARTS_OUTPUT)
-	@for chart in edge-controller edge-apiserver edge-console edge-monitoring; do \
+	@for chart in $(CHARTS); do \
 		echo "Packaging $$chart..."; \
 		helm package $(CHARTS_SOURCE)/$$chart -d $(CHARTS_OUTPUT); \
 	done
@@ -68,6 +70,6 @@ apply-host-components: ## Apply Host cluster components
 apply-member-components: ## Apply Member cluster components
 	kubectl apply -f components/member-components.yaml
 
-.PHONY: delete-components
-delete-components: ## Delete all components
+.PHONY: delete-host-components
+delete-host-components: ## Delete Host cluster components
 	kubectl delete -f components/host-components.yaml --ignore-not-found=true
