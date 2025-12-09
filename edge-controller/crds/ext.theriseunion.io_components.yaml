@@ -70,6 +70,14 @@ spec:
                   releaseName:
                     description: ReleaseName is the Helm release name
                     type: string
+                  repository:
+                    description: |-
+                      Repository is the chart repository URL
+                      If not specified, will use local charts or default ChartMuseum URL
+                      Examples:
+                        - http://controller-chartmuseum.edge-system.svc:8080
+                        - https://charts.example.com
+                    type: string
                 type: object
               enabled:
                 default: true
