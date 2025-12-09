@@ -51,6 +51,83 @@ edge:
     # Health check port  
     healthPort: 8081
 
+    # Controller configuration file
+    config:
+      enabled: true
+      # Metrics monitoring configuration
+      metrics:
+        enabled: true
+        prometheus:
+          endpoint: "http://prometheus-kube-prometheus-prometheus.prometheus.svc.cluster.local:9090"
+          auth: ""
+          timeout: "30s"
+          maxConcurrentQueries: 10
+          retryCount: 3
+          retryInterval: "1s"
+          tlsInsecureSkipVerify: true
+
+      # Device manager configuration
+      deviceManager:
+        hamiDeviceConfig: "config/device.yaml"
+
+      # Device plugin configuration
+      devicePlugin:
+        nvidiaHami:
+          memFactor: 1
+          nodeLabel:
+            key: "gpu-test"
+            value: "on"
+        hygonHami:
+          memFactor: 1
+          nodeLabel:
+            key: "dcu-test"
+            value: "on"
+        cambriconHami:
+          memFactor: 1
+          nodeLabel:
+            key: "mlu-test"
+            value: "on"
+        kunlunxinHami:
+          memFactor: 1
+          nodeLabel:
+            key: "xpu-test"
+            value: "on"
+        ascendHami:
+          memFactor: 1
+          nodeLabel:
+            key: "ascend-test"
+            value: "on"
+        iluvatarHami:
+          memFactor: 256
+          nodeLabel:
+            key: "iluvatar-test"
+            value: "on"
+        metaxHami:
+          memFactor: 1
+          nodeLabel:
+            key: "metax-test"
+            value: "on"
+        enflameHami:
+          memFactor: 1
+          nodeLabel:
+            key: "gcu-test"
+            value: "on"
+        alibabaHami:
+          memFactor: 1
+          nodeLabel:
+            key: "ppu-test"
+            value: "on"
+        nvidiaVolcano:
+          memFactor: 10
+          nodeLabel:
+            key: "volcano"
+            value: "on"
+        ascendVolcano:
+          memFactor: 1
+          nodeLabel:
+            key: "volcano_ascend-test"
+            value: "on"
+
   # RBAC Controller configuration
   rbacController:
     enabled: true

@@ -124,5 +124,6 @@ data:
 
     # Device manager configuration.
     deviceManager:
+      enabledAggregator: {{ .Values.edge.apiserver.config.deviceManager.enabledAggregator | default true }}
       hamiDeviceConfig: "{{ .Values.edge.apiserver.config.deviceManager.hamiDeviceConfig | default "config/device.yaml" }}"
 {{- end }}

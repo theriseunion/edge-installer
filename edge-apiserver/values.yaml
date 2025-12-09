@@ -104,6 +104,7 @@ edge:
         password: ""
         sslMode: ""
       deviceManager:
+        enabledAggregator: true
         hamiDeviceConfig: "config/device.yaml"
 
   # RBAC configuration - Core functionality
