@@ -75,6 +75,8 @@ metadata:
   name: edge-apiserver-cert
   namespace: edge-system
 spec:
+  # Set commonName to match the primary DNS name for proper certificate validation
+  commonName: {{ include "edge-apiserver.fullname" . }}.edge-system.svc.cluster.local
   dnsNames:
   - {{ include "edge-apiserver.fullname" . }}.edge-system.svc
   - {{ include "edge-apiserver.fullname" . }}.edge-system.svc.cluster.local
@@ -82,3 +84,8 @@ spec:
     kind: Issuer
     name: edge-service-issuer
   secretName: edge-apiserver-cert
+  # Include the full certificate chain in the secret
+  # This ensures the CA certificate is available for verification
+  usages:
+  - server auth
+  - client auth
