@@ -1,0 +1,44 @@
+# ChartMuseum Configuration
+# Helm Chart Repository for Edge Platform
+
+# Enable/disable chartmuseum deployment
+enabled: true
+
+# Image configuration
+image:
+  repository: quanzhenglong.com/edge/edge-museum
+  tag: "latest"
+  pullPolicy: IfNotPresent
+
+# Resource limits and requests
+resources:
+  limits:
+    cpu: 100m
+    memory: 128Mi
+  requests:
+    cpu: 50m
+    memory: 64Mi
+
+# Service configuration
+service:
+  type: ClusterIP
+  port: 8080
+
+# ChartMuseum environment variables
+env:
+  # Chart storage settings
+  STORAGE: "local"
+  STORAGE_LOCAL_ROOTDIR: "/charts"
+
+  # API settings
+  DISABLE_API: false
+  ALLOW_OVERWRITE: true
+
+  # Chart upload settings
+  CONTEXT_PATH: "/"
+
+# Namespace configuration (inherited from parent)
+namespace: ""
+
+# Parent chart fullname (used for naming resources)
+parentFullname: ""

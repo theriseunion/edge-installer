@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "edge-controller.fullname" . }}
+  labels:
+    {{- include "edge-controller.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.controller.service.type }}
+  ports:
+    - port: {{ .Values.controller.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+    - port: 8082
+      targetPort: 8082
+      protocol: TCP
+      name: metrics
+  selector:
+    {{- include "edge-controller.selectorLabels" . | nindent 4 }}

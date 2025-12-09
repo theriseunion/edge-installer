@@ -1,5 +1,5 @@
 # Edge Installer Makefile
-# ChartMuseum + Component CR 架构
+# Unified Helm Chart Architecture - Single Command Installation
 
 # CONTAINER_TOOL defines the container tool to be used for building images.
 CONTAINER_TOOL ?= docker
@@ -14,16 +14,23 @@ SHELL = /usr/bin/env bash -o pipefail
 help: ## Display this help.
 	@awk 'BEGIN {FS = ":.*##"; printf "\nUsage:\n  make \033[36m<target>\033[0m\n"} /^[a-zA-Z_0-9-]+:.*?##/ { printf "  \033[36m%-15s\033[0m %s\n", $$1, $$2 } /^##@/ { printf "\n\033[1m%s\033[0m\n", substr($$0, 5) } ' $(MAKEFILE_LIST)
 
-##@ ChartMuseum
+##@ Chart Packaging
 
-MUSEUM_IMG ?= quanzhenglong.com/edge/edge-museum:latest
+# Registry configuration
+REGISTRY ?= quanzhenglong.com/edge
+TAG ?= latest
 CHARTS_OUTPUT := bin/_output
 CHARTS_SOURCE := .
+
 # List of charts to package - modify this when adding/removing charts
-CHARTS := edge-controller edge-apiserver edge-console edge-monitoring
+# Note: monitoring-service is embedded in edge-monitoring chart
+CHARTS := edge-apiserver edge-console edge-controller edge-monitoring kubeedge vcluster yurt-manager yurthub
+
+# ChartMuseum image
+MUSEUM_IMG ?= $(REGISTRY)/edge-museum:$(TAG)
 
 .PHONY: package-charts
-package-charts: ## Package all Helm charts into tgz files
+package-charts: clean-charts ## Package all Helm charts into tgz files (cleans old packages first)
 	@echo "Packaging charts from $(CHARTS_SOURCE)..."
 	@mkdir -p $(CHARTS_OUTPUT)
 	@for chart in $(CHARTS); do \
@@ -73,3 +80,52 @@ apply-member-components: ## Apply Member cluster components
 .PHONY: delete-host-components
 delete-host-components: ## Delete Host cluster components
 	kubectl delete -f components/host-components.yaml --ignore-not-found=true
+
+##@ Unified Installation
+
+.PHONY: install-all
+install-all: ## Install all components (standalone cluster)
+	helm install edge-platform ./edge-controller
+
+.PHONY: install-host
+install-host: ## Install Host cluster components (with console)
+	helm install edge-platform ./edge-controller --set global.mode=host
+
+.PHONY: install-member
+install-member: ## Install Member cluster components (without console)
+	helm install edge-platform ./edge-controller --set global.mode=member
+
+.PHONY: install-controller-only
+install-controller-only: ## Install only controller infrastructure
+	helm install edge-platform ./edge-controller --set global.mode=none
+
+.PHONY: upgrade-all
+upgrade-all: ## Upgrade all components
+	helm upgrade edge-platform ./edge-controller
+
+.PHONY: uninstall
+uninstall: ## Uninstall all components
+	helm uninstall edge-platform
+
+.PHONY: lint
+lint: ## Lint the Helm chart
+	helm lint ./edge-controller
+
+.PHONY: template
+template: ## Show rendered templates
+	helm template edge-platform ./edge-controller
+
+##@ Examples
+
+.PHONY: example-host
+example-host: ## Example: Install host cluster with custom registry
+	helm install edge-platform ./edge-controller \
+		--set global.mode=host \
+		--set global.imageRegistry=your-registry.com/edge \
+		--set controller.image.tag=v1.0.0
+
+.PHONY: example-member
+example-member: ## Example: Install member cluster
+	helm install edge-platform ./edge-controller \
+		--set global.mode=member \
+		--set autoInstall.monitoring.enabled=false

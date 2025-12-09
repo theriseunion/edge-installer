@@ -1,0 +1,39 @@
+{{- if .Values.iptablesManager.enabled }}
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: cloud-iptables-manager
+  namespace: {{ include "kubeedge.namespace" . }}
+  labels:
+    {{- include "kubeedge.iptables.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "kubeedge.iptables.labels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "kubeedge.iptables.labels" . | nindent 8 }}
+    spec:
+      serviceAccount: iptables-manager-sa
+      hostNetwork: {{ .Values.iptablesManager.hostNetwork }}
+      {{- with .Values.iptablesManager.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      restartPolicy: Always
+      containers:
+      - name: iptables-manager
+        command: ['iptables-manager']
+        image: {{ include "kubeedge.iptablesImage" . }}
+        imagePullPolicy: {{ .Values.iptablesManager.image.pullPolicy }}
+        securityContext:
+          capabilities:
+            add:
+            - NET_ADMIN
+            - NET_RAW
+        {{- with .Values.iptablesManager.resources }}
+        resources:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+{{- end }}

@@ -1,0 +1,183 @@
+# Namespace configuration
+namespace: kubeedge
+
+# Global configuration
+global:
+  imageRegistry: ""
+  imagePullSecrets: []
+
+# CloudCore configuration
+cloudCore:
+  replicaCount: 1
+  hostNetwork: true
+  dnsPolicy: ClusterFirstWithHostNet
+
+  image:
+    registry: ""
+    repository: cloudcore
+    tag: "v1.20.0"
+    pullPolicy: IfNotPresent
+    pullSecrets: []
+    digest: ""
+
+  # Resources configuration
+  resources:
+    limits:
+      cpu: 200m
+      memory: 1Gi
+    requests:
+      cpu: 100m
+      memory: 512Mi
+
+  # Node selector and affinity
+  nodeSelector: {}
+  tolerations: []
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: node-role.kubernetes.io/edge
+            operator: DoesNotExist
+
+  # Security context
+  securityContext:
+    privileged: true
+
+# CloudHub configuration
+cloudHub:
+  # Advertise address (REQUIRED)
+  advertiseAddress:
+    - 10.0.242.176
+
+  dnsNames: []
+
+  nodeLimit: 1000
+
+  # Websocket configuration
+  websocket:
+    enable: true
+    address: "0.0.0.0"
+    port: 10000
+
+  # QUIC configuration
+  quic:
+    enable: false
+    address: "0.0.0.0"
+    port: 10001
+    maxIncomingStreams: 10000
+
+  # HTTPS configuration
+  https:
+    enable: true
+    address: "0.0.0.0"
+    port: 10002
+
+  # Unix socket configuration
+  unixsocket:
+    enable: true
+    address: "unix:///var/lib/kubeedge/kubeedge.sock"
+
+# CloudStream configuration
+cloudStream:
+  enable: true
+  streamPort: 10003
+  tunnelPort: 10004
+
+# Module configuration
+modules:
+  dynamicController:
+    enable: false
+  router:
+    enable: false
+  iptablesManager:
+    enable: true
+    mode: external
+  taskManager:
+    enable: false
+
+# Feature gates
+featureGates:
+  requireAuthorization: false
+
+# Kubernetes API configuration
+kubeAPIConfig:
+  kubeConfig: ""
+  master: ""
+
+# Service configuration
+service:
+  type: ClusterIP
+  ports:
+    cloudhub: 10000
+    cloudhubQuic: 10001
+    cloudhubHttps: 10002
+    cloudstream: 10003
+    tunnelport: 10004
+  annotations: {}
+
+# IPTables Manager configuration
+iptablesManager:
+  enabled: true
+
+  image:
+    registry: ""
+    repository: iptables-manager
+    tag: "v1.20.0"
+    pullPolicy: IfNotPresent
+
+  resources:
+    limits:
+      cpu: 200m
+      memory: 50Mi
+    requests:
+      cpu: 100m
+      memory: 25Mi
+
+  hostNetwork: true
+
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: node-role.kubernetes.io/edge
+            operator: DoesNotExist
+
+# Mosquitto configuration for edge nodes
+mosquitto:
+  enabled: true
+
+  image:
+    registry: ""
+    repository: eclipse-mosquitto
+    tag: "1.6.15"
+    pullPolicy: IfNotPresent
+
+  resources:
+    limits:
+      cpu: 200m
+      memory: 100Mi
+    requests:
+      cpu: 100m
+      memory: 50Mi
+
+  hostNetwork: true
+
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: node-role.kubernetes.io/edge
+            operator: Exists
+
+# RBAC configuration
+rbac:
+  create: true
+
+# ServiceAccount configuration
+serviceAccount:
+  create: true
+  name: cloudcore
+  annotations: {}

@@ -17,9 +17,6 @@ spec:
   scope: Namespaced
   versions:
   - additionalPrinterColumns:
-    - jsonPath: .spec.type
-      name: Type
-      type: string
     - jsonPath: .spec.enabled
       name: Enabled
       type: boolean
@@ -61,7 +58,8 @@ spec:
                 description: Chart contains Helm chart configuration
                 properties:
                   name:
-                    description: Name is the chart name, defaults to "edge-{type}"
+                    description: Name is the chart name, defaults to component name
+                      if not specified
                     type: string
                   namespace:
                     default: edge-system
@@ -70,19 +68,19 @@ spec:
                   releaseName:
                     description: ReleaseName is the Helm release name
                     type: string
+                  repository:
+                    description: |-
+                      Repository is the chart repository URL
+                      If not specified, will use local charts or default ChartMuseum URL
+                      Examples:
+                        - http://controller-chartmuseum.edge-system.svc:8080
+                        - https://charts.example.com
+                    type: string
                 type: object
               enabled:
                 default: true
                 description: Enabled indicates whether this component should be installed
                 type: boolean
-              type:
-                description: Type is the component type (controller/apiserver/console/monitoring)
-                enum:
-                - controller
-                - apiserver
-                - console
-                - monitoring
-                type: string
               values:
                 description: Values are Helm values to override defaults
                 type: object
@@ -93,7 +91,6 @@ spec:
                 type: string
             required:
             - enabled
-            - type
             type: object
           status:
             description: ComponentStatus defines the observed state of Component

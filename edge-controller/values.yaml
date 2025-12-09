@@ -1,63 +1,163 @@
-# Edge Controller Configuration - Focused on RBAC Management
+# Edge Platform Unified Configuration
+# Supports single-command installation of all components
 
-replicaCount: 1
+# Global configuration
+global:
+  # Installation mode: all, host, member, none
+  #   - all: install all components (for standalone clusters)
+  #   - host: install apiserver, controller, console, monitoring (for host clusters)
+  #   - member: install apiserver, controller, monitoring (for member clusters)
+  #   - none: only install controller infrastructure, no components
+  mode: "all"
+
+  # Namespace for all components
+  namespace: "edge-system"
+
+  # Image registry
+  imageRegistry: "quanzhenglong.com/edge"
 
 # Override the full name to remove edge- prefix
 fullnameOverride: "controller"
 
-image:
-  repository: quanzhenglong.com/edge/controller
-  pullPolicy: IfNotPresent  # Options: Always, IfNotPresent, Never
-  tag: "main"
+# Controller configuration
+controller:
+  enabled: true
+  replicaCount: 1
 
-# ServiceAccount configuration
-serviceAccount:
-  create: true
-  automount: true
-  name: ""
+  image:
+    repository: controller
+    tag: "main"
+    pullPolicy: IfNotPresent
 
-# Security Context
-securityContext:
-  runAsNonRoot: true
-  runAsUser: 65532
-  allowPrivilegeEscalation: false
-  capabilities:
-    drop:
-    - ALL
+  resources:
+    limits:
+      cpu: 200m
+      memory: 256Mi
+    requests:
+      cpu: 50m
+      memory: 64Mi
 
-# Service configuration
-service:
-  type: ClusterIP
-  port: 8080
-  targetPort: 8080
+  # ServiceAccount configuration
+  serviceAccount:
+    create: true
+    automount: true
+    name: ""
 
-# Resource limits and requests
-resources:
-  limits:
-    cpu: 200m
-    memory: 256Mi
-  requests:
-    cpu: 50m
-    memory: 64Mi
+  # Security Context
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 65532
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop:
+      - ALL
 
-# Edge Controller specific configuration
-edge:
-  controller:
-    # Log level (debug, info, warn, error)
-    logLevel: info
-    # Metrics port
-    metricsPort: 8080
-    # Health check port  
-    healthPort: 8081
+  # Service configuration
+  service:
+    type: ClusterIP
+    port: 8080
+    targetPort: 8080
 
-  # RBAC Controller configuration
-  rbacController:
+  # Chart repository configuration
+  chartRepository:
+    # URL will be auto-set to ChartMuseum service
+    url: ""
+
+  # Log level (debug, info, warn, error)
+  logLevel: info
+
+  # Metrics port
+  metricsPort: 8080
+
+  # Health check port
+  healthPort: 8081
+
+# ChartMuseum configuration
+chartmuseum:
+  enabled: true
+
+  # Fixed service name for chartmuseum
+  # This ensures Components can reliably access it at chartmuseum.{namespace}.svc
+  fullnameOverride: "chartmuseum"
+
+  image:
+    repository: quanzhenglong.com/edge/edge-museum
+    tag: "latest"
+    pullPolicy: IfNotPresent
+
+  resources:
+    limits:
+      cpu: 100m
+      memory: 128Mi
+    requests:
+      cpu: 50m
+      memory: 64Mi
+
+  service:
+    type: ClusterIP
+    port: 8080
+
+  env:
+    # Chart storage settings
+    STORAGE: "local"
+    STORAGE_LOCAL_ROOTDIR: "/charts"
+
+    # API settings
+    DISABLE_API: false
+    ALLOW_OVERWRITE: true
+
+    # Chart upload settings
+    CONTEXT_PATH: "/"
+
+# Component auto-installation configuration
+autoInstall:
+  # NOTE: Controller is NOT installed via Component CR because it's already
+  # deployed as part of this Helm chart. Only APIServer, Console, and Monitoring
+  # are managed via Component CRs.
+
+  # APIServer component
+  apiserver:
     enabled: true
-    # Watch all namespaces for RBAC resources
-    watchNamespace: ""
+    version: "0.1.0"
+    values:
+      replicaCount: 1
+      service:
+        type: ClusterIP
+        port: 8080
 
-# Chart Repository configuration (for Component CR installation)
-chartRepository:
-  # ChartMuseum URL for HTTP direct download
-  # Example: "http://edge-museum.edge-system.svc:8080"
-  url: ""
+  # Console component (only for host/all modes)
+  console:
+    enabled: false  # Will be set based on global.mode
+    version: "0.1.0"
+    values:
+      replicaCount: 1
+      service:
+        type: ClusterIP
+        port: 3000
+      env:
+        - name: NEXT_PUBLIC_API_BASE_URL
+          value: "http://apiserver:8080"
+
+  # Monitoring component
+  monitoring:
+    enabled: true
+    version: "0.1.0"
+    values:
+      namespace: "observability-system"
+      prometheus:
+        enabled: true
+      grafana:
+        enabled: true
+      alertManager:
+        enabled: true
+
+# Hook configuration
+hooks:
+  # Enable chart packaging/upload hooks
+  packageCharts: false
+
+  # Timeout for hook operations
+  timeout: 300
+
+  # Delete hook pods after execution
+  deletePolicy: before-hook-creation,hook-succeeded

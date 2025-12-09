@@ -46,6 +46,11 @@ resources:
 
 # Edge specific configuration
 edge:
+  # Cluster configuration
+  cluster:
+    # Enable cluster-level RBAC roles
+    enabled: true
+
   # API Server configuration
   apiserver:
     # Log level (debug, info, warn, error)
@@ -59,18 +64,6 @@ edge:
     installPlatformRoles: true
     # Grant cluster-admin privileges to apiserver
     clusterAdmin: true
-
-  # Host Cluster configuration
-  cluster:
-    name: "host"
-    enabled: true
-    provider: "Kubernetes"
-    joinFederation: false
-    externalKubeAPIEnabled: false
-    connection:
-      type: "direct"
-      kubernetesAPIEndpoint: "https://kubernetes.default.svc:443"
-      # theriseunionAPIEndpoint: "http://edge-apiserver:8080"
 
   # Default admin user configuration
   defaultAdmin:
