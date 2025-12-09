@@ -95,3 +95,4 @@ spec:
 # cert-manager's cainjector now automatically handles CA bundle injection
 # via the cert-manager.io/inject-ca-from annotation on the APIService resource above.
 # This approach is simpler, more reliable, and follows cert-manager best practices.
+{{- end }}
