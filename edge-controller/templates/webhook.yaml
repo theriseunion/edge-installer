@@ -3,7 +3,7 @@ apiVersion: admissionregistration.k8s.io/v1
 kind: MutatingWebhookConfiguration
 metadata:
   annotations:
-    cert-manager.io/inject-ca-from: edge-system/edge-serving-cert
+    cert-manager.io/inject-ca-from: edge-system/webhook-server-cert
   labels:
     app.kubernetes.io/component: webhook
     app.kubernetes.io/created-by: apiserver-project
@@ -78,6 +78,7 @@ webhooks:
       operator: NotIn
       values:
       - edge-system
+      - cert-manager
   objectSelector:
     matchExpressions:
     - key: control-plane

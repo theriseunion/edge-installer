@@ -1,0 +1,78 @@
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  labels:
+    {{- include "edge-apiserver.labels" . | nindent 4 }}
+    iam.theriseunion.io/scope: platform
+    iam.theriseunion.io/scope-value: global
+  name: edge-system:edge-apiserver:aggregator
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: edge-system:edge-apiserver:aggregator
+subjects:
+- apiGroup: rbac.authorization.k8s.io
+  kind: User
+  name: system:kube-aggregator
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    {{- include "edge-apiserver.labels" . | nindent 4 }}
+  name: edge-system:edge-apiserver:aggregator
+rules:
+- nonResourceURLs:
+  - /apis/vast.theriseunion.io/v1alpha1
+  - /apis/vast.theriseunion.io/v1alpha1/*
+  verbs:
+  - get
+- nonResourceURLs:
+  - /apis
+  - /apis/*
+  verbs:
+  - get
+- nonResourceURLs:
+  - /apis/vast.theriseunion.io
+  - /apis/vast.theriseunion.io/*
+  verbs:
+  - get
+- apiGroups:
+  - ""
+  resources:
+  - services
+  - endpoints
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - apiregistration.k8s.io
+  resources:
+  - apiservices
+  verbs:
+  - get
+  - list
+  - watch
+  - create
+  - update
+  - patch
+  - delete
+---
+apiVersion: apiregistration.k8s.io/v1
+kind: APIService
+metadata:
+  labels:
+    {{- include "edge-apiserver.labels" . | nindent 4 }}
+  name: v1alpha1.vast.theriseunion.io
+spec:
+  group: vast.theriseunion.io
+  groupPriorityMinimum: 1000
+  insecureSkipTLSVerify: true
+  service:
+    name: {{ include "edge-apiserver.fullname" . }}
+    namespace: edge-system
+    port: 8443
+  version: v1alpha1
+  versionPriority: 15
