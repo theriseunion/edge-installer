@@ -24,6 +24,10 @@ spec:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          {{- if .Values.edge.controller.config.enabled }}
+          args:
+            - --config=/etc/edge/controller.yaml
+          {{- end }}
           ports:
             - name: https
               containerPort: {{ .Values.service.targetPort }}
@@ -48,6 +52,11 @@ spec:
           - mountPath: /tmp/k8s-webhook-server/serving-certs
             name: cert
             readOnly: true
+          {{- if .Values.edge.controller.config.enabled }}
+          - mountPath: /etc/edge
+            name: controller-config
+            readOnly: true
+          {{- end }}
         - args:
           - --secure-listen-address=0.0.0.0:8443
           - --upstream=http://127.0.0.1:8080/
@@ -76,3 +85,8 @@ spec:
         secret:
           defaultMode: 420
           secretName: webhook-server-cert
+      {{- if .Values.edge.controller.config.enabled }}
+      - name: controller-config
+        configMap:
+          name: {{ include "edge-controller.fullname" . }}-config
+      {{- end }}

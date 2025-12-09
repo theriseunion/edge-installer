@@ -1,0 +1,100 @@
+{{- if .Values.edge.controller.config.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "edge-controller.fullname" . }}-config
+  labels:
+    {{- include "edge-controller.labels" . | nindent 4 }}
+data:
+  controller.yaml: |
+    # Metrics monitoring configuration.
+    metrics:
+      # Whether to enable metrics functionality.
+      enabled: {{ .Values.edge.controller.config.metrics.enabled | default true }}
+
+      # Prometheus configuration.
+      prometheus:
+        # Prometheus service endpoint.
+        # In-cluster: http://prometheus.observability-system.svc.cluster.local:9090
+        # Out-of-cluster: http://localhost:9090
+        endpoint: "{{ .Values.edge.controller.config.metrics.prometheus.endpoint | default "http://prometheus.observability-system.svc.cluster.local:9090" }}"
+
+        # Authentication.
+        auth: "{{ .Values.edge.controller.config.metrics.prometheus.auth | default "" }}"
+
+        # Query timeout.
+        timeout: "{{ .Values.edge.controller.config.metrics.prometheus.timeout | default "30s" }}"
+
+        # Maximum concurrent queries.
+        maxConcurrentQueries: {{ .Values.edge.controller.config.metrics.prometheus.maxConcurrentQueries | default 10 }}
+
+        # Retry configuration.
+        retryCount: {{ .Values.edge.controller.config.metrics.prometheus.retryCount | default 3 }}
+        retryInterval: "{{ .Values.edge.controller.config.metrics.prometheus.retryInterval | default "1s" }}"
+
+        # TLS configuration (can skip verification in development).
+        tlsInsecureSkipVerify: {{ .Values.edge.controller.config.metrics.prometheus.tlsInsecureSkipVerify | default true }}
+
+    # Device manager configuration.
+    deviceManager:
+      hamiDeviceConfig: "{{ .Values.edge.controller.config.deviceManager.hamiDeviceConfig | default "config/device.yaml" }}"
+
+    # Device plugin configuration.
+    device_plugin:
+      nvidia-hami:
+        mem_factor: {{ .Values.edge.controller.config.devicePlugin.nvidiaHami.memFactor | default 1 }}
+        node_label:
+          key: {{ .Values.edge.controller.config.devicePlugin.nvidiaHami.nodeLabel.key | default "gpu-test" }}
+          value: "{{ .Values.edge.controller.config.devicePlugin.nvidiaHami.nodeLabel.value | default "on" }}"
+      hygon-hami:
+        mem_factor: {{ .Values.edge.controller.config.devicePlugin.hygonHami.memFactor | default 1 }}
+        node_label:
+          key: {{ .Values.edge.controller.config.devicePlugin.hygonHami.nodeLabel.key | default "dcu-test" }}
+          value: "{{ .Values.edge.controller.config.devicePlugin.hygonHami.nodeLabel.value | default "on" }}"
+      cambricon-hami:
+        mem_factor: {{ .Values.edge.controller.config.devicePlugin.cambriconHami.memFactor | default 1 }}
+        node_label:
+          key: {{ .Values.edge.controller.config.devicePlugin.cambriconHami.nodeLabel.key | default "mlu-test" }}
+          value: "{{ .Values.edge.controller.config.devicePlugin.cambriconHami.nodeLabel.value | default "on" }}"
+      kunlunxin-hami:
+        mem_factor: {{ .Values.edge.controller.config.devicePlugin.kunlunxinHami.memFactor | default 1 }}
+        node_label:
+          key: {{ .Values.edge.controller.config.devicePlugin.kunlunxinHami.nodeLabel.key | default "xpu-test" }}
+          value: "{{ .Values.edge.controller.config.devicePlugin.kunlunxinHami.nodeLabel.value | default "on" }}"
+      ascend-hami:
+        mem_factor: {{ .Values.edge.controller.config.devicePlugin.ascendHami.memFactor | default 1 }}
+        node_label:
+          key: {{ .Values.edge.controller.config.devicePlugin.ascendHami.nodeLabel.key | default "ascend-test" }}
+          value: "{{ .Values.edge.controller.config.devicePlugin.ascendHami.nodeLabel.value | default "on" }}"
+      iluvatar-hami:
+        mem_factor: {{ .Values.edge.controller.config.devicePlugin.iluvatarHami.memFactor | default 256 }}
+        node_label:
+          key: {{ .Values.edge.controller.config.devicePlugin.iluvatarHami.nodeLabel.key | default "iluvatar-test" }}
+          value: "{{ .Values.edge.controller.config.devicePlugin.iluvatarHami.nodeLabel.value | default "on" }}"
+      metax-hami:
+        mem_factor: {{ .Values.edge.controller.config.devicePlugin.metaxHami.memFactor | default 1 }}
+        node_label:
+          key: {{ .Values.edge.controller.config.devicePlugin.metaxHami.nodeLabel.key | default "metax-test" }}
+          value: "{{ .Values.edge.controller.config.devicePlugin.metaxHami.nodeLabel.value | default "on" }}"
+      enflame-hami:
+        mem_factor: {{ .Values.edge.controller.config.devicePlugin.enflameHami.memFactor | default 1 }}
+        node_label:
+          key: {{ .Values.edge.controller.config.devicePlugin.enflameHami.nodeLabel.key | default "gcu-test" }}
+          value: "{{ .Values.edge.controller.config.devicePlugin.enflameHami.nodeLabel.value | default "on" }}"
+      alibaba-hami:
+        mem_factor: {{ .Values.edge.controller.config.devicePlugin.alibabaHami.memFactor | default 1 }}
+        node_label:
+          key: {{ .Values.edge.controller.config.devicePlugin.alibabaHami.nodeLabel.key | default "ppu-test" }}
+          value: "{{ .Values.edge.controller.config.devicePlugin.alibabaHami.nodeLabel.value | default "on" }}"
+      nvidia-volcano:
+        mem_factor: {{ .Values.edge.controller.config.devicePlugin.nvidiaVolcano.memFactor | default 10 }}
+        node_label:
+          key: {{ .Values.edge.controller.config.devicePlugin.nvidiaVolcano.nodeLabel.key | default "volcano" }}
+          value: "{{ .Values.edge.controller.config.devicePlugin.nvidiaVolcano.nodeLabel.value | default "on" }}"
+      ascend-volcano:
+        mem_factor: {{ .Values.edge.controller.config.devicePlugin.ascendVolcano.memFactor | default 1 }}
+        node_label:
+          key: {{ .Values.edge.controller.config.devicePlugin.ascendVolcano.nodeLabel.key | default "volcano_ascend-test" }}
+          value: "{{ .Values.edge.controller.config.devicePlugin.ascendVolcano.nodeLabel.value | default "on" }}"
+{{- end }}
+
