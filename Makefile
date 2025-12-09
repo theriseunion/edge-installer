@@ -4,12 +4,13 @@ NAMESPACE ?= edge-system
 KUBECONFIG ?= $(HOME)/.kube/config
 REGISTRY ?= quanzhenglong.com/edge
 TAG ?= latest
-CONTROLLER_APISERVER_TAG ?= vast-v0.1.0-04
+CONTROLLER_APISERVER_TAG ?= vast-v0.1.0-05
 PULL_POLICY ?= Always
 ENABLE_MONITORING ?= false
 INSTALL_OPENYURT ?= false
 OPENYURT_API_SERVER ?=
 CERT_MANAGER_VERSION ?= 1.14.4
+CERT_MANAGER_INSTALL_YAML ?= https://gh-proxy.net/https://github.com/cert-manager/cert-manager/releases/download/v${CERT_MANAGER_VERSION}/cert-manager.yaml
 
 .PHONY: deploy
 # 部署 Edge Platform
@@ -36,3 +37,9 @@ undeploy:
 	@helm uninstall console -n $(NAMESPACE) || true
 	@kubectl delete namespace $(NAMESPACE) || true
 	@echo "✅ Edge Platform 卸载成功"
+
+# 卸载 cert-manager
+.PHONY: uninstall-cert-manager
+uninstall-cert-manager: ## 卸载 cert-manager
+	kubectl delete -f $(CERT_MANAGER_INSTALL_YAML) || true
+	@echo "✅ cert-manager 卸载成功"

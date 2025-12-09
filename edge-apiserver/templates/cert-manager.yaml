@@ -1,4 +1,67 @@
 ---
+# CA Issuer - Generates a CA certificate for signing service certificates
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  labels:
+    app.kubernetes.io/component: certificate
+    app.kubernetes.io/created-by: apiserver-project
+    app.kubernetes.io/instance: ca-issuer
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/name: certificate
+    app.kubernetes.io/part-of: apiserver-project
+  name: edge-ca-issuer
+  namespace: edge-system
+spec:
+  selfSigned: {}
+---
+# CA Certificate - The root CA certificate used to sign service certificates
+# Note: Self-signed CA certificates do not auto-rotate. The CronJob will detect manual rotations.
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  labels:
+    app.kubernetes.io/component: certificate
+    app.kubernetes.io/created-by: apiserver-project
+    app.kubernetes.io/instance: ca-cert
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/name: certificate
+    app.kubernetes.io/part-of: apiserver-project
+  name: edge-ca-cert
+  namespace: edge-system
+spec:
+  isCA: true
+  # CommonName for CA certificates should be descriptive and identify the CA's purpose.
+  # Using domain format (ca.namespace.svc.cluster.local) is a common practice for consistency,
+  # but descriptive names like "Edge Platform CA" are also acceptable.
+  # The CommonName doesn't need to match any actual DNS name since CA certs are not used for TLS connections.
+  commonName: ca.edge-system.svc.cluster.local
+  # CA certificate duration - 10 years for root CA (longer validity for stability)
+  # Service certificates will have shorter durations and auto-renew
+  duration: 87600h  # 10 years
+  secretName: edge-ca-cert
+  issuerRef:
+    kind: Issuer
+    name: edge-ca-issuer
+---
+# CA Issuer for signing service certificates - Uses the CA certificate above
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  labels:
+    app.kubernetes.io/component: certificate
+    app.kubernetes.io/created-by: apiserver-project
+    app.kubernetes.io/instance: service-issuer
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/name: certificate
+    app.kubernetes.io/part-of: apiserver-project
+  name: edge-service-issuer
+  namespace: edge-system
+spec:
+  ca:
+    secretName: edge-ca-cert
+---
+# Service Certificate - Signed by the CA above
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
@@ -17,20 +80,5 @@ spec:
   - {{ include "edge-apiserver.fullname" . }}.edge-system.svc.cluster.local
   issuerRef:
     kind: Issuer
-    name: edge-selfsigned-issuer
+    name: edge-service-issuer
   secretName: edge-apiserver-cert
----
-apiVersion: cert-manager.io/v1
-kind: Issuer
-metadata:
-  labels:
-    app.kubernetes.io/component: certificate
-    app.kubernetes.io/created-by: apiserver-project
-    app.kubernetes.io/instance: serving-cert
-    app.kubernetes.io/managed-by: kustomize
-    app.kubernetes.io/name: certificate
-    app.kubernetes.io/part-of: apiserver-project
-  name: edge-selfsigned-issuer
-  namespace: edge-system
-spec:
-  selfSigned: {}

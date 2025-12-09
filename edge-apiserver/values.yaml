@@ -98,3 +98,5 @@ edge:
         clientSecret: "kubectl-secret"
       - clientId: "default-client"
         clientSecret: "default-secret"
+
+certManager: {}

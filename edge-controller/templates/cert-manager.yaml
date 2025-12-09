@@ -16,5 +16,5 @@ spec:
   - {{ include "edge-controller.fullname" . }}.edge-system.svc.cluster.local
   issuerRef:
     kind: Issuer
-    name: edge-selfsigned-issuer
+    name: edge-service-issuer
   secretName: webhook-server-cert

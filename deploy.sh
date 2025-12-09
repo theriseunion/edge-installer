@@ -127,6 +127,77 @@ curl -sL "$CERT_MANAGER_INSTALL_YAML" \
 kubectl -n cert-manager wait --for=condition=Available deploy --all --timeout=300s
 echo "✅ Cert-Manager 部署成功"
 
+# 等待 cert-manager webhook 完全就绪
+echo "等待 cert-manager webhook 就绪..."
+for i in {1..90}; do
+  # 检查 webhook pod 是否就绪（使用正确的标签选择器）
+  # cert-manager webhook 的标签是 app.kubernetes.io/name=webhook，不是 cert-manager-webhook
+  WEBHOOK_POD_NAME=$(kubectl get pods -n cert-manager -l app.kubernetes.io/name=webhook,app.kubernetes.io/component=webhook -o jsonpath='{.items[0].metadata.name}' 2>/dev/null || echo "")
+  if [ -n "$WEBHOOK_POD_NAME" ]; then
+    WEBHOOK_READY=$(kubectl get pod -n cert-manager "$WEBHOOK_POD_NAME" -o jsonpath='{.status.conditions[?(@.type=="Ready")].status}' 2>/dev/null || echo "False")
+    WEBHOOK_PHASE=$(kubectl get pod -n cert-manager "$WEBHOOK_POD_NAME" -o jsonpath='{.status.phase}' 2>/dev/null || echo "Unknown")
+  else
+    WEBHOOK_READY="False"
+    WEBHOOK_PHASE="NotFound"
+  fi
+  
+  # 检查 webhook 的 CA bundle 是否已注入
+  CA_BUNDLE=$(kubectl get validatingwebhookconfiguration cert-manager-webhook -o jsonpath='{.webhooks[0].clientConfig.caBundle}' 2>/dev/null || echo "")
+  
+  # 检查 webhook 服务是否可用
+  WEBHOOK_SVC=$(kubectl get svc -n cert-manager cert-manager-webhook 2>/dev/null | grep -c cert-manager-webhook || echo "0")
+  
+  # 检查 webhook 的 TLS 证书 secret 是否存在
+  WEBHOOK_TLS_SECRET=$(kubectl get secret cert-manager-webhook-ca -n cert-manager -o jsonpath='{.data.tls\.crt}' 2>/dev/null || echo "")
+  
+  # 测试 webhook 连接（通过检查 endpoints）
+  WEBHOOK_ENDPOINTS=$(kubectl get endpoints -n cert-manager cert-manager-webhook -o jsonpath='{.subsets[0].addresses[0].ip}' 2>/dev/null || echo "")
+  
+  # 如果 Pod 是 Running 状态且 Ready 为 True，或者 Pod 不存在但其他条件满足，认为就绪
+  if [ "$WEBHOOK_READY" = "True" ] && [ -n "$CA_BUNDLE" ] && [ "$CA_BUNDLE" != "null" ] && [ "$WEBHOOK_SVC" = "1" ] && [ -n "$WEBHOOK_TLS_SECRET" ] && [ -n "$WEBHOOK_ENDPOINTS" ]; then
+    echo "✅ cert-manager webhook 已就绪"
+    break
+  fi
+  
+  # 如果 Pod 是 Running 状态，即使 Ready 检查失败，也认为基本就绪（可能是短暂的检查延迟）
+  if [ "$WEBHOOK_PHASE" = "Running" ] && [ -n "$CA_BUNDLE" ] && [ "$CA_BUNDLE" != "null" ] && [ "$WEBHOOK_SVC" = "1" ] && [ -n "$WEBHOOK_TLS_SECRET" ] && [ -n "$WEBHOOK_ENDPOINTS" ]; then
+    if [ $i -ge 30 ]; then
+      echo "✅ cert-manager webhook 基本就绪（Pod Running，其他检查通过）"
+      break
+    fi
+  fi
+  
+  if [ $i -eq 90 ]; then
+    echo "⚠️  cert-manager webhook 就绪超时，但继续部署..."
+    echo "   Pod Name: $WEBHOOK_POD_NAME"
+    echo "   Pod Phase: $WEBHOOK_PHASE"
+    echo "   Pod Ready: $WEBHOOK_READY"
+    echo "   CA Bundle: $([ -n "$CA_BUNDLE" ] && echo "OK" || echo "missing")"
+    echo "   Service: $([ "$WEBHOOK_SVC" = "1" ] && echo "OK" || echo "missing")"
+    echo "   TLS Secret: $([ -n "$WEBHOOK_TLS_SECRET" ] && echo "OK" || echo "missing")"
+    echo "   Endpoints: $([ -n "$WEBHOOK_ENDPOINTS" ] && echo "OK" || echo "missing")"
+    break
+  fi
+  if [ $((i % 10)) -eq 0 ]; then
+    echo "等待 cert-manager webhook 就绪... (Pod: $WEBHOOK_PHASE/$WEBHOOK_READY, CA: $([ -n "$CA_BUNDLE" ] && echo "OK" || echo "waiting"), Svc: $WEBHOOK_SVC, TLS: $([ -n "$WEBHOOK_TLS_SECRET" ] && echo "OK" || echo "waiting"), Ep: $([ -n "$WEBHOOK_ENDPOINTS" ] && echo "OK" || echo "waiting")) ($i/90)"
+  fi
+  sleep 2
+done
+
+# 额外等待几秒，确保 webhook 的 TLS 连接完全建立
+echo "等待 webhook TLS 连接稳定..."
+sleep 10
+
+# 验证 webhook 配置
+echo "验证 cert-manager webhook 配置..."
+WEBHOOK_CA=$(kubectl get validatingwebhookconfiguration cert-manager-webhook -o jsonpath='{.webhooks[0].clientConfig.caBundle}' 2>/dev/null)
+if [ -z "$WEBHOOK_CA" ] || [ "$WEBHOOK_CA" = "null" ]; then
+  echo "⚠️  警告: cert-manager webhook CA bundle 未找到，webhook 验证可能失败"
+  echo "   如果部署失败，请等待几分钟后重试，或手动检查 webhook 配置"
+else
+  echo "✅ cert-manager webhook CA bundle 已配置"
+fi
+
 
 
 # 部署 API Server
