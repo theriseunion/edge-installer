@@ -199,46 +199,13 @@ else
 fi
 
 
-
-# 等待 CA 证书就绪，以便在创建 APIService 时设置 caBundle
-echo "等待 CA 证书就绪（用于 APIService caBundle）..."
-for i in {1..60}; do
-  if kubectl get secret edge-ca-cert -n $NAMESPACE &>/dev/null; then
-    READY_STATUS=$(kubectl get certificate edge-ca-cert -n $NAMESPACE -o jsonpath='{.status.conditions[?(@.type=="Ready")].status}' 2>/dev/null || echo "False")
-    if [ "$READY_STATUS" = "True" ]; then
-      echo "✅ CA 证书已就绪"
-      break
-    fi
-  fi
-  if [ $i -eq 60 ]; then
-    echo "⚠️  CA 证书就绪超时，APIService 将在创建后通过 Job 注入 caBundle"
-    break
-  fi
-  sleep 2
-done
-
-# 提取 CA 证书用于 Helm values
-CA_BUNDLE_FOR_HELM=""
-if kubectl get secret edge-ca-cert -n $NAMESPACE &>/dev/null; then
-  CA_BUNDLE_FOR_HELM=$(kubectl get secret edge-ca-cert -n $NAMESPACE -o jsonpath='{.data.ca\.crt}' 2>/dev/null || \
-                       kubectl get secret edge-ca-cert -n $NAMESPACE -o jsonpath='{.data.tls\.crt}' 2>/dev/null)
-fi
-
 # 部署 API Server
 echo "部署 API Server..."
-HELM_ARGS="--set image.repository=$REGISTRY/apiserver \
-  --set image.tag=$CONTROLLER_APISERVER_TAG \
-  --set image.pullPolicy=$PULL_POLICY"
-
-# 如果 CA 证书已就绪，通过 Helm values 设置 caBundle
-if [ -n "$CA_BUNDLE_FOR_HELM" ]; then
-  echo "通过 Helm values 设置 APIService caBundle..."
-  HELM_ARGS="$HELM_ARGS --set certManager.caBundle=$CA_BUNDLE_FOR_HELM"
-fi
-
 helm upgrade --install apiserver ./edge-apiserver \
   --namespace $NAMESPACE \
-  $HELM_ARGS \
+  --set image.repository=$REGISTRY/apiserver \
+  --set image.tag=$CONTROLLER_APISERVER_TAG \
+  --set image.pullPolicy=$PULL_POLICY \
   --wait || {
     echo "❌ API Server 部署失败"
     echo "请检查镜像是否存在以及集群连接状态"

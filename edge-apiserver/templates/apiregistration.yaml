@@ -60,12 +60,20 @@ rules:
   - patch
   - delete
 ---
+# APIService with automatic CA bundle injection via cert-manager cainjector
+# The cert-manager.io/inject-ca-from annotation tells cert-manager's cainjector
+# to automatically inject the CA certificate from the specified Certificate resource
+# into the caBundle field. This is the recommended approach per cert-manager best practices.
 apiVersion: apiregistration.k8s.io/v1
 kind: APIService
 metadata:
   labels:
     {{- include "edge-apiserver.labels" . | nindent 4 }}
   name: v1alpha1.vast.theriseunion.io
+  annotations:
+    # cert-manager cainjector will automatically inject CA bundle from edge-ca-cert Certificate
+    # Format: <namespace>/<certificate-name>
+    cert-manager.io/inject-ca-from: {{ .Release.Namespace }}/edge-ca-cert
 spec:
   group: vast.theriseunion.io
   groupPriorityMinimum: 1000
@@ -73,127 +81,16 @@ spec:
     name: {{ include "edge-apiserver.fullname" . }}
     namespace: edge-system
     port: 8443
-  # CA bundle will be injected by the post-install hook job
-  # The caBundle is read from edge-ca-cert secret's ca.crt field
-  # If manually set in values.yaml, use it; otherwise leave empty for Job to inject
+  # caBundle will be automatically injected by cert-manager cainjector
+  # If manually set in values.yaml, it will override the automatic injection
   # Note: caBundle is at spec level, not under spec.service
   {{- if and .Values.certManager .Values.certManager.caBundle }}
   caBundle: {{ .Values.certManager.caBundle | quote }}
-  {{- else }}
-  caBundle: ""
   {{- end }}
   version: v1alpha1
   versionPriority: 15
 ---
-# Job to inject CA bundle into APIService after certificate is ready
-apiVersion: batch/v1
-kind: Job
-metadata:
-  name: {{ include "edge-apiserver.fullname" . }}-inject-ca
-  namespace: {{ .Release.Namespace }}
-  labels:
-    {{- include "edge-apiserver.labels" . | nindent 4 }}
-    app.kubernetes.io/component: certificate-injector
-  annotations:
-    "helm.sh/hook": post-install,post-upgrade
-    "helm.sh/hook-weight": "10"
-    "helm.sh/hook-delete-policy": before-hook-creation
-spec:
-  template:
-    metadata:
-      labels:
-        {{- include "edge-apiserver.labels" . | nindent 8 }}
-        app.kubernetes.io/component: certificate-injector
-    spec:
-      serviceAccountName: {{ include "edge-apiserver.serviceAccountName" . }}
-      restartPolicy: OnFailure
-      containers:
-      - name: inject-ca
-        image: quanzhenglong.com/base/kubectl:latest
-        command:
-        - /bin/bash
-        - -c
-        - |
-          set -e
-          NAMESPACE="{{ .Release.Namespace }}"
-          echo "Waiting for CA certificate to be ready..."
-          
-          # Wait for cert-manager to be ready first
-          echo "Checking cert-manager availability..."
-          for i in {1..30}; do
-            if kubectl get crd certificates.cert-manager.io &>/dev/null; then
-              echo "cert-manager CRD is available"
-              break
-            fi
-            echo "Waiting for cert-manager CRD... ($i/30)"
-            sleep 2
-          done
-          
-          # Wait for CA certificate secret to be available and ready
-          echo "Waiting for CA certificate secret..."
-          for i in {1..120}; do
-            if kubectl get secret edge-ca-cert -n $NAMESPACE &>/dev/null; then
-              # Check if certificate is ready
-              READY_STATUS=$(kubectl get certificate edge-ca-cert -n $NAMESPACE -o jsonpath='{.status.conditions[?(@.type=="Ready")].status}' 2>/dev/null || echo "False")
-              if [ "$READY_STATUS" = "True" ]; then
-                echo "CA certificate is ready"
-                break
-              fi
-              echo "CA certificate not ready yet (status: $READY_STATUS), waiting... ($i/120)"
-            else
-              echo "CA certificate secret not found, waiting... ($i/120)"
-            fi
-            sleep 2
-          done
-          
-          # Final check
-          if ! kubectl get secret edge-ca-cert -n $NAMESPACE &>/dev/null; then
-            echo "ERROR: CA certificate secret not found after waiting"
-            exit 1
-          fi
-          
-          READY_STATUS=$(kubectl get certificate edge-ca-cert -n $NAMESPACE -o jsonpath='{.status.conditions[?(@.type=="Ready")].status}' 2>/dev/null || echo "False")
-          if [ "$READY_STATUS" != "True" ]; then
-            echo "WARNING: CA certificate is not ready (status: $READY_STATUS), but proceeding anyway..."
-          fi
-          
-          # Extract CA certificate from secret
-          # For CA certificates, cert-manager stores it in ca.crt or tls.crt
-          echo "Extracting CA certificate from secret..."
-          CA_BUNDLE=$(kubectl get secret edge-ca-cert -n $NAMESPACE -o jsonpath='{.data.ca\.crt}' 2>/dev/null || \
-                     kubectl get secret edge-ca-cert -n $NAMESPACE -o jsonpath='{.data.tls\.crt}' 2>/dev/null)
-          
-          if [ -z "$CA_BUNDLE" ]; then
-            echo "ERROR: Failed to extract CA certificate from secret edge-ca-cert"
-            echo "Secret contents:"
-            kubectl get secret edge-ca-cert -n $NAMESPACE -o yaml || true
-            echo "Available keys in secret:"
-            kubectl get secret edge-ca-cert -n $NAMESPACE -o jsonpath='{.data}' | jq 'keys' || true
-            exit 1
-          fi
-          
-          echo "CA certificate extracted (length: ${#CA_BUNDLE} characters)"
-          echo "Injecting CA bundle into APIService v1alpha1.vast.theriseunion.io..."
-          
-          # Update APIService with CA bundle
-          # Note: caBundle is at spec.caBundle, not spec.service.caBundle
-          kubectl patch apiservice v1alpha1.vast.theriseunion.io --type='json' -p='[{"op": "replace", "path": "/spec/caBundle", "value":"'$CA_BUNDLE'"}]' || {
-            echo "ERROR: Failed to update APIService"
-            echo "Current APIService spec:"
-            kubectl get apiservice v1alpha1.vast.theriseunion.io -o yaml || true
-            exit 1
-          }
-          
-          # Verify the update
-          VERIFIED_BUNDLE=$(kubectl get apiservice v1alpha1.vast.theriseunion.io -o jsonpath='{.spec.caBundle}' 2>/dev/null || echo "")
-          if [ -z "$VERIFIED_BUNDLE" ] || [ "$VERIFIED_BUNDLE" != "$CA_BUNDLE" ]; then
-            echo "WARNING: CA bundle verification failed. Expected length: ${#CA_BUNDLE}, Got: ${#VERIFIED_BUNDLE}"
-          else
-            echo "✅ Successfully injected and verified CA bundle into APIService"
-          fi
-        env:
-        - name: KUBECONFIG
-          value: ""
-      securityContext:
-        runAsNonRoot: false
-        runAsUser: 0
+# NOTE: The Job for manual CA bundle injection has been removed.
+# cert-manager's cainjector now automatically handles CA bundle injection
+# via the cert-manager.io/inject-ca-from annotation on the APIService resource above.
+# This approach is simpler, more reliable, and follows cert-manager best practices.
