@@ -122,7 +122,7 @@ example-host: ## Example: Install host cluster with custom registry
 	helm install edge-platform ./edge-controller \
 		--set global.mode=host \
 		--set global.imageRegistry=your-registry.com/edge \
-		--set global.imageTag=v1.0.0
+		--set controller.image.tag=v1.0.0
 
 .PHONY: example-member
 example-member: ## Example: Install member cluster
