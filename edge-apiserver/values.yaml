@@ -53,6 +53,58 @@ edge:
     logLevel: info
     # API Server port
     port: 8443
+    # ConfigMap configuration
+    config:
+      enabled: true
+      server:
+        host: "0.0.0.0"
+        timeout:
+          read: "30s"
+          write: "30s"
+          idle: "120s"
+        tls:
+          enabled: true
+      auth:
+        mode: "RBAC"
+        jwt:
+          secret: ""
+          expiry: "24h"
+          refreshTTL: "168h"
+        oauth:
+          issuer: ""
+          clientId: ""
+          clientSecret: ""
+      metrics:
+        prometheus:
+          auth: ""
+          timeout: "30s"
+          maxConcurrentQueries: 10
+          retryCount: 3
+          retryInterval: "1s"
+          tlsInsecureSkipVerify: true
+        cache:
+          enabled: true
+          ttl: "30s"
+          size: 1000
+      logging:
+        format: "text"
+        output: "stdout"
+        file: "/var/log/apiserver/apiserver.log"
+        rotation:
+          maxSize: 100
+          maxBackups: 5
+          maxAge: 30
+          compress: true
+      database:
+        type: ""
+        host: ""
+        port: 0
+        database: ""
+        username: ""
+        password: ""
+        sslMode: ""
+      deviceManager:
+        hamiDeviceConfig: "config/device.yaml"
 
   # RBAC configuration - Core functionality
   rbac:
@@ -84,7 +136,7 @@ edge:
   # Monitoring configuration
   monitoring:
     enabled: true
-    serviceEndpoint: "http://monitoring-service.observability-system.svc.cluster.local:80"
+    serviceEndpoint: "http://prometheus-kube-prometheus-prometheus.prometheus.svc.cluster.local:9090"
 
   # OAuth configuration
   oauth:

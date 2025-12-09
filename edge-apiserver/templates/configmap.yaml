@@ -1,0 +1,128 @@
+{{- if .Values.edge.apiserver.config.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "edge-apiserver.fullname" . }}-config
+  labels:
+    {{- include "edge-apiserver.labels" . | nindent 4 }}
+data:
+  apiserver.yaml: |
+    # Edge APIServer global configuration file.
+    # Configuration file uses YAML format and supports environment variable overrides.
+
+    # Server basic configuration.
+    server:
+      # HTTP service port.
+      port: {{ .Values.edge.apiserver.port | default 8443 }}
+
+      # Service bind address.
+      host: "{{ .Values.edge.apiserver.config.server.host | default "0.0.0.0" }}"
+
+      # Timeout configuration.
+      timeout:
+        read: "{{ .Values.edge.apiserver.config.server.timeout.read | default "30s" }}"
+        write: "{{ .Values.edge.apiserver.config.server.timeout.write | default "30s" }}"
+        idle: "{{ .Values.edge.apiserver.config.server.timeout.idle | default "120s" }}"
+
+      # TLS configuration (optional).
+      tls:
+        enabled: {{ .Values.edge.apiserver.config.server.tls.enabled | default true }}
+        certFile: "/tmp/k8s-webhook-server/serving-certs/tls.crt"
+        keyFile: "/tmp/k8s-webhook-server/serving-certs/tls.key"
+
+    # Authentication configuration.
+    auth:
+      # Authentication mode: RBAC (recommended), AlwaysAllow (development only).
+      mode: "{{ .Values.edge.apiserver.config.auth.mode | default "RBAC" }}"
+
+      # JWT configuration.
+      jwt:
+        # JWT secret (set JWT_SECRET via environment variable in production).
+        secret: "{{ .Values.edge.apiserver.config.auth.jwt.secret | default "" }}"
+        # Token expiration time.
+        expiry: "{{ .Values.edge.apiserver.config.auth.jwt.expiry | default "24h" }}"
+        # Refresh token validity period.
+        refreshTTL: "{{ .Values.edge.apiserver.config.auth.jwt.refreshTTL | default "168h" }}"
+
+      # OAuth configuration (optional).
+      oauth:
+        issuer: "{{ .Values.edge.apiserver.config.auth.oauth.issuer | default "" }}"
+        clientId: "{{ .Values.edge.apiserver.config.auth.oauth.clientId | default "" }}"
+        clientSecret: "{{ .Values.edge.apiserver.config.auth.oauth.clientSecret | default "" }}"
+
+    # Metrics monitoring configuration.
+    metrics:
+      # Whether to enable metrics functionality.
+      enabled: {{ .Values.edge.monitoring.enabled | default true }}
+
+      # Prometheus configuration.
+      prometheus:
+        # Prometheus service endpoint.
+        endpoint: "{{ .Values.edge.monitoring.serviceEndpoint | default "http://prometheus-kube-prometheus-prometheus.prometheus.svc.cluster.local:9090" }}"
+
+        # Authentication.
+        auth: "{{ .Values.edge.apiserver.config.metrics.prometheus.auth | default "" }}"
+
+        # Query timeout.
+        timeout: "{{ .Values.edge.apiserver.config.metrics.prometheus.timeout | default "30s" }}"
+
+        # Maximum concurrent queries.
+        maxConcurrentQueries: {{ .Values.edge.apiserver.config.metrics.prometheus.maxConcurrentQueries | default 10 }}
+
+        # Retry configuration.
+        retryCount: {{ .Values.edge.apiserver.config.metrics.prometheus.retryCount | default 3 }}
+        retryInterval: "{{ .Values.edge.apiserver.config.metrics.prometheus.retryInterval | default "1s" }}"
+
+        # TLS configuration (can skip verification in development).
+        tlsInsecureSkipVerify: {{ .Values.edge.apiserver.config.metrics.prometheus.tlsInsecureSkipVerify | default true }}
+
+      # Cache configuration.
+      cache:
+        # Whether to enable cache.
+        enabled: {{ .Values.edge.apiserver.config.metrics.cache.enabled | default true }}
+
+        # Cache expiration time.
+        ttl: "{{ .Values.edge.apiserver.config.metrics.cache.ttl | default "30s" }}"
+
+        # Cache size (number of entries).
+        size: {{ .Values.edge.apiserver.config.metrics.cache.size | default 1000 }}
+
+    # Logging configuration.
+    logging:
+      # Log level: debug, info, warn, error.
+      level: "{{ .Values.edge.apiserver.logLevel | default "info" }}"
+
+      # Log format: text, json.
+      format: "{{ .Values.edge.apiserver.config.logging.format | default "text" }}"
+
+      # Log output: stdout, stderr, file.
+      output: "{{ .Values.edge.apiserver.config.logging.output | default "stdout" }}"
+
+      # Log file path (when output is file).
+      file: "{{ .Values.edge.apiserver.config.logging.file | default "/var/log/apiserver/apiserver.log" }}"
+
+      # Log rotation configuration (optional).
+      rotation:
+        # Maximum size of a single log file (MB).
+        maxSize: {{ .Values.edge.apiserver.config.logging.rotation.maxSize | default 100 }}
+        # Number of backup files to retain.
+        maxBackups: {{ .Values.edge.apiserver.config.logging.rotation.maxBackups | default 5 }}
+        # Retention days.
+        maxAge: {{ .Values.edge.apiserver.config.logging.rotation.maxAge | default 30 }}
+        # Whether to compress old log files.
+        compress: {{ .Values.edge.apiserver.config.logging.rotation.compress | default true }}
+
+    # Database configuration (optional, if using database).
+    database:
+      type: "{{ .Values.edge.apiserver.config.database.type | default "" }}"
+      host: "{{ .Values.edge.apiserver.config.database.host | default "" }}"
+      port: {{ .Values.edge.apiserver.config.database.port | default 0 }}
+      database: "{{ .Values.edge.apiserver.config.database.database | default "" }}"
+      username: "{{ .Values.edge.apiserver.config.database.username | default "" }}"
+      password: "{{ .Values.edge.apiserver.config.database.password | default "" }}"
+      sslMode: "{{ .Values.edge.apiserver.config.database.sslMode | default "" }}"
+
+    # Device manager configuration.
+    deviceManager:
+      hamiDeviceConfig: "{{ .Values.edge.apiserver.config.deviceManager.hamiDeviceConfig | default "config/device.yaml" }}"
+{{- end }}
