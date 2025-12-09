@@ -16,7 +16,7 @@ spec:
     name: edge-apiserver
     namespace: {{ .Release.Namespace }}
     releaseName: edge-apiserver
-    repository: http://controller-chartmuseum.{{ .Release.Namespace }}.svc:8080
+    repository: http://chartmuseum.{{ .Release.Namespace }}.svc:8080
   {{- if .Values.autoInstall.apiserver.values }}
   values:
     {{- toYaml .Values.autoInstall.apiserver.values | nindent 4 }}

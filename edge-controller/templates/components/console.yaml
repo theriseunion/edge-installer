@@ -16,7 +16,7 @@ spec:
     name: edge-console
     namespace: {{ .Release.Namespace }}
     releaseName: edge-console
-    repository: http://controller-chartmuseum.edge-system.svc:8080
+    repository: http://chartmuseum.{{ .Release.Namespace }}.svc:8080
   {{- if .Values.autoInstall.console.values }}
   values:
     {{- toYaml .Values.autoInstall.console.values | nindent 4 }}

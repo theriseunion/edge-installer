@@ -76,6 +76,10 @@ controller:
 chartmuseum:
   enabled: true
 
+  # Fixed service name for chartmuseum
+  # This ensures Components can reliably access it at chartmuseum.{namespace}.svc
+  fullnameOverride: "chartmuseum"
+
   image:
     repository: quanzhenglong.com/edge/edge-museum
     tag: "latest"
@@ -107,11 +111,9 @@ chartmuseum:
 
 # Component auto-installation configuration
 autoInstall:
-  # Controller component (always installed if controller.enabled)
-  controller:
-    enabled: true
-    version: "0.1.0"
-    values: {}
+  # NOTE: Controller is NOT installed via Component CR because it's already
+  # deployed as part of this Helm chart. Only APIServer, Console, and Monitoring
+  # are managed via Component CRs.
 
   # APIServer component
   apiserver:

@@ -1,14 +1,15 @@
 {{/*
 Expand the name of the chart.
 */}}
-{{- define "monitoring-service.name" -}}
+{{- define "chartmuseum.name" -}}
 {{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
 {{/*
 Create a default fully qualified app name.
+We use the parent chart's fullname to maintain naming consistency.
 */}}
-{{- define "monitoring-service.fullname" -}}
+{{- define "chartmuseum.fullname" -}}
 {{- if .Values.fullnameOverride }}
 {{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" }}
 {{- else }}
@@ -24,37 +25,27 @@ Create a default fully qualified app name.
 {{/*
 Create chart name and version as used by the chart label.
 */}}
-{{- define "monitoring-service.chart" -}}
+{{- define "chartmuseum.chart" -}}
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
 {{/*
 Common labels
 */}}
-{{- define "monitoring-service.labels" -}}
-helm.sh/chart: {{ include "monitoring-service.chart" . }}
-{{ include "monitoring-service.selectorLabels" . }}
+{{- define "chartmuseum.labels" -}}
+helm.sh/chart: {{ include "chartmuseum.chart" . }}
+{{ include "chartmuseum.selectorLabels" . }}
 {{- if .Chart.AppVersion }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
+app.kubernetes.io/component: chartmuseum
 {{- end }}
 
 {{/*
 Selector labels
 */}}
-{{- define "monitoring-service.selectorLabels" -}}
-app.kubernetes.io/name: {{ include "monitoring-service.name" . }}
+{{- define "chartmuseum.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "chartmuseum.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
-{{- end }}
-
-{{/*
-Create the name of the service account to use
-*/}}
-{{- define "monitoring-service.serviceAccountName" -}}
-{{- if .Values.serviceAccount.create }}
-{{- default (include "monitoring-service.fullname" .) .Values.serviceAccount.name }}
-{{- else }}
-{{- default "default" .Values.serviceAccount.name }}
-{{- end }}
 {{- end }}

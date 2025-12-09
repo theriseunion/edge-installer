@@ -23,13 +23,14 @@ CHARTS_OUTPUT := bin/_output
 CHARTS_SOURCE := .
 
 # List of charts to package - modify this when adding/removing charts
-CHARTS := edge-apiserver edge-console edge-controller edge-monitoring kubeedge monitoring-service vcluster yurt-manager yurthub
+# Note: monitoring-service is embedded in edge-monitoring chart
+CHARTS := edge-apiserver edge-console edge-controller edge-monitoring kubeedge vcluster yurt-manager yurthub
 
 # ChartMuseum image
 MUSEUM_IMG ?= $(REGISTRY)/edge-museum:$(TAG)
 
 .PHONY: package-charts
-package-charts: ## Package all Helm charts into tgz files
+package-charts: clean-charts ## Package all Helm charts into tgz files (cleans old packages first)
 	@echo "Packaging charts from $(CHARTS_SOURCE)..."
 	@mkdir -p $(CHARTS_OUTPUT)
 	@for chart in $(CHARTS); do \

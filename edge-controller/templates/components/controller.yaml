@@ -1,4 +1,4 @@
-{{- if and .Values.controller.enabled .Values.autoInstall.controller.enabled }}
+{{- if .Values.controller.enabled }}
 apiVersion: ext.theriseunion.io/v1alpha1
 kind: Component
 metadata:
@@ -9,16 +9,15 @@ metadata:
     app.kubernetes.io/component: controller
     app.kubernetes.io/part-of: edge-platform
     cluster.theriseunion.io/role: {{ .Values.global.mode }}
+  annotations:
+    # Mark as pre-installed to skip reconcile loop
+    # Controller is already deployed as part of this Helm chart
+    ext.theriseunion.io/pre-installed: "true"
+    ext.theriseunion.io/skip-reconcile: "true"
+    ext.theriseunion.io/installation-method: "helm-direct"
 spec:
-  enabled: {{ .Values.autoInstall.controller.enabled }}
-  version: {{ .Values.autoInstall.controller.version | default .Chart.AppVersion }}
-  chart:
-    name: edge-controller
-    namespace: {{ .Release.Namespace }}
-    releaseName: edge-controller
-    repository: http://controller-chartmuseum.{{ .Release.Namespace }}.svc:8080
-  {{- if .Values.autoInstall.controller.values }}
-  values:
-    {{- toYaml .Values.autoInstall.controller.values | nindent 4 }}
-  {{- end }}
+  enabled: true
+  version: {{ .Chart.AppVersion }}
+  # NOTE: No chart field - controller is pre-installed via Helm
+  # This Component CR exists only for system recognition
 {{- end }}

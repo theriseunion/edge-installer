@@ -16,3 +16,11 @@ keywords:
   - kubernetes
 sources:
   - https://github.com/edge/apiserver
+
+# Dependencies - Chart dependencies ensure deployment order
+# ChartMuseum must be deployed before Controller to provide Chart repository
+dependencies:
+  - name: chartmuseum
+    version: "0.1.0"
+    repository: "file://./charts/chartmuseum"
+    condition: chartmuseum.enabled

@@ -16,7 +16,7 @@ spec:
     name: edge-monitoring
     namespace: observability-system
     releaseName: edge-monitoring
-    repository: http://controller-chartmuseum.edge-system.svc:8080
+    repository: http://chartmuseum.{{ .Release.Namespace }}.svc:8080
   {{- if .Values.autoInstall.monitoring.values }}
   values:
     {{- toYaml .Values.autoInstall.monitoring.values | nindent 4 }}

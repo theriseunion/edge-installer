@@ -1,0 +1,53 @@
+{{- if .Values.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "chartmuseum.fullname" . }}
+  labels:
+    {{- include "chartmuseum.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "chartmuseum.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "chartmuseum.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: chartmuseum
+    spec:
+      containers:
+      - name: chartmuseum
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        args:
+        - --port=8080
+        env:
+        - name: STORAGE
+          value: {{ .Values.env.STORAGE }}
+        - name: STORAGE_LOCAL_ROOTDIR
+          value: {{ .Values.env.STORAGE_LOCAL_ROOTDIR }}
+        - name: DISABLE_API
+          value: "{{ .Values.env.DISABLE_API }}"
+        - name: ALLOW_OVERWRITE
+          value: "{{ .Values.env.ALLOW_OVERWRITE }}"
+        - name: CONTEXT_PATH
+          value: {{ .Values.env.CONTEXT_PATH }}
+        ports:
+        - containerPort: 8080
+          name: http
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: http
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: http
+          initialDelaySeconds: 5
+          periodSeconds: 5
+        resources:
+          {{- toYaml .Values.resources | nindent 12 }}
+{{- end }}

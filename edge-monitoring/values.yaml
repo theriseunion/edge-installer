@@ -454,7 +454,7 @@ monitoringService:
   replicas: 1
   image:
     repository: quanzhenglong.com/edge/monitoring-service
-    tag: openapi-v1.1
+    tag: main
     pullPolicy: IfNotPresent
 
   service:

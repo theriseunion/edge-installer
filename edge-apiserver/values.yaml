@@ -46,6 +46,11 @@ resources:
 
 # Edge specific configuration
 edge:
+  # Cluster configuration
+  cluster:
+    # Enable cluster-level RBAC roles
+    enabled: true
+
   # API Server configuration
   apiserver:
     # Log level (debug, info, warn, error)
