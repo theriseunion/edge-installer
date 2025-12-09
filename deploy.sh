@@ -123,7 +123,7 @@ curl -sL "$CERT_MANAGER_INSTALL_YAML" \
   | sed -E "s|\"quay.io/jetstack/cert-manager-controller:[^\"]+\"|\"quanzhenglong.com/camp/cert-manager-controller:v${CERT_MANAGER_VERSION}\"|g" \
   | sed -E "s|\"quay.io/jetstack/cert-manager-cainjector:[^\"]+\"|\"quanzhenglong.com/camp/cert-manager-cainjector:v${CERT_MANAGER_VERSION}\"|g" \
   | sed -E "s|\"quay.io/jetstack/cert-manager-webhook:[^\"]+\"|\"quanzhenglong.com/camp/cert-manager-webhook:v${CERT_MANAGER_VERSION}\"|g" \
-  | kubectl apply -f -
+  | kubectl apply --validate=false -f -
 kubectl -n cert-manager wait --for=condition=Available deploy --all --timeout=300s
 echo "✅ Cert-Manager 部署成功"
 
