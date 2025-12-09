@@ -1,0 +1,24 @@
+{{- if and .Values.controller.enabled (or (eq .Values.global.mode "host") (eq .Values.global.mode "all")) }}
+apiVersion: ext.theriseunion.io/v1alpha1
+kind: Component
+metadata:
+  name: edge-console
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "edge-controller.labels" . | nindent 4 }}
+    app.kubernetes.io/component: console
+    app.kubernetes.io/part-of: edge-platform
+    cluster.theriseunion.io/role: {{ .Values.global.mode }}
+spec:
+  enabled: true
+  version: {{ .Values.autoInstall.console.version | default .Chart.AppVersion }}
+  chart:
+    name: edge-console
+    namespace: {{ .Release.Namespace }}
+    releaseName: edge-console
+    repository: http://controller-chartmuseum.edge-system.svc:8080
+  {{- if .Values.autoInstall.console.values }}
+  values:
+    {{- toYaml .Values.autoInstall.console.values | nindent 4 }}
+  {{- end }}
+{{- end }}

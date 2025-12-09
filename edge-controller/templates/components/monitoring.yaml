@@ -1,0 +1,24 @@
+{{- if and .Values.controller.enabled (and (ne .Values.global.mode "none") .Values.autoInstall.monitoring.enabled) }}
+apiVersion: ext.theriseunion.io/v1alpha1
+kind: Component
+metadata:
+  name: edge-monitoring
+  namespace: observability-system
+  labels:
+    {{- include "edge-controller.labels" . | nindent 4 }}
+    app.kubernetes.io/component: monitoring
+    app.kubernetes.io/part-of: edge-platform
+    cluster.theriseunion.io/role: {{ .Values.global.mode }}
+spec:
+  enabled: {{ .Values.autoInstall.monitoring.enabled }}
+  version: {{ .Values.autoInstall.monitoring.version | default .Chart.AppVersion }}
+  chart:
+    name: edge-monitoring
+    namespace: observability-system
+    releaseName: edge-monitoring
+    repository: http://controller-chartmuseum.edge-system.svc:8080
+  {{- if .Values.autoInstall.monitoring.values }}
+  values:
+    {{- toYaml .Values.autoInstall.monitoring.values | nindent 4 }}
+  {{- end }}
+{{- end }}

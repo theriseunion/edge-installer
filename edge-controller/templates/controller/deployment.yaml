@@ -5,7 +5,7 @@ metadata:
   labels:
     {{- include "edge-controller.labels" . | nindent 4 }}
 spec:
-  replicas: {{ .Values.replicaCount }}
+  replicas: {{ .Values.controller.replicaCount }}
   selector:
     matchLabels:
       {{- include "edge-controller.selectorLabels" . | nindent 6 }}
@@ -16,28 +16,28 @@ spec:
     spec:
       serviceAccountName: {{ include "edge-controller.serviceAccountName" . }}
       securityContext:
-        runAsNonRoot: {{ .Values.securityContext.runAsNonRoot }}
-        runAsUser: {{ .Values.securityContext.runAsUser }}
+        runAsNonRoot: {{ .Values.controller.securityContext.runAsNonRoot }}
+        runAsUser: {{ .Values.controller.securityContext.runAsUser }}
       containers:
         - name: {{ .Chart.Name }}
           securityContext:
-            {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
+            {{- toYaml .Values.controller.securityContext | nindent 12 }}
+          image: "{{ .Values.global.imageRegistry }}/{{ .Values.controller.image.repository }}:{{ .Values.controller.image.tag }}"
+          imagePullPolicy: {{ .Values.controller.image.pullPolicy }}
           ports:
             - name: http
-              containerPort: {{ .Values.service.port }}
+              containerPort: {{ .Values.controller.service.port }}
               protocol: TCP
             - name: health
-              containerPort: {{ .Values.edge.controller.healthPort }}
+              containerPort: {{ .Values.controller.healthPort }}
               protocol: TCP
           env:
             - name: LOG_LEVEL
-              value: {{ .Values.edge.controller.logLevel }}
+              value: {{ .Values.controller.logLevel }}
             - name: METRICS_ADDR
-              value: ":{{ .Values.edge.controller.metricsPort }}"
+              value: ":{{ .Values.controller.metricsPort }}"
             - name: HEALTH_ADDR
-              value: ":{{ .Values.edge.controller.healthPort }}"
+              value: ":{{ .Values.controller.healthPort }}"
             - name: HOME
               value: /tmp
             - name: HELM_CACHE_HOME
@@ -46,9 +46,11 @@ spec:
               value: /tmp/.helm/config
             - name: HELM_DATA_HOME
               value: /tmp/.helm/data
-            {{- if .Values.chartRepository.url }}
             - name: CHART_REPO_URL
-              value: {{ .Values.chartRepository.url }}
+              value: {{ .Values.controller.chartRepository.url | default (print "http://" (include "edge-controller.fullname" .) "-chartmuseum." .Release.Namespace ".svc:8080") }}
+            {{- if .Values.chartmuseum.enabled }}
+            - name: CHARTMUSEUM_ENABLED
+              value: "true"
             {{- end }}
           volumeMounts:
             - name: helm-cache

@@ -1,0 +1,28 @@
+{{- if and .Values.controller.enabled .Values.autoInstall.apiserver.enabled }}
+apiVersion: ext.theriseunion.io/v1alpha1
+kind: Component
+metadata:
+  name: edge-apiserver
+  namespace: {{ .Values.global.namespace | default "edge-system" }}
+  labels:
+    {{- include "edge-controller.labels" . | nindent 4 }}
+    app.kubernetes.io/component: apiserver
+    app.kubernetes.io/part-of: edge-platform
+    cluster.theriseunion.io/role: {{ .Values.global.mode }}
+  annotations:
+    "helm.sh/hook": post-install
+    "helm.sh/hook-weight": "1"
+    "helm.sh/hook-delete-policy": hook-succeeded
+spec:
+  type: apiserver
+  enabled: {{ .Values.autoInstall.apiserver.enabled }}
+  version: {{ .Values.autoInstall.apiserver.version | default .Chart.AppVersion }}
+  chart:
+    name: edge-apiserver
+    namespace: {{ .Values.global.namespace | default "edge-system" }}
+    releaseName: edge-apiserver
+  {{- if .Values.autoInstall.apiserver.values }}
+  values:
+    {{- toYaml .Values.autoInstall.apiserver.values | nindent 4 }}
+  {{- end }}
+{{- end }}

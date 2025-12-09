@@ -484,3 +484,11 @@ serviceMonitor:
       service: edge-controller
       port: metrics
       path: /metrics
+
+# Duty Service ReverseProxy 配置
+dutyProxy:
+  enabled: true
+  upstream:
+    scheme: http
+    host: 116.63.161.198
+    port: 30001

@@ -1,0 +1,19 @@
+{{- if .Values.chartmuseum.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "edge-controller.fullname" . }}-chartmuseum
+  labels:
+    {{- include "edge-controller.labels" . | nindent 4 }}
+    app.kubernetes.io/component: chartmuseum
+spec:
+  type: {{ .Values.chartmuseum.service.type }}
+  ports:
+  - port: {{ .Values.chartmuseum.service.port }}
+    targetPort: 8080
+    protocol: TCP
+    name: http
+  selector:
+    {{- include "edge-controller.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: chartmuseum
+{{- end }}

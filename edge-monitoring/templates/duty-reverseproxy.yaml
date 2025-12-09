@@ -1,0 +1,22 @@
+{{- if and .Values.global.enabled .Values.dutyProxy.enabled }}
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: ReverseProxy
+metadata:
+  name: duty-proxy
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    app: duty-service
+    component: reverse-proxy
+    app.kubernetes.io/managed-by: Helm
+  annotations:
+    meta.helm.sh/release-name: {{ .Release.Name }}
+    meta.helm.sh/release-namespace: {{ .Release.Namespace }}
+spec:
+  matcher:
+    method: '*'
+    path: /oapis/duty.theriseunion.io/v1/*
+  upstream:
+    scheme: {{ .Values.dutyProxy.upstream.scheme | default "http" }}
+    host: {{ .Values.dutyProxy.upstream.host }}
+    port: {{ .Values.dutyProxy.upstream.port }}
+{{- end }}

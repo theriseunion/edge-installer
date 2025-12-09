@@ -30,7 +30,9 @@ spec:
     name: v1alpha1
     schema:
       openAPIV3Schema:
-        description: ScopePattern defines URL pattern matching rules for scope extraction
+        description: |-
+          ScopePattern defines URL pattern matching rules for scope extraction
+          Note: Validation that scopeType matches a named parameter in pattern is performed by the controller
         properties:
           apiVersion:
             description: |-
@@ -71,10 +73,12 @@ spec:
                     - "/api/edge/{nodegroup}/management/*" (extract nodegroup)
                     - "/apis/custom.io/{_}/workspaces/{workspace}/apps/*" (skip version, extract workspace)
                     - "/api/clusters/{_}/regions/{_}/nodegroups/{nodegroup}/*" (skip cluster and region)
+                maxLength: 512
                 type: string
               scopeType:
                 description: Type of scope to extract, must match a named parameter
                   in pattern (not {_})
+                maxLength: 64
                 type: string
             required:
             - pattern

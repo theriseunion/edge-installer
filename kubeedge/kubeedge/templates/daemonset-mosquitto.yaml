@@ -1,0 +1,48 @@
+{{- if .Values.mosquitto.enabled }}
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: edge-eclipse-mosquitto
+  namespace: {{ include "kubeedge.namespace" . }}
+  labels:
+    {{- include "kubeedge.mosquitto.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "kubeedge.mosquitto.labels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "kubeedge.mosquitto.labels" . | nindent 8 }}
+    spec:
+      hostNetwork: {{ .Values.mosquitto.hostNetwork }}
+      restartPolicy: Always
+      volumes:
+        - name: mqtt-data-path
+          hostPath:
+            path: /var/lib/kubeedge/mqtt/data
+      containers:
+      - name: edge-eclipse-mosquitto
+        image: {{ include "kubeedge.mosquittoImage" . }}
+        imagePullPolicy: {{ .Values.mosquitto.image.pullPolicy }}
+        {{- with .Values.mosquitto.resources }}
+        resources:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+        volumeMounts:
+          - name: mqtt-data-path
+            mountPath: /mosquitto/data
+      tolerations:
+        - key: node-role.kubernetes.io/edge
+          operator: Exists
+        - key: node.kubernetes.io/not-ready
+          operator: Exists
+          effect: NoExecute
+        - key: node.kubernetes.io/unreachable
+          operator: Exists
+          effect: NoExecute
+      {{- with .Values.mosquitto.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+{{- end }}

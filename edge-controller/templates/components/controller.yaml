@@ -1,0 +1,24 @@
+{{- if and .Values.controller.enabled .Values.autoInstall.controller.enabled }}
+apiVersion: ext.theriseunion.io/v1alpha1
+kind: Component
+metadata:
+  name: edge-controller
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "edge-controller.labels" . | nindent 4 }}
+    app.kubernetes.io/component: controller
+    app.kubernetes.io/part-of: edge-platform
+    cluster.theriseunion.io/role: {{ .Values.global.mode }}
+spec:
+  enabled: {{ .Values.autoInstall.controller.enabled }}
+  version: {{ .Values.autoInstall.controller.version | default .Chart.AppVersion }}
+  chart:
+    name: edge-controller
+    namespace: {{ .Release.Namespace }}
+    releaseName: edge-controller
+    repository: http://controller-chartmuseum.{{ .Release.Namespace }}.svc:8080
+  {{- if .Values.autoInstall.controller.values }}
+  values:
+    {{- toYaml .Values.autoInstall.controller.values | nindent 4 }}
+  {{- end }}
+{{- end }}
