@@ -69,7 +69,17 @@ spec:
           - mountPath: /tmp/k8s-webhook-server/serving-certs
             name: cert
             readOnly: true
+          {{- if .Values.edge.apiserver.config.enabled }}
+          - mountPath: /etc/edge
+            name: apiserver-config
+            readOnly: true
+          {{- end }}
       volumes:
       - name: cert
         secret:
           secretName: edge-apiserver-cert
+      {{- if .Values.edge.apiserver.config.enabled }}
+      - name: apiserver-config
+        configMap:
+          name: {{ include "edge-apiserver.fullname" . }}-config
+      {{- end }}
