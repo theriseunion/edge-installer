@@ -3,11 +3,20 @@
 # Edge 快速部署脚本
 # 使用 Helm 直接部署三个组件
 
+# Parse command-line arguments in KEY=VALUE format.
+# This allows users to pass parameters like: ./deploy.sh TAG=v1.0.0 NAMESPACE=my-ns
+for arg in "$@"; do
+  if [[ "$arg" =~ ^[A-Z_][A-Z0-9_]*=.*$ ]]; then
+    export "$arg"
+  fi
+done
+
 # 默认参数设置
 NAMESPACE=${NAMESPACE:-edge-system}
 KUBECONFIG_PATH=${KUBECONFIG:-~/.kube/config}
 REGISTRY=${REGISTRY:-quanzhenglong.com/edge}
 TAG=${TAG:-latest}
+CONTROLLER_APISERVER_TAG=${CONTROLLER_APISERVER_TAG:-vast-v0.1.0-04}
 PULL_POLICY=${PULL_POLICY:-Always}
 ENABLE_MONITORING=${ENABLE_MONITORING:-false}
 INSTALL_OPENYURT=${INSTALL_OPENYURT:-false}
@@ -23,6 +32,7 @@ echo "命名空间 (NAMESPACE):           $NAMESPACE"
 echo "Kubeconfig 路径 (KUBECONFIG):   $KUBECONFIG_PATH"
 echo "镜像仓库 (REGISTRY):            $REGISTRY"
 echo "镜像标签 (TAG):                 $TAG"
+echo "Controller 和 API Server 镜像标签 (CONTROLLER_APISERVER_TAG): $CONTROLLER_APISERVER_TAG"
 echo "拉取策略 (PULL_POLICY):         $PULL_POLICY"
 echo "启用监控 (ENABLE_MONITORING):   $ENABLE_MONITORING"
 echo "安装 OpenYurt (INSTALL_OPENYURT): $INSTALL_OPENYURT"
@@ -124,7 +134,7 @@ echo "部署 API Server..."
 helm upgrade --install apiserver ./edge-apiserver \
   --namespace $NAMESPACE \
   --set image.repository=$REGISTRY/apiserver \
-  --set image.tag=$TAG \
+  --set image.tag=$CONTROLLER_APISERVER_TAG \
   --set image.pullPolicy=$PULL_POLICY \
   --wait || {
     echo "❌ API Server 部署失败"
@@ -137,7 +147,7 @@ echo "部署 Controller..."
 helm upgrade --install controller ./edge-controller \
   --namespace $NAMESPACE \
   --set image.repository=$REGISTRY/controller \
-  --set image.tag=$TAG \
+  --set image.tag=$CONTROLLER_APISERVER_TAG \
   --set image.pullPolicy=$PULL_POLICY \
   --wait || {
     echo "❌ Controller 部署失败"
