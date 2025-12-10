@@ -53,6 +53,13 @@ spec:
           spec:
             description: IAMRoleSpec defines the desired state of IAMRole
             properties:
+              aggregatedRoleTemplates:
+                description: |-
+                  AggregatedRoleTemplates stores the names of RoleTemplates that were aggregated into this IAMRole
+                  This is automatically populated based on AggregationRoleTemplates.TemplateNames and RoleSelector
+                items:
+                  type: string
+                type: array
               aggregationRoleTemplates:
                 description: |-
                   AggregationRoleTemplates describes how to locate RoleTemplates to aggregate into this IAMRole

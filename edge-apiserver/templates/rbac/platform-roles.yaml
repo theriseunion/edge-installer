@@ -11,29 +11,6 @@ metadata:
     iam.theriseunion.io/scope-value: global
 spec:
   #TODO: update uiPermissions to platform/*.* when frontend supports it
-  uiPermissions:
-    - platform/admin.view
-  rules:
-    - apiGroups:
-      - '*'
-      resources:
-      - '*'
-      verbs:
-      - '*'
-    # 非资源URL访问
-    - nonResourceURLs:
-      - /api
-      - /api/v1
-      - /apis
-      - /apis/*
-      - /oapis
-      - /oapis/*
-      - /oauth/userinfo
-      - /version
-      - /healthz
-      - /metrics
-      verbs:
-      - '*'
   aggregationRoleTemplates:
     roleSelector:
       matchLabels:
