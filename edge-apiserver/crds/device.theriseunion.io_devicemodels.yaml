@@ -51,6 +51,9 @@ spec:
       jsonPath: .spec.compute
       name: Compute
       type: string
+    - jsonPath: .status.updateTime
+      name: UpdateTime
+      type: date
     name: v1alpha1
     schema:
       openAPIV3Schema:
@@ -241,6 +244,10 @@ spec:
               status:
                 default: Unavailable
                 description: 设备型号在集群中的状态。Available表示集群中存在这个卡，NotExist表示集群中不存在这个卡。
+                type: string
+              updateTime:
+                description: UpdateTime 设备型号最后更新时间
+                format: date-time
                 type: string
             type: object
         type: object

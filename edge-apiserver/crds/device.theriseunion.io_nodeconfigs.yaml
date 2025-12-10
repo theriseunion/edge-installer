@@ -24,6 +24,21 @@ spec:
     - jsonPath: .status.capacity.memory
       name: TotalMemory
       type: string
+    - jsonPath: .status.capacity.splitCount
+      name: TotalSplitCount
+      type: string
+    - jsonPath: .status.allocated.core
+      name: AllocatedCore
+      type: string
+    - jsonPath: .status.allocated.memory
+      name: AllocatedMemory
+      type: string
+    - jsonPath: .status.allocated.splitCount
+      name: AllocatedSplitCount
+      type: string
+    - jsonPath: .status.updateTime
+      name: UpdateTime
+      type: date
     name: v1alpha1
     schema:
       openAPIV3Schema:
@@ -273,6 +288,10 @@ spec:
                       type: string
                   type: object
                 type: array
+              updateTime:
+                description: UpdateTime 节点配置最后更新时间
+                format: date-time
+                type: string
             type: object
         type: object
     served: true

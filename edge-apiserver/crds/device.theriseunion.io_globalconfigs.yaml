@@ -35,6 +35,9 @@ spec:
       jsonPath: .spec.alertLevel
       name: AlertLevel
       type: string
+    - jsonPath: .status.updateTime
+      name: UpdateTime
+      type: date
     name: v1alpha1
     schema:
       openAPIV3Schema:
@@ -111,6 +114,11 @@ spec:
             type: object
           status:
             description: GlobalConfigStatus 定义全局配置的观测状态
+            properties:
+              updateTime:
+                description: UpdateTime 全局配置最后更新时间
+                format: date-time
+                type: string
             type: object
         type: object
     served: true
