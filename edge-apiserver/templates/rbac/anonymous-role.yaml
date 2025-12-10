@@ -5,6 +5,7 @@ metadata:
   annotations:
     theriseunion.io/creator: system
     theriseunion.io/description: "匿名用户基础访问权限"
+    iam.theriseunion.io/ignore-aggregate: "true"
   labels:
     iam.theriseunion.io/managed: "true"
     iam.theriseunion.io/scope: platform

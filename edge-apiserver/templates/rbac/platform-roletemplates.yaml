@@ -433,3 +433,42 @@ spec:
       - /boss/access/roles
     verbs:
       - '*'
+
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  annotations:
+    theriseunion.io/creator: system
+    theriseunion.io/alias-name: "平台管理"
+    theriseunion.io/description: "仅供platform-admin使用"
+  labels:
+    theriseunion.io/managed: 'true'
+    iam.theriseunion.io/scope: platform
+    iam.theriseunion.io/aggregate-to-admin: ""
+  name: platform-manage-console
+spec:
+  uiPermissions:
+    - platform/admin.view
+    - platform/admin.manage
+  rules:
+    - apiGroups:
+      - '*'
+      resources:
+      - '*'
+      verbs:
+      - '*'
+    # 非资源URL访问
+    - nonResourceURLs:
+      - /api
+      - /api/v1
+      - /apis
+      - /apis/*
+      - /oapis
+      - /oapis/*
+      - /oauth/userinfo
+      - /version
+      - /healthz
+      - /metrics
+      verbs:
+      - '*'
