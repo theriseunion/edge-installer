@@ -22,7 +22,7 @@ spec:
     name: edge-controller
     namespace: {{ .Release.Namespace }}
     releaseName: edge-platform
-    repository: http://chartmuseum.{{ .Release.Namespace }}.svc:8080
+    repository: http://chartmuseum.{{ .Release.Namespace }}.svc:{{ .Values.chartmuseum.service.port }}
   # NOTE: Chart configuration is used by Cluster Controller when installing to member clusters
   # Host cluster's controller is pre-installed via Helm (skip-reconcile: true)
   # Member clusters use this configuration for automated controller installation
