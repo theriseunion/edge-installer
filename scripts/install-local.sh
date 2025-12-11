@@ -12,7 +12,7 @@ MODE="${MODE:-host}"  # host | member | all
 
 # 镜像配置
 REGISTRY="quanzhenglong.com/edge"
-TAG="main-local"
+TAG="main-qzl"
 
 # Color output
 RED='\033[0;31m'

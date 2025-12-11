@@ -26,7 +26,7 @@ controller:
 
   image:
     repository: controller
-    tag: "main"
+    tag: "main-qzl"
     pullPolicy: IfNotPresent
 
   resources:
@@ -82,7 +82,7 @@ chartmuseum:
 
   image:
     repository: quanzhenglong.com/edge/edge-museum
-    tag: "latest"
+    tag: "main-qzl"
     pullPolicy: IfNotPresent
 
   resources:
