@@ -68,6 +68,9 @@ spec:
             type: object
           status:
             description: RegistryStatus defines the observed state of Registry
+            properties:
+              status:
+                type: string
             type: object
         type: object
     served: true
