@@ -25,8 +25,10 @@ metadata:
   name: edge-system:edge-apiserver:aggregator
 rules:
 - nonResourceURLs:
-  - /apis/vast.theriseunion.io/v1alpha1
-  - /apis/vast.theriseunion.io/v1alpha1/*
+  - /apis/device.vast.theriseunion.io/v1alpha1
+  - /apis/device.vast.theriseunion.io/v1alpha1/*
+  - /apis/registry.vast.theriseunion.io/v1alpha1
+  - /apis/registry.vast.theriseunion.io/v1alpha1/*
   verbs:
   - get
 - nonResourceURLs:
@@ -35,8 +37,10 @@ rules:
   verbs:
   - get
 - nonResourceURLs:
-  - /apis/vast.theriseunion.io
-  - /apis/vast.theriseunion.io/*
+  - /apis/device.vast.theriseunion.io
+  - /apis/device.vast.theriseunion.io/*
+  - /apis/registry.vast.theriseunion.io
+  - /apis/registry.vast.theriseunion.io/*
   verbs:
   - get
 - apiGroups:
@@ -70,13 +74,43 @@ kind: APIService
 metadata:
   labels:
     {{- include "edge-apiserver.labels" . | nindent 4 }}
-  name: v1alpha1.vast.theriseunion.io
+  name: v1alpha1.device.vast.theriseunion.io
   annotations:
     # cert-manager cainjector will automatically inject CA bundle from edge-ca-cert Certificate
     # Format: <namespace>/<certificate-name>
     cert-manager.io/inject-ca-from: {{ .Release.Namespace }}/edge-ca-cert
 spec:
-  group: vast.theriseunion.io
+  group: device.vast.theriseunion.io
+  groupPriorityMinimum: 1000
+  service:
+    name: {{ include "edge-apiserver.fullname" . }}
+    namespace: edge-system
+    port: 8443
+  # caBundle will be automatically injected by cert-manager cainjector
+  # If manually set in values.yaml, it will override the automatic injection
+  # Note: caBundle is at spec level, not under spec.service
+  {{- if and .Values.certManager .Values.certManager.caBundle }}
+  caBundle: {{ .Values.certManager.caBundle | quote }}
+  {{- end }}
+  version: v1alpha1
+  versionPriority: 15
+---
+# APIService with automatic CA bundle injection via cert-manager cainjector
+# The cert-manager.io/inject-ca-from annotation tells cert-manager's cainjector
+# to automatically inject the CA certificate from the specified Certificate resource
+# into the caBundle field. This is the recommended approach per cert-manager best practices.
+apiVersion: apiregistration.k8s.io/v1
+kind: APIService
+metadata:
+  labels:
+    {{- include "edge-apiserver.labels" . | nindent 4 }}
+  name: v1alpha1.registry.vast.theriseunion.io
+  annotations:
+    # cert-manager cainjector will automatically inject CA bundle from edge-ca-cert Certificate
+    # Format: <namespace>/<certificate-name>
+    cert-manager.io/inject-ca-from: {{ .Release.Namespace }}/edge-ca-cert
+spec:
+  group: registry.vast.theriseunion.io
   groupPriorityMinimum: 1000
   service:
     name: {{ include "edge-apiserver.fullname" . }}
