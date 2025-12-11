@@ -37,8 +37,10 @@ package-charts: clean-charts ## Package all Helm charts into tgz files (cleans o
 		echo "Packaging $$chart..."; \
 		helm package $(CHARTS_SOURCE)/$$chart -d $(CHARTS_OUTPUT); \
 	done
+	@sleep 5
 	@echo "Charts packaged to $(CHARTS_OUTPUT)/"
 	@ls -lh $(CHARTS_OUTPUT)/*.tgz
+	
 
 .PHONY: clean-charts
 clean-charts: ## Clean packaged charts
