@@ -1,0 +1,15 @@
+apiVersion: device.theriseunion.io/v1alpha1
+kind: GlobalConfig
+metadata:
+  name: global-config
+spec:
+  # 资源感知：默认 allocation_rate, 支持 allocation_rate 和 usage_rate
+  resourceAwareness: allocation_rate
+  # 节点调度：默认 binpack, 支持 binpack 和 spread
+  nodeScheduling: binpack
+  # 显卡调度：默认 spread, 支持 binpack 和 spread
+  gpuScheduling: spread
+  # 资源池：默认开启, 支持 true 和 false
+  resourcePoolEnabled: true
+  # 开启严重/高告警级别, 支持 critical, high, middle, low
+  alertLevel: ["critical", "high"]

@@ -1,0 +1,239 @@
+apiVersion: device.theriseunion.io/v1alpha1
+kind: ComputeTemplate
+metadata:
+  name: default-nvidia
+  labels:
+    theriseunion.io/config-type: fixed
+    theriseunion.io/model-scope: "all"
+spec:
+  manufacturer: NVIDIA
+  model: "all"
+  deviceMemoryScaling: "1.0"
+  deviceCoreScaling: "1.0"
+  deviceSplitCount: 10
+  computeSplitMode: "hami-core"
+  description: "default nvidia compute template"
+---
+apiVersion: device.theriseunion.io/v1alpha1
+kind: ComputeTemplate
+metadata:
+  name: default-xpu-p800-oam
+  labels:
+    theriseunion.io/config-type: fixed
+    theriseunion.io/model-scope: "XPU-P800-OAM"
+spec:
+  manufacturer: XPU
+  model: "XPU-P800 OAM"
+  deviceMemoryScaling: "1"
+  deviceCoreScaling: "1"
+  deviceSplitCount: 4
+  computeSplitMode: "hami-core"
+  description: "default xpu-p800 oam compute template"
+---
+apiVersion: device.theriseunion.io/v1alpha1
+kind: ComputeTemplate
+metadata:
+  name: default-ascend910b2
+  labels:
+    theriseunion.io/config-type: fixed
+    theriseunion.io/model-scope: "Ascend910B2"
+spec:
+  manufacturer: Ascend
+  model: "Ascend910B2"
+  deviceMemoryScaling: "1"
+  deviceCoreScaling: "1"
+  deviceSplitCount: 8
+  computeSplitMode: "hami-core"
+  description: "default ascend910b2 compute template"
+---
+apiVersion: device.theriseunion.io/v1alpha1
+kind: ComputeTemplate
+metadata:
+  name: default-ascend910b3
+  labels:
+    theriseunion.io/config-type: fixed
+    theriseunion.io/model-scope: "Ascend910B3"
+spec:
+  manufacturer: Ascend
+  model: "Ascend910B3"
+  deviceMemoryScaling: "1"
+  deviceCoreScaling: "1"
+  deviceSplitCount: 4
+  computeSplitMode: "hami-core"
+  description: "default ascend910b3 compute template"
+---
+apiVersion: device.theriseunion.io/v1alpha1
+kind: ComputeTemplate
+metadata:
+  name: default-ascend910b4
+  labels:
+    theriseunion.io/config-type: fixed
+    theriseunion.io/model-scope: "Ascend910B4"
+spec:
+  manufacturer: Ascend
+  model: "Ascend910B4"
+  deviceMemoryScaling: "1"
+  deviceCoreScaling: "1"
+  deviceSplitCount: 4
+  computeSplitMode: "hami-core"
+  description: "default ascend910b4 compute template"
+---
+apiVersion: device.theriseunion.io/v1alpha1
+kind: ComputeTemplate
+metadata:
+  name: default-ascend310p
+  labels:
+    theriseunion.io/config-type: fixed
+    theriseunion.io/model-scope: "Ascend310P"
+spec:
+  manufacturer: Ascend
+  model: "Ascend310P"
+  deviceMemoryScaling: "1"
+  deviceCoreScaling: "1"
+  deviceSplitCount: 7
+  computeSplitMode: "hami-core"
+  description: "default ascend310p compute template"
+---
+apiVersion: device.theriseunion.io/v1alpha1
+kind: ComputeTemplate
+metadata:
+  name: default-hygon-k100-ai
+  labels:
+    theriseunion.io/config-type: fixed
+    theriseunion.io/model-scope: "DCU-K100_AI"
+spec:
+  manufacturer: DCU
+  model: "DCU-K100_AI"
+  deviceMemoryScaling: "1"
+  deviceCoreScaling: "1"
+  deviceSplitCount: 10
+  computeSplitMode: "hami-core"
+  description: "default hygon k100_ai compute template"
+---
+apiVersion: device.theriseunion.io/v1alpha1
+kind: ComputeTemplate
+metadata:
+  name: default-hygon-z100l
+  labels:
+    theriseunion.io/config-type: fixed
+    theriseunion.io/model-scope: "DCU-Z100L"
+spec:
+  manufacturer: DCU
+  model: "DCU-Z100L"
+  deviceMemoryScaling: "1"
+  deviceCoreScaling: "1"
+  deviceSplitCount: 4
+  computeSplitMode: "hami-core"
+  description: "default hygon z100l compute template"
+---
+apiVersion: device.theriseunion.io/v1alpha1
+kind: ComputeTemplate
+metadata:
+  name: default-hygon-z100
+  labels:
+    theriseunion.io/config-type: fixed
+    theriseunion.io/model-scope: "DCU-Z100"
+spec:
+  manufacturer: DCU
+  model: "DCU-Z100"
+  deviceMemoryScaling: "1"
+  deviceCoreScaling: "1"
+  deviceSplitCount: 4
+  computeSplitMode: "hami-core"
+  description: "default hygon z100 compute template"
+---
+apiVersion: device.theriseunion.io/v1alpha1
+kind: ComputeTemplate
+metadata:
+  name: default-iluvatar-mr-v100
+  labels:
+    theriseunion.io/config-type: fixed
+    theriseunion.io/model-scope: "Iluvatar-MR-V100"
+spec:
+  manufacturer: Iluvatar
+  model: "Iluvatar-MR-V100"
+  deviceMemoryScaling: "1"
+  deviceCoreScaling: "1"
+  deviceSplitCount: 10
+  computeSplitMode: "hami-core"
+  description: "default iluvatar-mr-v100 compute template"
+---
+apiVersion: device.theriseunion.io/v1alpha1
+kind: ComputeTemplate
+metadata:
+  name: default-iluvatar-bi-v150
+  labels:
+    theriseunion.io/config-type: fixed
+    theriseunion.io/model-scope: "Iluvatar-BI-V150"
+spec:
+  manufacturer: Iluvatar
+  model: "Iluvatar-BI-V150"
+  deviceMemoryScaling: "1"
+  deviceCoreScaling: "1"
+  deviceSplitCount: 10
+  computeSplitMode: "hami-core"
+  description: "default iluvatar-bi-v150 compute template"
+---
+apiVersion: device.theriseunion.io/v1alpha1
+kind: ComputeTemplate
+metadata:
+  name: default-metax-gpu-c500
+  labels:
+    theriseunion.io/config-type: fixed
+    theriseunion.io/model-scope: "Metax-GPU-C500"
+spec:
+  manufacturer: Metax-GPU
+  model: "Metax-GPU-C500"
+  deviceMemoryScaling: "1"
+  deviceCoreScaling: "1"
+  deviceSplitCount: 1
+  computeSplitMode: "hami-core"
+  description: "default metax-gpu-c500 compute template"
+---
+apiVersion: device.theriseunion.io/v1alpha1
+kind: ComputeTemplate
+metadata:
+  name: default-metax-sgpu-c500
+  labels:
+    theriseunion.io/config-type: fixed
+    theriseunion.io/model-scope: "Metax-SGPU-C500"
+spec:
+  manufacturer: Metax-SGPU
+  model: "Metax-SGPU-C500"
+  deviceMemoryScaling: "1"
+  deviceCoreScaling: "1"
+  deviceSplitCount: 10
+  computeSplitMode: "hami-core"
+  description: "default metax-sgpu-c500 compute template"
+---
+apiVersion: device.theriseunion.io/v1alpha1
+kind: ComputeTemplate
+metadata:
+  name: default-mlu
+  labels:
+    theriseunion.io/config-type: fixed
+    theriseunion.io/model-scope: "MLU"
+spec:
+  manufacturer: MLU
+  model: "MLU"
+  deviceMemoryScaling: "1"
+  deviceCoreScaling: "1"
+  deviceSplitCount: 10
+  computeSplitMode: "hami-core"
+  description: "default mlu compute template"
+---
+apiVersion: device.theriseunion.io/v1alpha1
+kind: ComputeTemplate
+metadata:
+  name: default-ppu
+  labels:
+    theriseunion.io/config-type: fixed
+    theriseunion.io/model-scope: "PPU-PPU-ZW810E"
+spec:
+  manufacturer: PPU
+  model: "PPU-PPU-ZW810E"
+  deviceMemoryScaling: "1"
+  deviceCoreScaling: "1"
+  deviceSplitCount: 1
+  computeSplitMode: "hami-core"
+  description: "default ppu compute template"
