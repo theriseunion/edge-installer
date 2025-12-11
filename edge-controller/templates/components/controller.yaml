@@ -10,14 +10,20 @@ metadata:
     app.kubernetes.io/part-of: edge-platform
     cluster.theriseunion.io/role: {{ .Values.global.mode }}
   annotations:
-    # Mark as pre-installed to skip reconcile loop
+    # Mark as pre-installed to skip reconcile loop in host cluster
     # Controller is already deployed as part of this Helm chart
     ext.theriseunion.io/pre-installed: "true"
     ext.theriseunion.io/skip-reconcile: "true"
     ext.theriseunion.io/installation-method: "helm-direct"
 spec:
   enabled: true
-  version: {{ .Chart.AppVersion }}
-  # NOTE: No chart field - controller is pre-installed via Helm
-  # This Component CR exists only for system recognition
+  version: {{ .Values.autoInstall.controller.version | default .Chart.Version }}
+  chart:
+    name: edge-controller
+    namespace: {{ .Release.Namespace }}
+    releaseName: edge-platform
+    repository: http://chartmuseum.{{ .Release.Namespace }}.svc:{{ .Values.chartmuseum.service.port }}
+  # NOTE: Chart configuration is used by Cluster Controller when installing to member clusters
+  # Host cluster's controller is pre-installed via Helm (skip-reconcile: true)
+  # Member clusters use this configuration for automated controller installation
 {{- end }}

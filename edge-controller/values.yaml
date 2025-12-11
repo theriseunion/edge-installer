@@ -111,9 +111,13 @@ chartmuseum:
 
 # Component auto-installation configuration
 autoInstall:
-  # NOTE: Controller is NOT installed via Component CR because it's already
-  # deployed as part of this Helm chart. Only APIServer, Console, and Monitoring
-  # are managed via Component CRs.
+  # NOTE: Controller is NOT installed via Component CR in host cluster because
+  # it's already deployed as part of this Helm chart. However, the controller
+  # Component CR configuration is used when installing controller to member clusters.
+
+  # Controller component configuration (used for member cluster installation)
+  controller:
+    version: "0.1.0"  # Chart version for member cluster installation
 
   # APIServer component
   apiserver:
