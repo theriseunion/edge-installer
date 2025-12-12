@@ -62,11 +62,11 @@ apiserver:
 
     # Authentication configuration
     auth:
-      mode: "RBAC"  # RBAC or AlwaysAllow
+      mode: "RBAC" # RBAC or AlwaysAllow
       jwt:
-        secret: ""  # Should be set via environment variable JWT_SECRET in production
+        secret: "" # Should be set via environment variable JWT_SECRET in production
         expiry: "24h"
-        refreshTTL: "168h"  # 7 days
+        refreshTTL: "168h" # 7 days
       oauth:
         issuer: ""
         clientId: ""
@@ -90,24 +90,24 @@ apiserver:
 
     # Logging configuration
     logging:
-      level: "info"  # debug, info, warn, error
-      format: "text"  # text, json
-      output: "stdout"  # stdout, stderr, file
+      level: "info" # debug, info, warn, error
+      format: "text" # text, json
+      output: "stdout" # stdout, stderr, file
       file: "/var/log/apiserver/apiserver.log"
       rotation:
-        maxSize: 100  # MB
+        maxSize: 100 # MB
         maxBackups: 5
-        maxAge: 30  # days
+        maxAge: 30 # days
         compress: true
 
     # Database configuration (optional)
     database:
-      type: ""  # mysql, postgres, sqlite
+      type: "" # mysql, postgres, sqlite
       host: ""
       port: 0
       database: ""
       username: ""
-      password: ""  # Should be set via environment variable in production
+      password: "" # Should be set via environment variable in production
       sslMode: ""
 
     # Device manager configuration
@@ -258,6 +258,28 @@ controller:
 # HAMI subchart configuration
 hami:
   enabled: true
-  # Add your hami configuration here
-  # See charts/hami/values.yaml for all available options
-
+  # Disable ServiceMonitor by default if Prometheus Operator is not installed
+  # Set to true if you have Prometheus Operator installed
+  devicePlugin:
+    serviceMonitor:
+      enabled: false
+  exporter:
+    kunlunxin:
+      serviceMonitor:
+        enabled: false
+    enflame:
+      serviceMonitor:
+        enabled: false
+  scheduler:
+    nodeSelector:
+      theriseunion.io/control: "true"
+    kubeScheduler:
+      imageTag: "v1.23.17"
+      image: quanzhenglong.com/camp/kubesphere/kube-scheduler
+    extender:
+      image: quanzhenglong.com/camp/hami
+    patch:
+      image: quanzhenglong.com/camp/jettech-kube-webhook-certgen:v1.5.2
+      imageNew: quanzhenglong.com/camp/liangjw-kube-webhook-certgen:v1.1.1
+      nodeSelector:
+        theriseunion.io/control: "true"

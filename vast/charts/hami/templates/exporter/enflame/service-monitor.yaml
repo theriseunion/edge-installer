@@ -1,4 +1,4 @@
-{{- if .Values.exporter.enflame.serviceMonitor.enabled }}
+{{- if and .Values.exporter.enflame.enabled .Values.exporter.enflame.serviceMonitor.enabled }}
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:

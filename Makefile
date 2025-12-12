@@ -133,3 +133,13 @@ example-member: ## Example: Install member cluster
 	helm install edge-platform ./edge-controller \
 		--set global.mode=member \
 		--set autoInstall.monitoring.enabled=false
+
+# 部署vas
+.PHONY: install-vast
+install-vast: ## Install VAST platform
+	helm install vast ./vast
+
+# 卸载vast
+.PHONY: uninstall-vast
+uninstall-vast: ## Uninstall VAST platform
+	helm uninstall vast

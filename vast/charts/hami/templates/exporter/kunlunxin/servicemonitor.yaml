@@ -1,4 +1,4 @@
-{{- if .Values.exporter.kunlunxin.serviceMonitor.enabled }}
+{{- if and .Values.exporter.kunlunxin.enabled .Values.exporter.kunlunxin.serviceMonitor.enabled }}
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
