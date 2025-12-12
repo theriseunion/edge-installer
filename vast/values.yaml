@@ -14,7 +14,7 @@ apiserver:
   # Image configuration
   image:
     repository: quanzhenglong.com/edge/apiserver
-    tag: latest
+    tag: vast-v0.1.0-10
     pullPolicy: Always
 
   # Namespace override (defaults to Release.Namespace)
@@ -56,7 +56,7 @@ apiserver:
         write: "30s"
         idle: "120s"
       tls:
-        enabled: true
+        enabled: false
         certFile: "/tmp/k8s-webhook-server/serving-certs/tls.crt"
         keyFile: "/tmp/k8s-webhook-server/serving-certs/tls.key"
 
@@ -125,7 +125,7 @@ controller:
   # Image configuration
   image:
     repository: quanzhenglong.com/edge/controller
-    tag: latest
+    tag: vast-v0.1.0-10
     pullPolicy: Always
 
   # Kube RBAC Proxy configuration
@@ -258,6 +258,8 @@ controller:
 # HAMI subchart configuration
 hami:
   enabled: true
+  fullnameOverride: hami
+  version: "v1.6.1-rc-08"
   # Disable ServiceMonitor by default if Prometheus Operator is not installed
   # Set to true if you have Prometheus Operator installed
   devicePlugin:
@@ -281,5 +283,9 @@ hami:
     patch:
       image: quanzhenglong.com/camp/jettech-kube-webhook-certgen:v1.5.2
       imageNew: quanzhenglong.com/camp/liangjw-kube-webhook-certgen:v1.1.1
-      nodeSelector:
-        theriseunion.io/control: "true"
+      # nodeSelector:
+      #   theriseunion.io/control: "true"
+      tolerations:
+        - key: node-role.kubernetes.io/control-plane
+          operator: Exists
+          effect: NoSchedule

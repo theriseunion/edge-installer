@@ -105,9 +105,9 @@ spec:
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           volumeMounts:
-            - name: cert
-              mountPath: /tmp/k8s-webhook-server/serving-certs
-              readOnly: true
+            # - name: cert
+            #   mountPath: /tmp/k8s-webhook-server/serving-certs
+            #   readOnly: true
             - name: apiserver-config
               mountPath: /etc/edge
               readOnly: true
@@ -125,9 +125,9 @@ spec:
       {{- end }}
       terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds }}
       volumes:
-        - name: cert
-          secret:
-            secretName: {{ .Values.cert.secretName }}
+        # - name: cert
+        #   secret:
+        #     secretName: {{ .Values.cert.secretName }}
         - name: apiserver-config
           configMap:
             name: {{ include "apiserver.fullname" . }}-config

@@ -72,9 +72,9 @@ spec:
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           volumeMounts:
-            - name: cert
-              mountPath: /tmp/k8s-webhook-server/serving-certs
-              readOnly: true
+            # - name: cert
+            #   mountPath: /tmp/k8s-webhook-server/serving-certs
+            #   readOnly: true
             - name: config
               mountPath: /etc/edge/config
               readOnly: true
@@ -107,10 +107,10 @@ spec:
       {{- end }}
       terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds }}
       volumes:
-        - name: cert
-          secret:
-            secretName: {{ .Values.webhook.certSecretName }}
-            defaultMode: 420
+        # - name: cert
+        #   secret:
+        #     secretName: {{ .Values.webhook.certSecretName }}
+        #     defaultMode: 420
         - name: config
           configMap:
             name: {{ include "controller.fullname" . }}-config
