@@ -1,5 +1,5 @@
 apiVersion: v2
-name: vast-apiserver
+name: apiserver
 description: Vast API Server - Heterogeneous computing resource management API server for GPU, NPU, Cambricon, Tianshu and other compute vendors
 type: application
 version: 0.1.0
@@ -20,18 +20,3 @@ keywords:
   - kubernetes
 sources:
   - https://github.com/edge/apiserver
-
-# Chart dependencies
-dependencies:
-  - name: controller
-    version: "0.1.0"
-    repository: "file://./charts/controller"
-    condition: controller.enabled
-  - name: apiserver
-    version: "0.1.0"
-    repository: "file://./charts/apiserver"
-    condition: apiserver.enabled
-  - name: hami
-    version: "2.5.0"
-    repository: "file://./charts/hami"
-    condition: hami.enabled
