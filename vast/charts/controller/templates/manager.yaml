@@ -1,112 +1,115 @@
+{{- if .Values.enabled }}
+{{- $fullName := include "controller.fullname" . -}}
+{{- $serviceAccountName := include "controller.serviceAccountName" . -}}
+{{- if .Values.createNamespace }}
+---
 apiVersion: v1
 kind: Namespace
 metadata:
+  name: {{ include "controller.namespace" . }}
   labels:
+    {{- include "controller.labels" . | nindent 4 }}
     app.kubernetes.io/component: manager
-    app.kubernetes.io/created-by: apiserver-project
-    app.kubernetes.io/instance: system
-    app.kubernetes.io/managed-by: kustomize
     app.kubernetes.io/name: namespace
-    app.kubernetes.io/part-of: apiserver-project
     control-plane: controller-manager
-  name: edge-system
+{{- end }}
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  name: {{ $fullName }}-manager
+  namespace: {{ include "controller.namespace" . }}
   labels:
+    {{- include "controller.labels" . | nindent 4 }}
     app.kubernetes.io/component: manager
-    app.kubernetes.io/created-by: apiserver-project
-    app.kubernetes.io/instance: controller-manager
-    app.kubernetes.io/managed-by: kustomize
     app.kubernetes.io/name: deployment
-    app.kubernetes.io/part-of: apiserver-project
     control-plane: controller-manager
-  name: edge-controller-manager
-  namespace: edge-system
 spec:
-  replicas: 1
+  replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      control-plane: controller-manager
+      {{- include "controller.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       annotations:
-        kubectl.kubernetes.io/default-container: manager
+        {{- with .Values.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
       labels:
-        control-plane: controller-manager
+        {{- include "controller.selectorLabels" . | nindent 8 }}
+        {{- with .Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
     spec:
-      containers:
-      - args:
-        - --config=/etc/edge/config/controller.yaml
-        - --v=4
-        env:
-        - name: ENABLE_WEBHOOKS
-          value: "true"
-        - name: WEBHOOK_PORT
-          value: "9443"
-        - name: CAMP_NS
-          value: rise-vast-system
-        image: quanzhenglong.com/edge/controller:latest
-        imagePullPolicy: Always
-        name: manager
-        ports:
-        - containerPort: 9443
-          name: webhook-server
-          protocol: TCP
-        resources:
-          limits:
-            cpu: 500m
-            memory: 128Mi
-          requests:
-            cpu: 10m
-            memory: 64Mi
-        securityContext:
-          allowPrivilegeEscalation: false
-          capabilities:
-            drop:
-            - ALL
-        volumeMounts:
-        - mountPath: /tmp/k8s-webhook-server/serving-certs
-          name: cert
-          readOnly: true
-        - mountPath: /etc/edge/config
-          name: config
-          readOnly: true
-      - args:
-        - --secure-listen-address=0.0.0.0:8443
-        - --upstream=http://127.0.0.1:8080/
-        - --logtostderr=true
-        - --v=0
-        image: quanzhenglong.com/edge/kube-rbac-proxy:v0.15.0
-        name: kube-rbac-proxy
-        ports:
-        - containerPort: 8443
-          name: https
-          protocol: TCP
-        resources:
-          limits:
-            cpu: 500m
-            memory: 128Mi
-          requests:
-            cpu: 5m
-            memory: 64Mi
-        securityContext:
-          allowPrivilegeEscalation: false
-          capabilities:
-            drop:
-            - ALL
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.global.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ $serviceAccountName }}
       securityContext:
-        runAsGroup: 10001
-        runAsNonRoot: true
-        runAsUser: 10001
-      serviceAccountName: edge-controller-manager
-      terminationGracePeriodSeconds: 10
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: manager
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          args:
+            {{- toYaml .Values.args | nindent 12 }}
+          env:
+            {{- toYaml .Values.env | nindent 12 }}
+            {{- toYaml .Values.extraEnv | nindent 12 }}
+          ports:
+            - name: webhook-server
+              containerPort: {{ .Values.webhook.port }}
+              protocol: TCP
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          volumeMounts:
+            - name: cert
+              mountPath: /tmp/k8s-webhook-server/serving-certs
+              readOnly: true
+            - name: config
+              mountPath: /etc/edge/config
+              readOnly: true
+        {{- if .Values.kubeRbacProxy.enabled }}
+        - name: kube-rbac-proxy
+          image: "{{ .Values.kubeRbacProxy.image.repository }}:{{ .Values.kubeRbacProxy.image.tag }}"
+          imagePullPolicy: {{ .Values.kubeRbacProxy.image.pullPolicy }}
+          args:
+            {{- toYaml .Values.kubeRbacProxy.args | nindent 12 }}
+          ports:
+            - name: https
+              containerPort: {{ .Values.kubeRbacProxy.port }}
+              protocol: TCP
+          resources:
+            {{- toYaml .Values.kubeRbacProxy.resources | nindent 12 }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+        {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds }}
       volumes:
-      - name: cert
-        secret:
-          defaultMode: 420
-          secretName: webhook-server-cert
-      - configMap:
-          name: edge-controller-config
-        name: config
+        - name: cert
+          secret:
+            secretName: {{ .Values.webhook.certSecretName }}
+            defaultMode: 420
+        - name: config
+          configMap:
+            name: {{ include "controller.fullname" . }}-config
+{{- end }}

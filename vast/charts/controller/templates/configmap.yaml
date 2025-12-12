@@ -1,100 +1,43 @@
+{{- if .Values.enabled }}
 apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "controller.fullname" . }}-config
+  namespace: {{ include "controller.namespace" . }}
+  labels:
+    {{- include "controller.labels" . | nindent 4 }}
+    app.kubernetes.io/component: manager
+    app.kubernetes.io/name: configmap
+    control-plane: controller-manager
 data:
   controller.yaml: |-
     # 指标监控配置
     metrics:
       # 是否启用metrics功能
-      enabled: true
+      enabled: {{ .Values.config.metrics.enabled }}
 
       # Prometheus配置
       prometheus:
         # Prometheus服务端点
-        # 集群内: http://prometheus.observability-system.svc.cluster.local:9090
-        # 集群外: http://localhost:9090
-        endpoint: "http://10.100.121.67:30190/"
+        endpoint: "{{ .Values.config.metrics.prometheus.endpoint }}"
 
         # 认证
-        auth: ""
+        auth: "{{ .Values.config.metrics.prometheus.auth }}"
 
         # 查询超时时间
-        timeout: "30s"
+        timeout: "{{ .Values.config.metrics.prometheus.timeout }}"
 
         # 最大并发查询数
-        maxConcurrentQueries: 10
+        maxConcurrentQueries: {{ .Values.config.metrics.prometheus.maxConcurrentQueries }}
 
         # 重试配置
-        retryCount: 3
-        retryInterval: "1s"
+        retryCount: {{ .Values.config.metrics.prometheus.retryCount }}
+        retryInterval: "{{ .Values.config.metrics.prometheus.retryInterval }}"
 
         # TLS配置（开发环境可以跳过验证）
-        tlsInsecureSkipVerify: true
+        tlsInsecureSkipVerify: {{ .Values.config.metrics.prometheus.tlsInsecureSkipVerify }}
     deviceManager:
-      hamiDeviceConfig: "config/device.yaml"
+      hamiDeviceConfig: "{{ .Values.config.deviceManager.hamiDeviceConfig }}"
     device_plugin:
-      nvidia-hami:
-        mem_factor: 1
-        node_label:
-          key: gpu-test
-          value: "on"
-      hygon-hami:
-        mem_factor: 1
-        node_label:
-          key: dcu-test
-          value: "on"
-      cambricon-hami:
-        mem_factor: 1
-        node_label:
-          key: mlu-test
-          value: "on"
-      kunlunxin-hami:
-        mem_factor: 1
-        node_label:
-          key: xpu-test
-          value: "on"
-      ascend-hami:
-        mem_factor: 1
-        node_label:
-          key: ascend-test
-          value: "on"
-      iluvatar-hami:
-        mem_factor: 256
-        node_label:
-          key: iluvatar-test
-          value: "on"
-      metax-hami:
-        mem_factor: 1
-        node_label:
-          key: metax-test
-          value: "on"
-      enflame-hami:
-        mem_factor: 1
-        node_label:
-          key: gcu-test
-          value: "on"
-      alibaba-hami:
-        mem_factor: 1
-        node_label:
-          key: ppu-test
-          value: "on"
-      nvidia-volcano:
-        mem_factor: 10
-        node_label:
-          key: volcano
-          value: "on"
-      ascend-volcano:
-        mem_factor: 1
-        node_label:
-          key: volcano_ascend-test
-          value: "on"
-kind: ConfigMap
-metadata:
-  labels:
-    app.kubernetes.io/component: manager
-    app.kubernetes.io/created-by: apiserver-project
-    app.kubernetes.io/instance: controller-config
-    app.kubernetes.io/managed-by: kustomize
-    app.kubernetes.io/name: configmap
-    app.kubernetes.io/part-of: apiserver-project
-    control-plane: controller-manager
-  name: edge-controller-config
-  namespace: edge-system
+      {{- toYaml .Values.config.devicePlugin | nindent 6 }}
+{{- end }}

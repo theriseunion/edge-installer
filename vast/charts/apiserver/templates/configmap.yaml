@@ -1,4 +1,13 @@
+{{- if .Values.enabled }}
 apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "apiserver.fullname" . }}-config
+  namespace: {{ include "apiserver.namespace" . }}
+  labels:
+    {{- include "apiserver.labels" . | nindent 4 }}
+    app.kubernetes.io/component: apiserver
+    app.kubernetes.io/name: configmap
 data:
   apiserver.yaml: |
     # Edge APIServer 全局配置文件
@@ -7,153 +16,117 @@ data:
     # 服务器基础配置
     server:
       # HTTP服务端口
-      port: 8090
+      port: {{ .Values.config.server.port }}
 
       # 服务绑定地址
-      host: "0.0.0.0"
+      host: "{{ .Values.config.server.host }}"
 
       # 超时配置
       timeout:
-        read: "30s"
-        write: "30s"
-        idle: "120s"
+        read: "{{ .Values.config.server.timeout.read }}"
+        write: "{{ .Values.config.server.timeout.write }}"
+        idle: "{{ .Values.config.server.timeout.idle }}"
 
       # TLS配置（可选）
       tls:
-        enabled: true
-        certFile: "/tmp/k8s-webhook-server/serving-certs/tls.crt"
-        keyFile: "/tmp/k8s-webhook-server/serving-certs/tls.key"
+        enabled: {{ .Values.config.server.tls.enabled }}
+        certFile: "{{ .Values.config.server.tls.certFile }}"
+        keyFile: "{{ .Values.config.server.tls.keyFile }}"
 
     # 认证配置
     auth:
       # 认证模式：RBAC（推荐）, AlwaysAllow（仅开发环境）
-      mode: "RBAC"
+      mode: "{{ .Values.config.auth.mode }}"
 
       # JWT配置
       jwt:
         # JWT密钥（生产环境请通过环境变量设置 JWT_SECRET）
-        secret: ""
+        secret: "{{ .Values.config.auth.jwt.secret }}"
         # Token过期时间
-        expiry: "24h"
+        expiry: "{{ .Values.config.auth.jwt.expiry }}"
         # 刷新Token有效期
-        refreshTTL: "168h"  # 7天
+        refreshTTL: "{{ .Values.config.auth.jwt.refreshTTL }}"
 
       # OAuth配置（可选）
       oauth:
-        issuer: ""
-        clientId: ""
-        clientSecret: ""
+        issuer: "{{ .Values.config.auth.oauth.issuer }}"
+        clientId: "{{ .Values.config.auth.oauth.clientId }}"
+        clientSecret: "{{ .Values.config.auth.oauth.clientSecret }}"
 
     # 指标监控配置
     metrics:
       # 是否启用metrics功能
-      enabled: true
+      enabled: {{ .Values.config.metrics.enabled }}
 
       # Prometheus配置
       prometheus:
         # Prometheus服务端点
-        endpoint: "http://prometheus-kube-prometheus-prometheus.prometheus.svc.cluster.local:9090"
-        # 集群外: http://localhost:9090
-        # endpoint: "http://10.100.121.67:30190/"
+        endpoint: "{{ .Values.config.metrics.prometheus.endpoint }}"
 
         # 认证
-        auth: ""
+        auth: "{{ .Values.config.metrics.prometheus.auth }}"
 
         # 查询超时时间
-        timeout: "30s"
+        timeout: "{{ .Values.config.metrics.prometheus.timeout }}"
 
         # 最大并发查询数
-        maxConcurrentQueries: 10
+        maxConcurrentQueries: {{ .Values.config.metrics.prometheus.maxConcurrentQueries }}
 
         # 重试配置
-        retryCount: 3
-        retryInterval: "1s"
+        retryCount: {{ .Values.config.metrics.prometheus.retryCount }}
+        retryInterval: "{{ .Values.config.metrics.prometheus.retryInterval }}"
 
         # TLS配置（开发环境可以跳过验证）
-        tlsInsecureSkipVerify: true
+        tlsInsecureSkipVerify: {{ .Values.config.metrics.prometheus.tlsInsecureSkipVerify }}
 
       # 缓存配置
       cache:
         # 是否启用缓存
-        enabled: true
+        enabled: {{ .Values.config.metrics.cache.enabled }}
 
         # 缓存过期时间
-        ttl: "30s"
+        ttl: "{{ .Values.config.metrics.cache.ttl }}"
 
         # 缓存大小（条目数）
-        size: 1000
+        size: {{ .Values.config.metrics.cache.size }}
 
     # 日志配置
     logging:
       # 日志级别：debug, info, warn, error
-      level: "info"
+      level: "{{ .Values.config.logging.level }}"
 
       # 日志格式：text, json
-      format: "text"
+      format: "{{ .Values.config.logging.format }}"
 
       # 日志输出：stdout, stderr, file
-      output: "stdout"
+      output: "{{ .Values.config.logging.output }}"
 
       # 日志文件路径（当output为file时）
-      file: "/var/log/apiserver/apiserver.log"
+      file: "{{ .Values.config.logging.file }}"
 
       # 日志轮转配置（可选）
       rotation:
         # 单个日志文件最大大小（MB）
-        maxSize: 100
+        maxSize: {{ .Values.config.logging.rotation.maxSize }}
         # 保留的备份文件数量
-        maxBackups: 5
+        maxBackups: {{ .Values.config.logging.rotation.maxBackups }}
         # 保留天数
-        maxAge: 30
+        maxAge: {{ .Values.config.logging.rotation.maxAge }}
         # 是否压缩旧日志文件
-        compress: true
+        compress: {{ .Values.config.logging.rotation.compress }}
 
     # 数据库配置（可选，如果使用数据库）
     database:
-      type: ""        # mysql, postgres, sqlite
-      host: ""
-      port: 0
-      database: ""
-      username: ""
-      password: ""    # 生产环境请通过环境变量设置
-      sslMode: ""
+      type: "{{ .Values.config.database.type }}"
+      host: "{{ .Values.config.database.host }}"
+      port: {{ .Values.config.database.port }}
+      database: "{{ .Values.config.database.database }}"
+      username: "{{ .Values.config.database.username }}"
+      password: "{{ .Values.config.database.password }}"
+      sslMode: "{{ .Values.config.database.sslMode }}"
 
-    # 环境变量覆盖说明：
-    # - SERVER_PORT: 覆盖 server.port
-    # - SERVER_HOST: 覆盖 server.host
-    # - AUTH_MODE: 覆盖 auth.mode
-    # - JWT_SECRET: 覆盖 auth.jwt.secret
-    # - METRICS_PROMETHEUS_ENDPOINT: 覆盖 metrics.prometheus.endpoint
-    # - METRICS_PROMETHEUS_TIMEOUT: 覆盖 metrics.prometheus.timeout
-    # - METRICS_CACHE_ENABLED: 覆盖 metrics.cache.enabled
-    # - LOG_LEVEL: 覆盖 logging.level
-    # - LOG_FORMAT: 覆盖 logging.format
-
-    # 使用示例：
-    # 1. 直接使用配置文件：
-    #    ./bin/apiserver --config=config/apiserver.yaml --kubeconfig=~/.kube/config
-    #
-    # 2. 环境变量覆盖：
-    #    export SERVER_PORT=9090
-    #    export METRICS_PROMETHEUS_ENDPOINT="http://prometheus.monitoring.svc.cluster.local:9090"
-    #    ./bin/apiserver --config=config/apiserver.yaml --kubeconfig=~/.kube/config
-    #
-    # 3. 仅使用环境变量（无配置文件）：
-    #    export SERVER_PORT=8080
-    #    export METRICS_PROMETHEUS_ENDPOINT="http://localhost:9090"
-    #    ./bin/apiserver --kubeconfig=~/.kube/config
-
+    # 设备管理器配置
     deviceManager:
-      enabledAggregator: true
-      hamiDeviceConfig: "config/device.yaml"
-kind: ConfigMap
-metadata:
-  labels:
-    app.kubernetes.io/component: apiserver
-    app.kubernetes.io/created-by: apiserver-project
-    app.kubernetes.io/instance: apiserver
-    app.kubernetes.io/managed-by: kustomize
-    app.kubernetes.io/name: configmap
-    app.kubernetes.io/part-of: apiserver-project
-  name: edge-apiserver-config
-  namespace: edge-system
+      enabledAggregator: {{ .Values.config.deviceManager.enabledAggregator }}
+      hamiDeviceConfig: "{{ .Values.config.deviceManager.hamiDeviceConfig }}"
+{{- end }}

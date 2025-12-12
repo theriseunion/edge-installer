@@ -1,3 +1,4 @@
+{{- if .Values.enabled }}
 VAST Controller (Operator) has been deployed successfully!
 
 The Controller is a standard Kubernetes Operator that:
@@ -6,12 +7,13 @@ The Controller is a standard Kubernetes Operator that:
   - Manages compute cards from multiple vendors (GPU, NPU, Tianshu, Hygon, Moore Threads, Suiyuan, Cambricon, Kunlunxin, etc.)
 
 To check the Controller status:
-  kubectl get deployment edge-controller-manager -n {{ .Release.Namespace | default "edge-system" }}
+  kubectl get deployment {{ include "controller.fullname" . }}-manager -n {{ include "controller.namespace" . }}
 
 To view the logs:
-  kubectl logs deployment/edge-controller-manager -n {{ .Release.Namespace | default "edge-system" }}
+  kubectl logs deployment/{{ include "controller.fullname" . }}-manager -n {{ include "controller.namespace" . }}
 
 To check CRDs:
   kubectl get crds | grep device.theriseunion.io
 
 CRDs and related resources will be created and managed automatically by the controller.
+{{- end }}
