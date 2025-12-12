@@ -133,3 +133,32 @@ example-member: ## Example: Install member cluster
 	helm install edge-platform ./edge-controller \
 		--set global.mode=member \
 		--set autoInstall.monitoring.enabled=false
+
+# 部署vas
+.PHONY: install-vast
+install-vast: ## Install VAST platform
+	helm install vast ./vast -n vast-system --create-namespace
+
+# 卸载vast
+.PHONY: uninstall-vast
+uninstall-vast: ## Uninstall VAST platform and clean up hook resources
+	@echo "Uninstalling VAST platform..."
+	@helm uninstall vast -n vast-system --wait || true
+	@echo "Cleaning up remaining hook resources..."
+	@echo "  - Deleting hook Jobs..."
+	@kubectl delete jobs -n vast-system -l app.kubernetes.io/instance=vast --ignore-not-found=true || true
+	@kubectl delete jobs -n vast-system -l "app.kubernetes.io/name=hami,app.kubernetes.io/component=admission-webhook" --ignore-not-found=true || true
+	@kubectl delete jobs -n default -l app.kubernetes.io/instance=vast --ignore-not-found=true || true
+	@kubectl delete jobs -n default -l "app.kubernetes.io/name=hami,app.kubernetes.io/component=admission-webhook" --ignore-not-found=true || true
+	@echo "  - Deleting hook Pods..."
+	@kubectl delete pods -n vast-system -l app.kubernetes.io/instance=vast --ignore-not-found=true || true
+	@kubectl delete pods -n vast-system -l "app.kubernetes.io/name=hami,app.kubernetes.io/component=admission-webhook" --ignore-not-found=true || true
+	@kubectl delete pods -n default -l app.kubernetes.io/instance=vast --ignore-not-found=true || true
+	@kubectl delete pods -n default -l "app.kubernetes.io/name=hami,app.kubernetes.io/component=admission-webhook" --ignore-not-found=true || true
+	@echo "  - Deleting hook ServiceAccounts, Roles, RoleBindings..."
+	@kubectl delete serviceaccount -n vast-system -l "app.kubernetes.io/instance=vast,app.kubernetes.io/component=admission-webhook" --ignore-not-found=true || true
+	@kubectl delete role -n vast-system -l "app.kubernetes.io/instance=vast,app.kubernetes.io/component=admission-webhook" --ignore-not-found=true || true
+	@kubectl delete rolebinding -n vast-system -l "app.kubernetes.io/instance=vast,app.kubernetes.io/component=admission-webhook" --ignore-not-found=true || true
+	@kubectl delete clusterrole -l "app.kubernetes.io/instance=vast,app.kubernetes.io/component=admission-webhook" --ignore-not-found=true || true
+	@kubectl delete clusterrolebinding -l "app.kubernetes.io/instance=vast,app.kubernetes.io/component=admission-webhook" --ignore-not-found=true || true
+	@echo "VAST platform uninstalled and cleaned up"

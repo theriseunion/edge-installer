@@ -1,0 +1,18 @@
+{{- if .Values.enabled }}
+VAST API Server has been deployed successfully!
+
+The API Server provides RESTful API endpoints for:
+  - Querying heterogeneous computing resource usage
+  - Checking resource allocation status
+  - Retrieving compute card information (GPU, NPU, Tianshu, Hygon, Moore Threads, Suiyuan, Cambricon, Kunlunxin, etc.)
+
+To check the API Server status:
+  kubectl get deployment {{ include "apiserver.fullname" . }} -n {{ include "apiserver.namespace" . }}
+
+To view the logs:
+  kubectl logs deployment/{{ include "apiserver.fullname" . }} -n {{ include "apiserver.namespace" . }}
+
+To access the API:
+  kubectl port-forward svc/{{ include "apiserver.fullname" . }} {{ .Values.service.port }}:{{ .Values.service.port }} -n {{ include "apiserver.namespace" . }}
+  # API will be available at https://localhost:{{ .Values.service.port }}
+{{- end }}

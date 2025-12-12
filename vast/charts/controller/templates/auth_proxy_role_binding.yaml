@@ -1,0 +1,18 @@
+{{- if and .Values.enabled .Values.kubeRbacProxy.enabled }}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: {{ include "controller.fullname" . }}-proxy-rolebinding
+  labels:
+    {{- include "controller.labels" . | nindent 4 }}
+    app.kubernetes.io/component: kube-rbac-proxy
+    app.kubernetes.io/name: clusterrolebinding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: {{ include "controller.fullname" . }}-proxy-role
+subjects:
+  - kind: ServiceAccount
+    name: {{ include "controller.serviceAccountName" . }}
+    namespace: {{ include "controller.namespace" . }}
+{{- end }}

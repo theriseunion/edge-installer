@@ -1,0 +1,17 @@
+{{- if .Values.exporter.cambricon.enabled }}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: {{ include "hami-vgpu.exporter" . }}-mlu
+  labels:
+    app.kubernetes.io/component: hami-exporter-mlu
+    {{- include "hami-vgpu.labels" . | nindent 4 }}
+subjects:
+  - kind: ServiceAccount
+    name: {{ include "hami-vgpu.exporter" . }}-mlu
+    namespace: {{ .Release.Namespace | quote }}
+roleRef:
+  kind: ClusterRole
+  name: {{ include "hami-vgpu.exporter" . }}-mlu
+  apiGroup: rbac.authorization.k8s.io
+{{- end }}

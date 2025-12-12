@@ -1,0 +1,18 @@
+{{- if .Values.exporter.hygon.enabled }}
+kind: Service
+apiVersion: v1
+metadata:
+  labels:
+    app.kubernetes.io/component: {{ include "hami-vgpu.exporter" . }}-dcu
+    {{- include "hami-vgpu.labels" . | nindent 4 }}
+  name: {{ include "hami-vgpu.exporter" . }}-dcu
+  namespace: {{ .Release.Namespace | quote }}
+spec:
+  selector:
+    app.kubernetes.io/component: {{ include "hami-vgpu.exporter" . }}-dcu
+  ports:
+    - name: "metrics"
+      port: {{ .Values.exporter.hygon.service.httpPort }}
+      targetPort: {{.Values.exporter.hygon.service.httpPort }}
+  type: ClusterIP
+{{- end }}

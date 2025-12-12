@@ -1,0 +1,13 @@
+apiVersion: device.theriseunion.io/v1alpha1
+kind: GlobalConfig
+metadata:
+  name: edge-global-config
+  namespace: edge-system
+spec:
+  alertLevel:
+  - critical
+  - high
+  gpuScheduling: spread
+  nodeScheduling: binpack
+  resourceAwareness: allocation_rate
+  resourcePoolEnabled: true

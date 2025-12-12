@@ -1,0 +1,78 @@
+{{- if .Values.exporter.enflame.enabled }}
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: {{ include "hami-vgpu.exporter" . }}-gcu
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    app.kubernetes.io/name: {{ include "hami-vgpu.exporter" . }}-gcu
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "hami-vgpu.exporter" . }}-gcu
+  updateStrategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "hami-vgpu.exporter" . }}-gcu
+    spec:
+      hostNetwork: true
+      {{- with .Values.exporter.enflame.nodeSelector }}
+      nodeSelector:
+      {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.exporter.enflame.tolerations }}
+      tolerations:
+      {{- toYaml . | nindent 6 }}
+      {{- end }}
+      containers:
+        - name: gcu-exporter
+          image: {{ .Values.exporter.enflame.image }}
+          imagePullPolicy: {{ .Values.exporter.enflame.imagePullPolicy }}
+          securityContext:
+            privileged: true
+          ports:
+            - name: metrics
+              protocol: TCP
+              containerPort: {{ .Values.exporter.enflame.service.httpPort }}
+          resources:
+            requests:
+              memory: 100Mi
+              cpu: 100m
+            limits:
+              memory: 2000Mi
+              cpu: 2000m
+          volumeMounts:
+            - name: syspath
+              mountPath: /sys
+            - name: localtime
+              mountPath: /etc/localtime
+            - name: varlock
+              mountPath: /var/lock
+            - name: pod-resources
+              mountPath: /var/lib/kubelet/pod-resources
+            - name: libefml
+              mountPath: /usr/lib/libefml.so
+            - name: libefml-real
+              mountPath: /usr/local/efsmi
+      volumes:
+        - name: syspath
+          hostPath:
+            path: /sys
+        - name: localtime
+          hostPath:
+            path: /etc/localtime
+        - name: varlock
+          hostPath:
+            path: /var/lock
+        - name: pod-resources
+          hostPath:
+            path: /var/lib/kubelet/pod-resources
+        - name: libefml
+          hostPath:
+            path: /usr/lib/libefml.so
+        - name: libefml-real
+          hostPath:
+            path: /usr/local/efsmi
+{{- end }}

@@ -1,0 +1,431 @@
+# Default values for hami-vgpu.
+
+nameOverride: ""
+fullnameOverride: "hami"
+namespaceOverride: ""
+imagePullSecrets: [ ]
+version: "v2.5.0"
+
+#Nvidia GPU Parameters
+resourceName: "nvidia.com/gpu"
+resourceMem: "nvidia.com/gpumem"
+resourceMemPercentage: "nvidia.com/gpumem-percentage"
+resourceCores: "nvidia.com/gpucores"
+resourcePriority: "nvidia.com/priority"
+
+#MLU Parameters
+mluResourceName: "cambricon.com/vmlu"
+mluResourceMem: "cambricon.com/mlu370.smlu.vmemory"
+mluResourceCores: "cambricon.com/mlu370.smlu.vcore"
+
+#Hygon DCU Parameters
+dcuResourceName: "hygon.com/dcunum"
+dcuResourceMem: "hygon.com/dcumem"
+dcuResourceCores: "hygon.com/dcucores"
+
+#Iluvatar GPU Parameters
+iluvatarResourceName: "iluvatar.ai/vgpu"
+iluvatarResourceMem: "iluvatar.ai/MR-V100.vMem"
+iluvatarResourceCore: "iluvatar.ai/MR-V100.vCore"
+
+#Metax SGPU Parameters
+metaxResourceName: "metax-tech.com/sgpu"
+metaxResourceCore: "metax-tech.com/vcore"
+metaxResourceMem: "metax-tech.com/vmemory"
+
+#Enflame GCU Parameters
+enflameResourceName: "enflame.com/gcu"
+
+#kunlunxin XPU Parameters
+xpuResourceName: "kunlunxin.com/xpu"
+xpuResourceMem: "kunlunxin.com/xpu-memory"
+
+#alibaba PPU Parameters
+alibabaResourceName: "alibabacloud.com/ppu"
+
+overwriteEnv: false
+
+
+schedulerName: "hami-scheduler"
+
+podSecurityPolicy:
+  enabled: false
+
+license: cO2syd/KBSfMYzLzJaVZISPFhCj/P5aym3hoXVnp6POkfzyqFp7JI7XZNRH9I/tyIIaQU+Msh4zSBnDof8E6QFJVizdgtDFqsW0JClBXzVr5iPBR2QTkXaRYqtt+ImLTHczWPF2tHex5ghf8QYRoRqLpTq3JaDgEA4dJt3LantcOz6+pOx6qaJ5AMI5jrOIkhzV5kL9mZOKTd3kgNipDiEYGte0ArQjqoBSscnHhVKO5AgsV60BWDmu2tKg3UwQPnwcLxMIHY6H4XsOvCQQ1FScQfM87e2lYDn01X2mtMC780Bh7zq8ahSQkP9jKEgbwB/CXF5O0YmMCkaVW3dKnva0XooVHVAVHc6YgMrzbPSxPzlvrN0XmLcl1k16CUwRV9QjrkRuz+sqaIxglDV+a7CBV0kVeyxbrtOLCoC/WVP+FC8FjHru5iYFcZMivCls7HEazbD2/f+LGtJPQPR4tgoAiRFsQLkAu/jhP78Y/cBxx7lRzzA18R81S76COy5WC
+
+nonOverwrite:
+  - resourcePoolCM
+  - flavorCM
+  - devicePluginCM
+  - licenseCM
+
+global:
+  gpuHookPath: /usr/local
+  labels: {}
+  annotations: {}
+  managedNodeSelectorEnable: false
+  managedNodeSelector:
+    usage: "gpu"
+  prometheus:
+    serviceMonitorSelector:
+      release: prometheus
+
+
+
+scheduler:
+  # @param nodeName defines the node name and the nvidia-vgpu-scheduler-scheduler will schedule to the node.
+  # if we install the nvidia-vgpu-scheduler-scheduler as default scheduler, we need to remove the k8s default
+  # scheduler pod from the cluster first, we must specify node name to skip the schedule workflow.
+  nodeName: ""
+  #nodeLabelSelector:
+  #  "gpu": "on"
+  overwriteEnv: "false"
+  defaultSchedulerPolicy:
+    nodeSchedulerPolicy: binpack
+    gpuSchedulerPolicy: spread
+    nodeSchedulerUsageEnable: false
+    gpuSchedulerUsageEnable: false
+  metricsBindAddress: ":9395"
+  livenessProbe: false
+  leaderElect: true
+  # when leaderElect is true, replicas is available, otherwise replicas is 1.
+  replicas: 1
+
+  # HAMI Enterprise Characteristics
+  resourcePoolSchedulingEnabled: false
+  resourcePoolConfigMapName: resource-pools-cm
+  flavorConfigMapName: flavors-cm
+  virtualDeviceConfigMapName: virtual-devices-cm
+  prometheusAddress: "http://prometheus-kube-prometheus-prometheus.prometheus:9090"
+  prometheusTimeout: "10s"
+  # @param enableSchedulerLogCache enable scheduler log cache
+  enableSchedulerLogCache: true
+  # @param schedulerLogServerBindAddress defines the network address and port for the scheduler log API server to bind to.
+  # Format: ":<port>" or "host:<port>". Use ":<port>" (e.g., ":9396") to bind to all network interfaces on the specified port.
+  # Default: ":9396"
+  schedulerLogServerBindAddress: ":9396"
+  # @param schedulerLogMaxCachePod defines the maximum number of Pod scheduling logs to cache.
+  # The scheduler stores logs for recently scheduled Pods in memory to serve the
+  # /api/v1/pod/{namespace}/{name}/schedulerlog API. This parameter controls the
+  # upper limit of this in-memory cache. When the number of cached Pods exceeds
+  # this value, the oldest entries are automatically evicted (LRU policy).
+  # Default: 1000
+  schedulerLogMaxCachePod: 1000
+
+  kubeScheduler:
+    # @param enabled indicate whether to run kube-scheduler container in the scheduler pod, it's true by default.
+    enabled: true
+    image: registry.cn-hangzhou.aliyuncs.com/google_containers/kube-scheduler
+    imageTag: "v1.23.17"
+    imagePullPolicy: IfNotPresent
+    resources: {}
+      # If you do want to specify resources, uncomment the following lines, adjust them as necessary.
+      # and remove the curly braces after 'resources:'.
+#      limits:
+#        cpu: 1000m
+#        memory: 1000Mi
+#      requests:
+#        cpu: 100m
+#        memory: 100Mi
+    extraNewArgs:
+      - --config=/config/config.yaml
+      - -v=4
+    extraArgs:
+      - --policy-config-file=/config/config.json
+      - -v=4
+  extender:
+    image: "harbor.rise.io/poc/hami"
+    imagePullPolicy: IfNotPresent
+    resources: {}
+      # If you do want to specify resources, uncomment the following lines, adjust them as necessary,
+      # and remove the curly braces after 'resources:'.
+#      limits:
+#        cpu: 1000m
+#        memory: 1000Mi
+#      requests:
+#        cpu: 100m
+#        memory: 100Mi
+    extraArgs:
+      - --debug
+      - -v=4
+  podAnnotations: {}
+  #nodeSelector:
+  #  gpu: "on"
+  tolerations: []
+  #serviceAccountName: "hami-vgpu-scheduler-sa"
+  admissionWebhook:
+    customURL:
+      enabled: false
+      # must be an endpoint using https.
+      # should generate host certs here
+      host: 127.0.0.1 # hostname or ip, can be your node'IP if you want to use https://<nodeIP>:<schedulerPort>/<path>
+      port: 31998
+      path: /webhook
+    whitelistNamespaces:
+    # Specify the namespaces that the webhook will not be applied to.
+      # - default
+      # - kube-system
+      # - istio-system
+    reinvocationPolicy: Never
+    failurePolicy: Ignore
+  patch:
+    image: docker.io/jettech/kube-webhook-certgen:v1.5.2
+    imageNew: liangjw/kube-webhook-certgen:v1.1.1
+    imagePullPolicy: IfNotPresent
+    priorityClassName: ""
+    podAnnotations: {}
+    nodeSelector: {}
+    tolerations: []
+    runAsUser: 2000
+  service:
+    type: NodePort  # Default type is NodePort, can be changed to ClusterIP
+    httpPort: 443   # HTTP port
+    schedulerPort: 31998  # NodePort for HTTP
+    monitorPort: 31993    # Monitoring port
+    schedulerLogPort: 31994
+    schedulerLogTargetPort: 9396
+    labels: {}
+    annotations: {} 
+
+devicePlugin:
+  image: "harbor.rise.io/poc/hami"
+  monitorimage: "harbor.rise.io/poc/hami"
+  monitorctrPath: /usr/local/vgpu/containers
+  imagePullPolicy: IfNotPresent
+  deviceSplitCount: 10
+  deviceMemoryScaling: 1
+  deviceCoreScaling: 1
+  runtimeClassName: ""
+  migStrategy: "none"
+  disablecorelimit: "false"
+  passDeviceSpecsEnabled: false
+  extraArgs:
+    - -v=4
+  
+  service:
+    type: NodePort  # Default type is NodePort, can be changed to ClusterIP
+    httpPort: 31992
+    labels: {}
+    annotations: {}
+
+  pluginPath: /var/lib/kubelet/device-plugins
+  libPath: /usr/local/vgpu
+
+  podAnnotations: {}
+  nvidianodeSelector:
+    gpu: "on"
+  tolerations: []
+  # The updateStrategy for DevicePlugin DaemonSet.
+  # If you want to update the DaemonSet by manual, set type as "OnDelete".
+  # We recommend use OnDelete update strategy because DevicePlugin pod restart will cause business pod restart, this behavior is destructive.
+  # Otherwise, you can use RollingUpdate update strategy to rolling update DevicePlugin pod.
+  updateStrategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+
+  resources: {}
+    # If you do want to specify resources, uncomment the following lines, adjust them as necessary.
+    # and remove the curly braces after 'resources:'.
+#    limits:
+#       cpu: 1000m
+#       memory: 1000Mi
+#    requests:
+#      cpu: 100m
+#      memory: 100Mi
+
+  vgpuMonitor:
+    extraArgs:
+      - --device-config-file=/device-config.yaml
+      - -v=4
+    resources: {}
+      # If you do want to specify resources, uncomment the following lines, adjust them as necessary.
+      # and remove the curly braces after 'resources:'.
+#      limits:
+#        cpu: 1000m
+#        memory: 1000Mi
+#      requests:
+#        cpu: 100m
+#        memory: 100Mi
+
+  # HAMI Enterprise Characteristics
+  serviceMonitor:
+    enabled: true
+    interval: 15s
+    honorLabels: false
+    additionalLabels:
+      release: prometheus
+    relabelings: [ ]
+
+devices:
+  mthreads:
+    enabled: false
+    customresources:
+      - mthreads.com/vgpu
+  nvidia:
+    gpuCorePolicy: default
+  ascend:
+    enabled: false
+    image: "quanzhenglong.com/camp/ascend-device-plugin:v2.4.3"
+    imagePullPolicy: IfNotPresent
+    extraArgs: []
+    nodeSelector:
+      ascend: "on"
+    tolerations:
+      - key: "arm64"
+        operator: "Equal"
+        value: "true"
+        effect: "NoSchedule"
+    customresources:
+      - huawei.com/Ascend910A
+      - huawei.com/Ascend910A-memory
+      - huawei.com/Ascend910B2
+      - huawei.com/Ascend910B2-memory
+      - huawei.com/Ascend910B3
+      - huawei.com/Ascend910B3-memory
+      - huawei.com/Ascend910B4
+      - huawei.com/Ascend910B4-memory
+      - huawei.com/Ascend310P
+      - huawei.com/Ascend310P-memory
+    ascend310P: "pro"
+  kunlunxin:
+    enabled: false
+    image: "harbor.rise.io/poc/xpu-device-plugin:03111257"
+    imagePullPolicy: IfNotPresent
+    nodeSelector:
+      xpu: "on"
+    tolerations: {}
+    # XPU-P800 OAM, XPU-P800 PCIE
+    cardType: "XPU-P800 OAM"
+    topologyPairs:
+      - 1,2,3,4
+      - 0,2,3,5
+      - 0,1,3,6
+      - 0,1,2,7
+      - 0,5,6,7
+      - 1,4,6,7
+      - 2,4,5,7
+      - 3,4,5,6
+  iluvatar:
+    enabled: false
+    image: "quanzhenglong.com/iluvatar/gpu-managerii:v4.3.0-2.1-x86_64"
+    imagePullPolicy: IfNotPresent
+    nodeSelector:
+      iluvatar: "on"
+    tolerations: {}
+    logLevel: 4
+    service:
+      servicePort: 32022
+      containerPort: 5679
+    customresources:
+      - iluvatar.ai/BI-V150
+      - iluvatar.ai/BI-V150.vMem
+      - iluvatar.ai/BI-V150.vCore 
+      - iluvatar.ai/BI-V150S
+      - iluvatar.ai/BI-V150S.vMem
+      - iluvatar.ai/BI-V150S.vCore
+      - iluvatar.ai/BI-V100
+      - iluvatar.ai/BI-V100.vMem
+      - iluvatar.ai/BI-V100.vCore
+      - iluvatar.ai/MR-V100
+      - iluvatar.ai/MR-V100.vMem
+      - iluvatar.ai/MR-V100.vCore
+      - iluvatar.ai/MR-V50
+      - iluvatar.ai/MR-V50.vMem
+      - iluvatar.ai/MR-V50.vCore
+  cambricon:
+    enabled: false
+    image: "harbor.4pd.io/rise-io/camp/cambricon-device-plugin:v2.0.17"
+    imagePullPolicy: IfNotPresent
+    nodeSelector:
+      mlu: "on"
+    tolerations: {}
+  hygon:
+    enabled: false
+    image: "harbor.4pd.io/rise-io/camp/dcu-device-plugin:1.0.7"
+    imagePullPolicy: IfNotPresent
+    nodeSelector:
+      dcu: "on"
+    tolerations:
+    - key: CriticalAddonsOnly
+      operator: Exists
+  metax:
+    enabled: false
+  enflame:
+    enabled: false
+    image: "quanzhenglong.com/camp/enflame/gcu-k8s-device-plugin:v2.0.30"
+    imagePullPolicy: IfNotPresent
+    nfdImage: "quanzhenglong.com/camp/enflame/node-feature-discovery:v1.2.20"
+    gcufdImage: "quanzhenglong.com/camp/enflame/gcu-feature-discovery:v1.3.21"
+    nodeSelector:
+      gcu: "on"
+    tolerations: {}
+  enflameshare:
+    enabled: false
+    image: "quanzhenglong.com/camp/enflame/gcushare-device-plugin:2.2.5"
+    imagePullPolicy: IfNotPresent
+    nodeSelector:
+      gcushare: "on"
+    tolerations: {}
+    sliceCount: 6
+  alibaba:
+    enabled: false
+
+exporter:
+  nvidia: {}
+  kunlunxin:
+    enabled: false
+    image: "iregistry.baidu-int.com/kunlunxin/xpu_exporter:v5.0.2-alpha.6.vf" #这个镜像目前是昆仑芯内部开发的版本
+    imagePullPolicy: IfNotPresent
+    serviceMonitor:
+      enabled: true
+    nodeSelector:
+      xpu: "on"
+    tolerations: []
+    service:
+      labels: []
+      annotations: []
+      httpPort: 9508
+    additionalLabels: []
+  cambricon:
+    enabled: false
+    image: "harbor.4pd.io/rise-io/camp/cambricon-mlu-exporter:v2.0.11"
+    imagePullPolicy: IfNotPresent
+    nodeSelector:
+      mlu: "on"
+    tolerations: {}
+    service:
+      httpPort: 30108
+  hygon:
+    enabled: false
+    image: "image.sourcefind.cn:5000/dcu/admin/base/dcu-exporter:v2.0.1"
+    imagePullPolicy: IfNotPresent
+    nodeSelector:
+      dcu: "on"
+    tolerations: {}
+    service:
+      httpPort: 16080
+  iluvatar:
+    enabled: false
+    image: "quanzhenglong.com/iluvatar/ix-exporter:4.3.0-x86_64"
+    imagePullPolicy: IfNotPresent
+    nodeSelector:
+      iluvatar: "on"
+    tolerations: {}
+    logLevel: 4
+    containerPort: 32021
+    servicePort: 32021
+  enflame:
+    enabled: false
+    image: "quanzhenglong.com/camp/enflame/gcu-exporter:v1.5.12"
+    imagePullPolicy: IfNotPresent
+    serviceMonitor:
+      enabled: true
+    additionalLabels:
+        release: prometheus
+    nodeSelector:
+      gcu: "on"
+    tolerations: {}
+    service:
+      httpPort: 9400
+  ascend: {}

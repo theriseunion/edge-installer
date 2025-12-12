@@ -1,0 +1,43 @@
+{{- if .Values.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "controller.fullname" . }}-config
+  namespace: {{ include "controller.namespace" . }}
+  labels:
+    {{- include "controller.labels" . | nindent 4 }}
+    app.kubernetes.io/component: manager
+    app.kubernetes.io/name: configmap
+    control-plane: controller-manager
+data:
+  controller.yaml: |-
+    # 指标监控配置
+    metrics:
+      # 是否启用metrics功能
+      enabled: {{ .Values.config.metrics.enabled }}
+
+      # Prometheus配置
+      prometheus:
+        # Prometheus服务端点
+        endpoint: "{{ .Values.config.metrics.prometheus.endpoint }}"
+
+        # 认证
+        auth: "{{ .Values.config.metrics.prometheus.auth }}"
+
+        # 查询超时时间
+        timeout: "{{ .Values.config.metrics.prometheus.timeout }}"
+
+        # 最大并发查询数
+        maxConcurrentQueries: {{ .Values.config.metrics.prometheus.maxConcurrentQueries }}
+
+        # 重试配置
+        retryCount: {{ .Values.config.metrics.prometheus.retryCount }}
+        retryInterval: "{{ .Values.config.metrics.prometheus.retryInterval }}"
+
+        # TLS配置（开发环境可以跳过验证）
+        tlsInsecureSkipVerify: {{ .Values.config.metrics.prometheus.tlsInsecureSkipVerify }}
+    deviceManager:
+      hamiDeviceConfig: "{{ .Values.config.deviceManager.hamiDeviceConfig }}"
+    device_plugin:
+      {{- toYaml .Values.config.devicePlugin | nindent 6 }}
+{{- end }}

@@ -1,0 +1,22 @@
+{{- if .Values.exporter.cambricon.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app.kubernetes.io/component: hami-exporter-mlu
+    {{- include "hami-vgpu.labels" . | nindent 4 }}
+  name: {{ include "hami-vgpu.exporter" . }}-mlu
+  namespace: {{ .Release.Namespace | quote }}
+spec:
+  clusterIP: None
+  ports:
+  - port: {{ .Values.exporter.cambricon.service.httpPort }}
+    protocol: TCP
+    name: http-metrics
+    targetPort: {{ .Values.exporter.cambricon.service.httpPort }}
+  selector:
+    k8s-app: mlu-exporter
+    app.kubernetes.io/component: hami-exporter-mlu
+  sessionAffinity: None
+  type: ClusterIP
+{{- end }}

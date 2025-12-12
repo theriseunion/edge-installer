@@ -1,0 +1,18 @@
+{{- if .Values.devices.iluvatar.enabled }}
+kind: Service
+apiVersion: v1
+metadata:
+  name: {{ include "hami-vgpu.device-plugin" . }}-iluvatar
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/component: {{ include "hami-vgpu.device-plugin" . }}-iluvatar
+spec:
+  selector:
+    app.kubernetes.io/component: {{ include "hami-vgpu.device-plugin" . }}-iluvatar
+  type: NodePort
+  ports:
+    - name: "metrics"
+      port: {{ .Values.devices.iluvatar.service.servicePort }}
+      targetPort: {{ .Values.devices.iluvatar.service.containerPort }}
+      nodePort: {{ .Values.devices.iluvatar.service.servicePort }}
+  {{- end }}

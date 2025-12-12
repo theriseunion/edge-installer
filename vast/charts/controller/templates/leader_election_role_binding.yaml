@@ -1,0 +1,19 @@
+{{- if and .Values.enabled .Values.leaderElection.create }}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: {{ .Values.leaderElection.roleBindingName }}
+  namespace: {{ include "controller.namespace" . }}
+  labels:
+    {{- include "controller.labels" . | nindent 4 }}
+    app.kubernetes.io/component: rbac
+    app.kubernetes.io/name: rolebinding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: {{ .Values.leaderElection.roleName }}
+subjects:
+  - kind: ServiceAccount
+    name: {{ include "controller.serviceAccountName" . }}
+    namespace: {{ include "controller.namespace" . }}
+{{- end }}

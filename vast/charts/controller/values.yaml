@@ -1,0 +1,245 @@
+# Default values for controller.
+# This is a YAML-formatted file.
+
+# Enable/disable controller deployment
+enabled: true
+
+# Create namespace (usually false, namespace should be created separately)
+createNamespace: false
+
+# Image configuration
+image:
+  repository: quanzhenglong.com/edge/controller
+  tag: latest
+  pullPolicy: Always
+
+# Kube RBAC Proxy image configuration
+kubeRbacProxy:
+  enabled: true
+  image:
+    repository: quanzhenglong.com/edge/kube-rbac-proxy
+    tag: v0.15.0
+    pullPolicy: IfNotPresent
+
+# Name override for resources
+nameOverride: ""
+fullnameOverride: ""
+
+# Namespace override (defaults to Release.Namespace)
+namespaceOverride: ""
+
+# Image pull secrets
+imagePullSecrets: []
+
+# Service account configuration
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+# Deployment configuration
+replicaCount: 1
+
+# Pod security context
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 10001
+  runAsGroup: 10001
+  fsGroup: 10001
+
+# Container security context
+securityContext:
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+    - ALL
+
+# Resource limits and requests for manager container
+resources:
+  limits:
+    cpu: 500m
+    memory: 128Mi
+  requests:
+    cpu: 10m
+    memory: 64Mi
+
+# Resource limits and requests for kube-rbac-proxy container
+# (configured in kubeRbacProxy section below)
+
+# Termination grace period
+terminationGracePeriodSeconds: 10
+
+# Command line arguments for manager
+args:
+  - --config=/etc/edge/config/controller.yaml
+  - --v=4
+
+# Environment variables
+env:
+  - name: ENABLE_WEBHOOKS
+    value: "true"
+  - name: WEBHOOK_PORT
+    value: "9443"
+  - name: CAMP_NS
+    value: "rise-vast-system"
+
+# Additional environment variables
+extraEnv: []
+
+# Node selector
+nodeSelector: {}
+
+# Tolerations
+tolerations: []
+
+# Affinity rules
+affinity: {}
+
+# Pod annotations
+podAnnotations:
+  kubectl.kubernetes.io/default-container: manager
+
+# Pod labels
+podLabels: {}
+
+# Volume mounts
+volumeMounts:
+  - name: cert
+    mountPath: /tmp/k8s-webhook-server/serving-certs
+    readOnly: true
+  - name: config
+    mountPath: /etc/edge/config
+    readOnly: true
+
+# Volumes
+volumes:
+  - name: cert
+    secret:
+      secretName: webhook-server-cert
+      defaultMode: 420
+  - name: config
+    configMap:
+      name: edge-controller-config
+
+# RBAC configuration
+rbac:
+  # Specifies whether RBAC resources should be created
+  create: true
+  # ClusterRole name for manager
+  clusterRoleName: edge-manager-role
+  # ClusterRoleBinding name
+  clusterRoleBindingName: edge-manager-rolebinding
+
+# Leader election configuration
+leaderElection:
+  # Specifies whether leader election resources should be created
+  create: true
+  # Role name for leader election
+  roleName: edge-leader-election-role
+  # RoleBinding name for leader election
+  roleBindingName: edge-leader-election-rolebinding
+
+# Webhook configuration
+webhook:
+  # Webhook server port
+  port: 9443
+  # Certificate secret name
+  certSecretName: webhook-server-cert
+  # Whether to create the certificate secret (if false, must be created manually)
+  certCreate: false
+
+# Kube RBAC Proxy configuration (continued from above)
+  resources:
+    limits:
+      cpu: 500m
+      memory: 128Mi
+    requests:
+      cpu: 5m
+      memory: 64Mi
+  args:
+    - --secure-listen-address=0.0.0.0:8443
+    - --upstream=http://127.0.0.1:8080/
+    - --logtostderr=true
+    - --v=0
+  port: 8443
+
+# Configuration for controller.yaml ConfigMap
+config:
+  # Metrics configuration
+  metrics:
+    enabled: true
+    prometheus:
+      endpoint: "http://10.100.121.67:30190/"
+      auth: ""
+      timeout: "30s"
+      maxConcurrentQueries: 10
+      retryCount: 3
+      retryInterval: "1s"
+      tlsInsecureSkipVerify: true
+
+  # Device manager configuration
+  deviceManager:
+    hamiDeviceConfig: "config/device.yaml"
+
+  # Device plugin configuration
+  devicePlugin:
+    nvidia-hami:
+      mem_factor: 1
+      node_label:
+        key: gpu-test
+        value: "on"
+    hygon-hami:
+      mem_factor: 1
+      node_label:
+        key: dcu-test
+        value: "on"
+    cambricon-hami:
+      mem_factor: 1
+      node_label:
+        key: mlu-test
+        value: "on"
+    kunlunxin-hami:
+      mem_factor: 1
+      node_label:
+        key: xpu-test
+        value: "on"
+    ascend-hami:
+      mem_factor: 1
+      node_label:
+        key: ascend-test
+        value: "on"
+    iluvatar-hami:
+      mem_factor: 256
+      node_label:
+        key: iluvatar-test
+        value: "on"
+    metax-hami:
+      mem_factor: 1
+      node_label:
+        key: metax-test
+        value: "on"
+    enflame-hami:
+      mem_factor: 1
+      node_label:
+        key: gcu-test
+        value: "on"
+    alibaba-hami:
+      mem_factor: 1
+      node_label:
+        key: ppu-test
+        value: "on"
+    nvidia-volcano:
+      mem_factor: 10
+      node_label:
+        key: volcano
+        value: "on"
+    ascend-volcano:
+      mem_factor: 1
+      node_label:
+        key: volcano_ascend-test
+        value: "on"
+

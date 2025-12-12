@@ -1,0 +1,34 @@
+VAST Platform has been deployed successfully!
+
+VAST is a heterogeneous computing resource management platform that supports:
+  - GPU, NPU, Tianshu, Hygon, Moore Threads, Suiyuan, Cambricon, Kunlunxin and other compute vendors
+  - Resource scheduling and allocation
+  - API-based resource query and management
+
+Components deployed:
+{{- if .Values.controller.enabled }}
+  ✓ Controller (Operator) - Manages CRDs and reconciles compute resources
+{{- end }}
+{{- if .Values.apiserver.enabled }}
+  ✓ API Server - Provides RESTful API for resource queries
+{{- end }}
+{{- if .Values.hami.enabled }}
+  ✓ HAMI - Open source scheduling framework for heterogeneous computing
+{{- end }}
+
+To check component status:
+  kubectl get deployments -n {{ .Release.Namespace | default "edge-system" }}
+
+To view Controller logs:
+  kubectl logs deployment/edge-controller-manager -n {{ .Release.Namespace | default "edge-system" }}
+
+To view API Server logs:
+  kubectl logs deployment/edge-apiserver -n {{ .Release.Namespace | default "edge-system" }}
+
+To access the API Server:
+  kubectl port-forward svc/edge-edge-apiserver 8443:8443 -n {{ .Release.Namespace | default "edge-system" }}
+
+To check CRDs:
+  kubectl get crds | grep device.theriseunion.io
+
+For more information, visit: https://github.com/edge/apiserver

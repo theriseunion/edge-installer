@@ -1,0 +1,132 @@
+{{- if .Values.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "apiserver.fullname" . }}-config
+  namespace: {{ include "apiserver.namespace" . }}
+  labels:
+    {{- include "apiserver.labels" . | nindent 4 }}
+    app.kubernetes.io/component: apiserver
+    app.kubernetes.io/name: configmap
+data:
+  apiserver.yaml: |
+    # Edge APIServer 全局配置文件
+    # 配置文件采用YAML格式，支持环境变量覆盖
+
+    # 服务器基础配置
+    server:
+      # HTTP服务端口
+      port: {{ .Values.config.server.port }}
+
+      # 服务绑定地址
+      host: "{{ .Values.config.server.host }}"
+
+      # 超时配置
+      timeout:
+        read: "{{ .Values.config.server.timeout.read }}"
+        write: "{{ .Values.config.server.timeout.write }}"
+        idle: "{{ .Values.config.server.timeout.idle }}"
+
+      # TLS配置（可选）
+      tls:
+        enabled: {{ .Values.config.server.tls.enabled }}
+        certFile: "{{ .Values.config.server.tls.certFile }}"
+        keyFile: "{{ .Values.config.server.tls.keyFile }}"
+
+    # 认证配置
+    auth:
+      # 认证模式：RBAC（推荐）, AlwaysAllow（仅开发环境）
+      mode: "{{ .Values.config.auth.mode }}"
+
+      # JWT配置
+      jwt:
+        # JWT密钥（生产环境请通过环境变量设置 JWT_SECRET）
+        secret: "{{ .Values.config.auth.jwt.secret }}"
+        # Token过期时间
+        expiry: "{{ .Values.config.auth.jwt.expiry }}"
+        # 刷新Token有效期
+        refreshTTL: "{{ .Values.config.auth.jwt.refreshTTL }}"
+
+      # OAuth配置（可选）
+      oauth:
+        issuer: "{{ .Values.config.auth.oauth.issuer }}"
+        clientId: "{{ .Values.config.auth.oauth.clientId }}"
+        clientSecret: "{{ .Values.config.auth.oauth.clientSecret }}"
+
+    # 指标监控配置
+    metrics:
+      # 是否启用metrics功能
+      enabled: {{ .Values.config.metrics.enabled }}
+
+      # Prometheus配置
+      prometheus:
+        # Prometheus服务端点
+        endpoint: "{{ .Values.config.metrics.prometheus.endpoint }}"
+
+        # 认证
+        auth: "{{ .Values.config.metrics.prometheus.auth }}"
+
+        # 查询超时时间
+        timeout: "{{ .Values.config.metrics.prometheus.timeout }}"
+
+        # 最大并发查询数
+        maxConcurrentQueries: {{ .Values.config.metrics.prometheus.maxConcurrentQueries }}
+
+        # 重试配置
+        retryCount: {{ .Values.config.metrics.prometheus.retryCount }}
+        retryInterval: "{{ .Values.config.metrics.prometheus.retryInterval }}"
+
+        # TLS配置（开发环境可以跳过验证）
+        tlsInsecureSkipVerify: {{ .Values.config.metrics.prometheus.tlsInsecureSkipVerify }}
+
+      # 缓存配置
+      cache:
+        # 是否启用缓存
+        enabled: {{ .Values.config.metrics.cache.enabled }}
+
+        # 缓存过期时间
+        ttl: "{{ .Values.config.metrics.cache.ttl }}"
+
+        # 缓存大小（条目数）
+        size: {{ .Values.config.metrics.cache.size }}
+
+    # 日志配置
+    logging:
+      # 日志级别：debug, info, warn, error
+      level: "{{ .Values.config.logging.level }}"
+
+      # 日志格式：text, json
+      format: "{{ .Values.config.logging.format }}"
+
+      # 日志输出：stdout, stderr, file
+      output: "{{ .Values.config.logging.output }}"
+
+      # 日志文件路径（当output为file时）
+      file: "{{ .Values.config.logging.file }}"
+
+      # 日志轮转配置（可选）
+      rotation:
+        # 单个日志文件最大大小（MB）
+        maxSize: {{ .Values.config.logging.rotation.maxSize }}
+        # 保留的备份文件数量
+        maxBackups: {{ .Values.config.logging.rotation.maxBackups }}
+        # 保留天数
+        maxAge: {{ .Values.config.logging.rotation.maxAge }}
+        # 是否压缩旧日志文件
+        compress: {{ .Values.config.logging.rotation.compress }}
+
+    # 数据库配置（可选，如果使用数据库）
+    database:
+      type: "{{ .Values.config.database.type }}"
+      host: "{{ .Values.config.database.host }}"
+      port: {{ .Values.config.database.port }}
+      database: "{{ .Values.config.database.database }}"
+      username: "{{ .Values.config.database.username }}"
+      password: "{{ .Values.config.database.password }}"
+      sslMode: "{{ .Values.config.database.sslMode }}"
+
+    # 设备管理器配置
+    deviceManager:
+      enabledAggregator: {{ .Values.config.deviceManager.enabledAggregator }}
+      hamiDeviceConfig: "{{ .Values.config.deviceManager.hamiDeviceConfig }}"
+{{- end }}

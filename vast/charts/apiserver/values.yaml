@@ -1,0 +1,209 @@
+# Default values for apiserver.
+# This is a YAML-formatted file.
+
+# Enable/disable apiserver deployment
+enabled: true
+
+# Image configuration
+image:
+  repository: quanzhenglong.com/edge/apiserver
+  tag: latest
+  pullPolicy: Always
+
+# Name override for resources
+nameOverride: ""
+fullnameOverride: ""
+
+# Namespace override (defaults to Release.Namespace)
+namespaceOverride: ""
+
+# Image pull secrets
+imagePullSecrets: []
+
+# Service account configuration
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+# Service configuration
+service:
+  type: ClusterIP
+  port: 8443
+  targetPort: 8443
+  annotations: {}
+  labels: {}
+
+# Deployment configuration
+replicaCount: 1
+
+# Pod security context
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 10001
+  runAsGroup: 10001
+  fsGroup: 10001
+
+# Container security context
+securityContext:
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+    - ALL
+
+# Resource limits and requests
+resources:
+  limits:
+    cpu: 500m
+    memory: 256Mi
+  requests:
+    cpu: 50m
+    memory: 128Mi
+
+# Liveness probe configuration
+livenessProbe:
+  httpGet:
+    path: /livez
+    port: 8443
+    scheme: HTTPS
+  initialDelaySeconds: 15
+  periodSeconds: 20
+  timeoutSeconds: 1
+  failureThreshold: 3
+
+# Readiness probe configuration
+readinessProbe:
+  httpGet:
+    path: /readyz
+    port: 8443
+    scheme: HTTPS
+  initialDelaySeconds: 5
+  periodSeconds: 10
+  timeoutSeconds: 1
+  failureThreshold: 3
+
+# Termination grace period
+terminationGracePeriodSeconds: 10
+
+# Command line arguments
+args:
+  - --config=/etc/edge/apiserver.yaml
+  - --authorization-mode=AlwaysAllow
+  - --v=5
+
+# Environment variables
+env:
+  - name: PORT
+    value: "8443"
+  - name: CAMP_NS
+    value: "rise-vast-system"
+
+# Additional environment variables
+extraEnv: []
+
+# Node selector
+nodeSelector: {}
+
+# Tolerations
+tolerations: []
+
+# Affinity rules
+affinity: {}
+
+# Pod annotations
+podAnnotations: {}
+
+# Pod labels
+podLabels: {}
+
+# Note: volumeMounts and volumes are now hardcoded in the template
+# to ensure proper ConfigMap name reference
+
+# RBAC configuration
+rbac:
+  # Specifies whether RBAC resources should be created
+  create: true
+  # ClusterRole name to bind to
+  clusterRoleName: edge-manager-role
+
+# Configuration for apiserver.yaml ConfigMap
+config:
+  # Server configuration
+  server:
+    port: 8090
+    host: "0.0.0.0"
+    timeout:
+      read: "30s"
+      write: "30s"
+      idle: "120s"
+    tls:
+      enabled: true
+      certFile: "/tmp/k8s-webhook-server/serving-certs/tls.crt"
+      keyFile: "/tmp/k8s-webhook-server/serving-certs/tls.key"
+
+  # Authentication configuration
+  auth:
+    mode: "RBAC"  # RBAC or AlwaysAllow
+    jwt:
+      secret: ""  # Should be set via environment variable JWT_SECRET in production
+      expiry: "24h"
+      refreshTTL: "168h"  # 7 days
+    oauth:
+      issuer: ""
+      clientId: ""
+      clientSecret: ""
+
+  # Metrics configuration
+  metrics:
+    enabled: true
+    prometheus:
+      endpoint: "http://prometheus-kube-prometheus-prometheus.prometheus.svc.cluster.local:9090"
+      auth: ""
+      timeout: "30s"
+      maxConcurrentQueries: 10
+      retryCount: 3
+      retryInterval: "1s"
+      tlsInsecureSkipVerify: true
+    cache:
+      enabled: true
+      ttl: "30s"
+      size: 1000
+
+  # Logging configuration
+  logging:
+    level: "info"  # debug, info, warn, error
+    format: "text"  # text, json
+    output: "stdout"  # stdout, stderr, file
+    file: "/var/log/apiserver/apiserver.log"
+    rotation:
+      maxSize: 100  # MB
+      maxBackups: 5
+      maxAge: 30  # days
+      compress: true
+
+  # Database configuration (optional)
+  database:
+    type: ""  # mysql, postgres, sqlite
+    host: ""
+    port: 0
+    database: ""
+    username: ""
+    password: ""  # Should be set via environment variable in production
+    sslMode: ""
+
+  # Device manager configuration
+  deviceManager:
+    enabledAggregator: true
+    hamiDeviceConfig: "config/device.yaml"
+
+# Certificate configuration
+cert:
+  # Secret name for TLS certificates
+  secretName: apiserver-cert
+  # Whether to create the secret (if false, must be created manually)
+  create: false
+

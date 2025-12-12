@@ -1,0 +1,25 @@
+{{- if and .Values.exporter.kunlunxin.enabled .Values.exporter.kunlunxin.serviceMonitor.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ include "hami-vgpu.exporter" . }}-xpu
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    {{- if .Values.exporter.kunlunxin.additionalLabels }}
+      {{- toYaml .Values.exporter.kunlunxin.additionalLabels | nindent 4 }}
+    {{- end }}
+spec:
+  endpoints:
+    - port: metrics
+      path: /metrics
+      relabelings:
+        - action: replace
+          sourceLabels: [ __meta_kubernetes_endpoint_node_name ]
+          targetLabel: node
+  namespaceSelector:
+    matchNames:
+      - {{ .Release.Namespace }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: hami-exporter-xpu
+  {{- end }}
