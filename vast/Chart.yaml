@@ -1,6 +1,6 @@
 apiVersion: v2
-name: vast-apiserver
-description: Vast API Server - Heterogeneous computing resource management API server for GPU, NPU, Cambricon, Tianshu and other compute vendors
+name: vast
+description: VAST Platform - Heterogeneous computing resource management platform for GPU, NPU, Tianshu, Hygon, Moore Threads, Suiyuan, Cambricon, Kunlunxin and other compute vendors
 type: application
 version: 0.1.0
 appVersion: "v1.0.0"
@@ -10,13 +10,17 @@ maintainers:
     email: dev@edge.io
 keywords:
   - vast
-  - api-server
   - heterogeneous-computing
   - gpu
   - npu
-  - cambricon
   - tianshu
+  - hygon
+  - moore-threads
+  - suiyuan
+  - cambricon
+  - kunlunxin
   - compute-resource-management
+  - resource-scheduling
   - kubernetes
 sources:
   - https://github.com/edge/apiserver
@@ -27,11 +31,14 @@ dependencies:
     version: "0.1.0"
     repository: "file://./charts/controller"
     condition: controller.enabled
+    description: VAST Controller - Kubernetes Operator for CRD reconciliation and resource management
   - name: apiserver
     version: "0.1.0"
     repository: "file://./charts/apiserver"
     condition: apiserver.enabled
+    description: VAST API Server - RESTful API for querying resource usage and allocation
   - name: hami
     version: "2.5.0"
     repository: "file://./charts/hami"
     condition: hami.enabled
+    description: HAMI - Open source scheduling framework for heterogeneous computing resources

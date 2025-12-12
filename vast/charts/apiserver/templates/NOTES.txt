@@ -1,9 +1,16 @@
-Edge Controller has been deployed successfully!
+VAST API Server has been deployed successfully!
 
-To check the controller status:
-  kubectl get deployment {{ include "edge-controller.fullname" . }} -n {{ .Release.Namespace }}
+The API Server provides RESTful API endpoints for:
+  - Querying heterogeneous computing resource usage
+  - Checking resource allocation status
+  - Retrieving compute card information (GPU, NPU, Tianshu, Hygon, Moore Threads, Suiyuan, Cambricon, Kunlunxin, etc.)
+
+To check the API Server status:
+  kubectl get deployment edge-apiserver -n {{ .Release.Namespace | default "edge-system" }}
 
 To view the logs:
-  kubectl logs deployment/{{ include "edge-controller.fullname" . }} -n {{ .Release.Namespace }}
+  kubectl logs deployment/edge-apiserver -n {{ .Release.Namespace | default "edge-system" }}
 
-RBAC Resources will be created automatically by the controller.
+To access the API:
+  kubectl port-forward svc/edge-edge-apiserver 8443:8443 -n {{ .Release.Namespace | default "edge-system" }}
+  # API will be available at https://localhost:8443

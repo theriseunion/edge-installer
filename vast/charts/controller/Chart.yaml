@@ -1,6 +1,6 @@
 apiVersion: v2
 name: controller
-description: Vast Controller - Kubernetes Operator for reconciling CRDs and managing heterogeneous computing resources (GPU, NPU, Cambricon, Tianshu and other compute vendors)
+description: VAST Controller - Kubernetes Operator that defines and reconciles CRDs for managing heterogeneous computing resources (GPU, NPU, Tianshu, Hygon, Moore Threads, Suiyuan, Cambricon, Kunlunxin and other compute vendors)
 type: application
 version: 0.1.0
 appVersion: "v1.0.0"
@@ -18,8 +18,12 @@ keywords:
   - heterogeneous-computing
   - gpu
   - npu
-  - cambricon
   - tianshu
+  - hygon
+  - moore-threads
+  - suiyuan
+  - cambricon
+  - kunlunxin
   - compute-resource-management
   - kubernetes
 sources:

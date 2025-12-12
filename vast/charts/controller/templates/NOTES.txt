@@ -1,9 +1,17 @@
-Edge Controller has been deployed successfully!
+VAST Controller (Operator) has been deployed successfully!
 
-To check the controller status:
-  kubectl get deployment {{ include "edge-controller.fullname" . }} -n {{ .Release.Namespace }}
+The Controller is a standard Kubernetes Operator that:
+  - Defines and manages CRDs for heterogeneous computing resources
+  - Reconciles compute resource states
+  - Manages compute cards from multiple vendors (GPU, NPU, Tianshu, Hygon, Moore Threads, Suiyuan, Cambricon, Kunlunxin, etc.)
+
+To check the Controller status:
+  kubectl get deployment edge-controller-manager -n {{ .Release.Namespace | default "edge-system" }}
 
 To view the logs:
-  kubectl logs deployment/{{ include "edge-controller.fullname" . }} -n {{ .Release.Namespace }}
+  kubectl logs deployment/edge-controller-manager -n {{ .Release.Namespace | default "edge-system" }}
 
-RBAC Resources will be created automatically by the controller.
+To check CRDs:
+  kubectl get crds | grep device.theriseunion.io
+
+CRDs and related resources will be created and managed automatically by the controller.
