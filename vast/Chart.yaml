@@ -1,6 +1,6 @@
 apiVersion: v2
-name: edge-apiserver
-description: Edge API Server - Multi-tenant cloud native platform API server with comprehensive RBAC
+name: vast-apiserver
+description: Vast API Server - Heterogeneous computing resource management API server for GPU, NPU, Cambricon, Tianshu and other compute vendors
 type: application
 version: 0.1.0
 appVersion: "v1.0.0"
@@ -9,10 +9,25 @@ maintainers:
   - name: Edge Team
     email: dev@edge.io
 keywords:
-  - edge
+  - vast
   - api-server
-  - rbac
-  - multi-tenant
+  - heterogeneous-computing
+  - gpu
+  - npu
+  - cambricon
+  - tianshu
+  - compute-resource-management
   - kubernetes
 sources:
   - https://github.com/edge/apiserver
+
+# Chart dependencies
+dependencies:
+  - name: controller
+    version: "0.1.0"
+    repository: "file://./charts/controller"
+    condition: controller.enabled
+  - name: hami
+    version: "2.5.0"
+    repository: "file://./charts/hami"
+    condition: hami.enabled
