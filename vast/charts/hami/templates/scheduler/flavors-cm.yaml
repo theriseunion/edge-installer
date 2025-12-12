@@ -1,0 +1,801 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: flavors-cm
+  {{- if has "flavorCM" .Values.nonOverwrite }}
+  annotations:
+    "helm.sh/resource-policy": keep
+    "helm.sh/hook": pre-install
+  {{- end }}
+data:
+  flavors: |
+    {{- if .Values.devices.ascend.enabled }}
+    - cardManufacturer: Ascend
+      cardType: Ascend910B2
+      coresPerVGpu: 100
+      description: 8张独占卡-昇腾910B2
+      memoryPerVGpu: 65536
+      name: NPU-8-ASCEND-910B2
+      type: fixed
+      usageMode: dedicated
+      vgpuCount: 8
+    - cardManufacturer: Ascend
+      cardType: Ascend910B2
+      coresPerVGpu: 100
+      description: 4张独占卡-昇腾910B2
+      memoryPerVGpu: 65536
+      name: NPU-4-ASCEND-910B2
+      type: fixed
+      usageMode: dedicated
+      vgpuCount: 4
+    - cardManufacturer: Ascend
+      cardType: Ascend910B2
+      coresPerVGpu: 100
+      description: 2张独占卡-昇腾910B2
+      memoryPerVGpu: 65536
+      name: NPU-2-ASCEND-910B2
+      type: fixed
+      usageMode: dedicated
+      vgpuCount: 2
+    - cardManufacturer: Ascend
+      cardType: Ascend910B2
+      coresPerVGpu: 100
+      description: 1张独占卡-昇腾910B2
+      memoryPerVGpu: 65536
+      name: NPU-1-ASCEND-910B2
+      type: fixed
+      usageMode: dedicated
+      vgpuCount: 1
+    - cardManufacturer: Ascend
+      cardType: Ascend910B2
+      coresPerVGpu: 12
+      description: 1张共享卡-VIR03-1C-8G-昇腾910B2
+      memoryPerVGpu: 8192
+      name: VNPU-VIR03_1C_8G-ASCEND-910B2
+      type: fixed
+      usageMode: shared
+      vgpuCount: 1
+    - cardManufacturer: Ascend
+      cardType: Ascend910B2
+      coresPerVGpu: 25
+      description: 1张共享卡-VIR06-1C-16G-昇腾910B2
+      memoryPerVGpu: 16384
+      name: VNPU-VIR06_1C_16G-ASCEND-910B2
+      type: fixed
+      usageMode: shared
+      vgpuCount: 1
+    - cardManufacturer: Ascend
+      cardType: Ascend910B2
+      coresPerVGpu: 50
+      description: 1张共享卡-VIR12-3C-32G-昇腾910B2
+      memoryPerVGpu: 32768
+      name: VNPU-VIR12_3C_32G-ASCEND-910B2
+      type: fixed
+      usageMode: shared
+      vgpuCount: 1
+    - cardManufacturer: Ascend
+      cardType: Ascend910B3
+      coresPerVGpu: 100
+      description: 8张独占卡-昇腾910B3
+      memoryPerVGpu: 65536
+      name: NPU-8-ASCEND-910B3
+      type: fixed
+      usageMode: dedicated
+      vgpuCount: 8
+    - cardManufacturer: Ascend
+      cardType: Ascend910B3
+      coresPerVGpu: 100
+      description: 4张独占卡-昇腾910B3
+      memoryPerVGpu: 65536
+      name: NPU-4-ASCEND-910B3
+      type: fixed
+      usageMode: dedicated
+      vgpuCount: 4
+    - cardManufacturer: Ascend
+      cardType: Ascend910B3
+      coresPerVGpu: 100
+      description: 2张独占卡-昇腾910B3
+      memoryPerVGpu: 65536
+      name: NPU-2-ASCEND-910B3
+      type: fixed
+      usageMode: dedicated
+      vgpuCount: 2
+    - cardManufacturer: Ascend
+      cardType: Ascend910B3
+      coresPerVGpu: 100
+      description: 1张独占卡-昇腾910B3
+      memoryPerVGpu: 65536
+      name: NPU-1-ASCEND-910B3
+      type: fixed
+      usageMode: dedicated
+      vgpuCount: 1
+    - cardManufacturer: Ascend
+      cardType: Ascend910B3
+      coresPerVGpu: 25
+      description: 1张共享卡-VIR05-1C-16G-昇腾910B3
+      memoryPerVGpu: 16385
+      name: VNPU-VIR05_1C_16G-ASCEND-910B3
+      type: fixed
+      usageMode: shared
+      vgpuCount: 1
+    - cardManufacturer: Ascend
+      cardType: Ascend910B3
+      coresPerVGpu: 50
+      description: 1张共享卡-VIR10-3C-32G-昇腾910B3
+      memoryPerVGpu: 32768
+      name: VNPU-VIR10_3C_32G-ASCEND-910B3
+      type: fixed
+      usageMode: shared
+      vgpuCount: 1
+    - cardManufacturer: Ascend
+      cardType: Ascend910B4
+      coresPerVGpu: 100
+      description: 8张独占卡-昇腾910B4
+      memoryPerVGpu: 32768
+      name: NPU-8-ASCEND-910B4
+      type: fixed
+      usageMode: dedicated
+      vgpuCount: 8
+    - cardManufacturer: Ascend
+      cardType: Ascend910B4
+      coresPerVGpu: 100
+      description: 4张独占卡-昇腾910B4
+      memoryPerVGpu: 32768
+      name: NPU-4-ASCEND-910B4
+      type: fixed
+      usageMode: dedicated
+      vgpuCount: 4
+    - cardManufacturer: Ascend
+      cardType: Ascend910B4
+      coresPerVGpu: 100
+      description: 2张独占卡-昇腾910B4
+      memoryPerVGpu: 32768
+      name: NPU-2-ASCEND-910B4
+      type: fixed
+      usageMode: dedicated
+      vgpuCount: 2
+    - cardManufacturer: Ascend
+      cardType: Ascend910B4
+      coresPerVGpu: 100
+      description: 1张独占卡-昇腾910B4
+      memoryPerVGpu: 32768
+      name: NPU-1-ASCEND-910B4
+      type: fixed
+      usageMode: dedicated
+      vgpuCount: 1
+    - cardManufacturer: Ascend
+      cardType: Ascend910B4
+      coresPerVGpu: 25
+      description: 1张共享卡-VIR05-1C-8G-昇腾910B4
+      memoryPerVGpu: 8192
+      name: VNPU-VIR05_1C_8G-ASCEND-910B4
+      type: fixed
+      usageMode: shared
+      vgpuCount: 1
+    - cardManufacturer: Ascend
+      cardType: Ascend910B4
+      coresPerVGpu: 50
+      description: 1张共享卡-VIR10-3C-16G-昇腾910B4
+      memoryPerVGpu: 16384
+      name: VNPU-VIR10_3C_16G-ASCEND-910B4
+      type: fixed
+      usageMode: shared
+      vgpuCount: 1
+    - cardManufacturer: Ascend
+      cardType: Ascend910B4
+      coresPerVGpu: 100
+      description: 8张独占卡-昇腾910B4-1
+      memoryPerVGpu: 65536
+      name: NPU-8-ASCEND-910B4-1
+      type: fixed
+      usageMode: dedicated
+      vgpuCount: 8
+    - cardManufacturer: Ascend
+      cardType: Ascend910B4
+      coresPerVGpu: 100
+      description: 4张独占卡-昇腾910B4-1
+      memoryPerVGpu: 65536
+      name: NPU-4-ASCEND-910B4-1
+      type: fixed
+      usageMode: dedicated
+      vgpuCount: 4
+    - cardManufacturer: Ascend
+      cardType: Ascend910B4
+      coresPerVGpu: 100
+      description: 2张独占卡-昇腾910B4-1
+      memoryPerVGpu: 65536
+      name: NPU-2-ASCEND-910B4-1
+      type: fixed
+      usageMode: dedicated
+      vgpuCount: 2
+    - cardManufacturer: Ascend
+      cardType: Ascend910B4
+      coresPerVGpu: 100
+      description: 1张独占卡-昇腾910B4-1
+      memoryPerVGpu: 65536
+      name: NPU-1-ASCEND-910B4-1
+      type: fixed
+      usageMode: dedicated
+      vgpuCount: 1
+    - cardManufacturer: Ascend
+      cardType: Ascend910B4
+      coresPerVGpu: 25
+      description: 1张共享卡-VIR05-1C-8G-昇腾910B4-1
+      memoryPerVGpu: 8192
+      name: VNPU-VIR05_1C_8G-ASCEND-910B4-1
+      type: fixed
+      usageMode: shared
+      vgpuCount: 1
+    - cardManufacturer: Ascend
+      cardType: Ascend910B4
+      coresPerVGpu: 50
+      description: 1张共享卡-VIR10-3C-16G-昇腾910B4-1
+      memoryPerVGpu: 16384
+      name: VNPU-VIR10_3C_16G-ASCEND-910B4-1
+      type: fixed
+      usageMode: shared
+      vgpuCount: 1
+    - cardManufacturer: Ascend
+      cardType: Ascend310P
+      coresPerVGpu: 100
+      description: 8张独占卡-昇腾310P
+      memoryPerVGpu: 21527
+      name: NPU-8-ASCEND-310P
+      type: fixed
+      usageMode: dedicated
+      vgpuCount: 8
+    - cardManufacturer: Ascend
+      cardType: Ascend310P
+      coresPerVGpu: 100
+      description: 4张独占卡-昇腾310P
+      memoryPerVGpu: 21527
+      name: NPU-4-ASCEND-310P
+      type: fixed
+      usageMode: dedicated
+      vgpuCount: 4
+    - cardManufacturer: Ascend
+      cardType: Ascend310P
+      coresPerVGpu: 100
+      description: 2张独占卡-昇腾310P
+      memoryPerVGpu: 21527
+      name: NPU-2-ASCEND-310P
+      type: fixed
+      usageMode: dedicated
+      vgpuCount: 2
+    - cardManufacturer: Ascend
+      cardType: Ascend310P
+      coresPerVGpu: 100
+      description: 1张独占卡-昇腾310P
+      memoryPerVGpu: 21527
+      name: NPU-1-ASCEND-310P
+      type: fixed
+      usageMode: dedicated
+      vgpuCount: 1
+    - cardManufacturer: Ascend
+      cardType: Ascend310P
+      coresPerVGpu: 12
+      description: 1张共享卡-VIR05-1C-3G-昇腾310P
+      memoryPerVGpu: 3072
+      name: VNPU-VIR05_1C_3G-ASCEND-310P
+      type: fixed
+      usageMode: shared
+      vgpuCount: 1
+    - cardManufacturer: Ascend
+      cardType: Ascend310P
+      coresPerVGpu: 25
+      description: 1张共享卡-VIR05-1C-6G-昇腾310P
+      memoryPerVGpu: 6144
+      name: VNPU-VIR05_1C_6G-ASCEND-310P
+      type: fixed
+      usageMode: shared
+      vgpuCount: 1
+    - cardManufacturer: Ascend
+      cardType: Ascend310P
+      coresPerVGpu: 50
+      description: 1张共享卡-VIR10-3C-12G-昇腾310P
+      memoryPerVGpu: 12288
+      name: VNPU-VIR10_3C_12G-ASCEND-310P
+      type: fixed
+      usageMode: shared
+      vgpuCount: 1
+    {{- end }}
+    {{- if .Values.devices.kunlunxin.enabled }}
+    - cardManufacturer: XPU
+      cardType: {{ .Values.devices.kunlunxin.cardType }}
+      coresPerVGpu: 100
+      description: 8张独占卡-昆仑芯P800
+      memoryPerVGpu: 98304
+      name: XPU-8-KUNLUNXIN-P800
+      type: fixed
+      usageMode: dedicated
+      vgpuCount: 8
+    - cardManufacturer: XPU
+      cardType: {{ .Values.devices.kunlunxin.cardType }}
+      coresPerVGpu: 100
+      description: 4张独占卡-昆仑芯P800
+      memoryPerVGpu: 98304
+      name: XPU-4-KUNLUNXIN-P800
+      type: fixed
+      usageMode: dedicated
+      vgpuCount: 4
+    - cardManufacturer: XPU
+      cardType: {{ .Values.devices.kunlunxin.cardType }}
+      coresPerVGpu: 100
+      description: 2张独占卡-昆仑芯P800
+      memoryPerVGpu: 98304
+      name: XPU-2-KUNLUNXIN-P800
+      type: fixed
+      usageMode: dedicated
+      vgpuCount: 2
+    - cardManufacturer: XPU
+      cardType: {{ .Values.devices.kunlunxin.cardType }}
+      coresPerVGpu: 100
+      description: 1张独占卡-昆仑芯P800
+      memoryPerVGpu: 98304
+      name: XPU-1-KUNLUNXIN-P800
+      type: fixed
+      usageMode: dedicated
+      vgpuCount: 1
+    - cardManufacturer: XPU
+      cardType: {{ .Values.devices.kunlunxin.cardType }}
+      coresPerVGpu: 25
+      description: 1张共享卡-24G-昆仑芯P800
+      memoryPerVGpu: 24576
+      name: VXPU-1-24G-KUNLUNXIN-P800
+      type: fixed
+      usageMode: shared
+      vgpuCount: 1
+    - cardManufacturer: XPU
+      cardType: {{ .Values.devices.kunlunxin.cardType }}
+      coresPerVGpu: 50
+      description: 1张共享卡-48G-昆仑芯P800
+      memoryPerVGpu: 49152
+      name: VXPU-1-48G-KUNLUNXIN-P800
+      type: fixed
+      usageMode: shared
+      vgpuCount: 1
+    {{- end }}
+    {{- if .Values.devices.iluvatar.enabled }}
+    - cardManufacturer: Iluvatar
+      cardType: Iluvatar-MR-V100
+      coresPerVGpu: 100
+      description: 8张独占卡-天数MR-V100
+      memoryPerVGpu: 128
+      name: Iluvatar-8-32G-MR-V100
+      type: fixed
+      usageMode: dedicated
+      vgpuCount: 8
+    - cardManufacturer: Iluvatar
+      cardType: Iluvatar-MR-V100
+      coresPerVGpu: 100
+      description: 4张独占卡-天数MR-V100
+      memoryPerVGpu: 128
+      name: Iluvatar-4-32G-MR-V100
+      type: fixed
+      usageMode: dedicated
+      vgpuCount: 4
+    - cardManufacturer: Iluvatar
+      cardType: Iluvatar-MR-V100
+      coresPerVGpu: 100
+      description: 2张独占卡-天数MR-V100
+      memoryPerVGpu: 128
+      name: Iluvatar-2-32G-MR-V100
+      type: fixed
+      usageMode: dedicated
+      vgpuCount: 2
+    - cardManufacturer: Iluvatar
+      cardType: Iluvatar-MR-V100
+      coresPerVGpu: 100
+      description: 1张独占卡-天数MR-V100
+      memoryPerVGpu: 128
+      name: Iluvatar-1-32G-MR-V100
+      type: fixed
+      usageMode: dedicated
+      vgpuCount: 1
+    - cardManufacturer: Iluvatar
+      cardType: Iluvatar-MR-V100
+      coresPerVGpu: 25
+      description: 1张共享卡-8G-天数MR-V100
+      memoryPerVGpu: 32
+      name: Iluvatar-1-8G-MR-V100
+      type: fixed
+      usageMode: shared
+      vgpuCount: 1
+    - cardManufacturer: Iluvatar
+      cardType: Iluvatar-MR-V100
+      coresPerVGpu: 50
+      description: 1张共享卡-16G-天数MR-V100
+      memoryPerVGpu: 64
+      name: Iluvatar-1-16G-MR-V100
+      type: fixed
+      usageMode: shared
+      vgpuCount: 1
+    - cardManufacturer: Iluvatar
+      cardType: Iluvatar-BI-V150
+      coresPerVGpu: 100
+      description: 8张独占卡-天数BI-V150
+      memoryPerVGpu: 128
+      name: Iluvatar-8-32G-BI-V150
+      type: fixed
+      usageMode: dedicated
+      vgpuCount: 8
+    - cardManufacturer: Iluvatar
+      cardType: Iluvatar-BI-V150
+      coresPerVGpu: 100
+      description: 4张独占卡-天数BI-V150
+      memoryPerVGpu: 128
+      name: Iluvatar-4-32G-BI-V150
+      type: fixed
+      usageMode: dedicated
+      vgpuCount: 4
+    - cardManufacturer: Iluvatar
+      cardType: Iluvatar-BI-V150
+      coresPerVGpu: 100
+      description: 2张独占卡-天数BI-V150
+      memoryPerVGpu: 128
+      name: Iluvatar-2-32G-BI-V150
+      type: fixed
+      usageMode: dedicated
+      vgpuCount: 2
+    - cardManufacturer: Iluvatar
+      cardType: Iluvatar-BI-V150
+      coresPerVGpu: 100
+      description: 1张独占卡-天数BI-V150
+      memoryPerVGpu: 128
+      name: Iluvatar-1-32G-BI-V150
+      type: fixed
+      usageMode: dedicated
+      vgpuCount: 1
+    - cardManufacturer: Iluvatar
+      cardType: Iluvatar-BI-V150
+      coresPerVGpu: 25
+      description: 1张共享卡-8G-天数BI-V150
+      memoryPerVGpu: 32
+      name: Iluvatar-1-8G-BI-V150
+      type: fixed
+      usageMode: shared
+      vgpuCount: 1
+    - cardManufacturer: Iluvatar
+      cardType: Iluvatar-BI-V150
+      coresPerVGpu: 50
+      description: 1张共享卡-16G-天数BI-V150
+      memoryPerVGpu: 64
+      name: Iluvatar-1-16G-BI-V150
+      type: fixed
+      usageMode: shared
+      vgpuCount: 1
+    {{- end }}
+    {{- if .Values.devices.hygon.enabled }}
+    - cardManufacturer: DCU
+      cardType: DCU-K100_AI
+      coresPerVGpu: 100
+      description: 8张独占卡-海光K100_AI
+      memoryPerVGpu: 65488
+      name: DCU-8-K100_AI
+      type: fixed
+      usageMode: dedicated
+      vgpuCount: 8
+    - cardManufacturer: DCU
+      cardType: DCU-K100_AI
+      coresPerVGpu: 100
+      description: 4张独占卡-海光K100_AI
+      memoryPerVGpu: 65488
+      name: DCU-4-K100_AI
+      type: fixed
+      usageMode: dedicated
+      vgpuCount: 4
+    - cardManufacturer: DCU
+      cardType: DCU-K100_AI
+      coresPerVGpu: 100
+      description: 2张独占卡-海光K100_AI
+      memoryPerVGpu: 65488
+      name: DCU-2-K100_AI
+      type: fixed
+      usageMode: dedicated
+      vgpuCount: 2
+    - cardManufacturer: DCU
+      cardType: DCU-K100_AI
+      coresPerVGpu: 100
+      description: 1张独占卡-海光K100_AI
+      memoryPerVGpu: 65488
+      name: DCU-1-K100_AI
+      type: fixed
+      usageMode: dedicated
+      vgpuCount: 1
+    - cardManufacturer: DCU
+      cardType: DCU-K100_AI
+      coresPerVGpu: 50
+      description: 1张共享卡-32G-海光K100
+      memoryPerVGpu: 32768
+      name: VDCU-K100_AI-1-32G
+      type: fixed
+      usageMode: shared
+      vgpuCount: 1
+    - cardManufacturer: DCU
+      cardType: DCU-K100_AI
+      coresPerVGpu: 25
+      description: 1张共享卡-16G-海光K100
+      memoryPerVGpu: 16384
+      name: VDCU-K100_AI-1-16G
+      type: fixed
+      usageMode: shared
+      vgpuCount: 1
+    - cardManufacturer: DCU
+      cardType: DCU-Z100L
+      coresPerVGpu: 100
+      description: 8张独占卡-海光Z100L
+      memoryPerVGpu: 32752
+      name: DCU-8-Z100L
+      type: fixed
+      usageMode: dedicated
+      vgpuCount: 8
+    - cardManufacturer: DCU
+      cardType: DCU-Z100L
+      coresPerVGpu: 100
+      description: 4张独占卡-海光Z100L
+      memoryPerVGpu: 32752
+      name: DCU-4-Z100L
+      type: fixed
+      usageMode: dedicated
+      vgpuCount: 4
+    - cardManufacturer: DCU
+      cardType: DCU-Z100L
+      coresPerVGpu: 100
+      description: 2张独占卡-海光Z100L
+      memoryPerVGpu: 32752
+      name: DCU-2-Z100L
+      type: fixed
+      usageMode: dedicated
+      vgpuCount: 2
+    - cardManufacturer: DCU
+      cardType: DCU-Z100L
+      coresPerVGpu: 100
+      description: 1张独占卡-海光Z100L
+      memoryPerVGpu: 32752
+      name: DCU-1-Z100L
+      type: fixed
+      usageMode: dedicated
+      vgpuCount: 1
+    - cardManufacturer: DCU
+      cardType: DCU-Z100L
+      coresPerVGpu: 50
+      description: 1张共享卡-16G-海光Z100L
+      memoryPerVGpu: 16376
+      name: VDCU-Z100L-1-16G
+      type: fixed
+      usageMode: shared
+      vgpuCount: 1
+    - cardManufacturer: DCU
+      cardType: DCU-Z100L
+      coresPerVGpu: 25
+      description: 1张共享卡-8G-海光Z100L
+      memoryPerVGpu: 8188
+      name: VDCU-Z100L-1-8G
+      type: fixed
+      usageMode: shared
+      vgpuCount: 1
+    {{- end }}
+    {{- if .Values.devices.cambricon.enabled }}
+    - cardManufacturer: MLU
+      cardType: MLU
+      coresPerVGpu: 100
+      description: 8张独占卡-寒武纪MLU370
+      memoryPerVGpu: 91
+      name: MLU-8-MLU370-X4
+      type: fixed
+      usageMode: dedicated
+      vgpuCount: 8
+    - cardManufacturer: MLU
+      cardType: MLU
+      coresPerVGpu: 100
+      description: 4张独占卡-寒武纪MLU370
+      memoryPerVGpu: 91
+      name: MLU-4-MLU370-X4
+      type: fixed
+      usageMode: dedicated
+      vgpuCount: 4
+    - cardManufacturer: MLU
+      cardType: MLU
+      coresPerVGpu: 100
+      description: 2张独占卡-寒武纪MLU370
+      memoryPerVGpu: 91
+      name: MLU-2-MLU370-X4
+      type: fixed
+      usageMode: dedicated
+      vgpuCount: 2
+    - cardManufacturer: MLU
+      cardType: MLU
+      coresPerVGpu: 100
+      description: 1张独占卡-寒武纪MLU370
+      memoryPerVGpu: 91
+      name: MLU-1-MLU370-X4
+      type: fixed
+      usageMode: dedicated
+      vgpuCount: 1
+    - cardManufacturer: MLU
+      cardType: MLU
+      coresPerVGpu: 25
+      description: 1张共享卡-6G-寒武纪MLU370
+      memoryPerVGpu: 25
+      name: VMLU-370_AI-1-6G
+      type: fixed
+      usageMode: shared
+      vgpuCount: 1
+    - cardManufacturer: MLU
+      cardType: MLU
+      coresPerVGpu: 25
+      description: 2张共享卡-6G-寒武纪MLU370
+      memoryPerVGpu: 25
+      name: VMLU-370_AI-2-6G
+      type: fixed
+      usageMode: shared
+      vgpuCount: 2
+    {{- end }}
+    {{- if .Values.devices.metax.enabled }}
+    - cardManufacturer: Metax-SGPU
+      cardType: Metax-SGPU-C500
+      coresPerVGpu: 25
+      description: 1张共享卡-16G-沐曦C500
+      memoryPerVGpu: 16384
+      name: 1x16G-MetaxSGPU-C500
+      type: fixed
+      usageMode: shared
+      vgpuCount: 1
+    - cardManufacturer: Metax-SGPU
+      cardType: Metax-SGPU-C500
+      coresPerVGpu: 50
+      description: 1张共享卡-32G-沐曦C500
+      memoryPerVGpu: 32768
+      name: 1x32G-MetaxSGPU-C500
+      type: fixed
+      usageMode: shared
+      vgpuCount: 1
+    - cardManufacturer: Metax-SGPU
+      cardType: Metax-SGPU-C500
+      coresPerVGpu: 100
+      description: 1张共享整卡-64G-沐曦C500
+      memoryPerVGpu: 65536
+      name: 1x64G-MetaxSGPU-C500
+      type: fixed
+      usageMode: dedicated
+      vgpuCount: 1
+    - cardManufacturer: Metax-SGPU
+      cardType: Metax-SGPU-C500
+      coresPerVGpu: 100
+      description: 2张共享整卡-64G-沐曦C500
+      memoryPerVGpu: 65536
+      name: 2x64G-MetaxSGPU-C500
+      type: fixed
+      usageMode: dedicated
+      vgpuCount: 2
+    - cardManufacturer: Metax-SGPU
+      cardType: Metax-SGPU-C500
+      coresPerVGpu: 100
+      description: 4张共享整卡-64G-沐曦C500
+      memoryPerVGpu: 65536
+      name: 4x64G-MetaxSGPU-C500
+      type: fixed
+      usageMode: dedicated
+      vgpuCount: 4
+    - cardManufacturer: Metax-GPU
+      cardType: Metax-GPU-C500
+      coresPerVGpu: 100
+      description: 1张整卡-64G-沐曦C500
+      memoryPerVGpu: 65536
+      name: 1x64G-MetaxGPU-C500
+      type: fixed
+      usageMode: dedicated
+      vgpuCount: 1
+    - cardManufacturer: Metax-GPU
+      cardType: Metax-GPU-C500
+      coresPerVGpu: 100
+      description: 2张整卡-64G-沐曦C500
+      memoryPerVGpu: 65536
+      name: 2x64G-MetaxGPU-C500
+      type: fixed
+      usageMode: dedicated
+      vgpuCount: 2
+    - cardManufacturer: Metax-GPU
+      cardType: Metax-GPU-C500
+      coresPerVGpu: 100
+      description: 4张整卡-64G-沐曦C500
+      memoryPerVGpu: 65536
+      name: 4x64G-MetaxGPU-C500
+      type: fixed
+      usageMode: dedicated
+      vgpuCount: 4
+    - cardManufacturer: Metax-GPU
+      cardType: Metax-GPU-C500
+      coresPerVGpu: 100
+      description: 8张整卡-64G-沐曦C500
+      memoryPerVGpu: 65536
+      name: 8x64G-MetaxGPU-C500
+      type: fixed
+      usageMode: dedicated
+      vgpuCount: 8
+    {{- end }}
+    {{- if .Values.devices.enflame.enabled }}
+    - cardManufacturer: GCU
+      cardType: GCU-S60
+      coresPerVGpu: 100
+      description: 1张整卡-41G-燧原S60
+      memoryPerVGpu: 41984
+      name: 1x41G-GCU-S60
+      type: fixed
+      usageMode: dedicated
+      vgpuCount: 1
+    - cardManufacturer: GCU
+      cardType: GCU-S60
+      coresPerVGpu: 100
+      description: 2张整卡-41G-燧原S60
+      memoryPerVGpu: 41984
+      name: 2x41G-GCU-S60
+      type: fixed
+      usageMode: dedicated
+      vgpuCount: 2
+    - cardManufacturer: GCU
+      cardType: GCU-S60
+      coresPerVGpu: 100
+      description: 4张整卡-41G-燧原S60
+      memoryPerVGpu: 41984
+      name: 4x41G-GCU-S60
+      type: fixed
+      usageMode: dedicated
+      vgpuCount: 4
+    - cardManufacturer: GCU
+      cardType: GCU-S60
+      coresPerVGpu: 100
+      description: 8张整卡-41G-燧原S60
+      memoryPerVGpu: 41984
+      name: 8x41G-GCU-S60
+      type: fixed
+      usageMode: dedicated
+      vgpuCount: 8
+    {{- end }}
+    {{- if .Values.devices.alibaba.enabled }}
+    - cardManufacturer: PPU
+      cardType: PPU-PPU-ZW810E
+      coresPerVGpu: 100
+      description: 16张独占卡-倚天810
+      memoryPerVGpu: 98304
+      name: PPU-16-Alibaba-ZW810E
+      type: fixed
+      usageMode: dedicated
+      vgpuCount: 16
+    - cardManufacturer: PPU
+      cardType: PPU-PPU-ZW810E
+      coresPerVGpu: 100
+      description: 8张独占卡-倚天810
+      memoryPerVGpu: 98304
+      name: PPU-8-Alibaba-ZW810E
+      type: fixed
+      usageMode: dedicated
+      vgpuCount: 8
+    - cardManufacturer: PPU
+      cardType: PPU-PPU-ZW810E
+      coresPerVGpu: 100
+      description: 4张独占卡-倚天810
+      memoryPerVGpu: 98304
+      name: PPU-4-Alibaba-ZW810E
+      type: fixed
+      usageMode: dedicated
+      vgpuCount: 4
+    - cardManufacturer: PPU
+      cardType: PPU-PPU-ZW810E
+      coresPerVGpu: 100
+      description: 2张独占卡-倚天810
+      memoryPerVGpu: 98304
+      name: PPU-2-Alibaba-ZW810E
+      type: fixed
+      usageMode: dedicated
+      vgpuCount: 2
+    - cardManufacturer: PPU
+      cardType: PPU-PPU-ZW810E
+      coresPerVGpu: 100
+      description: 1张独占卡-倚天810
+      memoryPerVGpu: 98304
+      name: PPU-1-Alibaba-ZW810E
+      type: fixed
+      usageMode: dedicated
+      vgpuCount: 1
+    {{- end }}

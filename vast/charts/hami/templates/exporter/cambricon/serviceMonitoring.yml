@@ -1,0 +1,24 @@
+{{- if .Values.exporter.cambricon.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  labels:
+    app.kubernetes.io/component: hami-exporter-mlu
+    {{- if .Values.global.prometheus.serviceMonitorSelector }}
+    {{- toYaml .Values.global.prometheus.serviceMonitorSelector | nindent 4 }}
+    {{- end }}
+  namespace: {{ .Release.Namespace | quote }}
+  name: {{ include "hami-vgpu.exporter" . }}-mlu
+spec:
+  endpoints:
+  - honorLabels: true
+    interval: 15s
+    port: http-metrics
+  jobLabel: component
+  namespaceSelector:
+    matchNames:
+      - {{ .Release.Namespace }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: hami-exporter-mlu
+{{- end }}

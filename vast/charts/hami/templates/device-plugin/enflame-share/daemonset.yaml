@@ -1,0 +1,81 @@
+{{- if .Values.devices.enflameshare.enabled }}
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: {{ include "hami-vgpu.device-plugin" . }}-gcushare
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    app.kubernetes.io/name: {{ include "hami-vgpu.device-plugin" . }}-gcushare
+    {{- include "hami-vgpu.labels" . | nindent 4 }}
+    {{- with .Values.global.labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+  {{- if .Values.global.annotations }}
+  annotations: {{ toYaml .Values.global.annotations | nindent 4}}
+  {{- end }}
+spec:
+  selector:
+    matchLabels:    
+      app.kubernetes.io/name: {{ include "hami-vgpu.device-plugin" . }}-gcushare
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "hami-vgpu.device-plugin" . }}-gcushare
+    spec:
+      {{- with .Values.devices.enflameshare.nodeSelector }}
+      nodeSelector:
+      {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.devices.enflameshare.tolerations }}
+      tolerations:
+      {{- toYaml . | nindent 6 }}
+      {{- end }}
+      serviceAccount: {{ include "hami-vgpu.device-plugin" . }}-gcushare
+      hostNetwork: true
+      containers:
+      - image: {{ .Values.devices.enflameshare.image }}
+        imagePullPolicy: {{ .Values.devices.enflameshare.imagePullPolicy | quote }}
+        name: gcushare
+        # Make this pod as Guaranteed pod which will never be evicted because of node's resource consumption.
+        command:
+          - gcushare-device-plugin
+          - --slice-count={{ .Values.devices.enflameshare.sliceCount }}
+        resources:
+          limits:
+            memory: "300Mi"
+            cpu: "1"
+          requests:
+            memory: "300Mi"
+            cpu: "1"
+        env:
+        - name: KUBECONFIG
+          value: /etc/kubernetes/kubelet.conf
+        - name: NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        securityContext:
+          # privileged: true
+          # allowPrivilegeEscalation: false
+          # capabilities:
+          #   drop: ["ALL"]
+        volumeMounts:
+          - name: device-plugin
+            mountPath: /var/lib/kubelet/device-plugins
+          - name: gcushare-dic
+            mountPath: /var/log/enflame/gcushare
+          - name: topscloud-config
+            mountPath: /etc/topscloud
+      volumes:
+        - name: device-plugin
+          hostPath:
+            path: /var/lib/kubelet/device-plugins
+        - name: gcushare-dic
+          hostPath:
+            path: /var/log/enflame/gcushare
+            type: DirectoryOrCreate
+        - name: topscloud-config
+          hostPath:
+            path: /etc/topscloud
+            type: DirectoryOrCreate
+{{- end }}

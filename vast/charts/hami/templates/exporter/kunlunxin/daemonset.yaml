@@ -1,0 +1,58 @@
+{{- if .Values.exporter.kunlunxin.enabled }}
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: {{ include "hami-vgpu.exporter" . }}-xpu
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    app.kubernetes.io/component: {{ include "hami-vgpu.exporter" . }}-xpu
+spec:
+  selector:
+    matchLabels:
+      k8s-app: xpu-exporter
+      app.kubernetes.io/component: {{ include "hami-vgpu.exporter" . }}-xpu
+  template:
+    metadata:
+      labels:
+        k8s-app: xpu-exporter
+        kubernetes.io/mutate-pod-webhook: unavailable
+        app.kubernetes.io/component: {{ include "hami-vgpu.exporter" . }}-xpu
+      annotations:
+        prometheus.io/port: "9508"
+        prometheus.io/scrape: "true"
+    spec:
+      hostNetwork: true
+      tolerations:
+        - key: node-role.kubernetes.io/master
+          operator: Exists
+          effect: NoSchedule
+      containers:
+        - image: {{ .Values.exporter.kunlunxin.image }}
+          imagePullPolicy: {{ .Values.exporter.kunlunxin.imagePullPolicy | quote }}
+          name: xpu-exporter
+          command: ["/usr/bin/xpu_exporter", "--web.listen-address=0.0.0.0:9508"]
+          ports:
+            - containerPort: 9508
+              protocol: TCP
+              name: http
+          resources:
+            requests:
+              cpu: 100m
+              memory: 100Mi
+            limits:
+              cpu: 1000m
+              memory: 1Gi
+          securityContext:
+            runAsUser: 0
+            privileged: true
+          volumeMounts:
+            - name: docker
+              mountPath: /var/run/docker.sock
+              readOnly: true
+      volumes:
+        - name: docker
+          hostPath:
+            path: /var/run/docker.sock
+      nodeSelector:
+        xpu: "on"
+{{- end }}

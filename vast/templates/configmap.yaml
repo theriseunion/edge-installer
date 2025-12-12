@@ -1,0 +1,159 @@
+apiVersion: v1
+data:
+  apiserver.yaml: |
+    # Edge APIServer 全局配置文件
+    # 配置文件采用YAML格式，支持环境变量覆盖
+
+    # 服务器基础配置
+    server:
+      # HTTP服务端口
+      port: 8090
+
+      # 服务绑定地址
+      host: "0.0.0.0"
+
+      # 超时配置
+      timeout:
+        read: "30s"
+        write: "30s"
+        idle: "120s"
+
+      # TLS配置（可选）
+      tls:
+        enabled: true
+        certFile: "/tmp/k8s-webhook-server/serving-certs/tls.crt"
+        keyFile: "/tmp/k8s-webhook-server/serving-certs/tls.key"
+
+    # 认证配置
+    auth:
+      # 认证模式：RBAC（推荐）, AlwaysAllow（仅开发环境）
+      mode: "RBAC"
+
+      # JWT配置
+      jwt:
+        # JWT密钥（生产环境请通过环境变量设置 JWT_SECRET）
+        secret: ""
+        # Token过期时间
+        expiry: "24h"
+        # 刷新Token有效期
+        refreshTTL: "168h"  # 7天
+
+      # OAuth配置（可选）
+      oauth:
+        issuer: ""
+        clientId: ""
+        clientSecret: ""
+
+    # 指标监控配置
+    metrics:
+      # 是否启用metrics功能
+      enabled: true
+
+      # Prometheus配置
+      prometheus:
+        # Prometheus服务端点
+        endpoint: "http://prometheus-kube-prometheus-prometheus.prometheus.svc.cluster.local:9090"
+        # 集群外: http://localhost:9090
+        # endpoint: "http://10.100.121.67:30190/"
+
+        # 认证
+        auth: ""
+
+        # 查询超时时间
+        timeout: "30s"
+
+        # 最大并发查询数
+        maxConcurrentQueries: 10
+
+        # 重试配置
+        retryCount: 3
+        retryInterval: "1s"
+
+        # TLS配置（开发环境可以跳过验证）
+        tlsInsecureSkipVerify: true
+
+      # 缓存配置
+      cache:
+        # 是否启用缓存
+        enabled: true
+
+        # 缓存过期时间
+        ttl: "30s"
+
+        # 缓存大小（条目数）
+        size: 1000
+
+    # 日志配置
+    logging:
+      # 日志级别：debug, info, warn, error
+      level: "info"
+
+      # 日志格式：text, json
+      format: "text"
+
+      # 日志输出：stdout, stderr, file
+      output: "stdout"
+
+      # 日志文件路径（当output为file时）
+      file: "/var/log/apiserver/apiserver.log"
+
+      # 日志轮转配置（可选）
+      rotation:
+        # 单个日志文件最大大小（MB）
+        maxSize: 100
+        # 保留的备份文件数量
+        maxBackups: 5
+        # 保留天数
+        maxAge: 30
+        # 是否压缩旧日志文件
+        compress: true
+
+    # 数据库配置（可选，如果使用数据库）
+    database:
+      type: ""        # mysql, postgres, sqlite
+      host: ""
+      port: 0
+      database: ""
+      username: ""
+      password: ""    # 生产环境请通过环境变量设置
+      sslMode: ""
+
+    # 环境变量覆盖说明：
+    # - SERVER_PORT: 覆盖 server.port
+    # - SERVER_HOST: 覆盖 server.host
+    # - AUTH_MODE: 覆盖 auth.mode
+    # - JWT_SECRET: 覆盖 auth.jwt.secret
+    # - METRICS_PROMETHEUS_ENDPOINT: 覆盖 metrics.prometheus.endpoint
+    # - METRICS_PROMETHEUS_TIMEOUT: 覆盖 metrics.prometheus.timeout
+    # - METRICS_CACHE_ENABLED: 覆盖 metrics.cache.enabled
+    # - LOG_LEVEL: 覆盖 logging.level
+    # - LOG_FORMAT: 覆盖 logging.format
+
+    # 使用示例：
+    # 1. 直接使用配置文件：
+    #    ./bin/apiserver --config=config/apiserver.yaml --kubeconfig=~/.kube/config
+    #
+    # 2. 环境变量覆盖：
+    #    export SERVER_PORT=9090
+    #    export METRICS_PROMETHEUS_ENDPOINT="http://prometheus.monitoring.svc.cluster.local:9090"
+    #    ./bin/apiserver --config=config/apiserver.yaml --kubeconfig=~/.kube/config
+    #
+    # 3. 仅使用环境变量（无配置文件）：
+    #    export SERVER_PORT=8080
+    #    export METRICS_PROMETHEUS_ENDPOINT="http://localhost:9090"
+    #    ./bin/apiserver --kubeconfig=~/.kube/config
+
+    deviceManager:
+      enabledAggregator: true
+      hamiDeviceConfig: "config/device.yaml"
+kind: ConfigMap
+metadata:
+  labels:
+    app.kubernetes.io/component: apiserver
+    app.kubernetes.io/created-by: apiserver-project
+    app.kubernetes.io/instance: apiserver
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/name: configmap
+    app.kubernetes.io/part-of: apiserver-project
+  name: edge-apiserver-config
+  namespace: edge-system

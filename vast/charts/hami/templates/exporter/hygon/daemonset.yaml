@@ -1,0 +1,104 @@
+{{- if .Values.exporter.hygon.enabled }}
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: {{ include "hami-vgpu.exporter" . }}-dcu
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    app.kubernetes.io/component: {{ include "hami-vgpu.exporter" . }}-dcu
+    {{- include "hami-vgpu.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: {{ include "hami-vgpu.exporter" . }}-dcu
+      {{- include "hami-vgpu.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      annotations:
+        prometheus.io/path: metrics
+        prometheus.io/port: {{ .Values.exporter.hygon.service.httpPort | quote }}
+        prometheus.io/scrape: "true"
+      labels:
+        app.kubernetes.io/component: {{ include "hami-vgpu.exporter" . }}-dcu
+        {{- include "hami-vgpu.selectorLabels" . | nindent 8 }}
+      name: dcu-exporter
+    spec:
+      containers:
+        - env:
+          - name: DCU_EXPORTER_LISTEN
+            value: {{ .Values.exporter.hygon.service.httpPort | quote }}
+          - name: "NODE_NAME"
+            valueFrom:
+              fieldRef:
+                fieldPath: spec.nodeName
+          image: {{ .Values.exporter.hygon.image }}
+          imagePullPolicy: {{ .Values.exporter.hygon.imagePullPolicy }}
+          name: dcu-exporter
+          ports:
+            - containerPort: {{ .Values.exporter.hygon.service.httpPort }}
+              hostPort: {{ .Values.exporter.hygon.service.httpPort }}
+              name: metrics
+              protocol: TCP
+          securityContext:
+            privileged: true
+          volumeMounts:
+            - mountPath: /var/lib/kubelet
+              name: var
+              readOnly: true
+            - mountPath: /dev/kfd
+              name: kfd
+              readOnly: true
+            - mountPath: /dev/mkfd
+              name: mkfd
+              readOnly: true
+            - mountPath: /dev/dri
+              name: dri
+              readOnly: true
+            - mountPath: /etc/hostname
+              name: hostname
+              readOnly: true
+            - mountPath: /etc/vdev
+              name: vdev
+              readOnly: true
+            - name: hyhal
+              readOnly: true
+              mountPath: /opt/hyhal
+      hostNetwork: true
+      serviceAccountName: {{ include "hami-vgpu.exporter" . }}-dcu
+      volumes:
+        - hostPath:
+            path: /var/lib/kubelet
+            type: ""
+          name: var
+        - hostPath:
+            path: /dev/kfd
+            type: CharDevice
+          name: kfd
+        - hostPath:
+            path: /dev/mkfd
+            type: CharDevice
+          name: mkfd
+        - hostPath:
+            path: /dev/dri
+            type: ""
+          name: dri
+        - hostPath:
+            path: /etc/hostname
+            type: ""
+          name: hostname
+        - hostPath:
+            path: /etc/vdev
+            type: ""
+          name: vdev
+        - name: hyhal
+          hostPath:
+            path: /opt/hyhal
+      {{- with .Values.exporter.hygon.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.exporter.hygon.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+{{- end }}

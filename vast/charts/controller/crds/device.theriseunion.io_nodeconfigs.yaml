@@ -1,0 +1,299 @@
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.16.1
+  name: nodeconfigs.device.theriseunion.io
+spec:
+  group: device.theriseunion.io
+  names:
+    kind: NodeConfig
+    listKind: NodeConfigList
+    plural: nodeconfigs
+    singular: nodeconfig
+  scope: Cluster
+  versions:
+  - additionalPrinterColumns:
+    - jsonPath: .spec.devicePlugins
+      name: DevicePlugins
+      type: string
+    - jsonPath: .status.capacity.core
+      name: TotalCore
+      type: string
+    - jsonPath: .status.capacity.memory
+      name: TotalMemory
+      type: string
+    - jsonPath: .status.capacity.splitCount
+      name: TotalSplitCount
+      type: string
+    - jsonPath: .status.allocated.core
+      name: AllocatedCore
+      type: string
+    - jsonPath: .status.allocated.memory
+      name: AllocatedMemory
+      type: string
+    - jsonPath: .status.allocated.splitCount
+      name: AllocatedSplitCount
+      type: string
+    - jsonPath: .status.updateTime
+      name: UpdateTime
+      type: date
+    name: v1alpha1
+    schema:
+      openAPIV3Schema:
+        description: |-
+          NodeConfig is the Schema for the nodeconfigs API
+          NodeConfig是比Node更大的一个概念，不仅仅是一个Node，而是关于这个节点所有相关信息的一个聚合体
+        properties:
+          apiVersion:
+            description: |-
+              APIVersion defines the versioned schema of this representation of an object.
+              Servers should convert recognized schemas to the latest internal value, and
+              may reject unrecognized values.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+            type: string
+          kind:
+            description: |-
+              Kind is a string value representing the REST resource this object represents.
+              Servers may infer this from the endpoint the client submits requests to.
+              Cannot be updated.
+              In CamelCase.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
+            type: string
+          metadata:
+            type: object
+          spec:
+            description: NodeConfigSpec defines the desired state of NodeConfig
+            properties:
+              devicePlugins:
+                description: DevicePlugins defines the device plugins to use for this
+                  node.
+                items:
+                  type: string
+                type: array
+              disabledDeviceUuids:
+                description: DisabledDeviceUuids defines the device uuids to disable
+                  for this node.
+                items:
+                  type: string
+                type: array
+              manufacturerConfig:
+                description: ManufacturerConfig defines the manufacturer-specific
+                  GPU configuration
+                items:
+                  properties:
+                    computeTemplateName:
+                      description: ComputeTemplateName is the name of the compute
+                        template to use for this node.
+                      type: string
+                    deviceComputeTemplateName:
+                      additionalProperties:
+                        type: string
+                      description: |-
+                        DeviceComputeTemplateName is the name of the compute template to use for each device.
+                        key is device uuid, value is compute template name. priority is higher than ComputeTemplateName.
+                      type: object
+                    manufacturer:
+                      description: Manufacturer defines the GPU manufacturer (e.g.,
+                        "Alibaba", "AMD", "Intel")
+                      type: string
+                  type: object
+                type: array
+            type: object
+          status:
+            description: NodeConfigStatus defines the observed state of NodeConfig
+            properties:
+              allocated:
+                description: Allocated is the current resource allocated of the node
+                properties:
+                  core:
+                    format: int32
+                    type: integer
+                  count:
+                    format: int32
+                    type: integer
+                  memory:
+                    format: int32
+                    type: integer
+                  splitCount:
+                    format: int32
+                    type: integer
+                required:
+                - core
+                - count
+                - memory
+                - splitCount
+                type: object
+              capacity:
+                description: Capacity is the total resource capacity of the node
+                properties:
+                  core:
+                    format: int32
+                    type: integer
+                  count:
+                    format: int32
+                    type: integer
+                  memory:
+                    format: int32
+                    type: integer
+                  splitCount:
+                    format: int32
+                    type: integer
+                required:
+                - core
+                - count
+                - memory
+                - splitCount
+                type: object
+              deviceStatus:
+                description: DeviceStatus is the status of each device
+                items:
+                  properties:
+                    computeTemplateName:
+                      description: ComputeTemplateName is the name of the compute
+                        template to use for this device.
+                      type: string
+                    computeTemplateSpec:
+                      description: ComputeTemplateSpec is the specification of the
+                        compute template to use for this device.
+                      properties:
+                        computeSplitMode:
+                          default: hami-core
+                          description: ComputeSplitMode defines the compute split
+                            mode (e.g., "mig" means split into MIG devices)
+                          enum:
+                          - mig
+                          - hami-core
+                          - mps
+                          type: string
+                        computeSplitStrategy:
+                          description: ComputeSplitStrategy 算力切分策略，不同的切分模式可能有不同的的切分策略
+                          type: string
+                        description:
+                          description: Description is the description of the compute
+                            template.
+                          type: string
+                        deviceCoreScaling:
+                          default: "1.0"
+                          description: |-
+                            DeviceCoreScaling defines the device core scaling factor (e.g., 2 means 2x)。 浮点数在CRD中被认为是危险类型，因此这里使用字符串表示。
+                            Must be a positive number in string format (e.g., "1.5", "2.0")
+                          pattern: ^[0-9]+(\.[0-9]+)?$
+                          type: string
+                        deviceMemoryScaling:
+                          default: "1.0"
+                          description: |-
+                            DeviceMemoryScaling defines the device memory scaling factor (e.g., 2 means 2x)。 浮点数在CRD中被认为是危险类型，因此这里使用字符串表示。
+                            Must be a positive number in string format (e.g., "1.5", "2.0")
+                          pattern: ^[0-9]+(\.[0-9]+)?$
+                          type: string
+                        deviceSplitCount:
+                          default: 10
+                          description: |-
+                            DeviceSplitCount defines the number of device splits (e.g., 2 means split into 2 devices)
+                            需要和切分模式联动
+                          maximum: 20
+                          minimum: 1
+                          type: integer
+                        manufacturer:
+                          description: Manufacturer is the manufacturer of the compute
+                            template.
+                          type: string
+                        model:
+                          description: |-
+                            Model is the model of the compute template.
+                            如果存在theriseunion.io/model-scope: "all"标签，那么表示该模板适用于当前厂商的所有型号的显卡
+                          type: string
+                      required:
+                      - manufacturer
+                      - model
+                      type: object
+                    name:
+                      description: Name is the unique identifier of the device
+                      type: string
+                  type: object
+                type: array
+              manufactureStatuses:
+                description: ManufactureStatuses is the status of each manufacturer
+                items:
+                  properties:
+                    allocated:
+                      description: Allocated is the current resource allocated of
+                        the node with the specified manufacturer
+                      properties:
+                        core:
+                          format: int32
+                          type: integer
+                        count:
+                          format: int32
+                          type: integer
+                        memory:
+                          format: int32
+                          type: integer
+                        splitCount:
+                          format: int32
+                          type: integer
+                      required:
+                      - core
+                      - count
+                      - memory
+                      - splitCount
+                      type: object
+                    capacity:
+                      description: Capacity is the total resource capacity of the
+                        node with the specified manufacturer
+                      properties:
+                        core:
+                          format: int32
+                          type: integer
+                        count:
+                          format: int32
+                          type: integer
+                        memory:
+                          format: int32
+                          type: integer
+                        splitCount:
+                          format: int32
+                          type: integer
+                      required:
+                      - core
+                      - count
+                      - memory
+                      - splitCount
+                      type: object
+                    driverVersion:
+                      description: DriverVersion is the version of the driver installed
+                        on the node
+                      type: string
+                    manufacturer:
+                      description: Manufacturer defines the GPU manufacturer (e.g.,
+                        "Alibaba", "AMD", "Intel")
+                      type: string
+                    supportDeviceLevelSchedule:
+                      default: true
+                      description: |-
+                        SupportDeviceLevelSchedule indicates whether the node supports device level scheduling
+                        如阿里的PPU, device-plugin不支持指定显卡，因此无法支持按照显卡颗粒度进行调度，只能以节点的维度调度
+                      type: boolean
+                    supportMig:
+                      default: false
+                      description: |-
+                        SupportMig indicates whether the node supports MIG (Multi-Instance GPU)
+                        节点是否支持Mig，主要是看节点上是否插入了支持MIG的卡，如果插入了Mig卡，就支持Mig。
+                      type: boolean
+                    toolkitVersion:
+                      description: ToolkitVersion is the version of the toolkit installed
+                        on the node
+                      type: string
+                  type: object
+                type: array
+              updateTime:
+                description: UpdateTime 节点配置最后更新时间
+                format: date-time
+                type: string
+            type: object
+        type: object
+    served: true
+    storage: true
+    subresources:
+      status: {}

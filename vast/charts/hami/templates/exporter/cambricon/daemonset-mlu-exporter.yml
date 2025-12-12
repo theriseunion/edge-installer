@@ -1,0 +1,107 @@
+# Copyright 2024 Cambricon, Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+{{- if .Values.exporter.cambricon.enabled }}
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: {{ include "hami-vgpu.exporter" . }}-mlu
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    app.kubernetes.io/component: hami-exporter-mlu
+    {{- include "hami-vgpu.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      k8s-app: mlu-exporter
+      app.kubernetes.io/component: hami-exporter-mlu
+  template:
+    metadata:
+      labels:
+        k8s-app: mlu-exporter
+        app.kubernetes.io/component: hami-exporter-mlu
+    spec:
+      priorityClassName: "system-node-critical"
+      serviceAccountName: {{ include "hami-vgpu.exporter" . }}-mlu
+      containers:
+      - image: {{ .Values.exporter.cambricon.image }}
+        imagePullPolicy: {{ .Values.exporter.cambricon.imagePullPolicy }}
+        name: mlu-exporter
+        command:
+        - /usr/bin/mlu-exporter
+        args:
+        - --collector=cndev # enabled collectors, choice:"cndev"', "podresources", "host", default:"cndev"
+        - --collector=podresources
+        - --log-level=info # set log level: trace/debug/info/warn/error/fatal/panic", default:"info"
+        - --metrics-config=/etc/mlu-exporter/metrics.yaml # configuration file of MLU exporter metrics, default:"/etc/mlu-exporter/metrics.yaml"
+        - --metrics-path=/metrics # metrics path of the exporter service, default:"/metrics"
+        - --metrics-prefix=mlu # prefix of all metric names, default:"mlu", env:"ENV_METRICS_PREFIX"
+        - --port={{ .Values.exporter.cambricon.service.httpPort }} # exporter service port, default:"30108", env:"ENV_SERVE_PORT"
+          # - --virtual-mode # virtual mode for devices, choice: "env-share", default:""
+          # - --push-gateway-url=http://vmagent-vmagent.monitoring:8429/api/v1/import/prometheus # If set, metrics will push to this server via prometheus push gateway protocol
+          # - --push-interval-ms=200 # numbers of metrics push interval in milliseconds, minimum 100
+          # - --cluster-name=zh-hqa-cluster01-2400 # cluster name, add cluster label for metrics push
+          # - --xid-error-metric-name=xid_error # metric name, push to push gateway immediately when xid event occurs
+          # - --xid-error-retry-times=10 # retry times for push xid error metric failed, default: 10
+          # - --log-file-for-xid-metric-failed=/tmp/xid.log # when report xid metric failed, will write log to this file
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 30108
+          initialDelaySeconds: 60
+          failureThreshold: 6
+          periodSeconds: 30
+        readinessProbe:
+          httpGet:
+            path: /healthz
+            port: 30108
+          initialDelaySeconds: 60
+          failureThreshold: 3
+          periodSeconds: 30
+        env:
+        - name: ENV_NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: "spec.nodeName"
+        volumeMounts:
+        - mountPath: /var/lib/kubelet/pod-resources/
+          name: pod-resources
+        - mountPath: /dev
+          name: dev
+        - mountPath: /etc/mlu-exporter
+          name: mlu-exporter
+        securityContext:
+          privileged: true
+      hostPID: true
+      hostIPC: true
+      volumes:
+      - name: pod-resources
+        hostPath:
+          path: /var/lib/kubelet/pod-resources/
+      - name: dev
+        hostPath:
+          path: /dev
+      - name: mlu-exporter
+        configMap:
+          defaultMode: 420
+          name: {{ include "hami-vgpu.exporter" . }}-mlu
+      {{- with .Values.exporter.cambricon.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.exporter.cambricon.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+{{- end }}

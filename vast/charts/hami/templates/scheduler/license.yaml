@@ -1,0 +1,17 @@
+{{- if .Values.scheduler.kubeScheduler.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "hami-vgpu.scheduler" . }}-license
+  labels:
+    app.kubernetes.io/component: hami-scheduler
+    {{- include "hami-vgpu.labels" . | nindent 4 }}
+  {{- if has "licenseCM" .Values.nonOverwrite }}
+  annotations:
+    "helm.sh/resource-policy": keep
+    "helm.sh/hook": pre-install
+  {{- end }}
+data:
+  license: |
+    {{ .Values.license }}
+  {{- end }}

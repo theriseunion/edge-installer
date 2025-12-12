@@ -1,0 +1,118 @@
+{{- if .Values.exporter.hygon.bak }}
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: {{ include "hami-vgpu.exporter" . }}-dcu
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    app.kubernetes.io/component: {{ include "hami-vgpu.exporter" . }}-dcu
+    {{- include "hami-vgpu.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: {{ include "hami-vgpu.exporter" . }}-dcu
+      {{- include "hami-vgpu.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      annotations:
+        prometheus.io/scrape: 'true'
+        prometheus.io/port: &portStr '{{ .Values.exporter.hygon.service.httpPort }}'
+        prometheus.io/path: 'metrics'
+      labels:
+        app.kubernetes.io/component: {{ include "hami-vgpu.exporter" . }}-dcu
+        {{- include "hami-vgpu.selectorLabels" . | nindent 8 }}
+      name: "dcu-exporter"
+    spec:
+      hostNetwork: true
+      serviceAccountName: {{ include "hami-vgpu.exporter" . }}-dcu
+      containers:
+        - image: {{ .Values.exporter.hygon.image }}
+          securityContext:
+            privileged: true
+          env:
+            - name: "DCU_EXPORTER_LISTEN"
+              value: *portStr
+            - name: "DCU_EXPORTER_KUBERNETES"
+              value: "true"
+            - name: DCU_EXPORTER_NODENAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+            - name: DCU_EXPORTER_POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: DCU_EXPORTER_POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: LD_LIBRARY_PATH
+              value: "/opt/dtk/hip/lib:/opt/dtk/llvm/lib:/opt/dtk/lib:/opt/dtk/lib64:/opt/hyhal/lib:/opt/hyhal/lib64:/opt/dtk/.hyhal/lib:/opt/dtk/.hyhal/lib64"
+          name: "dcu-exporter"
+          imagePullPolicy: {{ .Values.exporter.hygon.imagePullPolicy }}
+          ports:
+            - name: "metrics"
+              containerPort: &portInt {{ .Values.exporter.hygon.service.httpPort }}
+              hostPort: *portInt
+          #        securityContext:
+          #          runAsNonRoot: false
+          #          runAsUser: 0
+          volumeMounts:
+            - name: "var"
+              readOnly: true
+              mountPath: "/var/lib/kubelet"
+            - name: "kfd"
+              readOnly: true
+              mountPath: "/dev/kfd"
+            - name: "mkfd"
+              readOnly: true
+              mountPath: "/dev/mkfd"
+            - name: "dri"
+              readOnly: true
+              mountPath: "/dev/dri"
+            - name: "hostname"
+              readOnly: true
+              mountPath: "/etc/hostname"
+            - name: "opt-dtk"
+              readOnly: true
+              mountPath: "/opt/dtk"
+            - name: "vgpu"
+              readOnly: true
+              mountPath: "/usr/local/vgpu/dcu"
+            - name: "etc-vdev"
+              readOnly: true
+              mountPath: "/etc/vdev"
+      volumes:
+        - name: "var"
+          hostPath:
+            path: "/var/lib/kubelet"
+        - name: "kfd"
+          hostPath:
+            path: "/dev/kfd"
+        - name: "mkfd"
+          hostPath:
+            path: "/dev/mkfd"
+        - name: "dri"
+          hostPath:
+            path: "/dev/dri"
+        - name: "hostname"
+          hostPath:
+            path: "/etc/hostname"
+        - name: "opt-dtk"
+          hostPath:
+            path: "/opt/dtk"
+        - name: "vgpu"
+          hostPath:
+            path: "/usr/local/vgpu/dcu"
+        - name: "etc-vdev"
+          hostPath:
+            path: "/etc/vdev"
+      {{- with .Values.exporter.hygon.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.exporter.hygon.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+{{- end }}

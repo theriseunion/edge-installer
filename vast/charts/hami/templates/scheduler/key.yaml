@@ -1,0 +1,26 @@
+{{- if .Values.scheduler.kubeScheduler.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "hami-vgpu.scheduler" . }}-key
+  labels:
+    app.kubernetes.io/component: hami-scheduler
+    {{- include "hami-vgpu.labels" . | nindent 4 }}
+data:
+  key: |
+    -----BEGIN RSA PRIVATE KEY-----
+    MIICXQIBAAKBgQC9BkC4BrPnuZT8Ve9M+EpLO3UunWzp0C6SQIys4EbyHBK3vkty
+    kWQKYvKnOTjyO7Wq2gyOhSPwKuzzzq7De8I/zMB76y6xlRKnZe1uokZByBGRS7Am
+    /D47U+Q4JJzu2Kut+XzBH06aZlRW457GLE1rpVZSxxnwC29NvmGJisgeVwIDAQAB
+    AoGBAKLRdv/M7jxE07tDPlxbZotFDNv5SC5iXyslJMdobFPxsIHLDWwDJlv3/THj
+    jVTB7+rZ5YUB1AH0x6P+vPSvbpJQ7ReGgD44DpoCXepgGzEEJW4lbLUzeDzEPxjy
+    0X9AOhCc1qR1MVnadpuOC8YVlvNUCnHhvt5orlLvl79vDNAZAkEA1gi581rPqnxI
+    B/JumPoVFtsfg0mmlfaNf5FbOryHbTN40MN0f2Dmh6zaJ3OZ2yB1ddb9iTIibxNm
+    EIxobZJk+wJBAOIWL51paJ/YCHukxSMI/UhlNi05wwoHaMUHLvyYOwrevhvxfEc8
+    VnJtNq+XhBarr3oxX64ovgkRA0PnMRdsFVUCQFn24wpqQl27zZ8hhOFiRNkNk8pg
+    e9gPAVz8oScoNZhuCTte3Knp9hxTSINKsQINO7IjgwBXBWhA9CbCjeZ4oV8CQQCP
+    DfK664OkAJH9iliivoFlWYVaQH5EzkNgyBbXBYv2aNJp4/b7LBaW+LvthzWxEplJ
+    /AvKq0Tzf6xNPvA1HdKxAkBol5p/JIYAHEL71BRkfGJ/IrKsWYWbZ0c1u7ZnNofR
+    4DDqFd64vTCy1spWcFnlxMjIY8O1anET6DhQw63iqjqs
+    -----END RSA PRIVATE KEY-----
+  {{- end }}

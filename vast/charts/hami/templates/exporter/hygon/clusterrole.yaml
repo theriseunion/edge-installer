@@ -1,0 +1,19 @@
+{{- if .Values.exporter.hygon.enabled }}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: {{ include "hami-vgpu.exporter" . }}-dcu
+rules:
+  - apiGroups:
+      - ""
+    resources:
+      - pods
+    verbs:
+      - "*"
+  - apiGroups:
+      - storage.k8s.io
+    resources:
+      - pods
+    verbs:
+      - '*'
+{{- end }}
