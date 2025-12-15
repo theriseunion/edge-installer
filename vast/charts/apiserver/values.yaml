@@ -202,8 +202,13 @@ config:
 
 # Certificate configuration
 cert:
-  # Secret name for TLS certificates
-  secretName: apiserver-cert
-  # Whether to create the secret (if false, must be created manually)
-  create: false
+  # Secret name for TLS certificates (if not set, will be generated from fullname)
+  secretName: ""
+  # Whether to create the secret using Helm built-in functions
+  # If true, certificates will be auto-generated using genCA and genSignedCert
+  create: true
+  # Certificate validity in days (default: 3650 days = 10 years)
+  validityDays: 3650
+  # Additional hostnames/IPs to include in certificate SAN
+  additionalHosts: []
 

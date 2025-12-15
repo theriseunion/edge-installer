@@ -11,6 +11,16 @@ metadata:
     control-plane: controller-manager
 data:
   controller.yaml: |-
+    # Controller Webhook 设置
+    webhookSettings:
+      # HTTP服务端口
+      port: {{ .Values.webhook.server.port }}
+
+      # HTTP服务地址
+      host: {{ .Values.webhook.server.host | quote }}
+
+      # 证书目录
+      certDir: {{ .Values.webhook.server.certDir | quote }}
     # 指标监控配置
     metrics:
       # 是否启用metrics功能

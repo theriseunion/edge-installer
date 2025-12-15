@@ -74,9 +74,11 @@ spec:
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+      {{- if and .Values.global .Values.global.imagePullSecrets }}
       {{- with .Values.global.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
+      {{- end }}
       {{- end }}
       serviceAccountName: {{ $serviceAccountName }}
       securityContext:
@@ -105,9 +107,11 @@ spec:
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           volumeMounts:
-            # - name: cert
-            #   mountPath: /tmp/k8s-webhook-server/serving-certs
-            #   readOnly: true
+            {{- if and .Values.config.server.tls.enabled .Values.cert.create }}
+            - name: cert
+              mountPath: /tmp/k8s-webhook-server/serving-certs
+              readOnly: true
+            {{- end }}
             - name: apiserver-config
               mountPath: /etc/edge
               readOnly: true
@@ -125,9 +129,12 @@ spec:
       {{- end }}
       terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds }}
       volumes:
-        # - name: cert
-        #   secret:
-        #     secretName: {{ .Values.cert.secretName }}
+        {{- if and .Values.config.server.tls.enabled .Values.cert.create }}
+        - name: cert
+          secret:
+            secretName: {{ include "apiserver.certSecretName" . }}
+            defaultMode: 420
+        {{- end }}
         - name: apiserver-config
           configMap:
             name: {{ include "apiserver.fullname" . }}-config

@@ -145,12 +145,74 @@ leaderElection:
 
 # Webhook configuration
 webhook:
-  # Webhook server port
-  port: 9443
-  # Certificate secret name
-  certSecretName: webhook-server-cert
-  # Whether to create the certificate secret (if false, must be created manually)
-  certCreate: false
+  # Enable/disable webhook
+  enabled: true
+  
+  # Webhook server configuration
+  server:
+    # HTTP service port (internal port in container)
+    port: 9443
+    # HTTP service address
+    host: "0.0.0.0"
+    # Certificate directory
+    certDir: "/tmp/k8s-webhook-server/serving-certs"
+  
+  # Webhook service configuration
+  service:
+    # Service name (if not set, will be generated from fullname)
+    name: ""
+    # Service type (ClusterIP, NodePort, LoadBalancer)
+    type: ClusterIP
+    # Service port (external port)
+    port: 443
+    # Target port (should match webhook.server.port)
+    targetPort: 9443
+    # Additional annotations for the service
+    annotations: {}
+  
+  # Certificate configuration
+  cert:
+    # Certificate secret name (if not set, will be generated from fullname)
+    secretName: ""
+    # Whether to create the certificate secret using Helm built-in functions
+    # If true, certificates will be auto-generated using genCA and genSignedCert
+    create: true
+    # Certificate validity in days (default: 3650 days = 10 years)
+    validityDays: 3650
+    # Additional hostnames/IPs to include in certificate SAN
+    additionalHosts: []
+  
+  # Namespace selector configuration
+  namespaceSelector:
+    # Namespaces to exclude from webhook (will be added to matchExpressions)
+    excludeNamespaces:
+      - edge-system
+      - kube-system
+      - kube-public
+      - kube-node-lease
+  
+  # Webhook admission configuration
+  admission:
+    # Failure policy (Fail or Ignore)
+    failurePolicy: Fail
+    # Side effects (None, NoneOnDryRun, or Some)
+    sideEffects: None
+    # Timeout in seconds
+    timeoutSeconds: 10
+    # Reinvocation policy (Never or IfNeeded)
+    reinvocationPolicy: Never
+  
+  # Webhook patch job configuration (for updating CA bundle)
+  patch:
+    # Image for webhook certgen tool
+    image: "quanzhenglong.com/camp/liangjw-kube-webhook-certgen:v1.1.1"
+    # Image pull policy
+    imagePullPolicy: IfNotPresent
+    # Tolerations for the patch job
+    tolerations:
+      - key: node-role.kubernetes.io/control-plane
+        operator: Exists
+        effect: NoSchedule
 
 # Kube RBAC Proxy configuration (continued from above)
   resources:

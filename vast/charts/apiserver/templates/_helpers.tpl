@@ -70,10 +70,46 @@ Create namespace
 {{- define "apiserver.namespace" -}}
 {{- if .Values.namespaceOverride }}
 {{- .Values.namespaceOverride }}
-{{- else if .Values.global.namespaceOverride }}
+{{- else if and .Values.global .Values.global.namespaceOverride }}
 {{- .Values.global.namespaceOverride }}
 {{- else }}
 {{- .Release.Namespace }}
 {{- end }}
+{{- end }}
+
+{{/*
+Create certificate secret name
+*/}}
+{{- define "apiserver.certSecretName" -}}
+{{- if .Values.cert.secretName }}
+{{- .Values.cert.secretName | trunc 63 | trimSuffix "-" }}
+{{- else }}
+{{- printf "%s-cert" (include "apiserver.fullname" .) | trunc 63 | trimSuffix "-" }}
+{{- end }}
+{{- end }}
+
+{{/*
+Generate APIServer TLS certificates
+*/}}
+{{- define "apiserver.genCerts" -}}
+{{- $fullName := include "apiserver.fullname" . }}
+{{- $namespace := include "apiserver.namespace" . }}
+{{- $altNames := list }}
+{{- $altNames = append $altNames (printf "%s.%s.svc.cluster.local" $fullName $namespace) }}
+{{- $altNames = append $altNames (printf "%s.%s.svc" $fullName $namespace) }}
+{{- $altNames = append $altNames $fullName }}
+{{- $altNames = append $altNames "127.0.0.1" }}
+{{- $altNames = append $altNames "localhost" }}
+{{- range .Values.cert.additionalHosts }}
+{{- $altNames = append $altNames . }}
+{{- end }}
+
+{{- $validityDays := int (.Values.cert.validityDays | default 3650) }}
+{{- $ca := genCA (printf "%s-ca" $fullName) $validityDays }}
+{{- $cert := genSignedCert $fullName nil $altNames $validityDays $ca }}
+
+tls.crt: {{ $cert.Cert | b64enc }}
+tls.key: {{ $cert.Key | b64enc }}
+ca.crt: {{ $ca.Cert | b64enc }}
 {{- end }}
 

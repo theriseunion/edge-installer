@@ -69,10 +69,78 @@ Create namespace
 {{- define "controller.namespace" -}}
 {{- if .Values.namespaceOverride }}
 {{- .Values.namespaceOverride }}
-{{- else if .Values.global.namespaceOverride }}
+{{- else if and .Values.global .Values.global.namespaceOverride }}
 {{- .Values.global.namespaceOverride }}
 {{- else }}
 {{- .Release.Namespace }}
+{{- end }}
+{{- end }}
+
+{{/*
+Create webhook service name
+*/}}
+{{- define "controller.webhook.serviceName" -}}
+{{- if .Values.webhook.service.name }}
+{{- .Values.webhook.service.name | trunc 63 | trimSuffix "-" }}
+{{- else }}
+{{- printf "%s-webhook-service" (include "controller.fullname" .) | trunc 63 | trimSuffix "-" }}
+{{- end }}
+{{- end }}
+
+{{/*
+Create webhook certificate secret name
+*/}}
+{{- define "controller.webhook.certSecretName" -}}
+{{- if .Values.webhook.cert.secretName }}
+{{- .Values.webhook.cert.secretName | trunc 63 | trimSuffix "-" }}
+{{- else }}
+{{- printf "%s-webhook-cert" (include "controller.fullname" .) | trunc 63 | trimSuffix "-" }}
+{{- end }}
+{{- end }}
+
+{{/*
+Create webhook certificate directory
+*/}}
+{{- define "controller.webhook.certDir" -}}
+{{- .Values.webhook.server.certDir | default "/tmp/k8s-webhook-server/serving-certs" }}
+{{- end }}
+
+{{/*
+Generate Controller Webhook TLS certificates
+*/}}
+{{- define "controller.webhook.genCerts" -}}
+{{- $fullName := include "controller.fullname" . }}
+{{- $namespace := include "controller.namespace" . }}
+{{- $serviceName := include "controller.webhook.serviceName" . }}
+{{- $altNames := list }}
+{{- $altNames = append $altNames (printf "%s.%s.svc.cluster.local" $serviceName $namespace) }}
+{{- $altNames = append $altNames (printf "%s.%s.svc" $serviceName $namespace) }}
+{{- $altNames = append $altNames $serviceName }}
+{{- $altNames = append $altNames "127.0.0.1" }}
+{{- $altNames = append $altNames "localhost" }}
+{{- range .Values.webhook.cert.additionalHosts }}
+{{- $altNames = append $altNames . }}
+{{- end }}
+
+{{- $validityDays := int (.Values.webhook.cert.validityDays | default 3650) }}
+{{- $ca := genCA (printf "%s-webhook-ca" $fullName) $validityDays }}
+{{- $cert := genSignedCert (printf "%s-webhook" $fullName) nil $altNames $validityDays $ca }}
+
+tls.crt: {{ $cert.Cert | b64enc }}
+tls.key: {{ $cert.Key | b64enc }}
+ca.crt: {{ $ca.Cert | b64enc }}
+ca: {{ $ca.Cert | b64enc }}
+{{- end }}
+
+{{/*
+Generate Controller Webhook CA Bundle for webhook configuration
+*/}}
+{{- define "controller.webhook.caBundle" -}}
+{{- if and .Values.webhook.enabled .Values.webhook.cert.create }}
+{{- $fullName := include "controller.fullname" . }}
+{{- $validityDays := int (.Values.webhook.cert.validityDays | default 3650) }}
+{{- $ca := genCA (printf "%s-webhook-ca" $fullName) $validityDays }}
+{{- $ca.Cert | b64enc }}
 {{- end }}
 {{- end }}
 

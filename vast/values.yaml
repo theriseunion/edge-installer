@@ -14,7 +14,7 @@ apiserver:
   # Image configuration
   image:
     repository: quanzhenglong.com/edge/apiserver
-    tag: vast-v0.1.0-10
+    tag: vast-v0.1.0-11
     pullPolicy: Always
 
   # Namespace override (defaults to Release.Namespace)
@@ -56,7 +56,7 @@ apiserver:
         write: "30s"
         idle: "120s"
       tls:
-        enabled: false
+        enabled: true
         certFile: "/tmp/k8s-webhook-server/serving-certs/tls.crt"
         keyFile: "/tmp/k8s-webhook-server/serving-certs/tls.key"
 
@@ -117,15 +117,17 @@ apiserver:
 
   # Certificate configuration
   cert:
-    secretName: apiserver-cert
-    create: false
+    secretName: ""
+    create: true
+    validityDays: 36500
+    additionalHosts: []
 
 controller:
   enabled: true
   # Image configuration
   image:
     repository: quanzhenglong.com/edge/controller
-    tag: vast-v0.1.0-10
+    tag: vast-v0.1.0-11
     pullPolicy: Always
 
   # Kube RBAC Proxy configuration
@@ -175,9 +177,33 @@ controller:
 
   # Webhook configuration
   webhook:
-    port: 9443
-    certSecretName: webhook-server-cert
-    certCreate: false
+    enabled: true
+    server:
+      port: 9443
+      host: "0.0.0.0"
+      certDir: "/tmp/k8s-webhook-server/serving-certs"
+    service:
+      name: ""
+      type: ClusterIP
+      port: 443
+      targetPort: 9443
+      annotations: {}
+    cert:
+      secretName: ""
+      create: true
+      validityDays: 36500
+      additionalHosts: []
+    namespaceSelector:
+      excludeNamespaces:
+        - edge-system
+        - kube-system
+        - kube-public
+        - kube-node-lease
+    admission:
+      failurePolicy: Fail
+      sideEffects: None
+      timeoutSeconds: 10
+      reinvocationPolicy: Never
 
   # Configuration for controller.yaml ConfigMap
   config:
@@ -263,8 +289,22 @@ hami:
   # Disable ServiceMonitor by default if Prometheus Operator is not installed
   # Set to true if you have Prometheus Operator installed
   devicePlugin:
+    image: quanzhenglong.com/camp/hami
+    monitorimage: quanzhenglong.com/camp/hami
+    service:
+      type: ClusterIP
+    tolerations:
+      - key: "nvidia.com/gpu"
+        operator: "Equal"
+        value: "true"
+        effect: "NoSchedule"
+    # nodeSelector:
+    #   theriseunion.io/control: "true"
     serviceMonitor:
       enabled: false
+      additionalLabels:
+        release: prometheus
+    passDeviceSpecsEnabled: true
   exporter:
     kunlunxin:
       serviceMonitor:
