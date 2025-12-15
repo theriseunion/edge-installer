@@ -1,4 +1,14 @@
 {{- if and .Values.controller.enabled (and (ne .Values.global.mode "none") .Values.autoInstall.monitoring.enabled) }}
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: observability-system
+  labels:
+    {{- include "edge-controller.labels" . | nindent 4 }}
+    app.kubernetes.io/component: namespace
+    app.kubernetes.io/part-of: edge-platform
+---
 apiVersion: ext.theriseunion.io/v1alpha1
 kind: Component
 metadata:
