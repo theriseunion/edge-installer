@@ -1,0 +1,35 @@
+{{- if and .Values.controller.enabled .Values.autoInstall.vast.enabled }}
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: {{ .Values.autoInstall.vast.namespace | default "vast-system" }}
+  labels:
+    {{- include "edge-controller.labels" . | nindent 4 }}
+    app.kubernetes.io/component: namespace
+    app.kubernetes.io/part-of: edge-platform
+---
+apiVersion: ext.theriseunion.io/v1alpha1
+kind: Component
+metadata:
+  name: edge-vast
+  namespace: {{ .Values.autoInstall.vast.namespace | default "vast-system" }}
+  labels:
+    {{- include "edge-controller.labels" . | nindent 4 }}
+    app.kubernetes.io/component: vast
+    app.kubernetes.io/part-of: edge-platform
+    cluster.theriseunion.io/role: {{ .Values.global.mode }}
+spec:
+  enabled: {{ .Values.autoInstall.vast.enabled }}
+  version: {{ .Values.autoInstall.vast.version | default .Chart.AppVersion }}
+  chart:
+    name: vast
+    namespace: {{ .Values.autoInstall.vast.namespace | default "vast-system" }}
+    releaseName: vast
+    repository: http://chartmuseum.{{ .Release.Namespace }}.svc:8080
+  {{- if .Values.autoInstall.vast.values }}
+  values:
+    {{- toYaml .Values.autoInstall.vast.values | nindent 4 }}
+  {{- end }}
+{{- end }}
+
