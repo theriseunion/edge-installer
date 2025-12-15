@@ -13,18 +13,12 @@ spec:
   - apiGroups:
     - resources.theriseunion.io
     - iam.theriseunion.io
-    - tenant.theriseunion.io
     resources:
     - clusters
     verbs:
     - get
     - watch
-  - nonResourceURLs:
-      - /api/v1alpha1/events
-    verbs:
-      - get
-      - list
-      - watch
+    - list
 
 ---
 apiVersion: iam.theriseunion.io/v1alpha1
@@ -55,6 +49,23 @@ spec:
     - get
     - list
     - watch
+  - apiGroups:
+    - monitoring.theriseunion.io
+    resources:
+    - nodes/metrics
+    - metrics
+    verbs:
+    - get
+    - list
+    - watch
+  - apiGroups:
+    - ""
+    resources:
+    - events
+    verbs:
+    - list
+    - get
+    - watch
 
 ---
 apiVersion: iam.theriseunion.io/v1alpha1
@@ -80,6 +91,13 @@ spec:
     resources:
     - nodes
     - pods
+    verbs:
+    - '*'
+  - apiGroups:
+    - terminal.theriseunion.io
+    resources:
+    - nodes
+    - nodes/exec
     verbs:
     - '*'
 
@@ -113,6 +131,23 @@ spec:
     - get
     - list
     - watch
+  - apiGroups:
+    - monitoring.theriseunion.io
+    resources:
+    - nodes/metrics
+    - metrics
+    verbs:
+    - get
+    - list
+    - watch
+  - apiGroups:
+    - ""
+    resources:
+    - events
+    verbs:
+    - list
+    - get
+    - watch
 
 ---
 apiVersion: iam.theriseunion.io/v1alpha1
@@ -138,6 +173,13 @@ spec:
     resources:
     - nodes
     - pods
+    verbs:
+    - '*'
+  - apiGroups:
+    - terminal.theriseunion.io
+    resources:
+    - nodes
+    - nodes/exec
     verbs:
     - '*'
 
@@ -276,25 +318,38 @@ spec:
     - cluster/workloads.view
   rules:
   - apiGroups:
-    - '*'
+    - resources.theriseunion.io
     resources:
-    - applications
+    - endpoints
+    - limitranges
+    - podtemplates
+    - replicationcontrollers
+    - resourcequotas
+    - secrets
+    - serviceaccounts
+    - services
     - controllerrevisions
     - deployments
     - replicasets
     - statefulsets
     - daemonsets
-    - jobs
     - cronjobs
+    - jobs
+    - events
+    - ingresses
+    - router
     - pods
     - pods/log
     - pods/containers
-    - services
-    - ingresses
-    - router
+    - namespacenetworkpolicies
+    - networkpolicies
+    - podsecuritypolicies
+    - servicepolicies
+    - quotas
+    - abnormalworkloads
+    - workloads
+    - strategies
     - horizontalpodautoscalers
-    - configmaps
-    - secrets
     verbs:
     - get
     - list
@@ -320,25 +375,38 @@ spec:
     - cluster/workloads.manage
   rules:
   - apiGroups:
-    - '*'
+    - resources.theriseunion.io
     resources:
-    - applications
+    - endpoints
+    - limitranges
+    - podtemplates
+    - replicationcontrollers
+    - resourcequotas
+    - secrets
+    - serviceaccounts
+    - services
     - controllerrevisions
     - deployments
     - replicasets
     - statefulsets
     - daemonsets
-    - jobs
     - cronjobs
+    - jobs
+    - events
+    - ingresses
+    - router
     - pods
     - pods/log
     - pods/containers
-    - services
-    - ingresses
-    - router
+    - namespacenetworkpolicies
+    - networkpolicies
+    - podsecuritypolicies
+    - servicepolicies
+    - quotas
+    - abnormalworkloads
+    - workloads
+    - strategies
     - horizontalpodautoscalers
-    - configmaps
-    - secrets
     verbs:
     - '*'
 
@@ -350,7 +418,7 @@ metadata:
     theriseunion.io/creator: system
     theriseunion.io/alias-name: "项目查看"
     theriseunion.io/description: "允许查看当前集群里的项目信息"
-    iam.theriseunion.io/dependencies: "cluster-basic"
+    iam.theriseunion.io/dependencies: "cluster-view-workloads"
   labels:
     theriseunion.io/managed: 'true'
     iam.theriseunion.io/scope: cluster
@@ -365,20 +433,7 @@ spec:
   - apiGroups:
     - resources.theriseunion.io
     resources:  
-    - pods
-    - deployments
-    - statefulsets
-    - daemonsets
-    - replicasets
-    - jobs
-    - cronjobs
-    - services
-    - secrets
-    - configmaps
-    - serviceaccounts
-    - storageclasses
-    - persistentvolumes
-    - persistentvolumeclaims
+    - namespaces
     verbs:
     - get
     - list
@@ -392,7 +447,7 @@ metadata:
     theriseunion.io/creator: system
     theriseunion.io/alias-name: "项目管理"
     theriseunion.io/description: "管理当前集群里的项目信息"
-    iam.theriseunion.io/dependencies: "cluster-view-namespaces"
+    iam.theriseunion.io/dependencies: "cluster-manage-workloads"
   labels:
     theriseunion.io/managed: 'true'
     iam.theriseunion.io/scope: cluster
@@ -406,20 +461,7 @@ spec:
   - apiGroups:
     - resources.theriseunion.io
     resources:  
-    - pods
-    - deployments
-    - statefulsets
-    - daemonsets
-    - replicasets
-    - jobs
-    - cronjobs
-    - services
-    - secrets
-    - configmaps
-    - serviceaccounts
-    - storageclasses
-    - persistentvolumes
-    - persistentvolumeclaims
+    - namespaces
     verbs:
     - '*'
 
@@ -503,8 +545,17 @@ spec:
     - apiGroups:
         - resources.theriseunion.io
       resources:
-        - 'persistentvolumes'
-        - 'persistentvolumeclaims'
+        - persistentvolumes
+        - persistentvolumeclaims
+      verbs:
+        - list
+        - get
+        - watch
+    - apiGroups:
+        - ""
+      resources:
+        - namespaces/events
+        - events
       verbs:
         - list
         - get
@@ -532,8 +583,8 @@ spec:
     - apiGroups:
         - resources.theriseunion.io
       resources:
-        - 'persistentvolumes'
-        - 'persistentvolumeclaims'
+        - persistentvolumes
+        - persistentvolumeclaims
       verbs:
         - "*"
 
@@ -558,11 +609,22 @@ spec:
     - cluster/settings.view
   rules:
   - apiGroups:
-    - tenant.theriseunion.io
+    - resources.theriseunion.io
     resources:
     - clusters
+    - nodes
+    - storageclasses
+    - configmaps
     verbs:
     - get
+    - list
+  - nonResourceURLs:
+      - version
+      - oapis/version
+    verbs:
+      - get
+      - list
+      - watch
 
 ---
 apiVersion: iam.theriseunion.io/v1alpha1
@@ -584,11 +646,19 @@ spec:
     - cluster/settings.manage
   rules:
   - apiGroups:
-    - tenant.theriseunion.io
+    - resources.theriseunion.io
     resources:
     - clusters
+    - nodes
+    - storageclasses
+    - configmaps
     verbs:
     - '*'
+  - nonResourceURLs:
+      - version
+      - oapis/version
+    verbs:
+      - '*'
 
 ---
 apiVersion: iam.theriseunion.io/v1alpha1
@@ -612,9 +682,10 @@ spec:
     - cluster/roles.view
   rules:
   - apiGroups:
-    - '*'
+    - iam.theriseunion.io
     resources:
     - roles
+    - clusters/roles
     - iamroles
     - iamrolebindings
     - categories
@@ -623,10 +694,6 @@ spec:
     - get
     - list
     - watch
-  - nonResourceURLs:
-      - /boss/access/roles
-    verbs:
-      - get
 
 ---
 apiVersion: iam.theriseunion.io/v1alpha1
@@ -648,9 +715,10 @@ spec:
     - cluster/roles.manage
   rules:
   - apiGroups:
-    - '*'
+    - iam.theriseunion.io
     resources:
     - roles
+    - clusters/roles
     - iamroles
     - iamrolebindings
     - categories
@@ -680,10 +748,10 @@ spec:
     - cluster/members.view
   rules:
   - apiGroups:
-    - '*'
+    - iam.theriseunion.io
     resources:
     - members
-    - users
+    - clusters/members
     verbs:
     - get
     - list
@@ -709,9 +777,16 @@ spec:
     - cluster/members.manage
   rules:
   - apiGroups:
-    - '*'
+    - iam.theriseunion.io
     resources:
     - members
-    - users
+    - clusters/members
     verbs:
     - '*'
+  - apiGroups:
+    - iam.theriseunion.io
+    resources:
+    - users
+    verbs:
+    - get
+    - list
