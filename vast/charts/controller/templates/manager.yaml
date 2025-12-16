@@ -61,6 +61,8 @@ spec:
           args:
             {{- toYaml .Values.args | nindent 12 }}
           env:
+            - name: CAMP_NS
+              value: {{ include "controller.namespace" . }}
             {{- if .Values.webhook.enabled }}
             - name: ENABLE_WEBHOOKS
               value: "true"
@@ -90,7 +92,8 @@ spec:
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           volumeMounts:
-            {{- if and .Values.webhook.enabled .Values.webhook.cert.create }}
+            {{- $certManagerEnabled := eq (include "controller.certManagerEnabled" .) "true" }}
+            {{- if and .Values.webhook.enabled (or (and (not $certManagerEnabled) .Values.webhook.cert.create) $certManagerEnabled) }}
             - name: cert
               mountPath: {{ include "controller.webhook.certDir" . }}
               readOnly: true
@@ -127,7 +130,8 @@ spec:
       {{- end }}
       terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds }}
       volumes:
-        {{- if and .Values.webhook.enabled .Values.webhook.cert.create }}
+        {{- $certManagerEnabled := eq (include "controller.certManagerEnabled" .) "true" }}
+        {{- if and .Values.webhook.enabled (or (and (not $certManagerEnabled) .Values.webhook.cert.create) $certManagerEnabled) }}
         - name: cert
           secret:
             secretName: {{ include "controller.webhook.certSecretName" . }}

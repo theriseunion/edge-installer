@@ -8,13 +8,32 @@ global:
   # Namespace override (if not set, uses Release.Namespace)
   namespaceOverride: ""
 
+# Cert manager subchart configuration
+cert-manager:
+  enabled: true
+  # Namespace for cert-manager resources (defaults to Release.Namespace if not set)
+  namespace: cert-manager
+  # Override the full name to remove the release name prefix (vast-)
+  # Without this, resources would be named like: vast-cert-manager-*
+  # With this, resources will be named like: cert-manager-*
+  fullnameOverride: cert-manager
+  crds:
+    enabled: true
+
 # Enable/disable subcharts
 apiserver:
   enabled: true
+  # Pass cert-manager enabled status to subchart
+  cert-manager:
+    enabled: true
+  # Override the full name to remove the release name prefix (vast-)
+  # Without this, resources would be named like: vast-apiserver-*
+  # With this, resources will be named like: apiserver-*
+  fullnameOverride: apiserver
   # Image configuration
   image:
     repository: quanzhenglong.com/edge/apiserver
-    tag: vast-v0.1.0-11
+    tag: vast-v0.1.0-18
     pullPolicy: Always
 
   # Namespace override (defaults to Release.Namespace)
@@ -42,8 +61,6 @@ apiserver:
   env:
     - name: PORT
       value: "8443"
-    - name: CAMP_NS
-      value: "rise-vast-system"
 
   # Configuration for apiserver.yaml ConfigMap
   config:
@@ -121,13 +138,23 @@ apiserver:
     create: true
     validityDays: 36500
     additionalHosts: []
+    issuer:
+      name: "selfsigned-issuer"
+      create: true
 
 controller:
   enabled: true
+  # Pass cert-manager enabled status to subchart
+  cert-manager:
+    enabled: true
+  # Override the full name to remove the release name prefix (vast-)
+  # Without this, resources would be named like: vast-controller-*
+  # With this, resources will be named like: controller-*
+  fullnameOverride: controller
   # Image configuration
   image:
     repository: quanzhenglong.com/edge/controller
-    tag: vast-v0.1.0-11
+    tag: vast-v0.1.0-18
     pullPolicy: Always
 
   # Kube RBAC Proxy configuration
@@ -172,8 +199,6 @@ controller:
       value: "true"
     - name: WEBHOOK_PORT
       value: "9443"
-    - name: CAMP_NS
-      value: "rise-vast-system"
 
   # Webhook configuration
   webhook:
@@ -193,12 +218,17 @@ controller:
       create: true
       validityDays: 36500
       additionalHosts: []
+      issuer:
+        name: "selfsigned-issuer"
+        create: true
     namespaceSelector:
       excludeNamespaces:
         - edge-system
         - kube-system
         - kube-public
         - kube-node-lease
+        - vast-system
+        - cert-manager
     admission:
       failurePolicy: Fail
       sideEffects: None

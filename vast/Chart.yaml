@@ -27,6 +27,11 @@ sources:
 
 # Chart dependencies
 dependencies:
+  - name: cert-manager
+    version: "1.19.2"
+    repository: "file://./charts/cert-manager"
+    condition: cert-manager.enabled
+    description: Cert Manager - Certificate management for Kubernetes
   - name: controller
     version: "0.1.0"
     repository: "file://./charts/controller"

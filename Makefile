@@ -134,31 +134,106 @@ example-member: ## Example: Install member cluster
 		--set global.mode=member \
 		--set autoInstall.monitoring.enabled=false
 
-# 部署vas
+# 部署vast
 .PHONY: install-vast
 install-vast: ## Install VAST platform
-	helm install vast ./vast -n vast-system --create-namespace
+	@echo "Creating namespaces if they don't exist..."
+	@kubectl create namespace cert-manager --dry-run=client -o yaml | kubectl apply -f - || true
+	@kubectl create namespace rise-vast-system --dry-run=client -o yaml | kubectl apply -f - || true
+	@echo "Installing VAST platform..."
+	helm upgrade --install vast ./vast -n rise-vast-system --create-namespace --debug
 
 # 卸载vast
 .PHONY: uninstall-vast
-uninstall-vast: ## Uninstall VAST platform and clean up hook resources
+uninstall-vast: uninstall-cert-manager ## Uninstall VAST platform and clean up hook resources
 	@echo "Uninstalling VAST platform..."
-	@helm uninstall vast -n vast-system --wait || true
-	@echo "Cleaning up remaining hook resources..."
-	@echo "  - Deleting hook Jobs..."
-	@kubectl delete jobs -n vast-system -l app.kubernetes.io/instance=vast --ignore-not-found=true || true
-	@kubectl delete jobs -n vast-system -l "app.kubernetes.io/name=hami,app.kubernetes.io/component=admission-webhook" --ignore-not-found=true || true
-	@kubectl delete jobs -n default -l app.kubernetes.io/instance=vast --ignore-not-found=true || true
-	@kubectl delete jobs -n default -l "app.kubernetes.io/name=hami,app.kubernetes.io/component=admission-webhook" --ignore-not-found=true || true
-	@echo "  - Deleting hook Pods..."
-	@kubectl delete pods -n vast-system -l app.kubernetes.io/instance=vast --ignore-not-found=true || true
-	@kubectl delete pods -n vast-system -l "app.kubernetes.io/name=hami,app.kubernetes.io/component=admission-webhook" --ignore-not-found=true || true
-	@kubectl delete pods -n default -l app.kubernetes.io/instance=vast --ignore-not-found=true || true
-	@kubectl delete pods -n default -l "app.kubernetes.io/name=hami,app.kubernetes.io/component=admission-webhook" --ignore-not-found=true || true
-	@echo "  - Deleting hook ServiceAccounts, Roles, RoleBindings..."
-	@kubectl delete serviceaccount -n vast-system -l "app.kubernetes.io/instance=vast,app.kubernetes.io/component=admission-webhook" --ignore-not-found=true || true
-	@kubectl delete role -n vast-system -l "app.kubernetes.io/instance=vast,app.kubernetes.io/component=admission-webhook" --ignore-not-found=true || true
-	@kubectl delete rolebinding -n vast-system -l "app.kubernetes.io/instance=vast,app.kubernetes.io/component=admission-webhook" --ignore-not-found=true || true
-	@kubectl delete clusterrole -l "app.kubernetes.io/instance=vast,app.kubernetes.io/component=admission-webhook" --ignore-not-found=true || true
-	@kubectl delete clusterrolebinding -l "app.kubernetes.io/instance=vast,app.kubernetes.io/component=admission-webhook" --ignore-not-found=true || true
+	@echo "  - Step 1: Deleting webhook configurations (to avoid blocking deletion)..."
+	@kubectl delete mutatingwebhookconfigurations -l app.kubernetes.io/instance=vast --ignore-not-found=true || true
+	@kubectl delete validatingwebhookconfigurations -l app.kubernetes.io/instance=vast --ignore-not-found=true || true
+	@kubectl delete mutatingwebhookconfigurations -l "app.kubernetes.io/name=hami,app.kubernetes.io/component=admission-webhook" --ignore-not-found=true || true
+	@kubectl delete validatingwebhookconfigurations -l "app.kubernetes.io/name=hami,app.kubernetes.io/component=admission-webhook" --ignore-not-found=true || true
+	@echo "  - Step 2: Force deleting all Pods (to avoid hanging on termination)..."
+	@kubectl get pods -n rise-vast-system -l app.kubernetes.io/instance=vast --no-headers 2>/dev/null | awk '{print $$1}' | while read pod; do \
+		echo "    Removing finalizers from pod: $$pod"; \
+		kubectl patch pod "$$pod" -n rise-vast-system -p '{"metadata":{"finalizers":[]}}' --type=merge 2>/dev/null || true; \
+	done || true
+	@kubectl delete pods -n rise-vast-system -l app.kubernetes.io/instance=vast --ignore-not-found=true --force --grace-period=0 2>/dev/null || true
+	@kubectl delete pods -n rise-vast-system -l "app.kubernetes.io/name=hami" --ignore-not-found=true --force --grace-period=0 2>/dev/null || true
+	@echo "  - Step 3: Deleting Deployments and StatefulSets..."
+	@kubectl delete deployment,statefulset -n rise-vast-system -l app.kubernetes.io/instance=vast --ignore-not-found=true --force --grace-period=0 2>/dev/null || true
+	@kubectl delete deployment,statefulset -n rise-vast-system -l "app.kubernetes.io/name=hami" --ignore-not-found=true --force --grace-period=0 2>/dev/null || true
+	@echo "  - Step 4: Deleting hook Jobs..."
+	@kubectl delete jobs -n rise-vast-system -l app.kubernetes.io/instance=vast --ignore-not-found=true --force --grace-period=0 2>/dev/null || true
+	@kubectl delete jobs -n rise-vast-system -l "app.kubernetes.io/name=hami,app.kubernetes.io/component=admission-webhook" --ignore-not-found=true --force --grace-period=0 2>/dev/null || true
+	@kubectl delete jobs -n default -l app.kubernetes.io/instance=vast --ignore-not-found=true --force --grace-period=0 2>/dev/null || true
+	@kubectl delete jobs -n default -l "app.kubernetes.io/name=hami,app.kubernetes.io/component=admission-webhook" --ignore-not-found=true --force --grace-period=0 2>/dev/null || true
+	@echo "  - Step 5: Uninstalling Helm release (no wait, returns immediately)..."
+	@helm uninstall vast -n rise-vast-system 2>/dev/null || echo "    Helm release not found or already deleted"
+	@echo "  - Step 6: Deleting cert-manager resources (Certificates, ClusterIssuers)..."
+	@kubectl delete certificates -n rise-vast-system --all --ignore-not-found=true 2>/dev/null || true
+	@kubectl delete clusterissuers --all --ignore-not-found=true 2>/dev/null || true
+	@kubectl delete certificaterequests -n rise-vast-system --all --ignore-not-found=true 2>/dev/null || true
+	@echo "  - Step 7: Deleting certificate secrets and other secrets..."
+	@kubectl delete secret -n rise-vast-system apiserver-cert controller-webhook-cert --ignore-not-found=true 2>/dev/null || true
+	@kubectl delete secret -n rise-vast-system -l "app.kubernetes.io/instance=vast" --ignore-not-found=true 2>/dev/null || true
+	@echo "  - Step 8: Final cleanup of remaining resources..."
+	@kubectl delete pods -n rise-vast-system -l app.kubernetes.io/instance=vast --ignore-not-found=true --force --grace-period=0 2>/dev/null || true
+	@kubectl delete serviceaccount,role,rolebinding,configmap,secret -n rise-vast-system -l "app.kubernetes.io/instance=vast" --ignore-not-found=true 2>/dev/null || true
+	@kubectl delete clusterrole,clusterrolebinding -l "app.kubernetes.io/instance=vast" --ignore-not-found=true 2>/dev/null || true
+	@kubectl delete serviceaccount,role,rolebinding,configmap -n rise-vast-system -l "app.kubernetes.io/name=hami,app.kubernetes.io/component=admission-webhook" --ignore-not-found=true 2>/dev/null || true
+	@kubectl delete clusterrole,clusterrolebinding -l "app.kubernetes.io/name=hami,app.kubernetes.io/component=admission-webhook" --ignore-not-found=true 2>/dev/null || true
+	@kubectl delete configmap,secret -n rise-vast-system -l "app.kubernetes.io/name=hami" --ignore-not-found=true 2>/dev/null || true
+	@echo "  - Step 9: Deleting remaining HAMI resources..."
+	@kubectl delete configmap -n rise-vast-system flavors-cm resource-pools-cm --ignore-not-found=true 2>/dev/null || true
+	@kubectl delete secret -n rise-vast-system hami-scheduler-tls --ignore-not-found=true 2>/dev/null || true
 	@echo "VAST platform uninstalled and cleaned up"
+
+# 部署 cert-manager
+.PHONY: install-cert-manager
+install-cert-manager: ## Install cert-manager component
+	helm install cert-manager ./vast/charts/cert-manager -n cert-manager --create-namespace \
+		--set crds.enabled=true
+
+# 卸载 cert-manager
+.PHONY: uninstall-cert-manager
+uninstall-cert-manager: ## Uninstall cert-manager component and clean up resources
+	@echo "Uninstalling cert-manager..."
+	@echo "  - Step 1: Deleting webhook configurations (to avoid blocking deletion)..."
+	@kubectl delete mutatingwebhookconfigurations -l app.kubernetes.io/name=cert-manager --ignore-not-found=true || true
+	@kubectl delete validatingwebhookconfigurations -l app.kubernetes.io/name=cert-manager --ignore-not-found=true || true
+	@kubectl delete mutatingwebhookconfigurations -l app.kubernetes.io/instance=cert-manager --ignore-not-found=true || true
+	@kubectl delete validatingwebhookconfigurations -l app.kubernetes.io/instance=cert-manager --ignore-not-found=true || true
+	@echo "  - Step 2: Force deleting all Pods and Jobs..."
+	@kubectl get pods -n cert-manager --no-headers 2>/dev/null | awk '{print $$1}' | while read pod; do \
+		echo "    Removing finalizers from pod: $$pod"; \
+		kubectl patch pod "$$pod" -n cert-manager -p '{"metadata":{"finalizers":[]}}' --type=merge 2>/dev/null || true; \
+	done || true
+	@kubectl delete pods -n cert-manager --all --ignore-not-found=true --force --grace-period=0 2>/dev/null || true
+	@kubectl delete jobs -n cert-manager --all --ignore-not-found=true --force --grace-period=0 2>/dev/null || true
+	@kubectl delete jobs -n cert-manager -l app.kubernetes.io/instance=cert-manager --ignore-not-found=true --force --grace-period=0 2>/dev/null || true
+	@kubectl delete jobs -n cert-manager -l app.kubernetes.io/name=cert-manager --ignore-not-found=true --force --grace-period=0 2>/dev/null || true
+	@echo "  - Step 3: Deleting Deployments and StatefulSets..."
+	@kubectl delete deployment,statefulset -n cert-manager --all --ignore-not-found=true --force --grace-period=0 2>/dev/null || true
+	@kubectl delete deployment,statefulset -n cert-manager -l app.kubernetes.io/instance=cert-manager --ignore-not-found=true --force --grace-period=0 2>/dev/null || true
+	@echo "  - Step 4: Uninstalling Helm release (no wait, returns immediately)..."
+	@helm uninstall cert-manager -n cert-manager 2>/dev/null || echo "    Helm release not found or already deleted"
+	@echo "  - Step 5: Cleaning up remaining resources in namespace..."
+	@kubectl delete all --all -n cert-manager --ignore-not-found=true --force --grace-period=0 2>/dev/null || true
+	@kubectl delete serviceaccount,role,rolebinding,configmap,secret -n cert-manager --all --ignore-not-found=true 2>/dev/null || true
+	@echo "  - Step 6: Deleting CRDs (using label selector)..."
+	@kubectl delete crd -l app.kubernetes.io/name=cert-manager --ignore-not-found=true || true
+	@echo "  - Step 7: Deleting CRDs (fallback for unlabeled CRDs)..."
+	@kubectl delete crd certificates.cert-manager.io certificaterequests.cert-manager.io \
+		issuers.cert-manager.io clusterissuers.cert-manager.io \
+		challenges.acme.cert-manager.io orders.acme.cert-manager.io \
+		--ignore-not-found=true || true
+	@echo "  - Step 8: Deleting cluster-level resources..."
+	@kubectl delete clusterrole,clusterrolebinding -l app.kubernetes.io/name=cert-manager --ignore-not-found=true || true
+	@kubectl delete clusterrole,clusterrolebinding -l app.kubernetes.io/instance=cert-manager --ignore-not-found=true || true
+	@echo "  - Step 9: Deleting namespace..."
+	@if kubectl get namespace cert-manager 2>/dev/null | grep -q cert-manager; then \
+		echo "    Removing finalizers from namespace cert-manager..."; \
+		kubectl patch namespace cert-manager -p '{"metadata":{"finalizers":[]}}' --type=merge 2>/dev/null || true; \
+		kubectl delete namespace cert-manager --ignore-not-found=true --force --grace-period=0 2>/dev/null || true; \
+	fi || true
+	@echo "cert-manager uninstalled and cleaned up"

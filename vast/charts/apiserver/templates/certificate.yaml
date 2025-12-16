@@ -1,0 +1,39 @@
+{{- if and .Values.enabled .Values.config.server.tls.enabled }}
+{{- if eq (include "apiserver.certManagerEnabled" .) "true" }}
+{{- $issuerName := "selfsigned-issuer" }}
+{{- if and .Values.cert.issuer .Values.cert.issuer.name }}
+{{- $issuerName = .Values.cert.issuer.name }}
+{{- end }}
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: {{ include "apiserver.certSecretName" . }}
+  namespace: {{ include "apiserver.namespace" . }}
+  annotations:
+    "helm.sh/hook": post-install,post-upgrade
+    "helm.sh/hook-weight": "5"
+    "helm.sh/hook-delete-policy": before-hook-creation
+  labels:
+    {{- include "apiserver.labels" . | nindent 4 }}
+    app.kubernetes.io/component: certificate
+spec:
+  secretName: {{ include "apiserver.certSecretName" . }}
+  issuerRef:
+    kind: ClusterIssuer
+    name: {{ $issuerName }}
+    group: cert-manager.io
+  commonName: {{ include "apiserver.fullname" . }}
+  dnsNames:
+    - {{ include "apiserver.fullname" . }}
+    - {{ printf "%s.%s.svc" (include "apiserver.fullname" .) (include "apiserver.namespace" .) }}
+    - {{ printf "%s.%s.svc.cluster.local" (include "apiserver.fullname" .) (include "apiserver.namespace" .) }}
+    {{- if .Values.cert.additionalHosts }}
+    {{- range .Values.cert.additionalHosts }}
+    - {{ . | quote }}
+    {{- end }}
+    {{- end }}
+  duration: {{ printf "%dh" (mul (int (.Values.cert.validityDays | default 365)) 24) }}
+  renewBefore: 48h
+{{- end }}
+{{- end }}

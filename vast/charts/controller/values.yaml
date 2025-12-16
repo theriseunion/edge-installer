@@ -84,8 +84,6 @@ env:
     value: "true"
   - name: WEBHOOK_PORT
     value: "9443"
-  - name: CAMP_NS
-    value: "rise-vast-system"
 
 # Additional environment variables
 extraEnv: []

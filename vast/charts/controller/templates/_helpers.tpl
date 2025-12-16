@@ -133,7 +133,24 @@ ca: {{ $ca.Cert | b64enc }}
 {{- end }}
 
 {{/*
-Generate Controller Webhook CA Bundle for webhook configuration
+Check if cert-manager is enabled
+*/}}
+{{- define "controller.certManagerEnabled" -}}
+{{- $enabled := false }}
+{{- if hasKey .Values "cert-manager" }}
+  {{- if hasKey (index .Values "cert-manager") "enabled" }}
+    {{- $enabled = index .Values "cert-manager" "enabled" }}
+  {{- end }}
+{{- else if and .Root (hasKey .Root.Values "cert-manager") }}
+  {{- if hasKey (index .Root.Values "cert-manager") "enabled" }}
+    {{- $enabled = index .Root.Values "cert-manager" "enabled" }}
+  {{- end }}
+{{- end }}
+{{- if $enabled }}true{{- else }}false{{- end }}
+{{- end }}
+
+{{/*
+Generate Controller Webhook CA Bundle for webhook configuration (deprecated - use cert-manager instead)
 */}}
 {{- define "controller.webhook.caBundle" -}}
 {{- if and .Values.webhook.enabled .Values.webhook.cert.create }}

@@ -90,6 +90,8 @@ spec:
           args:
             {{- toYaml .Values.args | nindent 12 }}
           env:
+            - name: CAMP_NS
+              value: {{ include "apiserver.namespace" . }}
             {{- toYaml .Values.env | nindent 12 }}
             {{- if .Values.extraEnv }}
             {{- toYaml .Values.extraEnv | nindent 12 }}
@@ -107,7 +109,8 @@ spec:
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           volumeMounts:
-            {{- if and .Values.config.server.tls.enabled .Values.cert.create }}
+            {{- $certManagerEnabled := eq (include "apiserver.certManagerEnabled" .) "true" }}
+            {{- if and .Values.config.server.tls.enabled (or (and (not $certManagerEnabled) .Values.cert.create) $certManagerEnabled) }}
             - name: cert
               mountPath: /tmp/k8s-webhook-server/serving-certs
               readOnly: true
@@ -129,7 +132,8 @@ spec:
       {{- end }}
       terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds }}
       volumes:
-        {{- if and .Values.config.server.tls.enabled .Values.cert.create }}
+        {{- $certManagerEnabled := eq (include "apiserver.certManagerEnabled" .) "true" }}
+        {{- if and .Values.config.server.tls.enabled (or (and (not $certManagerEnabled) .Values.cert.create) $certManagerEnabled) }}
         - name: cert
           secret:
             secretName: {{ include "apiserver.certSecretName" . }}

@@ -50,7 +50,7 @@ controller:
     allowPrivilegeEscalation: false
     capabilities:
       drop:
-        - ALL
+      - ALL
 
   # Service configuration
   service:
@@ -117,7 +117,7 @@ autoInstall:
 
   # Controller component configuration (used for member cluster installation)
   controller:
-    version: "0.1.0" # Chart version for member cluster installation
+    version: "0.1.0"  # Chart version for member cluster installation
 
   # APIServer component
   apiserver:
@@ -131,7 +131,7 @@ autoInstall:
 
   # Console component (only for host/all modes)
   console:
-    enabled: false # Will be set based on global.mode
+    enabled: false  # Will be set based on global.mode
     version: "0.1.0"
     values:
       replicaCount: 1
@@ -159,7 +159,7 @@ autoInstall:
   vast:
     enabled: true # Set to true to enable VAST platform installation
     version: "0.1.0"
-    namespace: "vast-system" # Namespace for VAST platform
+    namespace: "rise-vast-system" # Namespace for VAST platform
     values:
       # VAST platform configuration
       # Override default values here if needed

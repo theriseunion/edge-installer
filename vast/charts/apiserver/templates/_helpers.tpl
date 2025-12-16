@@ -89,7 +89,24 @@ Create certificate secret name
 {{- end }}
 
 {{/*
-Generate APIServer TLS certificates
+Check if cert-manager is enabled
+*/}}
+{{- define "apiserver.certManagerEnabled" -}}
+{{- $enabled := false }}
+{{- if hasKey .Values "cert-manager" }}
+  {{- if hasKey (index .Values "cert-manager") "enabled" }}
+    {{- $enabled = index .Values "cert-manager" "enabled" }}
+  {{- end }}
+{{- else if and .Root (hasKey .Root.Values "cert-manager") }}
+  {{- if hasKey (index .Root.Values "cert-manager") "enabled" }}
+    {{- $enabled = index .Root.Values "cert-manager" "enabled" }}
+  {{- end }}
+{{- end }}
+{{- if $enabled }}true{{- else }}false{{- end }}
+{{- end }}
+
+{{/*
+Generate APIServer TLS certificates (deprecated - use cert-manager instead)
 */}}
 {{- define "apiserver.genCerts" -}}
 {{- $fullName := include "apiserver.fullname" . }}
