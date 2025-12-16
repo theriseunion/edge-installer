@@ -34,7 +34,7 @@ apiserver:
   image:
     repository: quanzhenglong.com/edge/apiserver
     tag: vast-v0.1.0-18
-    pullPolicy: Always
+    pullPolicy: IfNotPresent
 
   # Namespace override (defaults to Release.Namespace)
   namespaceOverride: ""
@@ -93,7 +93,7 @@ apiserver:
     metrics:
       enabled: true
       prometheus:
-        endpoint: "http://prometheus-kube-prometheus-prometheus.prometheus.svc.cluster.local:9090"
+        endpoint: "http://edge-prometheus.observability-system.svc:9090"
         auth: ""
         timeout: "30s"
         maxConcurrentQueries: 10
@@ -155,7 +155,7 @@ controller:
   image:
     repository: quanzhenglong.com/edge/controller
     tag: vast-v0.1.0-18
-    pullPolicy: Always
+    pullPolicy: IfNotPresent
 
   # Kube RBAC Proxy configuration
   kubeRbacProxy:
@@ -241,7 +241,7 @@ controller:
     metrics:
       enabled: true
       prometheus:
-        endpoint: "http://10.100.121.67:30190/"
+        endpoint: "http://edge-prometheus.observability-system.svc:9090"
         auth: ""
         timeout: "30s"
         maxConcurrentQueries: 10
