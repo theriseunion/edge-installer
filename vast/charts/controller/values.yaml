@@ -250,47 +250,47 @@ config:
     nvidia-hami:
       mem_factor: 1
       node_label:
-        key: gpu-test
+        key: gpu
         value: "on"
     hygon-hami:
       mem_factor: 1
       node_label:
-        key: dcu-test
+        key: dcu
         value: "on"
     cambricon-hami:
       mem_factor: 1
       node_label:
-        key: mlu-test
+        key: mlu
         value: "on"
     kunlunxin-hami:
       mem_factor: 1
       node_label:
-        key: xpu-test
+        key: xpu
         value: "on"
     ascend-hami:
       mem_factor: 1
       node_label:
-        key: ascend-test
+        key: ascend
         value: "on"
     iluvatar-hami:
       mem_factor: 256
       node_label:
-        key: iluvatar-test
+        key: iluvatar
         value: "on"
     metax-hami:
       mem_factor: 1
       node_label:
-        key: metax-test
+        key: metax
         value: "on"
     enflame-hami:
       mem_factor: 1
       node_label:
-        key: gcu-test
+        key: gcu
         value: "on"
     alibaba-hami:
       mem_factor: 1
       node_label:
-        key: ppu-test
+        key: ppu
         value: "on"
     nvidia-volcano:
       mem_factor: 10
@@ -300,6 +300,6 @@ config:
     ascend-volcano:
       mem_factor: 1
       node_label:
-        key: volcano_ascend-test
+        key: volcano_ascend
         value: "on"
 
