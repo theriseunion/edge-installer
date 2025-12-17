@@ -56,7 +56,7 @@ metadata:
 spec:
   core: 25
   manufacturer: NVIDIA
-  memorySize: 10240
+  memorySize: 6144
   model: NVIDIA-NVIDIA A30
 ---
 apiVersion: device.theriseunion.io/v1alpha1
