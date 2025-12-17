@@ -328,6 +328,9 @@ hami:
         operator: "Equal"
         value: "true"
         effect: "NoSchedule"
+      - key: "node-role.kubernetes.io/edge"
+        operator: "Exists"
+        effect: "NoSchedule"
     # nodeSelector:
     #   theriseunion.io/control: "true"
     serviceMonitor:
@@ -350,7 +353,7 @@ hami:
         operator: Exists
         effect: NoSchedule
     kubeScheduler:
-      imageTag: "v1.34.0"
+      imageTag: "v1.29.15"
       image: quanzhenglong.com/camp/kubesphere/kube-scheduler
     extender:
       image: quanzhenglong.com/camp/hami
