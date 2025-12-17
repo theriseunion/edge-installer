@@ -1,3 +1,4 @@
+---
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
@@ -70,6 +71,28 @@ spec:
                   description: ItemStatus defines the observed state of a device in
                     the resource pool item.
                   properties:
+                    allocated:
+                      description: Allocated represents the current resource allocated
+                        of the GPU card.
+                      properties:
+                        core:
+                          format: int32
+                          type: integer
+                        count:
+                          format: int32
+                          type: integer
+                        memory:
+                          format: int32
+                          type: integer
+                        splitCount:
+                          format: int32
+                          type: integer
+                      required:
+                      - core
+                      - count
+                      - memory
+                      - splitCount
+                      type: object
                     capacity:
                       description: Capacity represents the total resource capacity
                         of the GPU card.
@@ -134,28 +157,6 @@ spec:
                       - Failed
                       - Unknown
                       type: string
-                    usage:
-                      description: Usage represents the current resource usage of
-                        the GPU card.
-                      properties:
-                        core:
-                          format: int32
-                          type: integer
-                        count:
-                          format: int32
-                          type: integer
-                        memory:
-                          format: int32
-                          type: integer
-                        splitCount:
-                          format: int32
-                          type: integer
-                      required:
-                      - core
-                      - count
-                      - memory
-                      - splitCount
-                      type: object
                     uuid:
                       description: UUID identifies the GPU card (matches ResourceItem.UUID).
                       type: string
