@@ -33,7 +33,7 @@ apiserver:
   # Image configuration
   image:
     repository: quanzhenglong.com/edge/apiserver
-    tag: vast-v0.1.0-23
+    tag: vast-v0.1.0-26
     pullPolicy: IfNotPresent
 
   # Namespace override (defaults to Release.Namespace)
@@ -154,7 +154,7 @@ controller:
   # Image configuration
   image:
     repository: quanzhenglong.com/edge/controller
-    tag: vast-v0.1.0-23
+    tag: vast-v0.1.0-26
     pullPolicy: IfNotPresent
 
   # Kube RBAC Proxy configuration
@@ -175,7 +175,7 @@ controller:
       - --secure-listen-address=0.0.0.0:8443
       - --upstream=http://127.0.0.1:8080/
       - --logtostderr=true
-      - --v=0
+      - --v=3
     port: 8443
 
   # Namespace override (defaults to Release.Namespace)
