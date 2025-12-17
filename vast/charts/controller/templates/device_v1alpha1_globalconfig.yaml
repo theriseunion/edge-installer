@@ -1,8 +1,7 @@
 apiVersion: device.theriseunion.io/v1alpha1
 kind: GlobalConfig
 metadata:
-  name: edge-global-config
-  namespace: edge-system
+  name: global-config
 spec:
   alertLevel:
   - critical

@@ -4,8 +4,7 @@ metadata:
   labels:
     theriseunion.io/config-type: fixed
     theriseunion.io/model-scope: XPU-P800-OAM
-  name: edge-default-xpu-p800-oam
-  namespace: edge-system
+  name: default-xpu-p800-oam
 spec:
   computeSplitMode: hami-core
   description: default xpu-p800 oam compute template
@@ -21,8 +20,7 @@ metadata:
   labels:
     theriseunion.io/config-type: fixed
     theriseunion.io/model-scope: Ascend910B2
-  name: edge-default-ascend910b2
-  namespace: edge-system
+  name: default-ascend910b2
 spec:
   computeSplitMode: hami-core
   description: default ascend910b2 compute template
@@ -38,8 +36,7 @@ metadata:
   labels:
     theriseunion.io/config-type: fixed
     theriseunion.io/model-scope: Iluvatar-MR-V100
-  name: edge-default-iluvatar-mr-v100
-  namespace: edge-system
+  name: default-iluvatar-mr-v100
 spec:
   computeSplitMode: hami-core
   description: default iluvatar-mr-v100 compute template
@@ -55,8 +52,7 @@ metadata:
   labels:
     theriseunion.io/config-type: fixed
     theriseunion.io/model-scope: Iluvatar-BI-V150
-  name: edge-default-iluvatar-bi-v150
-  namespace: edge-system
+  name: default-iluvatar-bi-v150
 spec:
   computeSplitMode: hami-core
   description: default iluvatar-bi-v150 compute template
@@ -72,8 +68,7 @@ metadata:
   labels:
     theriseunion.io/config-type: fixed
     theriseunion.io/model-scope: Ascend910B3
-  name: edge-default-ascend910b3
-  namespace: edge-system
+  name: default-ascend910b3
 spec:
   computeSplitMode: hami-core
   description: default ascend910b3 compute template
@@ -89,8 +84,7 @@ metadata:
   labels:
     theriseunion.io/config-type: fixed
     theriseunion.io/model-scope: Metax-SGPU-C500
-  name: edge-default-metax-sgpu-c500
-  namespace: edge-system
+  name: default-metax-sgpu-c500
 spec:
   computeSplitMode: hami-core
   description: default metax-sgpu-c500 compute template
@@ -106,8 +100,7 @@ metadata:
   labels:
     theriseunion.io/config-type: fixed
     theriseunion.io/model-scope: DCU-K100_AI
-  name: edge-default-hygon-k100-ai
-  namespace: edge-system
+  name: default-hygon-k100-ai
 spec:
   computeSplitMode: hami-core
   description: default hygon k100_ai compute template
@@ -123,8 +116,7 @@ metadata:
   labels:
     theriseunion.io/config-type: fixed
     theriseunion.io/model-scope: all
-  name: edge-default-nvidia
-  namespace: edge-system
+  name: default-nvidia
 spec:
   computeSplitMode: hami-core
   description: default nvidia compute template
@@ -140,8 +132,7 @@ metadata:
   labels:
     theriseunion.io/config-type: fixed
     theriseunion.io/model-scope: Ascend910B4
-  name: edge-default-ascend910b4
-  namespace: edge-system
+  name: default-ascend910b4
 spec:
   computeSplitMode: hami-core
   description: default ascend910b4 compute template
@@ -157,8 +148,7 @@ metadata:
   labels:
     theriseunion.io/config-type: fixed
     theriseunion.io/model-scope: DCU-Z100L
-  name: edge-default-hygon-z100l
-  namespace: edge-system
+  name: default-hygon-z100l
 spec:
   computeSplitMode: hami-core
   description: default hygon z100l compute template
@@ -174,8 +164,7 @@ metadata:
   labels:
     theriseunion.io/config-type: fixed
     theriseunion.io/model-scope: DCU-Z100
-  name: edge-default-hygon-z100
-  namespace: edge-system
+  name: default-hygon-z100
 spec:
   computeSplitMode: hami-core
   description: default hygon z100 compute template
@@ -191,8 +180,7 @@ metadata:
   labels:
     theriseunion.io/config-type: fixed
     theriseunion.io/model-scope: MLU
-  name: edge-default-mlu
-  namespace: edge-system
+  name: default-mlu
 spec:
   computeSplitMode: hami-core
   description: default mlu compute template
@@ -208,8 +196,7 @@ metadata:
   labels:
     theriseunion.io/config-type: fixed
     theriseunion.io/model-scope: Ascend310P
-  name: edge-default-ascend310p
-  namespace: edge-system
+  name: default-ascend310p
 spec:
   computeSplitMode: hami-core
   description: default ascend310p compute template
@@ -225,8 +212,7 @@ metadata:
   labels:
     theriseunion.io/config-type: fixed
     theriseunion.io/model-scope: PPU-PPU-ZW810E
-  name: edge-default-ppu
-  namespace: edge-system
+  name: default-ppu
 spec:
   computeSplitMode: hami-core
   description: default ppu compute template
@@ -242,8 +228,7 @@ metadata:
   labels:
     theriseunion.io/config-type: fixed
     theriseunion.io/model-scope: Metax-GPU-C500
-  name: edge-default-metax-gpu-c500
-  namespace: edge-system
+  name: default-metax-gpu-c500
 spec:
   computeSplitMode: hami-core
   description: default metax-gpu-c500 compute template
