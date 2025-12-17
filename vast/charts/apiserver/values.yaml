@@ -198,7 +198,7 @@ config:
   # Device manager configuration
   deviceManager:
     enabledAggregator: true
-    hamiDeviceConfig: "config/device.yaml"
+    hamiDeviceConfig: "/config/device.yaml"
 
 # Certificate configuration
 cert:

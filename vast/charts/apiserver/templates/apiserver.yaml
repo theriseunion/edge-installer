@@ -118,6 +118,16 @@ spec:
             - name: apiserver-config
               mountPath: /etc/edge
               readOnly: true
+            {{- $hamiEnabled := true }}
+            {{- if and .Root .Root.Values.hami (hasKey .Root.Values.hami "enabled") }}
+              {{- $hamiEnabled = .Root.Values.hami.enabled }}
+            {{- end }}
+            {{- if $hamiEnabled }}
+            - name: device-config
+              mountPath: /config/device.yaml
+              subPath: device.yaml
+              readOnly: true
+            {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
@@ -142,6 +152,22 @@ spec:
         - name: apiserver-config
           configMap:
             name: {{ include "apiserver.fullname" . }}-config
+        {{- $hamiEnabled := true }}
+        {{- if and .Root .Root.Values.hami (hasKey .Root.Values.hami "enabled") }}
+          {{- $hamiEnabled = .Root.Values.hami.enabled }}
+        {{- end }}
+        {{- $hamiFullname := "hami" }}
+        {{- if and .Root .Root.Values.hami .Root.Values.hami.fullnameOverride }}
+          {{- $hamiFullname = .Root.Values.hami.fullnameOverride }}
+        {{- end }}
+        {{- if $hamiEnabled }}
+        - name: device-config
+          configMap:
+            name: {{ $hamiFullname }}-scheduler-device
+            items:
+              - key: device-config.yaml
+                path: device.yaml
+        {{- end }}
 {{- if .Values.serviceAccount.create }}
 ---
 apiVersion: v1

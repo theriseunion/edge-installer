@@ -101,6 +101,16 @@ spec:
             - name: config
               mountPath: /etc/edge/config
               readOnly: true
+            {{- $hamiEnabled := true }}
+            {{- if and .Root .Root.Values.hami (hasKey .Root.Values.hami "enabled") }}
+              {{- $hamiEnabled = .Root.Values.hami.enabled }}
+            {{- end }}
+            {{- if $hamiEnabled }}
+            - name: device-config
+              mountPath: /config/device.yaml
+              subPath: device.yaml
+              readOnly: true
+            {{- end }}
         {{- if .Values.kubeRbacProxy.enabled }}
         - name: kube-rbac-proxy
           image: "{{ .Values.kubeRbacProxy.image.repository }}:{{ .Values.kubeRbacProxy.image.tag }}"
@@ -140,4 +150,20 @@ spec:
         - name: config
           configMap:
             name: {{ include "controller.fullname" . }}-config
+        {{- $hamiEnabled := true }}
+        {{- if and .Root .Root.Values.hami (hasKey .Root.Values.hami "enabled") }}
+          {{- $hamiEnabled = .Root.Values.hami.enabled }}
+        {{- end }}
+        {{- $hamiFullname := "hami" }}
+        {{- if and .Root .Root.Values.hami .Root.Values.hami.fullnameOverride }}
+          {{- $hamiFullname = .Root.Values.hami.fullnameOverride }}
+        {{- end }}
+        {{- if $hamiEnabled }}
+        - name: device-config
+          configMap:
+            name: {{ $hamiFullname }}-scheduler-device
+            items:
+              - key: device-config.yaml
+                path: device.yaml
+        {{- end }}
 {{- end }}

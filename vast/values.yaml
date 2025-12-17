@@ -33,7 +33,7 @@ apiserver:
   # Image configuration
   image:
     repository: quanzhenglong.com/edge/apiserver
-    tag: vast-v0.1.0-18
+    tag: vast-v0.1.0-23
     pullPolicy: IfNotPresent
 
   # Namespace override (defaults to Release.Namespace)
@@ -130,7 +130,7 @@ apiserver:
     # Device manager configuration
     deviceManager:
       enabledAggregator: true
-      hamiDeviceConfig: "config/device.yaml"
+      hamiDeviceConfig: "/config/device.yaml"
 
   # Certificate configuration
   cert:
@@ -154,7 +154,7 @@ controller:
   # Image configuration
   image:
     repository: quanzhenglong.com/edge/controller
-    tag: vast-v0.1.0-18
+    tag: vast-v0.1.0-23
     pullPolicy: IfNotPresent
 
   # Kube RBAC Proxy configuration
@@ -251,7 +251,7 @@ controller:
 
     # Device manager configuration
     deviceManager:
-      hamiDeviceConfig: "config/device.yaml"
+      hamiDeviceConfig: "/config/device.yaml"
 
     # Device plugin configuration
     devicePlugin:
