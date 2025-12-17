@@ -13,9 +13,9 @@ spec:
     - project/basic.view
   rules:
   - apiGroups:
-    - 'resources.theriseunion.io'
+    - 'tenant.theriseunion.io'
     resources:
-    - 'namespaces'
+    - 'workspaces/namespaces'
     verbs:
     - get
     - list
