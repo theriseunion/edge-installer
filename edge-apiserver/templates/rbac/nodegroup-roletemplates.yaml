@@ -90,6 +90,7 @@ spec:
   rules:
   - apiGroups:
     - tenant.theriseunion.io
+    - resources.theriseunion.io
     resources:
     - nodes
     - nodegroups/nodes
