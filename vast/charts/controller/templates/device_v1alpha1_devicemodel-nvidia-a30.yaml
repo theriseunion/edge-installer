@@ -14,16 +14,13 @@ spec:
   computeCapabilities:
   - precision: FP32
     unit: TFLOPS
-    value: "19.5"
+    value: "10.3"
   - precision: FP16
     unit: TFLOPS
-    value: "312"
+    value: "165"
   - precision: BF16
     unit: TFLOPS
-    value: "312"
-  - precision: FP8
-    unit: TFLOPS
-    value: "624"
+    value: "165"
   core: 100
   description: NVIDIA A30 Tensor Core GPU with 24GB memory
   family: Ampere
