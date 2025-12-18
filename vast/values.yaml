@@ -48,6 +48,16 @@ apiserver:
   # Deployment configuration
   replicaCount: 1
 
+  # Node selector to schedule pods on control plane nodes
+  nodeSelector:
+    node-role.kubernetes.io/control-plane: ""
+
+  # Tolerations to allow scheduling on control plane nodes
+  tolerations:
+    - key: node-role.kubernetes.io/control-plane
+      operator: Exists
+      effect: NoSchedule
+
   # Resource limits and requests
   resources:
     limits:
@@ -184,6 +194,16 @@ controller:
   # Deployment configuration
   replicaCount: 1
 
+  # Node selector to schedule pods on control plane nodes
+  nodeSelector:
+    node-role.kubernetes.io/control-plane: ""
+
+  # Tolerations to allow scheduling on control plane nodes
+  tolerations:
+    - key: node-role.kubernetes.io/control-plane
+      operator: Exists
+      effect: NoSchedule
+
   # Resource limits and requests
   resources:
     limits:
@@ -233,7 +253,7 @@ controller:
         - rise-vast-system
         - prometheus
     admission:
-      failurePolicy: Fail
+      failurePolicy: Ignore
       sideEffects: None
       timeoutSeconds: 10
       reinvocationPolicy: Never
@@ -365,8 +385,8 @@ hami:
         # 如果没有，需要设置为false，设置为false时，dcgm-exporter会自动以sidecar的方式部署nv-hostengine进程
         isHostRunningNvHostEngineProcess: false
   scheduler:
-    # nodeSelector:
-    #   theriseunion.io/control: "true"
+    nodeSelector:
+      node-role.kubernetes.io/control-plane: ""
     tolerations:
       - key: node-role.kubernetes.io/control-plane
         operator: Exists

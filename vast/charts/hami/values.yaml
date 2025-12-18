@@ -149,9 +149,12 @@ scheduler:
       - --debug
       - -v=4
   podAnnotations: {}
-  #nodeSelector:
-  #  gpu: "on"
-  tolerations: []
+  nodeSelector:
+    node-role.kubernetes.io/control-plane: ""
+  tolerations:
+    - key: node-role.kubernetes.io/control-plane
+      operator: Exists
+      effect: NoSchedule
   #serviceAccountName: "hami-vgpu-scheduler-sa"
   admissionWebhook:
     customURL:
