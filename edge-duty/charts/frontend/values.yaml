@@ -1,0 +1,74 @@
+# Override the name and fullname (optional)
+nameOverride: ""
+fullnameOverride: "duty-web"
+
+# Image configuration
+image:
+  registry: "quanzhenglong.com"
+  repository: "camp/console-ui"
+  tag: "feat-simple-duty"
+  pullPolicy: IfNotPresent
+
+# Container port configuration
+containerPort: 80
+
+# Service configuration
+svc:
+  port: 80 # Service internal port (should match containerPort)
+  nodePort: 30001 # NodePort external port (30000-32767, only for NodePort type)
+  type: NodePort
+
+# Replica count
+replicaCount: 1
+
+# Resource limits and requests
+resources:
+  requests:  # 必须配置，满足资源配额要求
+    cpu: "100m"    # 100 毫核 = 0.1 核（根据配额要求调整，不能为 0）
+    memory: "256Mi"# 256MB 内存（根据配额要求调整）
+  limits:  # 可选，建议配置，避免资源滥用
+    cpu: "500m"    # 最大 CPU 限制
+    memory: "512Mi"# 最大内存限制
+
+# Health check configuration
+healthCheck:
+  path: "/"
+  livenessProbe:
+    initialDelaySeconds: 30
+    periodSeconds: 10
+  readinessProbe:
+    initialDelaySeconds: 5
+    periodSeconds: 5
+
+# Security context configuration
+securityContext:
+  runAsUser: 0
+  fsGroup: 101
+  allowPrivilegeEscalation: false
+  runAsNonRoot: false
+  capabilities:
+    drop:
+      - ALL
+    add:
+      - CAP_NET_BIND_SERVICE
+      - CAP_CHOWN
+      - CAP_DAC_OVERRIDE
+      - CAP_SETGID
+      - CAP_SETUID
+
+# Node selector (optional)
+nodeSelector: {}
+
+# Tolerations (optional)
+tolerations:
+  - key: "node-role.kubernetes.io/edge"
+    operator: "Exists"
+    effect: "NoSchedule"
+
+# Affinity (optional)
+affinity: {}
+
+serviceAccount:
+  create: true
+  name: ""
+  annotations: {}

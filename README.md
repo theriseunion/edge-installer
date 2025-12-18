@@ -43,7 +43,7 @@ graph TD
     F --> G{controller 检查 annotations}
     G -->|skip-reconcile=true| H[跳过 controller 自身]
     G -->|其他 Components| I[从 chartmuseum 下载 Chart]
-    I --> J[Helm 安装 apiserver/console/monitoring]
+    I --> J[Helm 安装 apiserver/console/monitoring/duty]
 ```
 
 ## ✨ 核心特性
@@ -131,6 +131,7 @@ make docker-push-museum
 - edge-console
 - edge-controller
 - edge-monitoring
+- edge-duty
 - kubeedge
 - vcluster
 - yurt-manager
