@@ -139,7 +139,7 @@ apiserver:
 
     # Device manager configuration
     deviceManager:
-      enabledAggregator: true
+      enabledAggregator: false
       hamiDeviceConfig: "/config/device.yaml"
 
   # Certificate configuration
