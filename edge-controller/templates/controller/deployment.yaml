@@ -15,6 +15,10 @@ spec:
         {{- include "edge-controller.selectorLabels" . | nindent 8 }}
     spec:
       serviceAccountName: {{ include "edge-controller.serviceAccountName" . }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       securityContext:
         runAsNonRoot: {{ .Values.controller.securityContext.runAsNonRoot }}
         runAsUser: {{ .Values.controller.securityContext.runAsUser }}
