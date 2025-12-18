@@ -44,6 +44,15 @@ resources:
     cpu: 100m
     memory: 128Mi
 
+# Node selector - Schedule on control plane nodes (Kubernetes 1.20+)
+nodeSelector:
+  node-role.kubernetes.io/control-plane: ""
+  # For older Kubernetes versions (< 1.20), use:
+  # node-role.kubernetes.io/master: ""
+  #
+  # To schedule on any node, set to empty:
+  # nodeSelector: {}
+
 # Edge specific configuration
 edge:
   # Cluster configuration

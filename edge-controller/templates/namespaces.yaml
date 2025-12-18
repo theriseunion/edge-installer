@@ -1,0 +1,16 @@
+{{- if .Values.autoInstall.monitoring.enabled }}
+---
+# Create observability-system namespace for monitoring components
+# Note: This namespace will be automatically bound to system-workspace by Controller initialization
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: {{ .Values.autoInstall.monitoring.values.namespace | default "observability-system" }}
+  labels:
+    app.kubernetes.io/name: edge-platform
+    app.kubernetes.io/component: observability
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    # Workspace binding - will be set by Controller initialization if not present
+    theriseunion.io/workspace: system-workspace
+    theriseunion.io/managed: "true"
+{{- end }}
