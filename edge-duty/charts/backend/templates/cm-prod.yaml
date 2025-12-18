@@ -1,0 +1,59 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "duty.backend.fullname" . }}-config
+  namespace: {{ .Release.Namespace | quote }}
+data:
+  config.prod.yaml: |
+    app:
+      name: duty
+      id: duty
+      version: v1.0
+      env: prod
+    server:
+      http:
+        addr: 0.0.0.0:8000
+        timeout: 10s
+      grpc:
+        addr: 0.0.0.0:9000
+        timeout: 10s
+    data:
+      database:
+        driver: postgres
+        source: host={{ .Values.duty.database.host }} port={{ .Values.duty.database.port }} user={{ .Values.duty.database.user }} dbname={{ .Values.duty.database.dbname }} password={{ .Values.duty.database.password }} sslmode=disable
+        debug: {{ .Values.duty.database.debug }}
+    trace:
+      disabled: {{ .Values.duty.trace.disabled }}
+      batcher: {{ .Values.duty.trace.batcher }}
+      sampler: {{ .Values.duty.trace.sampler }}
+      endpoint: {{ .Values.duty.trace.endpoint }}
+    smtp:
+      host: {{ .Values.duty.smtp.host }}
+      port: {{ .Values.duty.smtp.port }}
+      user: {{ .Values.duty.smtp.user }}
+      password: {{ .Values.duty.smtp.password }}
+      from: {{ .Values.duty.smtp.from }}
+    prometheus:
+      address: {{ .Values.duty.prometheus.address }}
+      timeout: {{ .Values.duty.prometheus.timeout }}
+      interval: {{ .Values.duty.prometheus.interval }}
+      auth: {{ .Values.duty.prometheus.auth }}
+    ali_config:
+      access_key_id: {{ .Values.duty.ali_config.access_key_id }}
+      access_key_secret: {{ .Values.duty.ali_config.access_key_secret }}
+      sms_alert:
+        tts_code: {{ .Values.duty.ali_config.sms_alert.tts_code }}
+        sign_name: {{ .Values.duty.ali_config.sms_alert.sign_name }}
+      phone_call_alert:
+        tts_code: {{ .Values.duty.ali_config.phone_call_alert.tts_code }}
+    {{- if .Values.duty.http_forward.rules }}
+    http_forward:
+      rules:
+      {{- range .Values.duty.http_forward.rules }}
+        - path_prefix: {{ .path_prefix | quote }}
+          target_url: {{ .target_url | quote }}
+          timeout: {{ .timeout | default "5s" }}
+          max_retries: {{ .max_retries | default 3 }}
+      {{- end }}
+    {{- end }}
+
