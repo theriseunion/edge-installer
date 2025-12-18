@@ -80,7 +80,7 @@ prometheus:
           - source_labels: [__meta_kubernetes_endpoint_node_name]
             target_label: node
       # Kubernetes 集群基础监控
-      - job_name: 'kubernetes-apiservers'
+      - job_name: 'apiserver'
         kubernetes_sd_configs:
           - role: endpoints
         scheme: https

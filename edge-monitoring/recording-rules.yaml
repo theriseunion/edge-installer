@@ -887,3 +887,137 @@ groups:
           sum by (cluster, namespace) (
             irate(container_network_transmit_packets_total{interface!="lo"}[5m])
           )
+
+  # ========================================================================
+  # Cluster-level Aggregation Rules
+  # Added by: Edge Team
+  # Purpose: Pre-aggregate metrics across entire cluster for time-series charts
+  # Dependencies: Requires kube-state-metrics and cadvisor metrics
+  # Note: These metrics are used by the cluster overview page time-series charts
+  # ========================================================================
+  - name: cluster-aggregation-rules
+    interval: 30s
+    rules:
+      # =====================================================
+      # Cluster CPU metrics (aggregated across entire cluster)
+      # =====================================================
+
+      # Cluster CPU usage (cores) - uses node-level metrics for accurate physical CPU usage
+      - record: cluster_cpu_usage
+        expr: |
+          sum (
+            rate(node_cpu_seconds_total{mode!="idle", mode!="iowait", mode!="steal"}[5m])
+          )
+
+      # Cluster CPU utilisation (percentage) - physical CPU / total CPU cores
+      - record: cluster_cpu_utilisation
+        expr: |
+          sum (
+            rate(node_cpu_seconds_total{mode!="idle", mode!="iowait", mode!="steal"}[5m])
+          ) / sum (
+            machine_cpu_cores
+          )
+
+      # Cluster total CPU cores available
+      - record: cluster_cpu_total
+        expr: |
+          sum (
+            machine_cpu_cores
+          )
+
+      # =====================================================
+      # Cluster Memory metrics (aggregated across entire cluster)
+      # =====================================================
+
+      # Cluster memory usage (bytes) - uses node-level metrics for accurate physical memory usage
+      - record: cluster_memory_usage
+        expr: |
+          sum (
+            node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes
+          )
+
+      # Cluster memory utilisation (percentage) - physical memory / total memory
+      - record: cluster_memory_utilisation
+        expr: |
+          sum (
+            node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes
+          ) / sum (
+            node_memory_MemTotal_bytes
+          )
+
+      # Cluster total memory available (bytes)
+      - record: cluster_memory_total
+        expr: |
+          sum (
+            node_memory_MemTotal_bytes
+          )
+
+      # =====================================================
+      # Cluster Disk metrics (aggregated across entire cluster)
+      # =====================================================
+
+      # Cluster disk usage (bytes)
+      - record: cluster_disk_size_usage
+        expr: |
+          sum (
+            node_filesystem_size_bytes{mountpoint="/"} - node_filesystem_avail_bytes{mountpoint="/"}
+          )
+
+      # Cluster disk utilisation (percentage)
+      - record: cluster_disk_size_utilisation
+        expr: |
+          sum (
+            node_filesystem_size_bytes{mountpoint="/"} - node_filesystem_avail_bytes{mountpoint="/"}
+          ) / sum (
+            node_filesystem_size_bytes{mountpoint="/"}
+          )
+
+      # Cluster total disk available (bytes)
+      - record: cluster_disk_size_total
+        expr: |
+          sum (
+            node_filesystem_size_bytes{mountpoint="/"}
+          )
+
+      # =====================================================
+      # Cluster GPU metrics (aggregated across entire cluster)
+      # =====================================================
+
+      # Cluster GPU usage (placeholder - will be 0 if no GPUs)
+      - record: cluster_gpu_usage
+        expr: |
+          sum (
+            device_gpu_utilization_percent
+          ) or vector(0)
+
+      # Cluster GPU total (placeholder - will be 0 if no GPUs)
+      - record: cluster_gpu_total
+        expr: |
+          count (
+            device_gpu_utilization_percent
+          ) or vector(0)
+
+      # =====================================================
+      # Cluster Pod and Resource Count metrics
+      # =====================================================
+
+      # Cluster total pod count
+      - record: cluster_pod_count
+        expr: |
+          sum (
+            kube_pod_info
+          )
+
+      # Cluster total node count
+      - record: cluster_node_count
+        expr: |
+          sum (
+            kube_node_info
+          )
+
+      # Cluster total namespace count
+      - record: cluster_namespace_count
+        expr: |
+          sum (
+            kube_namespace_labels
+          )
