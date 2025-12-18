@@ -63,9 +63,44 @@ spec:
       securityContext:
         {{- toYaml .Values.exporter.nvidia.podSecurityContext | nindent 8 }}
       {{- end }}
+      {{- $nvidiaHamiLabel := "gpu" }}
+      {{- $nvidiaHamiValue := "on" }}
+      {{- $nvidiaVolcanoLabel := "volcano" }}
+      {{- $nvidiaVolcanoValue := "on" }}
+      {{- if and .Root .Root.Values.controller .Root.Values.controller.config .Root.Values.controller.config.devicePlugin }}
+        {{- $nvidiaHamiConfig := index .Root.Values.controller.config.devicePlugin "nvidia-hami" }}
+        {{- if $nvidiaHamiConfig }}
+          {{- if $nvidiaHamiConfig.node_label }}
+            {{- $nvidiaHamiLabel = $nvidiaHamiConfig.node_label.key }}
+            {{- $nvidiaHamiValue = $nvidiaHamiConfig.node_label.value }}
+          {{- end }}
+        {{- end }}
+        {{- $nvidiaVolcanoConfig := index .Root.Values.controller.config.devicePlugin "nvidia-volcano" }}
+        {{- if $nvidiaVolcanoConfig }}
+          {{- if $nvidiaVolcanoConfig.node_label }}
+            {{- $nvidiaVolcanoLabel = $nvidiaVolcanoConfig.node_label.key }}
+            {{- $nvidiaVolcanoValue = $nvidiaVolcanoConfig.node_label.value }}
+          {{- end }}
+        {{- end }}
+      {{- end }}
       {{- if .Values.exporter.nvidia.affinity }}
       affinity:
         {{- toYaml .Values.exporter.nvidia.affinity | nindent 8 }}
+      {{- else }}
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: {{ $nvidiaHamiLabel }}
+                operator: In
+                values:
+                - {{ $nvidiaHamiValue | quote }}
+            - matchExpressions:
+              - key: {{ $nvidiaVolcanoLabel }}
+                operator: In
+                values:
+                - {{ $nvidiaVolcanoValue | quote }}
       {{- end }}
       {{- if .Values.exporter.nvidia.nodeSelector }}
       nodeSelector:
