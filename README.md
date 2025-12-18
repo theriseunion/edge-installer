@@ -220,6 +220,9 @@ chartmuseum:
     repository: quanzhenglong.com/edge/edge-museum
     tag: "latest"
   resources:
+    limits:
+      cpu: 100m
+      memory: 128Mi
     requests:
       cpu: 50m
       memory: 64Mi
@@ -493,8 +496,8 @@ func bindSystemNamespaces() {
 
     for _, ns := range systemNamespaces {
         // 添加 workspace label
-        namespace.Labels["theriseunion.io/workspace"] = "system-workspace"
-        namespace.Labels["theriseunion.io/managed"] = "true"
+        ns.Labels["theriseunion.io/workspace"] = "system-workspace"
+        ns.Labels["theriseunion.io/managed"] = "true"
     }
 }
 ```
