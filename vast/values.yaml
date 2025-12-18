@@ -391,6 +391,7 @@ hami:
       - key: node-role.kubernetes.io/control-plane
         operator: Exists
         effect: NoSchedule
+    prometheusAddress: "http://edge-prometheus.observability-system.svc:9090"
     kubeScheduler:
       imageTag: "v1.29.15"
       image: quanzhenglong.com/camp/kubesphere/kube-scheduler
