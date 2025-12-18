@@ -1,0 +1,19 @@
+{{- if .Values.exporter.nvidia.enabled }}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: {{ include "hami-vgpu.exporter" . }}-nvidia
+  namespace: {{ include "hami-vgpu.namespace" . }}
+  labels:
+    {{- include "hami-vgpu.labels" . | nindent 4 }}
+    app.kubernetes.io/component: "dcgm-exporter"
+subjects:
+- kind: ServiceAccount
+  name: {{ include "hami-vgpu.exporter" . }}-nvidia
+  namespace: {{ include "hami-vgpu.namespace" . }}
+roleRef:
+  kind: Role 
+  name: {{ include "hami-vgpu.exporter" . }}-nvidia-read-cm
+  apiGroup: rbac.authorization.k8s.io
+{{- end }}
+

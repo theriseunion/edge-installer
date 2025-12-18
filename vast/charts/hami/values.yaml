@@ -372,7 +372,146 @@ devices:
     enabled: false
 
 exporter:
-  nvidia: {}
+  nvidia:
+    enabled: false
+    image:
+      repository: nvcr.io/nvidia/k8s/dcgm-exporter
+      pullPolicy: IfNotPresent
+      # Image tag defaults to AppVersion, but you can use the tag key
+      # for the image tag, e.g:
+      tag: 3.3.6-3.4.2-ubuntu22.04
+    dcgm:
+      image:
+        repository: harbor.4pd.io/rise-io/camp/dcgm
+        pullPolicy: IfNotPresent
+        tag: 3.3.6-1-ubuntu22.04
+      # 是否主机上运行nv-hostengine进程，部署dcgm-exporter之前需要确认主机上是否有nv-hostengine进程，如果有，需要设置为true，
+      # 如果没有，需要设置为false，设置为false时，dcgm-exporter会自动以sidecar的方式部署nv-hostengine进程
+      isHostRunningNvHostEngineProcess: false
+    arguments: []
+    # Change the following reference to "/etc/dcgm-exporter/default-counters.csv"
+    # to stop profiling metrics from DCGM
+    # arguments: ["-f", "/etc/dcgm-exporter/dcp-metrics-included.csv"]
+    # NOTE: in general, add any command line arguments to arguments above
+    # and they will be passed through.
+    # Use "-r", "<HOST>:<PORT>" to connect to an already running hostengine
+    # Example arguments: ["-r", "host123:5555"]
+    # Use "-n" to remove the hostname tag from the output.
+    # Example arguments: ["-n"]
+    # Use "-d" to specify the devices to monitor. -d must be followed by a string
+    # in the following format: [f] or [g[:numeric_range][+]][i[:numeric_range]]
+    # Where a numeric range is something like 0-4 or 0,2,4, etc.
+    # Example arguments: ["-d", "g+i"] to monitor all GPUs and GPU instances or
+    # ["-d", "g:0-3"] to monitor GPUs 0-3.
+    # Use "-m" to specify the namespace and name of a configmap containing
+    # the watched exporter fields.
+    # Example arguments: ["-m", "default:exporter-metrics-config-map"]
+    # Overrides the chart's name
+    nameOverride: ""
+    # Overrides the chart's computed fullname
+    fullnameOverride: ""
+    # Overrides the deployment namespace
+    namespaceOverride: ""
+    # Defines the runtime class that will be used by the pod
+    runtimeClassName: ""
+    # Defines serviceAccount names for components.
+    serviceAccount:
+      # Specifies whether a service account should be created
+      create: true
+      # Annotations to add to the service account
+      annotations: {}
+      # The name of the service account to use.
+      # If not set and create is true, a name is generated using the fullname template
+      name:
+    rollingUpdate:
+      enable: true
+      # Specifies maximum number of DaemonSet pods that can be unavailable during the update
+      maxUnavailable: 1
+      # Specifies maximum number of nodes with an existing available DaemonSet pod that can have an updated DaemonSet pod during during an update
+      maxSurge: 0
+    # Labels to be added to dcgm-exporter pods
+    podLabels: {}
+    # Annotations to be added to dcgm-exporter pods
+    podAnnotations: {}
+    # Using this annotation which is required for prometheus scraping
+    # prometheus.io/scrape: "true"
+    # prometheus.io/port: "9400"
+    # The SecurityContext for the dcgm-exporter pods
+    podSecurityContext: {}
+    # fsGroup: 2000
+    # The SecurityContext for the dcgm-exporter containers
+    securityContext:
+      runAsNonRoot: false
+      runAsUser: 0
+      capabilities:
+        add: ["SYS_ADMIN", "NET_ADMIN"]
+      # readOnlyRootFilesystem: true
+    # Defines the dcgm-exporter service
+    service:
+      # When enabled, the helm chart will create service
+      enable: true
+      type: ClusterIP
+      port: 9400
+      address: ":9400"
+      # Annotations to add to the service
+      annotations: {}
+    # Allows to control pod resources
+    resources: {}
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
+    serviceMonitor:
+      enabled: true
+      interval: 15s
+      honorLabels: false
+      additionalLabels: {}
+      #monitoring: prometheus
+      relabelings:
+        - action: replace
+          sourceLabels:
+            - __meta_kubernetes_pod_node_name
+          targetLabel: node
+        - action: replace
+          sourceLabels:
+          - __meta_kubernetes_pod_node_name
+          targetLabel: pod_node
+        - action: labeldrop
+          regex: (service|endpoint)
+    #nodeSelector:
+    #  gpu: "on"
+    nodeSelector: {}
+    tolerations: []
+    #- operator: Exists
+    affinity: {}
+    #nodeAffinity:
+    #  requiredDuringSchedulingIgnoredDuringExecution:
+    #    nodeSelectorTerms:
+    #    - matchExpressions:
+    #      - key: nvidia-gpu
+    #        operator: Exists
+    extraHostVolumes: []
+    #- name: host-binaries
+    #  hostPath: /opt/bin
+    extraConfigMapVolumes:
+      - name: exporter-metrics-volume
+        configMap:
+          name: exporter-metrics-config-map
+    extraVolumeMounts:
+      - name: exporter-metrics-volume
+        mountPath: /etc/dcgm-exporter/metrics.csv
+        subPath: metrics.csv
+        readOnly: true
+    extraEnv:
+      - name: DCGM_EXPORTER_COLLECTORS
+        value: "/etc/dcgm-exporter/metrics.csv"
+    # Path to the kubelet socket for /pod-resources
+    kubeletPath: "/var/lib/kubelet/pod-resources"
+    remoteEnable: false
+    priorityClassName: ""
+    hostNetwork: false
   kunlunxin:
     enabled: false
     image: "iregistry.baidu-int.com/kunlunxin/xpu_exporter:v5.0.2-alpha.6.vf" #这个镜像目前是昆仑芯内部开发的版本

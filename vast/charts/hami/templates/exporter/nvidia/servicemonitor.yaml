@@ -1,0 +1,43 @@
+{{- if and .Values.exporter.nvidia.enabled .Values.exporter.nvidia.serviceMonitor.enabled }}
+# Copyright (c) 2021, NVIDIA CORPORATION.  All rights reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ include "hami-vgpu.exporter" . }}-nvidia
+  namespace: {{ include "hami-vgpu.namespace" . }}
+  labels:
+    {{- include "hami-vgpu.labels" . | nindent 4 }}
+    app.kubernetes.io/component: "dcgm-exporter"
+    {{- if .Values.exporter.nvidia.serviceMonitor.additionalLabels }}
+    {{- toYaml .Values.exporter.nvidia.serviceMonitor.additionalLabels | nindent 4 }}
+    {{- end }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "hami-vgpu.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: "dcgm-exporter"
+  namespaceSelector:
+    matchNames:
+    - "{{ include "hami-vgpu.namespace" . }}"
+  endpoints:
+  - port: "metrics"
+    path: "/metrics"
+    interval: "{{ .Values.exporter.nvidia.serviceMonitor.interval }}"
+    honorLabels: {{ .Values.exporter.nvidia.serviceMonitor.honorLabels }}
+    relabelings:
+      {{ toYaml .Values.exporter.nvidia.serviceMonitor.relabelings | nindent 6 }}
+{{- end -}}
+

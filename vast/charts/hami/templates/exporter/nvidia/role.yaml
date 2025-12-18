@@ -1,0 +1,16 @@
+{{- if .Values.exporter.nvidia.enabled }}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: {{ include "hami-vgpu.exporter" . }}-nvidia-read-cm
+  namespace: {{ include "hami-vgpu.namespace" . }}
+  labels:
+    {{- include "hami-vgpu.labels" . | nindent 4 }}
+    app.kubernetes.io/component: "dcgm-exporter"
+rules:
+- apiGroups: [""]
+  resources: ["configmaps"]
+  resourceNames: ["exporter-metrics-config-map"]
+  verbs: ["get"]
+{{- end }}
+

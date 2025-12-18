@@ -348,6 +348,22 @@ hami:
     enflame:
       serviceMonitor:
         enabled: false
+    nvidia:
+      enabled: true
+      image:
+        repository: quanzhenglong.com/camp/dcgm-exporter
+        pullPolicy: IfNotPresent
+        # Image tag defaults to AppVersion, but you can use the tag key
+        # for the image tag, e.g:
+        tag: 3.3.6-3.4.2-ubuntu22.04
+      dcgm:
+        image:
+          repository: quanzhenglong.com/camp/dcgm
+          pullPolicy: IfNotPresent
+          tag: 3.3.6-1-ubuntu22.04
+        # 是否主机上运行nv-hostengine进程，部署dcgm-exporter之前需要确认主机上是否有nv-hostengine进程，如果有，需要设置为true，
+        # 如果没有，需要设置为false，设置为false时，dcgm-exporter会自动以sidecar的方式部署nv-hostengine进程
+        isHostRunningNvHostEngineProcess: false
   scheduler:
     # nodeSelector:
     #   theriseunion.io/control: "true"

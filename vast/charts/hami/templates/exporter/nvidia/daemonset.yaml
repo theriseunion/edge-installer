@@ -1,0 +1,165 @@
+{{- if .Values.exporter.nvidia.enabled }}
+# Copyright (c) 2021, NVIDIA CORPORATION.  All rights reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: {{ include "hami-vgpu.exporter" . }}-nvidia
+  namespace: {{ include "hami-vgpu.namespace" . }}
+  labels:
+    {{- include "hami-vgpu.labels" . | nindent 4 }}
+    app.kubernetes.io/component: "dcgm-exporter"
+spec:
+  updateStrategy:
+    type: RollingUpdate
+    {{- if .Values.exporter.nvidia.rollingUpdate.enable }}
+    rollingUpdate:
+      maxUnavailable: {{ .Values.exporter.nvidia.rollingUpdate.maxUnavailable }}
+      maxSurge: {{ .Values.exporter.nvidia.rollingUpdate.maxSurge }}
+    {{- end }}
+  selector:
+    matchLabels:
+      {{- include "hami-vgpu.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: "dcgm-exporter"
+  template:
+    metadata:
+      labels:
+        {{- include "hami-vgpu.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: "dcgm-exporter"
+      {{- if .Values.exporter.nvidia.podLabels }}
+        {{- toYaml .Values.exporter.nvidia.podLabels | nindent 8 }}
+      {{- end }}
+      {{- if .Values.exporter.nvidia.podAnnotations }}
+      annotations:
+        {{- toYaml .Values.exporter.nvidia.podAnnotations | nindent 8 }}
+      {{- end }}
+    spec:
+      {{- if .Values.exporter.nvidia.runtimeClassName }}
+      runtimeClassName: {{ .Values.exporter.nvidia.runtimeClassName }}
+      {{- end }}
+      priorityClassName: {{ .Values.exporter.nvidia.priorityClassName | default "system-node-critical" }}
+      {{- if .Values.exporter.nvidia.hostNetwork }}
+      hostNetwork: {{ .Values.exporter.nvidia.hostNetwork }}
+      dnsPolicy: ClusterFirstWithHostNet
+      {{- end }}
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "hami-vgpu.exporter" . }}-nvidia
+      {{- if .Values.exporter.nvidia.podSecurityContext }}
+      securityContext:
+        {{- toYaml .Values.exporter.nvidia.podSecurityContext | nindent 8 }}
+      {{- end }}
+      {{- if .Values.exporter.nvidia.affinity }}
+      affinity:
+        {{- toYaml .Values.exporter.nvidia.affinity | nindent 8 }}
+      {{- end }}
+      {{- if .Values.exporter.nvidia.nodeSelector }}
+      nodeSelector:
+        {{- toYaml .Values.exporter.nvidia.nodeSelector | nindent 8 }}
+      {{- end }}
+      {{- with .Values.exporter.nvidia.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 6 }}
+      {{- end }}
+      volumes:
+      - name: "pod-gpu-resources"
+        hostPath:
+          path: {{ .Values.exporter.nvidia.kubeletPath }}
+      {{- range .Values.exporter.nvidia.extraHostVolumes }}
+      - name: {{ .name | quote }}
+        hostPath:
+          path: {{ .hostPath | quote }}
+      {{- end }}
+      {{- with .Values.exporter.nvidia.extraConfigMapVolumes }}
+      {{- toYaml . | nindent 6 }}
+      {{- end }}
+      containers:
+      - name: exporter
+        securityContext:
+          {{- toYaml .Values.exporter.nvidia.securityContext | nindent 10 }}
+        {{- if .Values.exporter.nvidia.image.tag }}
+        image: "{{ .Values.exporter.nvidia.image.repository }}:{{ .Values.exporter.nvidia.image.tag }}"
+        {{- else }}
+        image: "{{ .Values.exporter.nvidia.image.repository }}:3.3.6-3.4.2-ubuntu22.04"
+        {{- end }}
+        imagePullPolicy: "{{ .Values.exporter.nvidia.image.pullPolicy }}"
+        args:
+        {{- range .Values.exporter.nvidia.arguments }}
+        - {{ . }}
+        {{- end }}
+        env:
+        - name: "DCGM_EXPORTER_KUBERNETES"
+          value: "true"
+        - name: "DCGM_EXPORTER_LISTEN"
+          value: "{{ .Values.exporter.nvidia.service.address }}"
+        - name: NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        - name: HOST_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.hostIP
+        {{- if .Values.exporter.nvidia.dcgm.isHostRunningNvHostEngineProcess }}
+        - name: DCGM_REMOTE_HOSTENGINE_INFO
+          value: "$(HOST_IP):5555"
+        {{- else }}
+        - name: DCGM_REMOTE_HOSTENGINE_INFO
+          value: "localhost:5555"
+        {{- end }}
+        {{- if .Values.exporter.nvidia.extraEnv }}
+        {{- toYaml .Values.exporter.nvidia.extraEnv | nindent 8 }}
+        {{- end }}
+        ports:
+        - name: "metrics"
+          containerPort: {{ .Values.exporter.nvidia.service.port }}
+        volumeMounts:
+        - name: "pod-gpu-resources"
+          readOnly: true
+          mountPath: "/var/lib/kubelet/pod-resources"
+        {{- if .Values.exporter.nvidia.extraVolumeMounts }}
+        {{- toYaml .Values.exporter.nvidia.extraVolumeMounts | nindent 8 }}
+        {{- end }}
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: {{ .Values.exporter.nvidia.service.port }}
+          initialDelaySeconds: 45
+          periodSeconds: 5
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: {{ .Values.exporter.nvidia.service.port }}
+          initialDelaySeconds: 45
+        {{- if .Values.exporter.nvidia.resources }}
+        resources:
+          {{- toYaml .Values.exporter.nvidia.resources | nindent 10 }}
+        {{- end }}
+      {{- if not .Values.exporter.nvidia.dcgm.isHostRunningNvHostEngineProcess }}
+      - name: dcgm
+        image: "{{ .Values.exporter.nvidia.dcgm.image.repository }}:{{ .Values.exporter.nvidia.dcgm.image.tag }}"
+        imagePullPolicy: {{ .Values.exporter.nvidia.dcgm.image.pullPolicy }}
+        ports:
+          - containerPort: 5555
+            protocol: TCP
+        securityContext:
+          capabilities:
+            add:
+              - SYS_ADMIN
+      {{- end }}
+{{- end }}
+
