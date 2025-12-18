@@ -229,6 +229,9 @@ controller:
         - kube-node-lease
         - vast-system
         - cert-manager
+        - observability-system
+        - rise-vast-system
+        - prometheus
     admission:
       failurePolicy: Fail
       sideEffects: None
