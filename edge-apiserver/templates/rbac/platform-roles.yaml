@@ -1,3 +1,5 @@
+{{- if or (eq .Values.global.mode "all") (eq .Values.global.mode "host") }}
+---
 apiVersion: iam.theriseunion.io/v1alpha1
 kind: IAMRole
 metadata:
@@ -51,3 +53,4 @@ spec:
       matchLabels:
         iam.theriseunion.io/aggregate-to-regular: ""
         iam.theriseunion.io/scope: platform
+{{- end }}
