@@ -23,12 +23,12 @@ replicaCount: 1
 
 # Resource limits and requests
 resources:
-  requests:  # 必须配置，满足资源配额要求
-    cpu: "100m"    # 100 毫核 = 0.1 核（根据配额要求调整，不能为 0）
-    memory: "256Mi"# 256MB 内存（根据配额要求调整）
-  limits:  # 可选，建议配置，避免资源滥用
-    cpu: "500m"    # 最大 CPU 限制
-    memory: "512Mi"# 最大内存限制
+  requests:
+    cpu: "100m"
+    memory: "256Mi"
+  limits:
+    cpu: "500m"
+    memory: "512Mi"
 
 # Health check configuration
 healthCheck:
@@ -42,19 +42,10 @@ healthCheck:
 
 # Security context configuration
 securityContext:
-  runAsUser: 0
+  runAsUser: 0  # 保留root运行
   fsGroup: 101
-  allowPrivilegeEscalation: false
+  allowPrivilegeEscalation: true  # 允许权限提升（Nginx需要）
   runAsNonRoot: false
-  capabilities:
-    drop:
-      - ALL
-    add:
-      - CAP_NET_BIND_SERVICE
-      - CAP_CHOWN
-      - CAP_DAC_OVERRIDE
-      - CAP_SETGID
-      - CAP_SETUID
 
 # Node selector (optional)
 nodeSelector: {}

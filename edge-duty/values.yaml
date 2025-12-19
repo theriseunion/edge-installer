@@ -38,6 +38,7 @@ duty:
       phone_call_alert:
         tts_code: ""
     prometheus:
+      namespace: observability-system
       address: http://prometheus-kube-prometheus-prometheus.prometheus.svc.cluster.local:9090
       timeout: 1m
       interval: 30m
@@ -97,7 +98,7 @@ duty-web:
   image:
     registry: "quanzhenglong.com"
     repository: "camp/console-ui"
-    tag: "feat-simple-duty-01"
+    tag: "feat-simple-duty-06"
     pullPolicy: IfNotPresent
   containerPort: 80
   svc:

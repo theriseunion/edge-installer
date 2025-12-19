@@ -13,6 +13,14 @@ global:
 # Prometheus 配置
 prometheus:
   enabled: true
+  rules:
+    # 需匹配 Prometheus 实例的 ruleSelector 标签
+    additionalLabels:
+      release: prometheus
+    # 可选注解
+    annotations:
+      meta.helm.sh/release-name: { { .Release.Name } }
+      meta.helm.sh/release-namespace: { { .Release.Namespace } }
   image:
     # 镜像名称（会自动拼接 global.imageRegistry）
     name: edge/prometheus

@@ -1,5 +1,19 @@
 backend:
   fullnameOverride: "duty"
+  serviceUrl: "http://duty.observability-system.svc.cluster.local:80/v1/webhook/alertmanager"
+
+alertManagerConfig:
+  enabled: true
+  sendResolved: true
+  name: "duty-webhook-config"
+  namespace: "observability-system"
+  labels:
+    alertmanager-config: "duty"
+    app.kubernetes.io/name: "duty"
+    app.kubernetes.io/instance: "duty"
+  route:
+    receiver: "duty-webhook"
+    continue: true
 
 #backend
 duty:
