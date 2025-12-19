@@ -72,6 +72,15 @@ controller:
   # Health check port
   healthPort: 8081
 
+# Node selector - Schedule on control plane nodes (Kubernetes 1.20+)
+nodeSelector:
+  node-role.kubernetes.io/control-plane: ""
+  # For older Kubernetes versions (< 1.20), use:
+  # node-role.kubernetes.io/master: ""
+  #
+  # To schedule on any node, set to empty:
+  # nodeSelector: {}
+
 # ChartMuseum configuration
 chartmuseum:
   enabled: true

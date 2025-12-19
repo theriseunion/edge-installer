@@ -19,6 +19,21 @@ spec:
         component: prometheus
     spec:
       serviceAccountName: edge-prometheus
+      tolerations:
+      - effect: NoExecute
+        key: node.kubernetes.io/not-ready
+        operator: Exists
+        tolerationSeconds: 300
+      - effect: NoExecute
+        key: node.kubernetes.io/unreachable
+        operator: Exists
+        tolerationSeconds: 300
+      - key: node-role.kubernetes.io/edge
+        operator: Exists
+        effect: NoSchedule
+      - key: scope.theriseunion.io/nodegroup
+        operator: Exists
+        effect: NoSchedule
       containers:
       - name: prometheus
         image: {{ .Values.global.imageRegistry }}/{{ .Values.prometheus.image.name }}:{{ .Values.prometheus.image.tag }}

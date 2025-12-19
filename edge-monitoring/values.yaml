@@ -33,10 +33,10 @@ prometheus:
   resources:
     requests:
       memory: "512Mi"
-      cpu: "250m"
-    limits:
-      memory: "1Gi"
       cpu: "500m"
+    limits:
+      memory: "5Gi"
+      cpu: "3000m"
 
   # 配置文件
   config:
@@ -80,7 +80,7 @@ prometheus:
           - source_labels: [__meta_kubernetes_endpoint_node_name]
             target_label: node
       # Kubernetes 集群基础监控
-      - job_name: 'kubernetes-apiservers'
+      - job_name: 'apiserver'
         kubernetes_sd_configs:
           - role: endpoints
         scheme: https
