@@ -10,20 +10,25 @@ metadata:
     app: {{ include "duty.backend.fullname" . }}
     component: rbac
 rules:
-# Services权限 - 仅针对ExternalName Service
-- apiGroups: [""]
-  resources: ["services"]
-  verbs: ["create", "get", "list", "watch", "update", "patch", "delete"]
+  # Services权限 - 仅针对ExternalName Service
+  - apiGroups: [""]
+    resources: ["services"]
+    verbs: ["create", "get", "list", "watch", "update", "patch", "delete"]
 
-# Traefik IngressRoute权限 - 管理路由规则
-- apiGroups: ["traefik.io"]
-  resources: ["ingressroutes", "middlewares"]
-  verbs: ["create", "get", "list", "watch", "update", "patch", "delete"]
+  # Traefik IngressRoute权限 - 管理路由规则
+  - apiGroups: ["traefik.io"]
+    resources: ["ingressroutes", "middlewares"]
+    verbs: ["create", "get", "list", "watch", "update", "patch", "delete"]
 
-# Namespaces权限 - 获取命名空间信息
-- apiGroups: [""]
-  resources: ["namespaces"]
-  verbs: ["get"]
+  # Namespaces权限 - 获取命名空间信息
+  - apiGroups: [""]
+    resources: ["namespaces"]
+    verbs: ["get"]
+
+  # 新增 PrometheusRule 权限（解决创建 forbidden 问题）
+  - apiGroups: ["monitoring.coreos.com"]
+    resources: ["prometheusrules"]
+    verbs: ["create", "get", "list", "watch", "update", "patch", "delete"]
 
 ---
 apiVersion: rbac.authorization.k8s.io/v1
@@ -36,9 +41,9 @@ metadata:
     app: {{ include "duty.backend.fullname" . }}
     component: rbac
 subjects:
-- kind: ServiceAccount
-  name: {{ include "duty.serviceAccountName" . }}
-  namespace: {{ .Release.Namespace }}
+  - kind: ServiceAccount
+    name: {{ include "duty.serviceAccountName" . }}
+    namespace: {{ .Release.Namespace }}
 roleRef:
   kind: Role
   name: {{ include "duty.backend.fullname" . }}-role

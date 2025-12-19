@@ -26,16 +26,6 @@ spec:
               {{- with .Values.duty.env }}
               {{- toYaml . | nindent 14 }}
               {{- end }}
-              - name: JWT_SECRET
-                valueFrom:
-                  secretKeyRef:
-                    name: camp-jwt-secret
-                    key: JWT_SECRET
-              - name: ADMIN_JWT_TOKEN
-                valueFrom:
-                  secretKeyRef:
-                    name: camp-jwt-secret
-                    key: ADMIN_JWT_TOKEN
             args:
               - "--conf"
               - "/apps/config/config.prod.yaml"
@@ -84,16 +74,6 @@ spec:
               {{- with .Values.duty.env }}
               {{- toYaml . | nindent 14 }}
               {{- end }}
-              - name: JWT_SECRET
-                valueFrom:
-                  secretKeyRef:
-                    name: camp-jwt-secret
-                    key: JWT_SECRET
-              - name: ADMIN_JWT_TOKEN
-                valueFrom:
-                  secretKeyRef:
-                    name: camp-jwt-secret
-                    key: ADMIN_JWT_TOKEN
             args:
               - "--conf"
               - "/apps/config/config.prod.yaml"
@@ -142,11 +122,6 @@ spec:
               {{- with .Values.duty.env }}
               {{- toYaml . | nindent 14 }}
               {{- end }}
-              - name: ADMIN_JWT_TOKEN
-                valueFrom:
-                  secretKeyRef:
-                    name: camp-jwt-secret
-                    key: ADMIN_JWT_TOKEN
             args:
               - "--conf"
               - "/apps/config/config.prod.yaml"
@@ -195,11 +170,6 @@ spec:
               {{- with .Values.duty.env }}
               {{- toYaml . | nindent 14 }}
               {{- end }}
-              - name: ADMIN_JWT_TOKEN
-                valueFrom:
-                  secretKeyRef:
-                    name: camp-jwt-secret
-                    key: ADMIN_JWT_TOKEN
             args:
               - "--conf"
               - "/apps/config/config.prod.yaml"
@@ -248,11 +218,6 @@ spec:
               {{- with .Values.duty.env }}
               {{- toYaml . | nindent 14 }}
               {{- end }}
-              - name: ADMIN_JWT_TOKEN
-                valueFrom:
-                  secretKeyRef:
-                    name: camp-jwt-secret
-                    key: ADMIN_JWT_TOKEN
             args:
               - "--conf"
               - "/apps/config/config.prod.yaml"
