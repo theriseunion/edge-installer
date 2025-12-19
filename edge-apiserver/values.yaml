@@ -1,5 +1,14 @@
 # Edge API Server Configuration - Focused on RBAC Management
 
+# Global configuration
+global:
+  # Installation mode: all, host, member, none
+  #   - all: install all components (for standalone clusters)
+  #   - host: install apiserver, controller, console, monitoring (for host clusters)
+  #   - member: install apiserver, controller, monitoring (for member clusters)
+  #   - none: only install controller infrastructure, no components
+  mode: "all"
+
 replicaCount: 1
 
 # Override the full name to remove edge- prefix
