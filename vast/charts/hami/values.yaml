@@ -457,7 +457,10 @@ exporter:
       port: 9400
       address: ":9400"
       # Annotations to add to the service
-      annotations: {}
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/path: "/metrics"
+      # Note: prometheus.io/port is automatically set from service.port in the template
     # Allows to control pod resources
     resources: {}
     # limits:

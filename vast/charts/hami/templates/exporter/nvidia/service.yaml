@@ -21,10 +21,11 @@ metadata:
   labels:
     {{- include "hami-vgpu.labels" . | nindent 4 }}
     app.kubernetes.io/component: "dcgm-exporter"
-  {{- with .Values.exporter.nvidia.service.annotations }}
   annotations:
-  {{- toYaml . | nindent 4 }}
+  {{- with .Values.exporter.nvidia.service.annotations }}
+    {{- toYaml . | nindent 4 }}
   {{- end }}
+    prometheus.io/port: "{{ .Values.exporter.nvidia.service.port }}"
 spec:
   type: {{ .Values.exporter.nvidia.service.type }}
   ports:
