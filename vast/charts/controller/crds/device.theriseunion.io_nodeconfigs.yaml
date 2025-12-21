@@ -18,23 +18,23 @@ spec:
     - jsonPath: .spec.devicePlugins
       name: DevicePlugins
       type: string
-    - jsonPath: .status.capacity.core
+    - jsonPath: .status.allocatable.core
       name: TotalCore
       type: string
-    - jsonPath: .status.capacity.memory
+    - jsonPath: .status.allocatable.memory
       name: TotalMemory
       type: string
-    - jsonPath: .status.capacity.splitCount
+    - jsonPath: .status.allocatable.splitCount
       name: TotalSplitCount
       type: string
-    - jsonPath: .status.allocated.core
-      name: AllocatedCore
+    - jsonPath: .status.requested.core
+      name: RequestedCore
       type: string
-    - jsonPath: .status.allocated.memory
-      name: AllocatedMemory
+    - jsonPath: .status.requested.memory
+      name: RequestedMemory
       type: string
-    - jsonPath: .status.allocated.splitCount
-      name: AllocatedSplitCount
+    - jsonPath: .status.requested.splitCount
+      name: RequestedSplitCount
       type: string
     - jsonPath: .status.updateTime
       name: UpdateTime
@@ -104,29 +104,9 @@ spec:
           status:
             description: NodeConfigStatus defines the observed state of NodeConfig
             properties:
-              allocated:
-                description: Allocated is the current resource allocated of the node
-                properties:
-                  core:
-                    format: int32
-                    type: integer
-                  count:
-                    format: int32
-                    type: integer
-                  memory:
-                    format: int32
-                    type: integer
-                  splitCount:
-                    format: int32
-                    type: integer
-                required:
-                - core
-                - count
-                - memory
-                - splitCount
-                type: object
-              capacity:
-                description: Capacity is the total resource capacity of the node
+              allocatable:
+                description: Allocatable is the total resource allocatable of the
+                  node
                 properties:
                   core:
                     format: int32
@@ -159,13 +139,12 @@ spec:
                         compute template to use for this device.
                       properties:
                         computeSplitMode:
-                          default: hami-core
+                          default: soft
                           description: ComputeSplitMode defines the compute split
-                            mode (e.g., "mig" means split into MIG devices)
+                            mode (e.g., hard means mig, soft means hami-core)
                           enum:
-                          - mig
-                          - hami-core
-                          - mps
+                          - hard
+                          - soft
                           type: string
                         computeSplitStrategy:
                           description: ComputeSplitStrategy 算力切分策略，不同的切分模式可能有不同的的切分策略
@@ -214,35 +193,34 @@ spec:
                       type: string
                   type: object
                 type: array
+              limit:
+                description: Limit is the current resource limit of the node
+                properties:
+                  core:
+                    format: int32
+                    type: integer
+                  count:
+                    format: int32
+                    type: integer
+                  memory:
+                    format: int32
+                    type: integer
+                  splitCount:
+                    format: int32
+                    type: integer
+                required:
+                - core
+                - count
+                - memory
+                - splitCount
+                type: object
               manufactureStatuses:
                 description: ManufactureStatuses is the status of each manufacturer
                 items:
                   properties:
-                    allocated:
-                      description: Allocated is the current resource allocated of
+                    allocatable:
+                      description: Allocatable is the total resource allocatable of
                         the node with the specified manufacturer
-                      properties:
-                        core:
-                          format: int32
-                          type: integer
-                        count:
-                          format: int32
-                          type: integer
-                        memory:
-                          format: int32
-                          type: integer
-                        splitCount:
-                          format: int32
-                          type: integer
-                      required:
-                      - core
-                      - count
-                      - memory
-                      - splitCount
-                      type: object
-                    capacity:
-                      description: Capacity is the total resource capacity of the
-                        node with the specified manufacturer
                       properties:
                         core:
                           format: int32
@@ -266,10 +244,54 @@ spec:
                       description: DriverVersion is the version of the driver installed
                         on the node
                       type: string
+                    limit:
+                      description: Limit is the current resource limit of the node
+                        with the specified manufacturer
+                      properties:
+                        core:
+                          format: int32
+                          type: integer
+                        count:
+                          format: int32
+                          type: integer
+                        memory:
+                          format: int32
+                          type: integer
+                        splitCount:
+                          format: int32
+                          type: integer
+                      required:
+                      - core
+                      - count
+                      - memory
+                      - splitCount
+                      type: object
                     manufacturer:
                       description: Manufacturer defines the GPU manufacturer (e.g.,
                         "Alibaba", "AMD", "Intel")
                       type: string
+                    requested:
+                      description: Requested is the current resource requested of
+                        the node with the specified manufacturer
+                      properties:
+                        core:
+                          format: int32
+                          type: integer
+                        count:
+                          format: int32
+                          type: integer
+                        memory:
+                          format: int32
+                          type: integer
+                        splitCount:
+                          format: int32
+                          type: integer
+                      required:
+                      - core
+                      - count
+                      - memory
+                      - splitCount
+                      type: object
                     supportDeviceLevelSchedule:
                       default: true
                       description: |-
@@ -288,6 +310,27 @@ spec:
                       type: string
                   type: object
                 type: array
+              request:
+                description: Request is the current resource requested of the node
+                properties:
+                  core:
+                    format: int32
+                    type: integer
+                  count:
+                    format: int32
+                    type: integer
+                  memory:
+                    format: int32
+                    type: integer
+                  splitCount:
+                    format: int32
+                    type: integer
+                required:
+                - core
+                - count
+                - memory
+                - splitCount
+                type: object
               updateTime:
                 description: UpdateTime 节点配置最后更新时间
                 format: date-time

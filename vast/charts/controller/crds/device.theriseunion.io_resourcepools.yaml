@@ -53,27 +53,7 @@ spec:
           status:
             description: ResourcePoolStatus defines the observed state of ResourcePool
             properties:
-              allocated:
-                properties:
-                  core:
-                    format: int32
-                    type: integer
-                  count:
-                    format: int32
-                    type: integer
-                  memory:
-                    format: int32
-                    type: integer
-                  splitCount:
-                    format: int32
-                    type: integer
-                required:
-                - core
-                - count
-                - memory
-                - splitCount
-                type: object
-              capacity:
+              allocatable:
                 properties:
                   core:
                     format: int32
@@ -105,6 +85,46 @@ spec:
                   - scope
                   type: object
                 type: array
+              limit:
+                properties:
+                  core:
+                    format: int32
+                    type: integer
+                  count:
+                    format: int32
+                    type: integer
+                  memory:
+                    format: int32
+                    type: integer
+                  splitCount:
+                    format: int32
+                    type: integer
+                required:
+                - core
+                - count
+                - memory
+                - splitCount
+                type: object
+              requested:
+                properties:
+                  core:
+                    format: int32
+                    type: integer
+                  count:
+                    format: int32
+                    type: integer
+                  memory:
+                    format: int32
+                    type: integer
+                  splitCount:
+                    format: int32
+                    type: integer
+                required:
+                - core
+                - count
+                - memory
+                - splitCount
+                type: object
             type: object
         type: object
     served: true

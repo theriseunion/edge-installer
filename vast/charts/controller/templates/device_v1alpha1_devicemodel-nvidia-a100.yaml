@@ -31,8 +31,8 @@ spec:
   memoryStep: 256
   model: NVIDIA A100-PCIE-40GB
   supportComputeSplitMode:
-  - mig
-  - hami-core
+  - hard
+  - soft
   supportVirtualDevice: true
 ---
 apiVersion: device.theriseunion.io/v1alpha1

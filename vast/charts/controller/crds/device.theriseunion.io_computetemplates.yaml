@@ -70,13 +70,12 @@ spec:
           spec:
             properties:
               computeSplitMode:
-                default: hami-core
+                default: soft
                 description: ComputeSplitMode defines the compute split mode (e.g.,
-                  "mig" means split into MIG devices)
+                  hard means mig, soft means hami-core)
                 enum:
-                - mig
-                - hami-core
-                - mps
+                - hard
+                - soft
                 type: string
               computeSplitStrategy:
                 description: ComputeSplitStrategy 算力切分策略，不同的切分模式可能有不同的的切分策略

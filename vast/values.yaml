@@ -33,7 +33,7 @@ apiserver:
   # Image configuration
   image:
     repository: quanzhenglong.com/edge/apiserver
-    tag: vast-v0.1.0-26
+    tag: vast-v0.1.31
     pullPolicy: IfNotPresent
 
   # Namespace override (defaults to Release.Namespace)
@@ -164,7 +164,7 @@ controller:
   # Image configuration
   image:
     repository: quanzhenglong.com/edge/controller
-    tag: vast-v0.1.0-26
+    tag: vast-v0.1.31
     pullPolicy: IfNotPresent
 
   # Kube RBAC Proxy configuration

@@ -71,30 +71,8 @@ spec:
                   description: ItemStatus defines the observed state of a device in
                     the resource pool item.
                   properties:
-                    allocated:
-                      description: Allocated represents the current resource allocated
-                        of the GPU card.
-                      properties:
-                        core:
-                          format: int32
-                          type: integer
-                        count:
-                          format: int32
-                          type: integer
-                        memory:
-                          format: int32
-                          type: integer
-                        splitCount:
-                          format: int32
-                          type: integer
-                      required:
-                      - core
-                      - count
-                      - memory
-                      - splitCount
-                      type: object
-                    capacity:
-                      description: Capacity represents the total resource capacity
+                    allocatable:
+                      description: Allocatable represents the total resource allocatable
                         of the GPU card.
                       properties:
                         core:
@@ -133,6 +111,28 @@ spec:
                       - DevicePluginError
                       - Unknown
                       type: string
+                    limit:
+                      description: Limit represents the current resource limit of
+                        the GPU card.
+                      properties:
+                        core:
+                          format: int32
+                          type: integer
+                        count:
+                          format: int32
+                          type: integer
+                        memory:
+                          format: int32
+                          type: integer
+                        splitCount:
+                          format: int32
+                          type: integer
+                      required:
+                      - core
+                      - count
+                      - memory
+                      - splitCount
+                      type: object
                     memoryName:
                       description: MemoryName specifies the memory name of the device
                         (e.g., "nvidia.com/gpu-memory").
@@ -144,6 +144,28 @@ spec:
                       description: NodeName identifies the node where the GPU card
                         is located (matches ResourceItem.NodeName).
                       type: string
+                    request:
+                      description: Request represents the current resource requested
+                        of the GPU card.
+                      properties:
+                        core:
+                          format: int32
+                          type: integer
+                        count:
+                          format: int32
+                          type: integer
+                        memory:
+                          format: int32
+                          type: integer
+                        splitCount:
+                          format: int32
+                          type: integer
+                      required:
+                      - core
+                      - count
+                      - memory
+                      - splitCount
+                      type: object
                     resourceName:
                       description: ResourceName specifies the resource name of the
                         device (e.g., "nvidia.com/gpu").
