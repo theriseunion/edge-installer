@@ -134,9 +134,28 @@ example-member: ## Example: Install member cluster
 		--set global.mode=member \
 		--set autoInstall.monitoring.enabled=false
 
+# 应用vast CRDs
+.PHONY: apply-vast-crds
+apply-vast-crds: ## Apply VAST CRDs manually (required before upgrade)
+	@echo "Applying VAST CRDs..."
+	@kubectl apply -f vast/charts/controller/crds/ || true
+	@echo "Waiting for CRDs to be established..."
+	@kubectl wait --for condition=established --timeout=60s \
+		crds/computetemplates.device.theriseunion.io \
+		crds/nodeconfigs.device.theriseunion.io \
+		crds/devicemodels.device.theriseunion.io \
+		crds/resourcepools.device.theriseunion.io \
+		crds/resourcepoolitems.device.theriseunion.io \
+		crds/globalconfigs.device.theriseunion.io \
+		crds/repositories.registry.theriseunion.io \
+		crds/registries.registry.theriseunion.io \
+		crds/clusterrepositories.registry.theriseunion.io \
+		crds/clusterregistries.registry.theriseunion.io \
+		2>/dev/null || echo "Some CRDs may not exist yet, continuing..."
+
 # 部署vast
 .PHONY: install-vast
-install-vast: ## Install VAST platform
+install-vast: apply-vast-crds ## Install VAST platform
 	@echo "Creating namespaces if they don't exist..."
 	@kubectl create namespace cert-manager --dry-run=client -o yaml | kubectl apply -f - || true
 	@kubectl create namespace rise-vast-system --dry-run=client -o yaml | kubectl apply -f - || true
