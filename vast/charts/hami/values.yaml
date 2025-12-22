@@ -489,7 +489,10 @@ exporter:
     #nodeSelector:
     #  gpu: "on"
     nodeSelector: {}
-    tolerations: []
+    tolerations:
+    - key: node-role.kubernetes.io/edge
+      operator: Exists
+      effect: NoSchedule
     #- operator: Exists
     affinity: {}
     #nodeAffinity:

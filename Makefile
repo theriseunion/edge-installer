@@ -155,7 +155,7 @@ apply-vast-crds: ## Apply VAST CRDs manually (required before upgrade)
 
 # 部署vast
 .PHONY: install-vast
-install-vast: apply-vast-crds ## Install VAST platform
+install-vast: ## Install VAST platform
 	@echo "Creating namespaces if they don't exist..."
 	@kubectl create namespace cert-manager --dry-run=client -o yaml | kubectl apply -f - || true
 	@kubectl create namespace rise-vast-system --dry-run=client -o yaml | kubectl apply -f - || true
