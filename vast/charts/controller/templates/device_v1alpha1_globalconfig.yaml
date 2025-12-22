@@ -9,4 +9,4 @@ spec:
   gpuScheduling: spread
   nodeScheduling: binpack
   resourceAwareness: allocation_rate
-  resourcePoolEnabled: true
+  resourcePoolEnabled: false
