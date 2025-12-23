@@ -56,6 +56,10 @@ spec:
             - name: CHARTMUSEUM_ENABLED
               value: "true"
             {{- end }}
+            {{- if eq .Values.global.mode "member" }}
+            - name: CLUSTER_ROLE
+              value: member
+            {{- end }}
           volumeMounts:
             - name: helm-cache
               mountPath: /tmp/.helm
