@@ -1,0 +1,30 @@
+---
+# VAST Device API Reverse Proxy
+# 透传代理所有 VAST device API 请求（包括 v1alpha1 资源和 openapi/v2 端点）
+# 上游 VAST apiserver 已使用 /oapis/device.vast.theriseunion.io/* 路径，无需重写
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: ReverseProxy
+metadata:
+  name: vast-device-proxy
+  namespace: edge-system
+  labels:
+    app: vast-apiserver
+    component: reverse-proxy
+  annotations:
+    theriseunion.io/description: VAST device API proxy - transparently proxies all VAST API requests
+    openapi-endpoint: /openapi/v2
+spec:
+  # 匹配所有 /oapis/device.vast.theriseunion.io/* 路径（包括 v1alpha1 和 openapi/v2）
+  matcher:
+    method: '*'
+    path: /oapis/device.vast.theriseunion.io/*
+
+  # 上游 VAST apiserver
+  upstream:
+    host: apiserver.rise-vast-system.svc.cluster.local
+    port: 8443
+    scheme: https
+    insecureSkipVerify: true
+
+  # 不需要任何 rewrite，直接透传路径（上游已使用 /oapis/device.vast.theriseunion.io/* 路径）
+  # directives: {}
