@@ -90,7 +90,7 @@ chartmuseum:
   fullnameOverride: "chartmuseum"
 
   image:
-    repository: quanzhenglong.com/edge/edge-museum
+    repository: edge/edge-museum
     tag: "latest"
     pullPolicy: IfNotPresent
 

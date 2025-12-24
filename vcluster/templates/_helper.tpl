@@ -3,7 +3,8 @@
 {{- if .Values.controlPlane.statefulSet.image.tag -}}
 {{- $tag = .Values.controlPlane.statefulSet.image.tag -}}
 {{- end -}}
-{{- include "vcluster.image" (dict "defaultImageRegistry" .Values.controlPlane.advanced.defaultImageRegistry "tag" $tag "registry" .Values.controlPlane.statefulSet.image.registry "repository" .Values.controlPlane.statefulSet.image.repository) -}}
+{{- $defaultRegistry := default .Values.controlPlane.advanced.defaultImageRegistry .Values.global.imageRegistry -}}
+{{- include "vcluster.image" (dict "defaultImageRegistry" $defaultRegistry "tag" $tag "registry" .Values.controlPlane.statefulSet.image.registry "repository" .Values.controlPlane.statefulSet.image.repository) -}}
 {{- end -}}
 
 {{- define "vcluster.image" -}}

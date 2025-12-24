@@ -27,7 +27,7 @@
 {{- include "vcluster.oldPlugins.initContainers" . }}
 {{- include "vcluster.plugins.initContainers" . }}
 - name: kubernetes
-  image: "{{ include "vcluster.image" (dict "defaultImageRegistry" .Values.controlPlane.advanced.defaultImageRegistry "registry" .Values.controlPlane.distro.k8s.image.registry "repository" .Values.controlPlane.distro.k8s.image.repository "tag" (include "vcluster.k8s.image.tag" .)) }}"
+  image: "{{ include "vcluster.image" (dict "defaultImageRegistry" (default .Values.controlPlane.advanced.defaultImageRegistry .Values.global.imageRegistry) "registry" .Values.controlPlane.distro.k8s.image.registry "repository" .Values.controlPlane.distro.k8s.image.repository "tag" (include "vcluster.k8s.image.tag" .)) }}"
   volumeMounts:
     - mountPath: /binaries
       name: binaries
@@ -53,7 +53,7 @@
 {{- include "vcluster.oldPlugins.initContainers" . }}
 {{- include "vcluster.plugins.initContainers" . }}
 - name: vcluster
-  image: "{{ include "vcluster.image" (dict "defaultImageRegistry" .Values.controlPlane.advanced.defaultImageRegistry "registry" .Values.controlPlane.distro.k3s.image.registry "repository" .Values.controlPlane.distro.k3s.image.repository "tag" .Values.controlPlane.distro.k3s.image.tag) }}"
+  image: "{{ include "vcluster.image" (dict "defaultImageRegistry" (default .Values.controlPlane.advanced.defaultImageRegistry .Values.global.imageRegistry) "registry" .Values.controlPlane.distro.k3s.image.registry "repository" .Values.controlPlane.distro.k3s.image.repository "tag" .Values.controlPlane.distro.k3s.image.tag) }}"
   command:
     - /bin/sh
   args:
@@ -82,8 +82,8 @@
 {{- if not $container.image }}
 {{- continue }}
 {{- end }}
-- {{- if $.Values.controlPlane.advanced.defaultImageRegistry }}
-  image: {{ $.Values.controlPlane.advanced.defaultImageRegistry }}/{{ $container.image }}
+- {{- if (default $.Values.controlPlane.advanced.defaultImageRegistry $.Values.global.imageRegistry) }}
+  image: {{ (default $.Values.controlPlane.advanced.defaultImageRegistry $.Values.global.imageRegistry) }}/{{ $container.image }}
   {{- else }}
   image: {{ $container.image }}
   {{- end }}
@@ -139,8 +139,8 @@
 {{- if or (ne $container.version "v2") (not $container.image) -}}
 {{- continue -}}
 {{- end -}}
-- {{- if $.Values.controlPlane.advanced.defaultImageRegistry }}
-  image: {{ $.Values.controlPlane.advanced.defaultImageRegistry }}/{{ $container.image }}
+- {{- if (default $.Values.controlPlane.advanced.defaultImageRegistry $.Values.global.imageRegistry) }}
+  image: {{ (default $.Values.controlPlane.advanced.defaultImageRegistry $.Values.global.imageRegistry) }}/{{ $container.image }}
   {{- else }}
   image: {{ $container.image }}
   {{- end }}

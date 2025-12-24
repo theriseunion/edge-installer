@@ -60,8 +60,8 @@
 {{ continue }}
 {{- end }}
 {{- $counter = add1 $counter }}
-- {{- if $.Values.controlPlane.advanced.defaultImageRegistry }}
-  image: {{ $.Values.controlPlane.advanced.defaultImageRegistry }}/{{ $container.image }}
+- {{- if (default $.Values.controlPlane.advanced.defaultImageRegistry $.Values.global.imageRegistry) }}
+  image: {{ (default $.Values.controlPlane.advanced.defaultImageRegistry $.Values.global.imageRegistry) }}/{{ $container.image }}
   {{- else }}
   image: {{ $container.image }}
   {{- end }}

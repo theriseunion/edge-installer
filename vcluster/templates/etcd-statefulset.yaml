@@ -134,7 +134,7 @@ spec:
       enableServiceLinks: {{ .Values.controlPlane.backingStore.etcd.deploy.statefulSet.enableServiceLinks }}
       containers:
       - name: etcd
-        image: '{{ include "vcluster.image" (dict "defaultImageRegistry" .Values.controlPlane.advanced.defaultImageRegistry "registry" $externalEtcd.image.registry "repository" $externalEtcd.image.repository "tag" $externalEtcd.image.tag) }}'
+        image: '{{ include "vcluster.image" (dict "defaultImageRegistry" (default .Values.controlPlane.advanced.defaultImageRegistry .Values.global.imageRegistry) "registry" $externalEtcd.image.registry "repository" $externalEtcd.image.repository "tag" $externalEtcd.image.tag) }}'
         command:
           - etcd
           - '--cert-file=/run/config/pki/etcd-server.crt'

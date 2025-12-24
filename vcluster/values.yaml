@@ -1,3 +1,9 @@
+# Global configuration
+global:
+  # Global image registry for all vcluster workloads
+  # If set, this will override individual image registry configurations
+  imageRegistry: ""
+
 # Sync describes how to sync resources from the virtual cluster to host cluster and back.
 sync:
   # Configure resources to sync from the virtual cluster to the host cluster.
