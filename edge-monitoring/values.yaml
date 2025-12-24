@@ -8,14 +8,14 @@ global:
   # 命名空间
   namespace: observability-system
   # 镜像仓库地址（可通过 Helm 参数覆盖）
-  imageRegistry: quanzhenglong.com/edge
+  imageRegistry: quanzhenglong.com
 
 # Prometheus 配置
 prometheus:
   enabled: true
   image:
     # 镜像名称（会自动拼接 global.imageRegistry）
-    name: prometheus
+    name: edge/prometheus
     tag: v2.45.0
     pullPolicy: IfNotPresent
 
@@ -263,7 +263,7 @@ grafana:
   enabled: true
   image:
     # 镜像名称（会自动拼接 global.imageRegistry）
-    name: grafana
+    name: edge/grafana
     tag: 10.0.0
     pullPolicy: IfNotPresent
 
@@ -302,7 +302,7 @@ alertmanager:
   enabled: true
   image:
     # 镜像名称（会自动拼接 global.imageRegistry）
-    name: alertmanager
+    name: edge/alertmanager
     tag: v0.25.0
     pullPolicy: IfNotPresent
 
@@ -340,7 +340,7 @@ kubeStateMetrics:
   enabled: true
   image:
     # 镜像名称（会自动拼接 global.imageRegistry）
-    name: kube-state-metrics
+    name: edge/kube-state-metrics
     tag: v2.10.0
     pullPolicy: IfNotPresent
 
@@ -367,7 +367,7 @@ nodeExporter:
   enabled: true
   image:
     # 镜像名称（会自动拼接 global.imageRegistry）
-    name: node-exporter
+    name: edge/node-exporter
     tag: v1.6.0
     pullPolicy: IfNotPresent
 
@@ -393,7 +393,7 @@ cadvisor:
   enabled: true
   image:
     # 镜像名称（会自动拼接 global.imageRegistry）
-    name: cadvisor
+    name: edge/cadvisor
     tag: v0.47.0
     pullPolicy: IfNotPresent
 
@@ -453,7 +453,8 @@ monitoringService:
   enabled: true
   replicas: 1
   image:
-    repository: quanzhenglong.com/edge/monitoring-service
+    registry: ""  # 留空则使用 global.imageRegistry
+    repository: edge/monitoring-service
     tag: main
     pullPolicy: IfNotPresent
 
