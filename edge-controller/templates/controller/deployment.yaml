@@ -59,6 +59,9 @@ spec:
             {{- if eq .Values.global.mode "member" }}
             - name: CLUSTER_ROLE
               value: member
+            {{- else }}
+            - name: CLUSTER_ROLE
+              value: host
             {{- end }}
           volumeMounts:
             - name: helm-cache
