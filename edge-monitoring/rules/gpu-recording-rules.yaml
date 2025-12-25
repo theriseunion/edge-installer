@@ -25,14 +25,8 @@ spec:
             DCGM_FI_DEV_GPU_UTIL
             * on(uuid) group_left(pod, namespace, container)
             label_replace(
-              label_replace(
-                label_replace(
-                  kube_pod_container_info{container!="POD"},
-                  "uuid", "$1", "pod", ".*-([a-f0-9\\-]+)$"
-                ),
-                "pod", "$1", "pod", "(.*)"
-              ),
-              "namespace", "$1", "namespace", "(.*)"
+              kube_pod_container_info{container!="POD"},
+              "uuid", "$1", "pod", ".*-([a-f0-9\\-]+)$"
             )
 
         # Container GPU memory usage (bytes) - requires pod mapping
@@ -41,14 +35,8 @@ spec:
             DCGM_FI_DEV_FB_USED * 1024 * 1024
             * on(uuid) group_left(pod, namespace, container)
             label_replace(
-              label_replace(
-                label_replace(
-                  kube_pod_container_info{container!="POD"},
-                  "uuid", "$1", "pod", ".*-([a-f0-9\\-]+)$"
-                ),
-                "pod", "$1", "pod", "(.*)"
-              ),
-              "namespace", "$1", "namespace", "(.*)"
+              kube_pod_container_info{container!="POD"},
+              "uuid", "$1", "pod", ".*-([a-f0-9\\-]+)$"
             )
 
     - name: node-gpu-metrics

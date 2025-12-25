@@ -102,16 +102,12 @@ groups:
   rules:
   - record: container_gpu_usage
     expr: "DCGM_FI_DEV_GPU_UTIL\n* on(uuid) group_left(pod, namespace, container)\n\
-      label_replace(\n  label_replace(\n    label_replace(\n      kube_pod_container_info{container!=\"\
-      POD\"},\n      \"uuid\", \"$1\", \"pod\", \".*-([a-f0-9\\\\-]+)$\"\n    ),\n\
-      \    \"pod\", \"$1\", \"pod\", \"(.*)\"\n  ),\n  \"namespace\", \"$1\", \"namespace\"\
-      , \"(.*)\"\n)\n"
+      label_replace(\n  kube_pod_container_info{container!=\"POD\"},\n  \"uuid\", \"\
+      $1\", \"pod\", \".*-([a-f0-9\\\\-]+)$\"\n)\n"
   - record: container_gpu_memory_usage
     expr: "DCGM_FI_DEV_FB_USED * 1024 * 1024\n* on(uuid) group_left(pod, namespace,\
-      \ container)\nlabel_replace(\n  label_replace(\n    label_replace(\n      kube_pod_container_info{container!=\"\
-      POD\"},\n      \"uuid\", \"$1\", \"pod\", \".*-([a-f0-9\\\\-]+)$\"\n    ),\n\
-      \    \"pod\", \"$1\", \"pod\", \"(.*)\"\n  ),\n  \"namespace\", \"$1\", \"namespace\"\
-      , \"(.*)\"\n)\n"
+      \ container)\nlabel_replace(\n  kube_pod_container_info{container!=\"POD\"},\n\
+      \  \"uuid\", \"$1\", \"pod\", \".*-([a-f0-9\\\\-]+)$\"\n)\n"
 - name: node-gpu-metrics
   interval: 30s
   rules:

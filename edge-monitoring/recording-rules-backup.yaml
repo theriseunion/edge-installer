@@ -23,74 +23,62 @@ data:
           # CPU requests by node - with fallback handling
           - record: cluster:namespace:pod_cpu:active:kube_pod_container_resource_requests
             expr: |
-              sum by (cluster, node) (
-                (
-                  kube_pod_container_resource_requests{job="kube-state-metrics", resource="cpu", unit="core"}
-                  * on (cluster, namespace, pod) group_left(node)
-                  kube_pod_info{job="kube-state-metrics"}
-                ) or on (cluster, node) (
-                  # Fallback: use kube_pod_container_resource_requests without unit filter
-                  sum by (cluster, node) (
-                    kube_pod_container_resource_requests{job="kube-state-metrics", resource="cpu"}
-                    * on (cluster, namespace, pod) group_left(node)
-                    kube_pod_info{job="kube-state-metrics"}
-                  )
-                )
-              )
+              (sum by (cluster, node) (
+                kube_pod_container_resource_requests{job="kube-state-metrics", resource="cpu", unit="core"}
+                * on (cluster, namespace, pod) group_left(node)
+                kube_pod_info{job="kube-state-metrics"}
+              )) or
+              (sum by (cluster, node) (
+                # Fallback: use kube_pod_container_resource_requests without unit filter
+                kube_pod_container_resource_requests{job="kube-state-metrics", resource="cpu"}
+                * on (cluster, namespace, pod) group_left(node)
+                kube_pod_info{job="kube-state-metrics"}
+              ))
 
           # CPU limits by node - with fallback handling
           - record: cluster:namespace:pod_cpu:active:kube_pod_container_resource_limits
             expr: |
-              sum by (cluster, node) (
-                (
-                  kube_pod_container_resource_limits{job="kube-state-metrics", resource="cpu", unit="core"}
-                  * on (cluster, namespace, pod) group_left(node)
-                  kube_pod_info{job="kube-state-metrics"}
-                ) or on (cluster, node) (
-                  # Fallback: use kube_pod_container_resource_limits without unit filter
-                  sum by (cluster, node) (
-                    kube_pod_container_resource_limits{job="kube-state-metrics", resource="cpu"}
-                    * on (cluster, namespace, pod) group_left(node)
-                    kube_pod_info{job="kube-state-metrics"}
-                  )
-                )
-              )
+              (sum by (cluster, node) (
+                kube_pod_container_resource_limits{job="kube-state-metrics", resource="cpu", unit="core"}
+                * on (cluster, namespace, pod) group_left(node)
+                kube_pod_info{job="kube-state-metrics"}
+              )) or
+              (sum by (cluster, node) (
+                # Fallback: use kube_pod_container_resource_limits without unit filter
+                kube_pod_container_resource_limits{job="kube-state-metrics", resource="cpu"}
+                * on (cluster, namespace, pod) group_left(node)
+                kube_pod_info{job="kube-state-metrics"}
+              ))
 
           # Memory requests by node - with fallback handling
           - record: cluster:namespace:pod_memory:active:kube_pod_container_resource_requests
             expr: |
-              sum by (cluster, node) (
-                (
-                  kube_pod_container_resource_requests{job="kube-state-metrics", resource="memory", unit="byte"}
-                  * on (cluster, namespace, pod) group_left(node)
-                  kube_pod_info{job="kube-state-metrics"}
-                ) or on (cluster, node) (
-                  # Fallback: use kube_pod_container_resource_requests without unit filter
-                  sum by (cluster, node) (
-                    kube_pod_container_resource_requests{job="kube-state-metrics", resource="memory"}
-                    * on (cluster, namespace, pod) group_left(node)
-                    kube_pod_info{job="kube-state-metrics"}
-                  )
-                )
-              )
+              (sum by (cluster, node) (
+                kube_pod_container_resource_requests{job="kube-state-metrics", resource="memory", unit="byte"}
+                * on (cluster, namespace, pod) group_left(node)
+                kube_pod_info{job="kube-state-metrics"}
+              )) or
+              (sum by (cluster, node) (
+                # Fallback: use kube_pod_container_resource_requests without unit filter
+                kube_pod_container_resource_requests{job="kube-state-metrics", resource="memory"}
+                * on (cluster, namespace, pod) group_left(node)
+                kube_pod_info{job="kube-state-metrics"}
+              ))
 
           # Memory limits by node - with fallback handling
           - record: cluster:namespace:pod_memory:active:kube_pod_container_resource_limits
             expr: |
-              sum by (cluster, node) (
-                (
-                  kube_pod_container_resource_limits{job="kube-state-metrics", resource="memory", unit="byte"}
-                  * on (cluster, namespace, pod) group_left(node)
-                  kube_pod_info{job="kube-state-metrics"}
-                ) or on (cluster, node) (
-                  # Fallback: use kube_pod_container_resource_limits without unit filter
-                  sum by (cluster, node) (
-                    kube_pod_container_resource_limits{job="kube-state-metrics", resource="memory"}
-                    * on (cluster, namespace, pod) group_left(node)
-                    kube_pod_info{job="kube-state-metrics"}
-                  )
-                )
-              )
+              (sum by (cluster, node) (
+                kube_pod_container_resource_limits{job="kube-state-metrics", resource="memory", unit="byte"}
+                * on (cluster, namespace, pod) group_left(node)
+                kube_pod_info{job="kube-state-metrics"}
+              )) or
+              (sum by (cluster, node) (
+                # Fallback: use kube_pod_container_resource_limits without unit filter
+                kube_pod_container_resource_limits{job="kube-state-metrics", resource="memory"}
+                * on (cluster, namespace, pod) group_left(node)
+                kube_pod_info{job="kube-state-metrics"}
+              ))
 
       # Additional recording rules for cluster-level aggregations that may be missing
       - name: cluster-resource-aggregation-rules
@@ -895,12 +883,9 @@ metadata:
   annotations:
     meta.helm.sh/release-name: edge-monitoring
     meta.helm.sh/release-namespace: observability-system
-  creationTimestamp: "2025-12-16T01:09:07Z"
   labels:
     app: edge-prometheus
     app.kubernetes.io/managed-by: Helm
     component: prometheus-rules
   name: edge-prometheus-rules
   namespace: observability-system
-  resourceVersion: "79595033"
-  uid: 3d17f356-dd92-4c44-b160-305500e39777

@@ -1020,7 +1020,9 @@ groups:
         expr: |
           sum (
             kube_namespace_labels
-          )groups:
+          )
+
+
   # vLLM service monitoring recording rules
   - name: vllm-service-monitoring-rules
     interval: 30s
