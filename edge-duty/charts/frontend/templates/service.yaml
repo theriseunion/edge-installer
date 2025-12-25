@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "simple-duty-web.fullname" . }}
+  labels:
+    {{- include "simple-duty-web.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.svc.type }}
+  ports:
+  - port: {{ .Values.svc.port }}
+    targetPort: http
+    protocol: TCP
+    name: http
+    {{- if eq .Values.svc.type "NodePort" }}
+    nodePort: {{ .Values.svc.nodePort }}
+    {{- end }}
+  selector:
+    {{- include "simple-duty-web.selectorLabels" . | nindent 4 }}

@@ -1,0 +1,70 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "duty.backend.fullname" . }}
+  labels:
+    {{- include "duty.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.duty.replicaCount }}
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      {{- include "duty.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.duty.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "duty.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.duty.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "duty.serviceAccountName" . }}
+      enableServiceLinks: false
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.duty.securityContext | nindent 12 }}
+          image: "{{ .Values.duty.image.repository }}:{{ .Values.duty.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.duty.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 8000
+              protocol: TCP
+            - name: grpc
+              containerPort: 9000
+              protocol: TCP
+          command:
+            - "/apps/server"
+          args:
+            - "--conf"
+            - "/apps/config/config.{{ .Values.duty.configEnv }}.yaml"
+          {{- with .Values.duty.env }}
+          env:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          volumeMounts:
+            - name: config
+              mountPath: /apps/config/
+          resources:
+            {{- toYaml .Values.duty.resources | nindent 12 }}
+      {{- with .Values.duty.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.duty.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.duty.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      volumes:
+        - name: config
+          configMap:
+            name: {{ include "duty.backend.fullname" . }}-config
