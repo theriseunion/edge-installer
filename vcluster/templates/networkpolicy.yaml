@@ -1,22 +1,9 @@
-{{- if .Values.policies.networkPolicy.enabled }}
+{{- if and .Values.isolation.enabled .Values.isolation.networkPolicy.enabled }}
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: vc-work-{{ .Release.Name }}
-  namespace: {{ .Release.Namespace }}
-  labels:
-    app: vcluster
-    chart: "{{ include "vcluster.version.label"  $ }}"
-    release: "{{ .Release.Name }}"
-    heritage: "{{ .Release.Service }}"
-    {{- if .Values.policies.networkPolicy.labels }}
-{{ toYaml .Values.policies.networkPolicy.labels | indent 4 }}
-    {{- end }}
-  {{- $annotations := merge dict .Values.controlPlane.advanced.globalMetadata.annotations .Values.policies.networkPolicy.annotations }}
-  {{- if $annotations }}
-  annotations:
-{{ toYaml $annotations | indent 4 }}
-  {{- end }}
+  name: {{ .Release.Name }}-workloads
+  namespace: {{ .Values.isolation.namespace | default .Release.Namespace }}
 spec:
   podSelector:
     matchLabels:
@@ -32,46 +19,30 @@ spec:
               release: {{ .Release.Name }}
     # Allows outgoing connections to DNS server
     - ports:
-        - port: 53
-          protocol: UDP
-        - port: 53
-          protocol: TCP
+      - port: 53
+        protocol: UDP
+      - port: 53
+        protocol: TCP
     # Allows outgoing connections to the internet or
     # other vcluster workloads
     - to:
-      - podSelector:
-          matchLabels:
-            vcluster.loft.sh/managed-by: {{ .Release.Name }}
-      - ipBlock:
-          cidr: {{ .Values.policies.networkPolicy.outgoingConnections.ipBlock.cidr }}
-          except:
-            {{- range .Values.policies.networkPolicy.outgoingConnections.ipBlock.except }}
-            - {{ . }}
-            {{- end }}
-    {{- if .Values.policies.networkPolicy.extraWorkloadRules }}
-{{ toYaml .Values.policies.networkPolicy.extraWorkloadRules | indent 4 }}
-    {{- end }}
+        - podSelector:
+            matchLabels:
+              vcluster.loft.sh/managed-by: {{ .Release.Name }}
+        - ipBlock:
+            cidr: {{ .Values.isolation.networkPolicy.outgoingConnections.ipBlock.cidr }}
+            except:
+              {{- range .Values.isolation.networkPolicy.outgoingConnections.ipBlock.except }}
+              - {{ . }}
+              {{- end }}
   policyTypes:
     - Egress
 ---
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: vc-cp-{{ .Release.Name }}
+  name: {{ .Release.Name }}-control-plane
   namespace: {{ .Release.Namespace }}
-  labels:
-    app: vcluster
-    chart: "{{ include "vcluster.version.label"  $ }}"
-    release: "{{ .Release.Name }}"
-    heritage: "{{ .Release.Service }}"
-  {{- if .Values.policies.networkPolicy.labels }}
-{{ toYaml .Values.policies.networkPolicy.labels | indent 4 }}
-  {{- end }}
-  {{- $annotations := merge dict .Values.controlPlane.advanced.globalMetadata.annotations .Values.policies.networkPolicy.annotations }}
-  {{- if $annotations }}
-  annotations:
-{{ toYaml $annotations | indent 4 }}
-  {{- end }}
 spec:
   podSelector:
     matchLabels:
@@ -94,15 +65,6 @@ spec:
           podSelector:
             matchLabels:
               k8s-app: kube-dns
-        {{- if .Values.policies.networkPolicy.outgoingConnections.platform }}
-        - podSelector:
-            matchLabels:
-              app: loft
-          namespaceSelector: {}
-        {{- end }}
-    {{- if .Values.policies.networkPolicy.extraControlPlaneRules }}
-{{ toYaml .Values.policies.networkPolicy.extraControlPlaneRules | indent 4 }}
-    {{- end }}
   policyTypes:
     - Egress
-  {{- end }}
+{{- end }}
