@@ -1,0 +1,107 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: npu-recording-rules
+  namespace: observability-system
+  labels:
+    prometheus: kube-prometheus
+    role: recording-rules
+    layer: npu
+spec:
+  groups:
+    # ========================================================================
+    # NPU Recording Rules
+    # Purpose: Aggregate NPU metrics from device to node and cluster level
+    # Priority: P3 - Requires NPU Exporter deployment
+    # Dependencies: npu-exporter (NPU metrics)
+    #
+    # IMPORTANT: This PrometheusRule requires NPU Exporter to be deployed first
+    # Base metrics required from NPU Exporter:
+    #   - npu_chip_info_memory_total
+    #   - npu_chip_info_memory_usage
+    #   - npu_chip_info_utilization
+    #   - npu_chip_info_temperature
+    #   - npu_chip_info_power
+    #
+    # Current Status: NPU Exporter NOT deployed (0/9 NPU metrics available)
+    # ========================================================================
+    - name: node-npu-metrics
+      interval: 30s
+      rules:
+        # =====================================================
+        # Node-level NPU metrics (aggregated by node)
+        # =====================================================
+
+        # Node NPU memory total (bytes) - sum all NPU chips on node
+        - record: edge_node_npu_memory_total
+          expr: |
+            sum by (cluster, instance) (
+              npu_chip_info_memory_total
+            )
+
+        # Node NPU memory usage (bytes) - sum all NPU chips on node
+        - record: edge_node_npu_memory_usage
+          expr: |
+            sum by (cluster, instance) (
+              npu_chip_info_memory_usage
+            )
+
+        # Node NPU count
+        - record: edge_node_npu_count
+          expr: |
+            count by (cluster, instance) (
+              npu_chip_info_memory_total
+            )
+
+        # Node NPU average utilisation (0-100)
+        - record: edge_node_npu_utilisation_avg
+          expr: |
+            avg by (cluster, instance) (
+              npu_chip_info_utilization
+            )
+
+        # Node NPU average temperature (Celsius)
+        - record: edge_node_npu_temperature_avg
+          expr: |
+            avg by (cluster, instance) (
+              npu_chip_info_temperature
+            )
+
+        # Node NPU total power (Watts)
+        - record: edge_node_npu_power_total
+          expr: |
+            sum by (cluster, instance) (
+              npu_chip_info_power
+            )
+
+    - name: cluster-npu-metrics
+      interval: 30s
+      rules:
+        # =====================================================
+        # Cluster-level NPU metrics (global aggregation)
+        # =====================================================
+
+        # Cluster NPU memory total (bytes) - sum all nodes
+        - record: edge_cluster_npu_memory_total
+          expr: |
+            sum(edge_node_npu_memory_total)
+
+        # Cluster NPU memory usage (bytes) - sum all nodes
+        - record: edge_cluster_npu_memory_usage
+          expr: |
+            sum(edge_node_npu_memory_usage)
+
+        # Cluster NPU count - sum all nodes
+        - record: edge_cluster_npu_count
+          expr: |
+            sum(edge_node_npu_count)
+
+        # Cluster NPU average utilisation (0-100)
+        - record: edge_cluster_npu_utilisation_avg
+          expr: |
+            avg(edge_node_npu_utilisation_avg)
+
+        # Cluster NPU total power (Watts)
+        - record: edge_cluster_npu_power_total
+          expr: |
+            sum(edge_node_npu_power_total)
