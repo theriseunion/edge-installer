@@ -20,21 +20,6 @@ If release name contains chart name it will be used as a full name.
 {{- end }}
 {{- end }}
 
-{{- define "duty.frontend.fullname" -}}
-{{- if .Values.frontend.fullnameOverride }}
-  {{- .Values.frontend.fullnameOverride | trunc 63 | trimSuffix "-" }}
-{{- else }}
-  {{- $component := default "console-ui" .Values.frontend.componentName }}  {{/* 组件名默认 console-ui，可自定义 */}}
-  {{- $name := default "console-ui" .Values.frontend.nameOverride }}        {{/* 前端单独的 nameOverride，不依赖 Chart 名 */}}
-  {{- /* 拼接规则：发布名 + 组件名（若发布名已包含组件名，则直接用发布名） */}}
-  {{- if contains $component .Release.Name }}
-    {{- .Release.Name | trunc 63 | trimSuffix "-" }}
-  {{- else }}
-    {{- printf "%s-%s" .Release.Name $component | trunc 63 | trimSuffix "-" }}
-  {{- end }}
-{{- end }}
-{{- end }}
-
 {{- define "duty.chart" -}}
 {{- .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
 {{- end -}}

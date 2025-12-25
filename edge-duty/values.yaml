@@ -2,7 +2,7 @@ duty:
   duty:
     image:
       repository: quanzhenglong.com/camp/duty
-      tag: "v1.1.3"
+      tag: "v1.1.7"
       pullPolicy: IfNotPresent
     resources:
       limits:
@@ -98,7 +98,7 @@ duty-web:
   image:
     registry: "quanzhenglong.com"
     repository: "camp/console-ui"
-    tag: "feat-simple-duty-06"
+    tag: "feat-simple-duty-08"
     pullPolicy: IfNotPresent
   containerPort: 80
   svc:
