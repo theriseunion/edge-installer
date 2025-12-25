@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
       - name: chartmuseum
-        image: quanzhenglong.com/edge/edge-museum:main
+        image: quanzhenglong.com/edge/edge-museum:main-qzl
         imagePullPolicy: Always
         ports:
         - containerPort: 8080

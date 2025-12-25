@@ -10,7 +10,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 MANIFESTS_DIR="${SCRIPT_DIR}/../manifests/chartmuseum"
 NAMESPACE="${NAMESPACE:-edge-system}"
 REPO_NAME="${REPO_NAME:-edge-charts}"
-MUSEUM_IMAGE="${MUSEUM_IMAGE:-quanzhenglong.com/edge/edge-museum:main}"
+MUSEUM_IMAGE="${MUSEUM_IMAGE:-quanzhenglong.com/edge/edge-museum:main-qzl}"
 
 # Color output
 RED='\033[0;31m'
@@ -66,7 +66,7 @@ deploy_chartmuseum() {
     log_info "Deploying ChartMuseum to ${NAMESPACE}..."
 
     # Update image in deployment if custom image is specified
-    if [[ "${MUSEUM_IMAGE}" != "quanzhenglong.com/edge/edge-museum:main" ]]; then
+    if [[ "${MUSEUM_IMAGE}" != "quanzhenglong.com/edge/edge-museum:main-qzl" ]]; then
         log_info "Using custom image: ${MUSEUM_IMAGE}"
         kubectl set image deployment/edge-museum \
             chartmuseum="${MUSEUM_IMAGE}" \
