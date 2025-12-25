@@ -14,11 +14,28 @@ spec:
     # Purpose: Aggregate DCGM GPU metrics to container/pod/namespace level
     # Priority: P1 - Foundation for workspace and namespace GPU metrics
     # Dependencies: dcgm-exporter (NVIDIA GPU metrics)
+    #
+    # KNOWN LIMITATION:
+    # The current implementation uses a regex pattern to extract GPU UUID from
+    # pod names (.*-([a-f0-9\\-]+)$). This approach has limitations:
+    # - Assumes pod names end with UUID pattern (e.g., pod-name-<uuid>)
+    # - Will fail for standalone pods or pods with different naming conventions
+    # - Not reliable for all Kubernetes pod naming patterns
+    #
+    # RECOMMENDED SOLUTION:
+    # Configure dcgm-exporter to expose pod/namespace/container labels directly
+    # on GPU metrics. This would eliminate the need for regex-based label mapping
+    # and provide more reliable metric association. See:
+    # https://github.com/NVIDIA/dcgm-exporter#kubernetes-labels
+    #
+    # Alternative approach if dcgm-exporter doesn't support direct labels:
+    # Use GPU device plugin's resource allocation information from kubelet API
     # ========================================================================
     - name: container-gpu-metrics
       interval: 30s
       rules:
         # Container GPU utilisation (0-100) - requires pod mapping
+        # WARNING: Uses regex-based pod name matching - see limitations above
         # This joins DCGM GPU metrics with pod information
         - record: container_gpu_usage
           expr: |
@@ -30,6 +47,7 @@ spec:
             )
 
         # Container GPU memory usage (bytes) - requires pod mapping
+        # WARNING: Uses regex-based pod name matching - see limitations above
         - record: container_gpu_memory_usage
           expr: |
             DCGM_FI_DEV_FB_USED * 1024 * 1024

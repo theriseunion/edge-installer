@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(kubectl get:*)",
+      "Bash(kubectl describe:*)",
+      "Bash(kubectl label:*)",
+      "Bash(kubectl rollout restart:*)",
+      "Bash(kubectl exec:*)"
+    ]
+  }
+}
