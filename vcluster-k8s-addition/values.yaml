@@ -1,0 +1,47 @@
+# Default values for k8s-addon.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+global:
+  imageRegistry:
+  tag:
+  imagePullSecrets: []
+caCertificate: "xxxxxxxxx"
+edgeGatewayName: ".vcluster-k8s-ke-101"
+edgeGatewayPort: 30443
+etcdIP: "x.x.x.x"
+installCni:
+  image:
+    registry: ""
+    repository: calico/cni
+    tag: "v3.23.5"
+    digest: ""
+    pullPolicy: IfNotPresent
+upgradeIpam:
+  image:
+    registry: ""
+    repository: calico/cni
+    tag: "v3.23.5"
+    digest: ""
+    pullPolicy: IfNotPresent
+mountBpffs:
+  image:
+    registry: ""
+    repository: calico/node
+    tag: "v3.23.5"
+    digest: ""
+    pullPolicy: IfNotPresent
+calicoNode:
+  image:
+    registry: ""
+    repository: calico/node
+    tag: "v3.23.5"
+    digest: ""
+    pullPolicy: IfNotPresent
+controller:
+  image:
+    registry: ""
+    repository: calico/kube-controllers
+    tag: "v3.23.5"
+    digest: ""
+    pullPolicy: IfNotPresent
