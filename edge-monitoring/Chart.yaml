@@ -3,12 +3,13 @@ name: edge-monitoring
 description: Edge 监控套件 - Prometheus + Grafana + AlertManager
 type: application
 version: 0.1.0
+dependencies:
+  - name: kube-prometheus-stack
+    version: "59.1.0"
+    repository: "file://./charts"
 appVersion: "1.0"
 keywords:
-  - prometheus
-  - grafana
   - monitoring
-  - alertmanager
   - edge
 maintainers:
   - name: Edge Team
