@@ -1,0 +1,127 @@
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.16.1
+  name: globalconfigs.device.theriseunion.io
+spec:
+  group: device.theriseunion.io
+  names:
+    kind: GlobalConfig
+    listKind: GlobalConfigList
+    plural: globalconfigs
+    singular: globalconfig
+  scope: Cluster
+  versions:
+  - additionalPrinterColumns:
+    - description: 资源感知配置
+      jsonPath: .spec.resourceAwareness
+      name: ResourceAwareness
+      type: string
+    - description: 节点调度策略
+      jsonPath: .spec.nodeScheduling
+      name: NodeScheduling
+      type: string
+    - description: 显卡调度策略
+      jsonPath: .spec.gpuScheduling
+      name: GPUScheduling
+      type: string
+    - description: 资源池配置
+      jsonPath: .spec.resourcePoolEnabled
+      name: ResourcePoolEnabled
+      type: boolean
+    - description: 故障码告警级别
+      jsonPath: .spec.alertLevel
+      name: AlertLevel
+      type: string
+    - jsonPath: .status.updateTime
+      name: UpdateTime
+      type: date
+    name: v1alpha1
+    schema:
+      openAPIV3Schema:
+        description: GlobalConfig 是全局配置的 CRD 资源
+        properties:
+          apiVersion:
+            description: |-
+              APIVersion defines the versioned schema of this representation of an object.
+              Servers should convert recognized schemas to the latest internal value, and
+              may reject unrecognized values.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+            type: string
+          kind:
+            description: |-
+              Kind is a string value representing the REST resource this object represents.
+              Servers may infer this from the endpoint the client submits requests to.
+              Cannot be updated.
+              In CamelCase.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
+            type: string
+          metadata:
+            type: object
+          spec:
+            description: GlobalConfigSpec 定义全局配置的期望状态
+            properties:
+              alertLevel:
+                description: AlertLevel 故障码告警级别配置, critical, high, middle, low
+                items:
+                  description: 告警级别枚举
+                  enum:
+                  - critical
+                  - high
+                  - middle
+                  - low
+                  type: string
+                type: array
+              gpuScheduling:
+                allOf:
+                - enum:
+                  - binpack
+                  - spread
+                - enum:
+                  - binpack
+                  - spread
+                default: spread
+                description: GPUScheduling 显卡调度策略（紧凑 / 均衡），默认均衡
+                type: string
+              nodeScheduling:
+                allOf:
+                - enum:
+                  - binpack
+                  - spread
+                - enum:
+                  - binpack
+                  - spread
+                default: binpack
+                description: NodeScheduling 节点调度策略（紧凑 / 均衡），默认紧凑
+                type: string
+              resourceAwareness:
+                allOf:
+                - enum:
+                  - allocation_rate
+                  - usage_rate
+                - enum:
+                  - allocation_rate
+                  - usage_rate
+                default: allocation_rate
+                description: ResourceAwareness 资源感知配置（按分配率 / 按使用率），默认按照分配率分配资源
+                type: string
+              resourcePoolEnabled:
+                default: true
+                description: ResourcePoolEnabled 资源池配置（开启 / 关闭），默认开启
+                type: boolean
+            type: object
+          status:
+            description: GlobalConfigStatus 定义全局配置的观测状态
+            properties:
+              updateTime:
+                description: UpdateTime 全局配置最后更新时间
+                format: date-time
+                type: string
+            type: object
+        type: object
+    served: true
+    storage: true
+    subresources:
+      status: {}

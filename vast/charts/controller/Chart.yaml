@@ -1,0 +1,30 @@
+apiVersion: v2
+name: controller
+description: VAST Controller - Kubernetes Operator that defines and reconciles CRDs for managing heterogeneous computing resources (GPU, NPU, Tianshu, Hygon, Moore Threads, Suiyuan, Cambricon, Kunlunxin and other compute vendors)
+type: application
+version: 0.1.0
+appVersion: "v1.0.0"
+home: https://github.com/edge/apiserver
+maintainers:
+  - name: Edge Team
+    email: dev@edge.io
+keywords:
+  - vast
+  - controller
+  - operator
+  - kubernetes-operator
+  - crd
+  - reconciliation
+  - heterogeneous-computing
+  - gpu
+  - npu
+  - tianshu
+  - hygon
+  - moore-threads
+  - suiyuan
+  - cambricon
+  - kunlunxin
+  - compute-resource-management
+  - kubernetes
+sources:
+  - https://github.com/edge/apiserver

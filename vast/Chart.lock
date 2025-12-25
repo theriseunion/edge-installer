@@ -1,0 +1,12 @@
+dependencies:
+- name: controller
+  repository: file://./charts/controller
+  version: 0.1.0
+- name: apiserver
+  repository: file://./charts/apiserver
+  version: 0.1.0
+- name: hami
+  repository: file://./charts/hami
+  version: 2.5.0
+digest: sha256:020cee2eeff0b6b7ffda88f68320bf11f809093c2eb829fc272a13593b8f06be
+generated: "2025-12-12T17:26:15.241980341+08:00"

@@ -1,0 +1,20 @@
+{{- if .Values.devicePlugin.serviceMonitor.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ include "hami-vgpu.device-plugin" . }}-monitor
+  labels:
+    {{- if .Values.devicePlugin.serviceMonitor.additionalLabels }}
+    {{- toYaml .Values.devicePlugin.serviceMonitor.additionalLabels | nindent 4 }}
+    {{- end }}
+spec:
+  endpoints:
+    - port: monitorport
+      path: /metrics
+  namespaceSelector:
+    matchNames:
+      - {{ .Release.Namespace }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: hami-device-plugin
+  {{- end -}}

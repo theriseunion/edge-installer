@@ -1,0 +1,14 @@
+{{- if .Values.devices.cambricon.enabled }}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: {{ include "hami-vgpu.device-plugin" . }}-mlu
+subjects:
+  - kind: ServiceAccount
+    name: {{ include "hami-vgpu.device-plugin" . }}-mlu
+    namespace: {{ .Release.Namespace | quote }}
+roleRef:
+  kind: ClusterRole
+  name: {{ include "hami-vgpu.device-plugin" . }}-mlu
+  apiGroup: rbac.authorization.k8s.io
+{{- end }}

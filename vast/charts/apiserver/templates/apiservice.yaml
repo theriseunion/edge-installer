@@ -1,0 +1,132 @@
+{{- if and .Values.enabled .Values.config.deviceManager.enabledAggregator }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  labels:
+    {{- include "apiserver.labels" . | nindent 4 }}
+    iam.theriseunion.io/scope: platform
+    iam.theriseunion.io/scope-value: global
+  name: {{ include "apiserver.namespace" . }}:{{ include "apiserver.fullname" . }}:aggregator
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: {{ include "apiserver.namespace" . }}:{{ include "apiserver.fullname" . }}:aggregator
+subjects:
+- apiGroup: rbac.authorization.k8s.io
+  kind: User
+  name: system:kube-aggregator
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    {{- include "apiserver.labels" . | nindent 4 }}
+  name: {{ include "apiserver.namespace" . }}:{{ include "apiserver.fullname" . }}:aggregator
+rules:
+- nonResourceURLs:
+  - /apis/device.vast.theriseunion.io/v1alpha1
+  - /apis/device.vast.theriseunion.io/v1alpha1/*
+  - /apis/registry.vast.theriseunion.io/v1alpha1
+  - /apis/registry.vast.theriseunion.io/v1alpha1/*
+  verbs:
+  - get
+- nonResourceURLs:
+  - /apis
+  - /apis/*
+  verbs:
+  - get
+- nonResourceURLs:
+  - /apis/device.vast.theriseunion.io
+  - /apis/device.vast.theriseunion.io/*
+  - /apis/registry.vast.theriseunion.io
+  - /apis/registry.vast.theriseunion.io/*
+  verbs:
+  - get
+- apiGroups:
+  - ""
+  resources:
+  - services
+  - endpoints
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - apiregistration.k8s.io
+  resources:
+  - apiservices
+  verbs:
+  - get
+  - list
+  - watch
+  - create
+  - update
+  - patch
+  - delete
+---
+# APIService with automatic CA bundle injection via cert-manager cainjector
+# The cert-manager.io/inject-ca-from annotation tells cert-manager's cainjector
+# to automatically inject the CA certificate from the specified Certificate resource
+# into the caBundle field. This is the recommended approach per cert-manager best practices.
+apiVersion: apiregistration.k8s.io/v1
+kind: APIService
+metadata:
+  labels:
+    {{- include "apiserver.labels" . | nindent 4 }}
+  name: v1alpha1.device.vast.theriseunion.io
+  annotations:
+    # cert-manager cainjector will automatically inject CA bundle from apiserver certificate
+    # Format: <namespace>/<certificate-name>
+    cert-manager.io/inject-ca-from: {{ include "apiserver.namespace" . }}/{{ include "apiserver.certSecretName" . }}
+spec:
+  group: device.vast.theriseunion.io
+  groupPriorityMinimum: 1000
+  service:
+    name: {{ include "apiserver.fullname" . }}
+    namespace: {{ include "apiserver.namespace" . }}
+    port: {{ .Values.service.port }}
+  # caBundle will be automatically injected by cert-manager cainjector
+  # If manually set in values.yaml, it will override the automatic injection
+  # Note: caBundle is at spec level, not under spec.service
+  {{- if and .Values.certManager .Values.certManager.caBundle }}
+  caBundle: {{ .Values.certManager.caBundle | quote }}
+  {{- end }}
+  version: v1alpha1
+  versionPriority: 15
+---
+# APIService with automatic CA bundle injection via cert-manager cainjector
+# The cert-manager.io/inject-ca-from annotation tells cert-manager's cainjector
+# to automatically inject the CA certificate from the specified Certificate resource
+# into the caBundle field. This is the recommended approach per cert-manager best practices.
+apiVersion: apiregistration.k8s.io/v1
+kind: APIService
+metadata:
+  labels:
+    {{- include "apiserver.labels" . | nindent 4 }}
+  name: v1alpha1.registry.vast.theriseunion.io
+  annotations:
+    # cert-manager cainjector will automatically inject CA bundle from apiserver certificate
+    # Format: <namespace>/<certificate-name>
+    cert-manager.io/inject-ca-from: {{ include "apiserver.namespace" . }}/{{ include "apiserver.certSecretName" . }}
+spec:
+  group: registry.vast.theriseunion.io
+  groupPriorityMinimum: 1000
+  service:
+    name: {{ include "apiserver.fullname" . }}
+    namespace: {{ include "apiserver.namespace" . }}
+    port: {{ .Values.service.port }}
+  # caBundle will be automatically injected by cert-manager cainjector
+  # If manually set in values.yaml, it will override the automatic injection
+  # Note: caBundle is at spec level, not under spec.service
+  {{- if and .Values.certManager .Values.certManager.caBundle }}
+  caBundle: {{ .Values.certManager.caBundle | quote }}
+  {{- end }}
+  version: v1alpha1
+  versionPriority: 15
+---
+# NOTE: The Job for manual CA bundle injection has been removed.
+# cert-manager's cainjector now automatically handles CA bundle injection
+# via the cert-manager.io/inject-ca-from annotation on the APIService resource above.
+# This approach is simpler, more reliable, and follows cert-manager best practices.
+{{- end }}

@@ -1,0 +1,408 @@
+# Default values for vast.
+# This is a YAML-formatted file.
+
+# Global values shared across all subcharts
+global:
+  # Image pull secrets (applied to all subcharts)
+  imagePullSecrets: []
+  # Namespace override (if not set, uses Release.Namespace)
+  namespaceOverride: ""
+
+# Cert manager subchart configuration
+cert-manager:
+  enabled: true
+  # Namespace for cert-manager resources (defaults to Release.Namespace if not set)
+  namespace: cert-manager
+  # Override the full name to remove the release name prefix (vast-)
+  # Without this, resources would be named like: vast-cert-manager-*
+  # With this, resources will be named like: cert-manager-*
+  fullnameOverride: cert-manager
+  crds:
+    enabled: true
+
+# Enable/disable subcharts
+apiserver:
+  enabled: true
+  # Pass cert-manager enabled status to subchart
+  cert-manager:
+    enabled: true
+  # Override the full name to remove the release name prefix (vast-)
+  # Without this, resources would be named like: vast-apiserver-*
+  # With this, resources will be named like: apiserver-*
+  fullnameOverride: apiserver
+  # Image configuration
+  image:
+    repository: quanzhenglong.com/edge/apiserver
+    tag: vast-v0.1.31
+    pullPolicy: IfNotPresent
+
+  # Namespace override (defaults to Release.Namespace)
+  namespaceOverride: ""
+
+  # Service configuration
+  service:
+    type: ClusterIP
+    port: 8443
+    targetPort: 8443
+
+  # Deployment configuration
+  replicaCount: 1
+
+  # Node selector to schedule pods on control plane nodes
+  nodeSelector:
+    node-role.kubernetes.io/control-plane: ""
+
+  # Tolerations to allow scheduling on control plane nodes
+  tolerations:
+    - key: node-role.kubernetes.io/control-plane
+      operator: Exists
+      effect: NoSchedule
+
+  # Resource limits and requests
+  resources:
+    limits:
+      cpu: 500m
+      memory: 256Mi
+    requests:
+      cpu: 50m
+      memory: 128Mi
+
+  # Environment variables
+  env:
+    - name: PORT
+      value: "8443"
+
+  # Configuration for apiserver.yaml ConfigMap
+  config:
+    # Server configuration
+    server:
+      port: 8090
+      host: "0.0.0.0"
+      timeout:
+        read: "30s"
+        write: "30s"
+        idle: "120s"
+      tls:
+        enabled: true
+        certFile: "/tmp/k8s-webhook-server/serving-certs/tls.crt"
+        keyFile: "/tmp/k8s-webhook-server/serving-certs/tls.key"
+
+    # Authentication configuration
+    auth:
+      mode: "RBAC" # RBAC or AlwaysAllow
+      jwt:
+        secret: "" # Should be set via environment variable JWT_SECRET in production
+        expiry: "24h"
+        refreshTTL: "168h" # 7 days
+      oauth:
+        issuer: ""
+        clientId: ""
+        clientSecret: ""
+
+    # Metrics configuration
+    metrics:
+      enabled: true
+      prometheus:
+        endpoint: "http://edge-prometheus.observability-system.svc:9090"
+        auth: ""
+        timeout: "30s"
+        maxConcurrentQueries: 10
+        retryCount: 3
+        retryInterval: "1s"
+        tlsInsecureSkipVerify: true
+      cache:
+        enabled: true
+        ttl: "30s"
+        size: 1000
+
+    # Logging configuration
+    logging:
+      level: "info" # debug, info, warn, error
+      format: "text" # text, json
+      output: "stdout" # stdout, stderr, file
+      file: "/var/log/apiserver/apiserver.log"
+      rotation:
+        maxSize: 100 # MB
+        maxBackups: 5
+        maxAge: 30 # days
+        compress: true
+
+    # Database configuration (optional)
+    database:
+      type: "" # mysql, postgres, sqlite
+      host: ""
+      port: 0
+      database: ""
+      username: ""
+      password: "" # Should be set via environment variable in production
+      sslMode: ""
+
+    # Device manager configuration
+    deviceManager:
+      enabledAggregator: false
+      hamiDeviceConfig: "/config/device.yaml"
+
+  # Certificate configuration
+  cert:
+    secretName: ""
+    create: true
+    validityDays: 36500
+    additionalHosts: []
+    issuer:
+      name: "selfsigned-issuer"
+      create: true
+
+controller:
+  enabled: true
+  # Pass cert-manager enabled status to subchart
+  cert-manager:
+    enabled: true
+  # Override the full name to remove the release name prefix (vast-)
+  # Without this, resources would be named like: vast-controller-*
+  # With this, resources will be named like: controller-*
+  fullnameOverride: controller
+  # Image configuration
+  image:
+    repository: quanzhenglong.com/edge/controller
+    tag: vast-v0.1.31
+    pullPolicy: IfNotPresent
+
+  # Kube RBAC Proxy configuration
+  kubeRbacProxy:
+    enabled: true
+    image:
+      repository: quanzhenglong.com/edge/kube-rbac-proxy
+      tag: v0.15.0
+      pullPolicy: IfNotPresent
+    resources:
+      limits:
+        cpu: 500m
+        memory: 128Mi
+      requests:
+        cpu: 5m
+        memory: 64Mi
+    args:
+      - --secure-listen-address=0.0.0.0:8443
+      - --upstream=http://127.0.0.1:8080/
+      - --logtostderr=true
+      - --v=3
+    port: 8443
+
+  # Namespace override (defaults to Release.Namespace)
+  namespaceOverride: ""
+
+  # Deployment configuration
+  replicaCount: 1
+
+  # Node selector to schedule pods on control plane nodes
+  nodeSelector:
+    node-role.kubernetes.io/control-plane: ""
+
+  # Tolerations to allow scheduling on control plane nodes
+  tolerations:
+    - key: node-role.kubernetes.io/control-plane
+      operator: Exists
+      effect: NoSchedule
+
+  # Resource limits and requests
+  resources:
+    limits:
+      cpu: 500m
+      memory: 128Mi
+    requests:
+      cpu: 10m
+      memory: 64Mi
+
+  # Environment variables
+  env:
+    - name: ENABLE_WEBHOOKS
+      value: "true"
+    - name: WEBHOOK_PORT
+      value: "9443"
+
+  # Webhook configuration
+  webhook:
+    enabled: true
+    server:
+      port: 9443
+      host: "0.0.0.0"
+      certDir: "/tmp/k8s-webhook-server/serving-certs"
+    service:
+      name: ""
+      type: ClusterIP
+      port: 443
+      targetPort: 9443
+      annotations: {}
+    cert:
+      secretName: ""
+      create: true
+      validityDays: 36500
+      additionalHosts: []
+      issuer:
+        name: "selfsigned-issuer"
+        create: true
+    namespaceSelector:
+      excludeNamespaces:
+        - edge-system
+        - kube-system
+        - kube-public
+        - kube-node-lease
+        - vast-system
+        - cert-manager
+        - observability-system
+        - rise-vast-system
+        - prometheus
+    admission:
+      failurePolicy: Ignore
+      sideEffects: None
+      timeoutSeconds: 10
+      reinvocationPolicy: Never
+
+  # Configuration for controller.yaml ConfigMap
+  config:
+    # Metrics configuration
+    metrics:
+      enabled: true
+      prometheus:
+        endpoint: "http://edge-prometheus.observability-system.svc:9090"
+        auth: ""
+        timeout: "30s"
+        maxConcurrentQueries: 10
+        retryCount: 3
+        retryInterval: "1s"
+        tlsInsecureSkipVerify: true
+
+    # Device manager configuration
+    deviceManager:
+      hamiDeviceConfig: "/config/device.yaml"
+
+    # Device plugin configuration
+    devicePlugin:
+      nvidia-hami:
+        mem_factor: 1
+        node_label:
+          key: gpu
+          value: "on"
+      hygon-hami:
+        mem_factor: 1
+        node_label:
+          key: dcu
+          value: "on"
+      cambricon-hami:
+        mem_factor: 1
+        node_label:
+          key: mlu
+          value: "on"
+      kunlunxin-hami:
+        mem_factor: 1
+        node_label:
+          key: xpu
+          value: "on"
+      ascend-hami:
+        mem_factor: 1
+        node_label:
+          key: ascend
+          value: "on"
+      iluvatar-hami:
+        mem_factor: 256
+        node_label:
+          key: iluvatar
+          value: "on"
+      metax-hami:
+        mem_factor: 1
+        node_label:
+          key: metax
+          value: "on"
+      enflame-hami:
+        mem_factor: 1
+        node_label:
+          key: gcu
+          value: "on"
+      alibaba-hami:
+        mem_factor: 1
+        node_label:
+          key: ppu
+          value: "on"
+      nvidia-volcano:
+        mem_factor: 10
+        node_label:
+          key: volcano
+          value: "on"
+      ascend-volcano:
+        mem_factor: 1
+        node_label:
+          key: volcano_ascend
+          value: "on"
+
+# HAMI subchart configuration
+hami:
+  enabled: true
+  fullnameOverride: hami
+  version: "v1.6.1-rc-08"
+  # Disable ServiceMonitor by default if Prometheus Operator is not installed
+  # Set to true if you have Prometheus Operator installed
+  devicePlugin:
+    image: quanzhenglong.com/camp/hami
+    monitorimage: quanzhenglong.com/camp/hami
+    service:
+      type: ClusterIP
+    tolerations:
+      - key: "nvidia.com/gpu"
+        operator: "Equal"
+        value: "true"
+        effect: "NoSchedule"
+      - key: "node-role.kubernetes.io/edge"
+        operator: "Exists"
+        effect: "NoSchedule"
+    # nodeSelector:
+    #   theriseunion.io/control: "true"
+    serviceMonitor:
+      enabled: false
+      additionalLabels:
+        release: prometheus
+    passDeviceSpecsEnabled: true
+  exporter:
+    kunlunxin:
+      serviceMonitor:
+        enabled: false
+    enflame:
+      serviceMonitor:
+        enabled: false
+    nvidia:
+      enabled: true
+      image:
+        repository: quanzhenglong.com/camp/dcgm-exporter
+        pullPolicy: IfNotPresent
+        # Image tag defaults to AppVersion, but you can use the tag key
+        # for the image tag, e.g:
+        tag: 3.3.6-3.4.2-ubuntu22.04
+      dcgm:
+        image:
+          repository: quanzhenglong.com/camp/dcgm
+          pullPolicy: IfNotPresent
+          tag: 3.3.6-1-ubuntu22.04
+        # 是否主机上运行nv-hostengine进程，部署dcgm-exporter之前需要确认主机上是否有nv-hostengine进程，如果有，需要设置为true，
+        # 如果没有，需要设置为false，设置为false时，dcgm-exporter会自动以sidecar的方式部署nv-hostengine进程
+        isHostRunningNvHostEngineProcess: false
+  scheduler:
+    nodeSelector:
+      node-role.kubernetes.io/control-plane: ""
+    tolerations:
+      - key: node-role.kubernetes.io/control-plane
+        operator: Exists
+        effect: NoSchedule
+    prometheusAddress: "http://edge-prometheus.observability-system.svc:9090"
+    kubeScheduler:
+      imageTag: "v1.29.15"
+      image: quanzhenglong.com/camp/kubesphere/kube-scheduler
+    extender:
+      image: quanzhenglong.com/camp/hami
+    patch:
+      image: quanzhenglong.com/camp/jettech-kube-webhook-certgen:v1.5.2
+      imageNew: quanzhenglong.com/camp/liangjw-kube-webhook-certgen:v1.1.1
+      # nodeSelector:
+      #   theriseunion.io/control: "true"
+      tolerations:
+        - key: node-role.kubernetes.io/control-plane
+          operator: Exists
+          effect: NoSchedule

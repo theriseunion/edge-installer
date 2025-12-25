@@ -1,0 +1,81 @@
+{{- if .Values.devices.enflame.enabled }}
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: {{ include "hami-vgpu.device-plugin" . }}-gcu
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    app.kubernetes.io/name: {{ include "hami-vgpu.device-plugin" . }}-gcu
+    {{- include "hami-vgpu.labels" . | nindent 4 }}
+    {{- with .Values.global.labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "hami-vgpu.device-plugin" . }}-gcu
+  updateStrategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "hami-vgpu.device-plugin" . }}-gcu
+    spec:
+      {{- with .Values.devices.enflame.nodeSelector }}
+      nodeSelector:
+      {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.devices.enflame.tolerations }}
+      tolerations:
+      {{- toYaml . | nindent 6 }}
+      {{- end }}
+      # Mark this pod as a critical add-on; when enabled, the critical add-on
+      # scheduler reserves resources for critical add-on pods so that they can
+      # be rescheduled after a failure.
+      # See https://kubernetes.io/docs/tasks/administer-cluster/guaranteed-scheduling-critical-addon-pods/
+      priorityClassName: "system-node-critical"
+      securityContext:
+        runAsUser: 0
+      containers:
+      - image: {{ .Values.devices.enflame.image }}
+        imagePullPolicy: {{ .Values.devices.enflame.imagePullPolicy | quote }}
+        name: gcu-device-plugin
+        env:
+          - name: FAIL_ON_INIT_ERROR
+            value: "false"
+          - name: CUSTOM_REGISTER_RESOURCE
+            value: "enflame.com/gcu,enflame.com/vgcu"
+          - name: CDI_CONFIG_PATH
+            value: "/etc/cdi"
+          - name: REGISTER_ALL_CDI_CONFIG
+            value: "true"
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop: ["ALL"]
+            add: ["SYS_CHROOT"]
+        volumeMounts:
+        - name: device-plugin
+          mountPath: /var/lib/kubelet/device-plugins
+        - name: k8s-device-plugin-dir
+          mountPath: /var/log/enflame/k8s-device-plugin
+        - name: cdi-config
+          mountPath: /etc/cdi
+        - name: host-root
+          mountPath: /host-root
+      volumes:
+      - name: device-plugin
+        hostPath:
+          path: /var/lib/kubelet/device-plugins
+      - name: k8s-device-plugin-dir
+        hostPath:
+          path: /var/log/enflame/k8s-device-plugin
+          type: DirectoryOrCreate
+      - name: cdi-config
+        hostPath:
+          path: /etc/cdi
+          type: DirectoryOrCreate
+      - name: host-root
+        hostPath:
+          path: /
+{{- end }}

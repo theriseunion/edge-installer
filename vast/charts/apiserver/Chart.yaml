@@ -1,0 +1,27 @@
+apiVersion: v2
+name: apiserver
+description: VAST API Server - Provides RESTful API for querying heterogeneous computing resource usage, allocation status, and compute card information (supports GPU, NPU, Tianshu, Hygon, Moore Threads, Suiyuan, Cambricon, Kunlunxin and other vendors)
+type: application
+version: 0.1.0
+appVersion: "v1.0.0"
+home: https://github.com/edge/apiserver
+maintainers:
+  - name: Edge Team
+    email: dev@edge.io
+keywords:
+  - vast
+  - api-server
+  - heterogeneous-computing
+  - gpu
+  - npu
+  - tianshu
+  - hygon
+  - moore-threads
+  - suiyuan
+  - cambricon
+  - kunlunxin
+  - compute-resource-management
+  - resource-allocation
+  - kubernetes
+sources:
+  - https://github.com/edge/apiserver

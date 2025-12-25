@@ -1,0 +1,39 @@
+{{- if and .Values.enabled .Values.webhook.enabled }}
+{{- if eq (include "controller.certManagerEnabled" .) "true" }}
+{{- $issuerName := "selfsigned-issuer" }}
+{{- if and .Values.webhook.cert.issuer .Values.webhook.cert.issuer.name }}
+{{- $issuerName = .Values.webhook.cert.issuer.name }}
+{{- end }}
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: {{ include "controller.webhook.certSecretName" . }}
+  namespace: {{ include "controller.namespace" . }}
+  annotations:
+    "helm.sh/hook": post-install,post-upgrade
+    "helm.sh/hook-weight": "5"
+    "helm.sh/hook-delete-policy": before-hook-creation
+  labels:
+    {{- include "controller.labels" . | nindent 4 }}
+    app.kubernetes.io/component: webhook-certificate
+spec:
+  secretName: {{ include "controller.webhook.certSecretName" . }}
+  issuerRef:
+    kind: ClusterIssuer
+    name: {{ $issuerName }}
+    group: cert-manager.io
+  commonName: {{ include "controller.webhook.serviceName" . }}
+  dnsNames:
+    - {{ include "controller.webhook.serviceName" . }}
+    - {{ printf "%s.%s.svc" (include "controller.webhook.serviceName" .) (include "controller.namespace" .) }}
+    - {{ printf "%s.%s.svc.cluster.local" (include "controller.webhook.serviceName" .) (include "controller.namespace" .) }}
+    {{- if .Values.webhook.cert.additionalHosts }}
+    {{- range .Values.webhook.cert.additionalHosts }}
+    - {{ . | quote }}
+    {{- end }}
+    {{- end }}
+  duration: {{ printf "%dh" (mul (int (.Values.webhook.cert.validityDays | default 365)) 24) }}
+  renewBefore: 48h
+{{- end }}
+{{- end }}

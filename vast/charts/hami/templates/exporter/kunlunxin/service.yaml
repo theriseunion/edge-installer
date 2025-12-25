@@ -1,0 +1,24 @@
+{{- if .Values.exporter.kunlunxin.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "hami-vgpu.exporter" . }}-xpu
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    app.kubernetes.io/component: hami-exporter-xpu
+    {{- include "hami-vgpu.labels" . | nindent 4 }}
+    {{- if .Values.exporter.kunlunxin.service.labels }}
+    {{ toYaml .Values.exporter.kunlunxin.service.labels | indent 4 }}
+    {{- end }}
+  {{- if .Values.devicePlugin.service.annotations }}
+  annotations: {{ toYaml .Values.devicePlugin.service.annotations | nindent 4 }}
+  {{- end }}
+spec:
+  type: {{ .Values.exporter.kunlunxin.service.type | default "ClusterIP" }}
+  selector:
+    app.kubernetes.io/component: hami-exporter-xpu
+  ports:
+    - name: metrics
+      port: {{ .Values.exporter.kunlunxin.service.httpPort }}
+      targetPort: 9508
+{{- end }}

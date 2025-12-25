@@ -1,0 +1,31 @@
+{{- if .Values.devices.iluvatar.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  labels:
+    app.kubernetes.io/name: {{ include "hami-vgpu.device-plugin" . }}-iluvatar
+    {{- if .Values.global.prometheus.serviceMonitorSelector }}
+    {{- toYaml .Values.global.prometheus.serviceMonitorSelector | nindent 4 }}
+    {{- end }}
+  name: {{ include "hami-vgpu.device-plugin" . }}-iluvatar
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpoints:
+    - path: /metric
+      port: metrics
+      relabelings:
+        - action: replace
+          regex: (.*)
+          replacement: $1
+          sourceLabels:
+            - __meta_kubernetes_pod_node_name
+          targetLabel: node
+        - action: labeldrop
+          regex: (service|endpoint)
+  namespaceSelector:
+    matchNames:
+      - {{ .Release.Namespace }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: {{ include "hami-vgpu.device-plugin" . }}-iluvatar
+  {{- end }}

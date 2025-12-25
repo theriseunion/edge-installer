@@ -1,0 +1,15 @@
+{{- if and .Values.enabled .Values.kubeRbacProxy.enabled }}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: {{ include "controller.fullname" . }}-metrics-reader
+  labels:
+    {{- include "controller.labels" . | nindent 4 }}
+    app.kubernetes.io/component: kube-rbac-proxy
+    app.kubernetes.io/name: clusterrole
+rules:
+  - nonResourceURLs:
+      - /metrics
+    verbs:
+      - get
+{{- end }}

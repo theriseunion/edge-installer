@@ -1,0 +1,239 @@
+apiVersion: device.theriseunion.io/v1alpha1
+kind: ComputeTemplate
+metadata:
+  labels:
+    theriseunion.io/config-type: fixed
+    theriseunion.io/model-scope: XPU-P800-OAM
+  name: default-xpu-p800-oam
+spec:
+  computeSplitMode: soft
+  description: default xpu-p800 oam compute template
+  deviceCoreScaling: "1"
+  deviceMemoryScaling: "1"
+  deviceSplitCount: 4
+  manufacturer: XPU
+  model: XPU-P800 OAM
+---
+apiVersion: device.theriseunion.io/v1alpha1
+kind: ComputeTemplate
+metadata:
+  labels:
+    theriseunion.io/config-type: fixed
+    theriseunion.io/model-scope: Ascend910B2
+  name: default-ascend910b2
+spec:
+  computeSplitMode: soft
+  description: default ascend910b2 compute template
+  deviceCoreScaling: "1"
+  deviceMemoryScaling: "1"
+  deviceSplitCount: 8
+  manufacturer: Ascend
+  model: Ascend910B2
+---
+apiVersion: device.theriseunion.io/v1alpha1
+kind: ComputeTemplate
+metadata:
+  labels:
+    theriseunion.io/config-type: fixed
+    theriseunion.io/model-scope: Iluvatar-MR-V100
+  name: default-iluvatar-mr-v100
+spec:
+  computeSplitMode: soft
+  description: default iluvatar-mr-v100 compute template
+  deviceCoreScaling: "1"
+  deviceMemoryScaling: "1"
+  deviceSplitCount: 10
+  manufacturer: Iluvatar
+  model: Iluvatar-MR-V100
+---
+apiVersion: device.theriseunion.io/v1alpha1
+kind: ComputeTemplate
+metadata:
+  labels:
+    theriseunion.io/config-type: fixed
+    theriseunion.io/model-scope: Iluvatar-BI-V150
+  name: default-iluvatar-bi-v150
+spec:
+  computeSplitMode: soft
+  description: default iluvatar-bi-v150 compute template
+  deviceCoreScaling: "1"
+  deviceMemoryScaling: "1"
+  deviceSplitCount: 10
+  manufacturer: Iluvatar
+  model: Iluvatar-BI-V150
+---
+apiVersion: device.theriseunion.io/v1alpha1
+kind: ComputeTemplate
+metadata:
+  labels:
+    theriseunion.io/config-type: fixed
+    theriseunion.io/model-scope: Ascend910B3
+  name: default-ascend910b3
+spec:
+  computeSplitMode: soft
+  description: default ascend910b3 compute template
+  deviceCoreScaling: "1"
+  deviceMemoryScaling: "1"
+  deviceSplitCount: 4
+  manufacturer: Ascend
+  model: Ascend910B3
+---
+apiVersion: device.theriseunion.io/v1alpha1
+kind: ComputeTemplate
+metadata:
+  labels:
+    theriseunion.io/config-type: fixed
+    theriseunion.io/model-scope: Metax-SGPU-C500
+  name: default-metax-sgpu-c500
+spec:
+  computeSplitMode: soft
+  description: default metax-sgpu-c500 compute template
+  deviceCoreScaling: "1"
+  deviceMemoryScaling: "1"
+  deviceSplitCount: 10
+  manufacturer: Metax-SGPU
+  model: Metax-SGPU-C500
+---
+apiVersion: device.theriseunion.io/v1alpha1
+kind: ComputeTemplate
+metadata:
+  labels:
+    theriseunion.io/config-type: fixed
+    theriseunion.io/model-scope: DCU-K100_AI
+  name: default-hygon-k100-ai
+spec:
+  computeSplitMode: soft
+  description: default hygon k100_ai compute template
+  deviceCoreScaling: "1"
+  deviceMemoryScaling: "1"
+  deviceSplitCount: 10
+  manufacturer: DCU
+  model: DCU-K100_AI
+---
+apiVersion: device.theriseunion.io/v1alpha1
+kind: ComputeTemplate
+metadata:
+  labels:
+    theriseunion.io/config-type: fixed
+    theriseunion.io/model-scope: all
+  name: default-nvidia
+spec:
+  computeSplitMode: soft
+  description: default nvidia compute template
+  deviceCoreScaling: "1.0"
+  deviceMemoryScaling: "1.0"
+  deviceSplitCount: 10
+  manufacturer: NVIDIA
+  model: all
+---
+apiVersion: device.theriseunion.io/v1alpha1
+kind: ComputeTemplate
+metadata:
+  labels:
+    theriseunion.io/config-type: fixed
+    theriseunion.io/model-scope: Ascend910B4
+  name: default-ascend910b4
+spec:
+  computeSplitMode: soft
+  description: default ascend910b4 compute template
+  deviceCoreScaling: "1"
+  deviceMemoryScaling: "1"
+  deviceSplitCount: 4
+  manufacturer: Ascend
+  model: Ascend910B4
+---
+apiVersion: device.theriseunion.io/v1alpha1
+kind: ComputeTemplate
+metadata:
+  labels:
+    theriseunion.io/config-type: fixed
+    theriseunion.io/model-scope: DCU-Z100L
+  name: default-hygon-z100l
+spec:
+  computeSplitMode: soft
+  description: default hygon z100l compute template
+  deviceCoreScaling: "1"
+  deviceMemoryScaling: "1"
+  deviceSplitCount: 4
+  manufacturer: DCU
+  model: DCU-Z100L
+---
+apiVersion: device.theriseunion.io/v1alpha1
+kind: ComputeTemplate
+metadata:
+  labels:
+    theriseunion.io/config-type: fixed
+    theriseunion.io/model-scope: DCU-Z100
+  name: default-hygon-z100
+spec:
+  computeSplitMode: soft
+  description: default hygon z100 compute template
+  deviceCoreScaling: "1"
+  deviceMemoryScaling: "1"
+  deviceSplitCount: 4
+  manufacturer: DCU
+  model: DCU-Z100
+---
+apiVersion: device.theriseunion.io/v1alpha1
+kind: ComputeTemplate
+metadata:
+  labels:
+    theriseunion.io/config-type: fixed
+    theriseunion.io/model-scope: MLU
+  name: default-mlu
+spec:
+  computeSplitMode: soft
+  description: default mlu compute template
+  deviceCoreScaling: "1"
+  deviceMemoryScaling: "1"
+  deviceSplitCount: 10
+  manufacturer: MLU
+  model: MLU
+---
+apiVersion: device.theriseunion.io/v1alpha1
+kind: ComputeTemplate
+metadata:
+  labels:
+    theriseunion.io/config-type: fixed
+    theriseunion.io/model-scope: Ascend310P
+  name: default-ascend310p
+spec:
+  computeSplitMode: soft
+  description: default ascend310p compute template
+  deviceCoreScaling: "1"
+  deviceMemoryScaling: "1"
+  deviceSplitCount: 7
+  manufacturer: Ascend
+  model: Ascend310P
+---
+apiVersion: device.theriseunion.io/v1alpha1
+kind: ComputeTemplate
+metadata:
+  labels:
+    theriseunion.io/config-type: fixed
+    theriseunion.io/model-scope: PPU-PPU-ZW810E
+  name: default-ppu
+spec:
+  computeSplitMode: soft
+  description: default ppu compute template
+  deviceCoreScaling: "1"
+  deviceMemoryScaling: "1"
+  deviceSplitCount: 1
+  manufacturer: PPU
+  model: PPU-PPU-ZW810E
+---
+apiVersion: device.theriseunion.io/v1alpha1
+kind: ComputeTemplate
+metadata:
+  labels:
+    theriseunion.io/config-type: fixed
+    theriseunion.io/model-scope: Metax-GPU-C500
+  name: default-metax-gpu-c500
+spec:
+  computeSplitMode: soft
+  description: default metax-gpu-c500 compute template
+  deviceCoreScaling: "1"
+  deviceMemoryScaling: "1"
+  deviceSplitCount: 1
+  manufacturer: Metax-GPU
+  model: Metax-GPU-C500

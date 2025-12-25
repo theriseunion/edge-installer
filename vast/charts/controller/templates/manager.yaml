@@ -1,0 +1,169 @@
+{{- if .Values.enabled }}
+{{- $fullName := include "controller.fullname" . -}}
+{{- $serviceAccountName := include "controller.serviceAccountName" . -}}
+{{- if .Values.createNamespace }}
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: {{ include "controller.namespace" . }}
+  labels:
+    {{- include "controller.labels" . | nindent 4 }}
+    app.kubernetes.io/component: manager
+    app.kubernetes.io/name: namespace
+    control-plane: controller-manager
+{{- end }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ $fullName }}-manager
+  namespace: {{ include "controller.namespace" . }}
+  labels:
+    {{- include "controller.labels" . | nindent 4 }}
+    app.kubernetes.io/component: manager
+    app.kubernetes.io/name: deployment
+    control-plane: controller-manager
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "controller.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      annotations:
+        {{- with .Values.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      labels:
+        {{- include "controller.selectorLabels" . | nindent 8 }}
+        {{- with .Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if and .Values.global .Values.global.imagePullSecrets }}
+      {{- with .Values.global.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- end }}
+      serviceAccountName: {{ $serviceAccountName }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: manager
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          args:
+            {{- toYaml .Values.args | nindent 12 }}
+          env:
+            - name: CAMP_NS
+              value: {{ include "controller.namespace" . }}
+            {{- if .Values.webhook.enabled }}
+            - name: ENABLE_WEBHOOKS
+              value: "true"
+            - name: WEBHOOK_PORT
+              value: {{ .Values.webhook.server.port | quote }}
+            {{- else }}
+            - name: ENABLE_WEBHOOKS
+              value: "false"
+            {{- end }}
+            {{- range .Values.env }}
+            {{- if ne .name "ENABLE_WEBHOOKS" }}
+            {{- if ne .name "WEBHOOK_PORT" }}
+            - name: {{ .name }}
+              value: {{ .value | quote }}
+            {{- end }}
+            {{- end }}
+            {{- end }}
+            {{- if .Values.extraEnv }}
+            {{- toYaml .Values.extraEnv | nindent 12 }}
+            {{- end }}
+          ports:
+            - name: webhook-server
+              containerPort: {{ .Values.webhook.server.port }}
+              protocol: TCP
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          volumeMounts:
+            {{- $certManagerEnabled := eq (include "controller.certManagerEnabled" .) "true" }}
+            {{- if and .Values.webhook.enabled (or (and (not $certManagerEnabled) .Values.webhook.cert.create) $certManagerEnabled) }}
+            - name: cert
+              mountPath: {{ include "controller.webhook.certDir" . }}
+              readOnly: true
+            {{- end }}
+            - name: config
+              mountPath: /etc/edge/config
+              readOnly: true
+            {{- $hamiEnabled := true }}
+            {{- if and .Root .Root.Values.hami (hasKey .Root.Values.hami "enabled") }}
+              {{- $hamiEnabled = .Root.Values.hami.enabled }}
+            {{- end }}
+            {{- if $hamiEnabled }}
+            - name: device-config
+              mountPath: /config/device.yaml
+              subPath: device.yaml
+              readOnly: true
+            {{- end }}
+        {{- if .Values.kubeRbacProxy.enabled }}
+        - name: kube-rbac-proxy
+          image: "{{ .Values.kubeRbacProxy.image.repository }}:{{ .Values.kubeRbacProxy.image.tag }}"
+          imagePullPolicy: {{ .Values.kubeRbacProxy.image.pullPolicy }}
+          args:
+            {{- toYaml .Values.kubeRbacProxy.args | nindent 12 }}
+          ports:
+            - name: https
+              containerPort: {{ .Values.kubeRbacProxy.port }}
+              protocol: TCP
+          resources:
+            {{- toYaml .Values.kubeRbacProxy.resources | nindent 12 }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+        {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds }}
+      volumes:
+        {{- $certManagerEnabled := eq (include "controller.certManagerEnabled" .) "true" }}
+        {{- if and .Values.webhook.enabled (or (and (not $certManagerEnabled) .Values.webhook.cert.create) $certManagerEnabled) }}
+        - name: cert
+          secret:
+            secretName: {{ include "controller.webhook.certSecretName" . }}
+            defaultMode: 420
+        {{- end }}
+        - name: config
+          configMap:
+            name: {{ include "controller.fullname" . }}-config
+        {{- $hamiEnabled := true }}
+        {{- if and .Root .Root.Values.hami (hasKey .Root.Values.hami "enabled") }}
+          {{- $hamiEnabled = .Root.Values.hami.enabled }}
+        {{- end }}
+        {{- $hamiFullname := "hami" }}
+        {{- if and .Root .Root.Values.hami .Root.Values.hami.fullnameOverride }}
+          {{- $hamiFullname = .Root.Values.hami.fullnameOverride }}
+        {{- end }}
+        {{- if $hamiEnabled }}
+        - name: device-config
+          configMap:
+            name: {{ $hamiFullname }}-scheduler-device
+            items:
+              - key: device-config.yaml
+                path: device.yaml
+        {{- end }}
+{{- end }}

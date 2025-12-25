@@ -164,6 +164,25 @@ autoInstall:
       alertManager:
         enabled: true
 
+  # VAST component
+  vast:
+    enabled: true # Set to true to enable VAST platform installation
+    version: "0.1.0"
+    namespace: "rise-vast-system" # Namespace for VAST platform
+    values:
+      # VAST platform configuration
+      # Override default values here if needed
+      # Example:
+      # controller:
+      #   enabled: true
+      #   image:
+      #     repository: quanzhenglong.com/edge/controller
+      #     tag: vast-v0.1.0-11
+      # apiserver:
+      #   enabled: true
+      # hami:
+      #   enabled: true
+
 # Hook configuration
 hooks:
   # Enable chart packaging/upload hooks

@@ -1,0 +1,25 @@
+{{- if and .Values.exporter.enflame.enabled .Values.exporter.enflame.serviceMonitor.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ include "hami-vgpu.exporter" . }}-gcu
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    {{- if .Values.exporter.enflame.additionalLabels }}
+      {{- toYaml .Values.exporter.enflame.additionalLabels | nindent 4 }}
+    {{- end }}
+spec:
+  endpoints:
+    - port: metrics
+      path: /metrics
+      relabelings:
+        - action: replace
+          sourceLabels: [ __meta_kubernetes_endpoint_node_name ]
+          targetLabel: node
+  namespaceSelector:
+    matchNames:
+      - {{ .Release.Namespace }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "hami-vgpu.exporter" . }}-gcu
+{{- end }}

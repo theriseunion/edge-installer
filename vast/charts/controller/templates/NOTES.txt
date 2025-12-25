@@ -1,0 +1,19 @@
+{{- if .Values.enabled }}
+VAST Controller (Operator) has been deployed successfully!
+
+The Controller is a standard Kubernetes Operator that:
+  - Defines and manages CRDs for heterogeneous computing resources
+  - Reconciles compute resource states
+  - Manages compute cards from multiple vendors (GPU, NPU, Tianshu, Hygon, Moore Threads, Suiyuan, Cambricon, Kunlunxin, etc.)
+
+To check the Controller status:
+  kubectl get deployment {{ include "controller.fullname" . }}-manager -n {{ include "controller.namespace" . }}
+
+To view the logs:
+  kubectl logs deployment/{{ include "controller.fullname" . }}-manager -n {{ include "controller.namespace" . }}
+
+To check CRDs:
+  kubectl get crds | grep device.theriseunion.io
+
+CRDs and related resources will be created and managed automatically by the controller.
+{{- end }}

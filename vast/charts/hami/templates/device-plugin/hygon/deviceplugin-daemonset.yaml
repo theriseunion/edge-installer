@@ -1,0 +1,96 @@
+{{- if .Values.devices.hygon.enabled }}
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: {{ include "hami-vgpu.device-plugin" . }}-dcu
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    app.kubernetes.io/component: {{ include "hami-vgpu.device-plugin" . }}-mlu
+    {{- include "hami-vgpu.labels" . | nindent 4 }}
+    {{- with .Values.global.labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+  {{- if .Values.global.annotations }}
+  annotations: {{ toYaml .Values.global.annotations | nindent 4}}
+  {{- end }}
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: {{ include "hami-vgpu.device-plugin" . }}-dcu
+      {{- include "hami-vgpu.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/component: {{ include "hami-vgpu.device-plugin" . }}-dcu
+        {{- include "hami-vgpu.selectorLabels" . | nindent 8 }}
+    spec:
+      serviceAccountName: {{ include "hami-vgpu.device-plugin" . }}-dcu
+      hostPID: true
+      hostNetwork: true
+      containers:
+        - image: {{ .Values.devices.hygon.image }}
+          imagePullPolicy: {{ .Values.devices.hygon.imagePullPolicy | quote }}
+          #command: ["/bin/bash","-c","source /opt/hygondriver/env.sh && sleep infinity"]
+          command: ["/root/k8s-device-plugin"]
+          name: dcu-dp-cntr
+          env:
+            - name: NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+            - name: HYGONPATH
+              value: /opt/dtk
+            - name: BASH_ENV
+              value: ~/.bashrc
+          securityContext:
+            privileged: true
+            allowPrivilegeEscalation: true
+            capabilities:
+              drop: ["ALL"]
+              add: ["SYS_ADMIN"]
+          volumeMounts:
+            - name: dp
+              mountPath: /var/lib/kubelet/device-plugins
+            - name: sys
+              mountPath: /sys
+            - name: hwpath
+              mountPath: /usr/share/hwdata
+            - name: hygonloc
+              mountPath: /opt/hygondriver/
+            - name: lib
+              mountPath: /usr/local/vgpu
+            - name: hyhal
+              mountPath: /opt/hyhal
+            - name: etc-vdev
+              mountPath: /etc/vdev
+      volumes:
+        - name: dp
+          hostPath:
+            path: /var/lib/kubelet/device-plugins
+        - name: sys
+          hostPath:
+            path: /sys
+        - name: hwpath
+          hostPath:
+            path: /usr/share/hwdata
+        - name: hygonloc
+          hostPath:
+            path: /opt/dtk
+        - name: lib
+          hostPath:
+            path: /usr/local/vgpu
+        - name: hyhal
+          hostPath:
+            path: /opt/hyhal
+        - name: etc-vdev
+          hostPath:
+            path: /etc/vdev
+      {{- with .Values.devices.hygon.nodeSelector }}
+      nodeSelector:
+      {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.devices.hygon.tolerations }}
+      tolerations:
+      {{- toYaml . | nindent 6 }}
+      {{- end }}
+{{- end }}

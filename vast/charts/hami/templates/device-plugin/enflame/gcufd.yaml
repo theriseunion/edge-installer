@@ -1,0 +1,57 @@
+{{- if .Values.devices.enflame.enabled }}
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: gcu-feature-discovery
+  labels:
+    app.kubernetes.io/name: gcu-feature-discovery
+    app.kubernetes.io/version: 1.0.0
+    app.kubernetes.io/part-of: enflame-gcu
+  namespace: {{ .Release.Namespace | quote }}
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: gcu-feature-discovery
+      app.kubernetes.io/part-of: enflame-gcu
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: gcu-feature-discovery
+        app.kubernetes.io/version: 1.0.0
+        app.kubernetes.io/part-of: enflame-gcu
+    spec:
+      {{- with .Values.devices.enflame.nodeSelector }}
+      nodeSelector:
+      {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.devices.enflame.tolerations }}
+      tolerations:
+      {{- toYaml . | nindent 6 }}
+      {{- end }}
+      containers:
+        - image: {{ .Values.devices.enflame.gcufdImage }}
+          name: gcu-feature-discovery
+          imagePullPolicy: {{ .Values.devices.enflame.imagePullPolicy | quote }}
+          volumeMounts:
+            - name: output-dir
+              mountPath: "/etc/kubernetes/node-feature-discovery/features.d"
+            - name: host-sys
+              mountPath: "/sys"
+            - name: topscloud-config
+              mountPath: /etc/topscloud
+          securityContext:
+            privileged: true
+      # nodeSelector:
+      #  feature.node.kubernetes.io/pci-1e36.present: "true" # ENFLAME vendor ID
+      volumes:
+        - name: output-dir
+          hostPath:
+            path: "/etc/kubernetes/node-feature-discovery/features.d"
+        - name: host-sys
+          hostPath:
+            path: "/sys"
+        - name: topscloud-config
+          hostPath:
+            path: /etc/topscloud
+            type: DirectoryOrCreate
+{{- end }}

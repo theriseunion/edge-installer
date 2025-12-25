@@ -1,0 +1,12 @@
+apiVersion: device.theriseunion.io/v1alpha1
+kind: GlobalConfig
+metadata:
+  name: global-config
+spec:
+  alertLevel:
+  - critical
+  - high
+  gpuScheduling: spread
+  nodeScheduling: binpack
+  resourceAwareness: allocation_rate
+  resourcePoolEnabled: false

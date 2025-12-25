@@ -1,0 +1,271 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: edge-manager-role
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - configmaps
+  verbs:
+  - create
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - events
+  verbs:
+  - create
+  - patch
+- apiGroups:
+  - ""
+  resources:
+  - namespaces
+  - nodes
+  verbs:
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - pods
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - app.theriseunion.io
+  resources:
+  - applicationdeployments
+  - applicationversions
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - app.theriseunion.io
+  resources:
+  - applicationdeployments/finalizers
+  - applicationversions/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - app.theriseunion.io
+  resources:
+  - applicationdeployments/status
+  - applicationversions/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - apps
+  resources:
+  - deployments
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - configmaps
+  - secrets
+  - services
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - device.theriseunion.io
+  resources:
+  - computetemplates
+  - devicemodels
+  - globalconfigs
+  - nodeconfigs
+  - resourcepoolitems
+  - resourcepools
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - device.theriseunion.io
+  resources:
+  - computetemplates/finalizers
+  - devicemodels/finalizers
+  - globalconfigs/finalizers
+  - nodeconfigs/finalizers
+  - resourcepoolitems/finalizers
+  - resourcepools/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - device.theriseunion.io
+  resources:
+  - computetemplates/status
+  - devicemodels/status
+  - globalconfigs/status
+  - nodeconfigs/status
+  - resourcepoolitems/status
+  - resourcepools/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - iam.theriseunion.io
+  resources:
+  - iamrolebindings
+  - iamroles
+  - reverseproxies
+  - roletemplates
+  - users
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - iam.theriseunion.io
+  resources:
+  - iamrolebindings/finalizers
+  - iamroles/finalizers
+  - reverseproxies/finalizers
+  - roletemplates/finalizers
+  - users/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - iam.theriseunion.io
+  resources:
+  - iamrolebindings/status
+  - iamroles/status
+  - reverseproxies/status
+  - roletemplates/status
+  - users/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - iam.theriseunion.io
+  resources:
+  - scopepatterns
+  - scopepatterns/status
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - policy
+  resources:
+  - pods/eviction
+  verbs:
+  - create
+- apiGroups:
+  - rbac.authorization.k8s.io
+  resources:
+  - clusterrolebindings
+  - clusterroles
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - registry.theriseunion.io
+  resources:
+  - clusterregistries
+  - clusterrepositories
+  - registries
+  - repositories
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - registry.theriseunion.io
+  resources:
+  - clusterregistries/finalizers
+  - clusterrepositories/finalizers
+  - registries/finalizers
+  - repositories/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - registry.theriseunion.io
+  resources:
+  - clusterregistries/status
+  - clusterrepositories/status
+  - registries/status
+  - repositories/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - scope.theriseunion.io
+  resources:
+  - clusters
+  - nodegroups
+  - workspaces
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - scope.theriseunion.io
+  resources:
+  - clusters/finalizers
+  - nodegroups/finalizers
+  - workspaces/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - scope.theriseunion.io
+  resources:
+  - clusters/status
+  - nodegroups/status
+  - workspaces/status
+  verbs:
+  - get
+  - patch
+  - update

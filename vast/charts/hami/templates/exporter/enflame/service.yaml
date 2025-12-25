@@ -1,0 +1,17 @@
+{{- if .Values.exporter.enflame.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "hami-vgpu.exporter" . }}-gcu
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    app.kubernetes.io/name: {{ include "hami-vgpu.exporter" . }}-gcu
+spec:
+  selector:
+    app.kubernetes.io/name: {{ include "hami-vgpu.exporter" . }}-gcu
+  ports:
+    - name: metrics
+      port: {{ .Values.exporter.enflame.service.httpPort }}
+      targetPort: {{ .Values.exporter.enflame.service.httpPort }}
+  type: NodePort
+{{- end }}

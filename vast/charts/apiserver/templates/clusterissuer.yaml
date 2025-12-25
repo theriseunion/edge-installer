@@ -1,0 +1,19 @@
+{{- if and .Values.enabled .Values.config.server.tls.enabled }}
+{{- if and (eq (include "apiserver.certManagerEnabled" .) "true") (or (.Values.cert.issuer.create | default false) (.Values.cert.createIssuer | default false)) }}
+---
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: {{ if and .Values.cert.issuer .Values.cert.issuer.name }}{{ .Values.cert.issuer.name }}{{ else }}selfsigned-issuer{{ end }}
+  annotations:
+    "helm.sh/hook": post-install,post-upgrade
+    "helm.sh/hook-weight": "3"
+    "helm.sh/hook-delete-policy": before-hook-creation
+  labels:
+    {{- include "apiserver.labels" . | nindent 4 }}
+    app.kubernetes.io/component: issuer
+spec:
+  selfSigned: {}
+{{- end }}
+{{- end }}
+
