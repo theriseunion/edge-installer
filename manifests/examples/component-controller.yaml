@@ -13,7 +13,7 @@ spec:
   values:
     image:
       repository: quanzhenglong.com/edge/edge-controller
-      tag: main-qzl
+      tag: main-qzl-v0.2
       pullPolicy: Always
 
     replicaCount: 1

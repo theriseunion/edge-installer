@@ -172,7 +172,7 @@ spec:
       serviceAccountName: edge-installer
       containers:
       - name: installer
-        image: quanzhenglong.com/edge/edge-installer:main-qzl
+        image: quanzhenglong.com/edge/edge-installer:main-qzl-v0.2
         imagePullPolicy: "Always"
         resources:
           limits:

@@ -8,7 +8,7 @@ fullnameOverride: "console"
 image:
   repository: quanzhenglong.com/edge/console
   pullPolicy: IfNotPresent
-  tag: "main-qzl"
+  tag: "main-qzl-v0.2"
 
 imagePullSecrets: []
 nameOverride: ""

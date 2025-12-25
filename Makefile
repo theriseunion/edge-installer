@@ -18,7 +18,7 @@ help: ## Display this help.
 
 # Registry configuration
 REGISTRY ?= quanzhenglong.com/edge
-TAG ?= main-qzl 
+TAG ?= main-qzl-v0.2 
 CHARTS_OUTPUT := bin/_output
 CHARTS_SOURCE := .
 

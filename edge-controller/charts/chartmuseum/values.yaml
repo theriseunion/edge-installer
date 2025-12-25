@@ -7,7 +7,7 @@ enabled: true
 # Image configuration
 image:
   repository: quanzhenglong.com/edge/edge-museum
-  tag: "main-qzl"
+  tag: "main-qzl-v0.2"
   pullPolicy: IfNotPresent
 
 # Resource limits and requests

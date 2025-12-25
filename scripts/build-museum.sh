@@ -6,7 +6,7 @@ set -e
 
 # Default values
 REGISTRY=${REGISTRY:-"quanzhenglong.com/edge"}
-TAG=${TAG:-"latest"}
+TAG=${TAG:-"main-qzl-v0.2"}
 OUTPUT_DIR=${OUTPUT_DIR:-"bin/_output"}
 
 echo "==================== Building ChartMuseum Image ===================="
