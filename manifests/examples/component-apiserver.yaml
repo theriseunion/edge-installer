@@ -24,7 +24,7 @@ spec:
   values:
     image:
       repository: quanzhenglong.com/edge/edge-apiserver
-      tag: main-qzl-v0.2
+      tag: main-qzl-v0.2-arm64
       pullPolicy: Always
 
     replicaCount: 1

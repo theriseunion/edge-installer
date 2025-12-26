@@ -7,7 +7,7 @@
 NAMESPACE=${NAMESPACE:-edge-system}
 KUBECONFIG_PATH=${KUBECONFIG:-~/.kube/config}
 REGISTRY=${REGISTRY:-quanzhenglong.com/edge}
-TAG=${TAG:-main-qzl-v0.2}
+TAG=${TAG:-main-qzl-v0.2-arm64}
 PULL_POLICY=${PULL_POLICY:-Always}
 ENABLE_MONITORING=${ENABLE_MONITORING:-false}
 INSTALL_OPENYURT=${INSTALL_OPENYURT:-false}

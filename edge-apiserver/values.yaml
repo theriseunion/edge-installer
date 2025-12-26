@@ -17,7 +17,7 @@ fullnameOverride: "apiserver"
 image:
   repository: quanzhenglong.com/edge/apiserver
   pullPolicy: IfNotPresent  # Options: Always, IfNotPresent, Never
-  tag: "main-qzl-v0.2"
+  tag: "main-qzl-v0.2-arm64"
 
 # ServiceAccount configuration
 serviceAccount:

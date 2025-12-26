@@ -24,7 +24,7 @@ spec:
   values:
     image:
       repository: quanzhenglong.com/edge/apiserver
-      tag: main-qzl-v0.2
+      tag: main-qzl-v0.2-arm64
       pullPolicy: IfNotPresent
 
 ---
@@ -49,7 +49,7 @@ spec:
   values:
     image:
       repository: quanzhenglong.com/edge/console
-      tag: main-qzl-v0.2
+      tag: main-qzl-v0.2-arm64
       pullPolicy: IfNotPresent
 
 ---
