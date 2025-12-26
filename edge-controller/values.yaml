@@ -14,7 +14,7 @@ global:
   namespace: "edge-system"
 
   # Image registry
-  imageRegistry: "quanzhenglong.com/edge"
+  imageRegistry: "quanzhenglong.com"
 
 # Override the full name to remove edge- prefix
 fullnameOverride: "controller"
@@ -25,7 +25,7 @@ controller:
   replicaCount: 1
 
   image:
-    repository: controller
+    repository: edge/controller
     tag: "main"
     pullPolicy: IfNotPresent
 
