@@ -193,3 +193,19 @@ hooks:
 
   # Delete hook pods after execution
   deletePolicy: before-hook-creation,hook-succeeded
+platformAdmin:
+  components:
+    - yurt-iot-dock
+    - edgex-device-virtual
+    - edgex-device-rest
+  images:
+    edgex-core-common-config-bootstrapper: "quanzhenglong.com/openyurt/core-common-config-bootstrapper:3.0.0"
+    edgex-device-virtual: "quanzhenglong.com/openyurt/device-virtual:3.0.0"
+    edgex-device-rest: "quanzhenglong.com/openyurt/device-rest:3.0.0"
+    edgex-redis: "quanzhenglong.com/openyurt/redis:7.0.11-alpine"
+    yurt-iot-dock: "quanzhenglong.com/openyurt/yurt-iot-dock:latest"
+    edgex-core-metadata: "quanzhenglong.com/openyurt/core-metadata:3.0.0"
+    edgex-core-consul: "quanzhenglong.com/openyurt/consul:1.15.2"
+    edgex-core-command: "quanzhenglong.com/openyurt/core-command:3.0.0"
+configmap:
+  ImageRegistry: "quanzhenglong.com"
