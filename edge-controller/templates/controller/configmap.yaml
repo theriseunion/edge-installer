@@ -13,7 +13,7 @@ data:
         - {{ . }}
         {{- end }}
         images:
-        {{- range .Values.platformAdmin.images }}
-        - {{ . }}
+        {{- range $key, $value := .Values.platformAdmin.images }}
+        - {{ $key }}: {{ $value }}
         {{- end }}
     imageRegistry: {{ .Values.configmap.ImageRegistry }}
