@@ -6,7 +6,8 @@ enabled: true
 
 # Image configuration
 image:
-  repository: quanzhenglong.com/edge/edge-museum
+  registry: quanzhenglong.com
+  repository: edge/edge-museum
   tag: "main-qzl-v0.2-arm64"
   pullPolicy: IfNotPresent
 

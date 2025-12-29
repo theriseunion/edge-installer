@@ -6,7 +6,8 @@ replicaCount: 1
 fullnameOverride: "console"
 
 image:
-  repository: quanzhenglong.com/edge/console
+  registry: quanzhenglong.com
+  repository: edge/console
   pullPolicy: IfNotPresent
   tag: "main-qzl-v0.2-arm64"
 

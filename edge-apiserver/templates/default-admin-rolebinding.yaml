@@ -5,6 +5,7 @@ kind: IAMRoleBinding
 metadata:
   name: admin-platform-admin
   annotations:
+    theriseunion.io/creator: system
     helm.sh/resource-policy: keep
   labels:
     iam.theriseunion.io/scope: platform

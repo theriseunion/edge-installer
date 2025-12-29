@@ -15,7 +15,8 @@ replicaCount: 1
 fullnameOverride: "apiserver"
 
 image:
-  repository: quanzhenglong.com/edge/apiserver
+  registry: quanzhenglong.com
+  repository: edge/apiserver
   pullPolicy: IfNotPresent  # Options: Always, IfNotPresent, Never
   tag: "main-qzl-v0.2-arm64"
 
