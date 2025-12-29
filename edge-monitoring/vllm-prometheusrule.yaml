@@ -1,0 +1,104 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: vllm-recording-rules
+  namespace: observability-system
+  labels:
+    prometheus: kube-prometheus
+    role: recording-rules
+    app: vllm
+spec:
+  groups:
+    # vLLM service monitoring recording rules
+    - name: vllm-service-monitoring-rules
+      interval: 30s
+      rules:
+        # 1. 端到端时延平均值 (E2E Request Latency Average)
+        - record: vllm:e2e_request_latency_seconds:avg
+          expr: |
+            rate(vllm:e2e_request_latency_seconds_sum[5m])
+            /
+            rate(vllm:e2e_request_latency_seconds_count[5m])
+
+        # 1.1 端到端时延 P50
+        - record: vllm:e2e_request_latency_seconds:p50
+          expr: |
+            histogram_quantile(0.50, rate(vllm:e2e_request_latency_seconds_bucket[5m]))
+
+        # 1.2 端到端时延 P95
+        - record: vllm:e2e_request_latency_seconds:p95
+          expr: |
+            histogram_quantile(0.95, rate(vllm:e2e_request_latency_seconds_bucket[5m]))
+
+        # 1.3 端到端时延 P99
+        - record: vllm:e2e_request_latency_seconds:p99
+          expr: |
+            histogram_quantile(0.99, rate(vllm:e2e_request_latency_seconds_bucket[5m]))
+
+        # 2. 生成第一个词所需时间平均值 (Time to First Token - TTFT Average)
+        - record: vllm:time_to_first_token_seconds:avg
+          expr: |
+            rate(vllm:time_to_first_token_seconds_sum[5m])
+            /
+            rate(vllm:time_to_first_token_seconds_count[5m])
+
+        # 2.1 生成第一个词所需时间 P50
+        - record: vllm:time_to_first_token_seconds:p50
+          expr: |
+            histogram_quantile(0.50, rate(vllm:time_to_first_token_seconds_bucket[5m]))
+
+        # 2.2 生成第一个词所需时间 P95
+        - record: vllm:time_to_first_token_seconds:p95
+          expr: |
+            histogram_quantile(0.95, rate(vllm:time_to_first_token_seconds_bucket[5m]))
+
+        # 2.3 生成第一个词所需时间 P99
+        - record: vllm:time_to_first_token_seconds:p99
+          expr: |
+            histogram_quantile(0.99, rate(vllm:time_to_first_token_seconds_bucket[5m]))
+
+        # 3. 输入阶段的平均吞吐量 (Prompt Tokens Throughput - tokens/s)
+        - record: vllm:prompt_tokens_throughput:rate
+          expr: |
+            rate(vllm:prompt_tokens_total[5m])
+
+        # 4. 输出阶段的平均吞吐量 (Generation Tokens Throughput - tokens/s)
+        - record: vllm:generation_tokens_throughput:rate
+          expr: |
+            rate(vllm:generation_tokens_total[5m])
+
+        # 5. 处理请求的总 token 数增长率 (1小时)
+        - record: vllm:prompt_tokens_total:increase_1h
+          expr: |
+            increase(vllm:prompt_tokens_total[1h])
+
+        # 6. 处理响应的总 token 数增长率 (1小时)
+        - record: vllm:generation_tokens_total:increase_1h
+          expr: |
+            increase(vllm:generation_tokens_total[1h])
+
+        # 额外有用的指标
+
+        # 请求速率 (Requests per second)
+        - record: vllm:request_rate:rate
+          expr: |
+            rate(vllm:e2e_request_latency_seconds_count[5m])
+
+        # 总吞吐量 (Total Tokens Throughput - tokens/s)
+        - record: vllm:total_tokens_throughput:rate
+          expr: |
+            rate(vllm:prompt_tokens_total[5m]) + rate(vllm:generation_tokens_total[5m])
+
+        # 平均每请求的 prompt tokens 数
+        - record: vllm:avg_prompt_tokens_per_request
+          expr: |
+            rate(vllm:prompt_tokens_total[5m])
+            /
+            rate(vllm:e2e_request_latency_seconds_count[5m])
+
+        # 平均每请求的 generation tokens 数
+        - record: vllm:avg_generation_tokens_per_request
+          expr: |
+            rate(vllm:generation_tokens_total[5m])
+            /
+            rate(vllm:e2e_request_latency_seconds_count[5m])
