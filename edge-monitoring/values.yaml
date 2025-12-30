@@ -8,14 +8,14 @@ global:
   # 命名空间
   namespace: observability-system
   # 镜像仓库地址（可通过 Helm 参数覆盖）
-  imageRegistry: quanzhenglong.com
+  # imageRegistry: quanzhenglong.com
 
 # Monitoring Service 配置 - 提供统一的监控数据 API
 monitoringService:
   enabled: true
   replicas: 1
   image:
-    registry: ""  # 留空则使用 global.imageRegistry
+    registry: "quanzhenglong.com"  # 留空则使用 global.imageRegistry
     repository: edge/monitoring-service
     tag: main
     pullPolicy: IfNotPresent
