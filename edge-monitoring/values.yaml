@@ -53,8 +53,8 @@ dutyProxy:
   enabled: true
   upstream:
     scheme: http
-    host: 116.63.161.198
-    port: 30001
+    host: duty-web.observability-system.svc.cluster.local
+    port: 80
 
 # Edge Remote Write 配置 - 接收边缘节点的监控数据
 edgeRemoteWrite:
