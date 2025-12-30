@@ -10,10 +10,6 @@ kind: Certificate
 metadata:
   name: {{ include "controller.webhook.certSecretName" . }}
   namespace: {{ include "controller.namespace" . }}
-  annotations:
-    "helm.sh/hook": post-install,post-upgrade
-    "helm.sh/hook-weight": "5"
-    "helm.sh/hook-delete-policy": before-hook-creation
   labels:
     {{- include "controller.labels" . | nindent 4 }}
     app.kubernetes.io/component: webhook-certificate
