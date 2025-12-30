@@ -157,13 +157,12 @@ autoInstall:
     version: "0.1.0"
     values:
       namespace: "observability-system"
-      prometheus:
-        enabled: true
-      grafana:
-        enabled: true
-      alertManager:
-        enabled: true
 
+  duty:
+    enabled: true
+    version: "0.1.0"
+    values:
+      namespace: "observability-system"
   # VAST component
   vast:
     enabled: true # Set to true to enable VAST platform installation
