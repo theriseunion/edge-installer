@@ -8,7 +8,7 @@ alertManagerConfig:
   name: "duty-webhook-config"
   namespace: "observability-system"
   labels:
-    alertmanager-config: "duty"
+    alertmanagerConfig: "duty"
     app.kubernetes.io/name: "duty"
     app.kubernetes.io/instance: "duty"
   route:

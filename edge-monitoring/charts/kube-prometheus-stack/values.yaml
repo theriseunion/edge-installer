@@ -3767,7 +3767,7 @@ prometheus:
     ##
       volumeClaimTemplate:
         spec:
-          storageClassName: nfs-client
+          storageClassName: local
           accessModes: ["ReadWriteOnce"]
           resources:
             requests:
