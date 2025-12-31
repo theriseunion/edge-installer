@@ -18,7 +18,7 @@ image:
   registry: quanzhenglong.com
   repository: edge/apiserver
   pullPolicy: IfNotPresent  # Options: Always, IfNotPresent, Never
-  tag: "main"
+  tag: "main-qzl-v0.2-arm64"
 
 # ServiceAccount configuration
 serviceAccount:

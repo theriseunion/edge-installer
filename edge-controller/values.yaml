@@ -26,7 +26,7 @@ controller:
 
   image:
     repository: edge/controller
-    tag: "main"
+    tag: "main-qzl-v0.2-arm64"
     pullPolicy: IfNotPresent
 
   resources:
@@ -91,7 +91,7 @@ chartmuseum:
 
   image:
     repository: edge/edge-museum
-    tag: main
+    tag: "main-qzl-v0.2-arm64"
     pullPolicy: IfNotPresent
 
   resources:
@@ -153,19 +153,19 @@ autoInstall:
 
   # Monitoring component
   monitoring:
-    enabled: true
+    enabled: false
     version: "0.1.0"
     values:
       namespace: "observability-system"
 
   duty:
-    enabled: true
+    enabled: false
     version: "0.1.0"
     values:
       namespace: "observability-system"
   # VAST component
   vast:
-    enabled: true # Set to true to enable VAST platform installation
+    enabled: false # Set to true to enable VAST platform installation
     version: "0.1.0"
     namespace: "rise-vast-system" # Namespace for VAST platform
     values:

@@ -8,7 +8,7 @@ enabled: true
 image:
   registry: quanzhenglong.com
   repository: edge/edge-museum
-  tag: main
+  tag: "main-qzl-v0.2-arm64"
   pullPolicy: IfNotPresent
 
 # Resource limits and requests
