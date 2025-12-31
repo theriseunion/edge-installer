@@ -130,3 +130,32 @@ tls.key: {{ $cert.Key | b64enc }}
 ca.crt: {{ $ca.Cert | b64enc }}
 {{- end }}
 
+{{/*
+Get CA bundle from cert-manager Certificate secret for ReverseProxy
+This function attempts to lookup the CA certificate from the Secret created by cert-manager.
+If the Secret doesn't exist yet (e.g., during initial deployment), it returns an empty string.
+Users can also manually set cert.reverseProxy.caBundle in values.yaml as a fallback.
+*/}}
+{{- define "apiserver.caBundle" -}}
+{{- $caBundle := "" }}
+{{- if and .Values.enabled .Values.config.server.tls.enabled }}
+  {{- if eq (include "apiserver.certManagerEnabled" .) "true" }}
+    {{- /* Try to get CA bundle from values.yaml first (manual override) */}}
+    {{- if and .Values.cert .Values.cert.reverseProxy .Values.cert.reverseProxy.caBundle }}
+      {{- $caBundle = .Values.cert.reverseProxy.caBundle }}
+    {{- else }}
+      {{- /* Try to lookup the Secret created by cert-manager */}}
+      {{- $secretName := include "apiserver.certSecretName" . }}
+      {{- $namespace := include "apiserver.namespace" . }}
+      {{- $secret := lookup "v1" "Secret" $namespace $secretName }}
+      {{- if and $secret $secret.data }}
+        {{- if hasKey $secret.data "ca.crt" }}
+          {{- $caBundle = index $secret.data "ca.crt" }}
+        {{- end }}
+      {{- end }}
+    {{- end }}
+  {{- end }}
+{{- end }}
+{{- $caBundle }}
+{{- end }}
+

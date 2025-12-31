@@ -6,6 +6,8 @@ kind: ClusterIssuer
 metadata:
   name: {{ if and .Values.webhook.cert.issuer .Values.webhook.cert.issuer.name }}{{ .Values.webhook.cert.issuer.name }}{{ else }}selfsigned-issuer{{ end }}
   annotations:
+    "helm.sh/hook": post-install,post-upgrade
+    "helm.sh/hook-weight": "1"
     "helm.sh/resource-policy": keep
   labels:
     {{- include "controller.labels" . | nindent 4 }}

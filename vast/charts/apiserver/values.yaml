@@ -211,4 +211,11 @@ cert:
   validityDays: 3650
   # Additional hostnames/IPs to include in certificate SAN
   additionalHosts: []
+  # ReverseProxy CA bundle configuration
+  reverseProxy:
+    # Manual CA bundle override (base64 encoded PEM format)
+    # If not set, the CA bundle will be automatically retrieved from the cert-manager Certificate secret
+    # This is useful when the Secret doesn't exist yet during initial deployment
+    # Example: kubectl get secret -n <namespace> <cert-secret-name> -o jsonpath='{.data.ca\.crt}'
+    caBundle: ""
 
