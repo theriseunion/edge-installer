@@ -15,8 +15,7 @@ containerPort: 80
 # Service configuration
 svc:
   port: 80 # Service internal port (should match containerPort)
-  nodePort: 30001 # NodePort external port (30000-32767, only for NodePort type)
-  type: NodePort
+  type: ClusterIP
 
 # Replica count
 replicaCount: 1
