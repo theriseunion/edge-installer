@@ -1,0 +1,6 @@
+apiVersion: v2
+name: edge-prometheus-agent
+description: 边缘节点 Prometheus Agent，推送监控数据到云端
+type: application
+version: 0.1.0
+appVersion: "2.50.1"

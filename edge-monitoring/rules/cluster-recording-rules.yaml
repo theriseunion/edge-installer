@@ -1,0 +1,248 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: cluster-recording-rules
+  namespace: observability-system
+  labels:
+    prometheus: kube-prometheus
+    role: recording-rules
+    release: edge-monitoring
+    layer: cluster
+spec:
+  groups:
+    # ========================================================================
+    # Cluster-level Aggregation Recording Rules
+    # Purpose: Global cluster-wide resource metrics aggregation
+    # Priority: P2 - Depends on node-recording-rules
+    # Dependencies: node-exporter, kube-state-metrics, cadvisor, node-recording-rules
+    # ========================================================================
+    - name: cluster-cpu-metrics
+      interval: 30s
+      rules:
+        # Cluster CPU total (allocatable)
+        - record: cluster_cpu_total
+          expr: |
+            sum(kube_node_status_allocatable{job="kube-state-metrics", resource="cpu"})
+
+        # Cluster CPU usage (all nodes)
+        - record: cluster_cpu_usage
+          expr: |
+            sum(rate(node_cpu_seconds_total{job="node-exporter", mode!="idle"}[5m]))
+
+        # Cluster CPU utilisation (0-1 ratio)
+        - record: cluster_cpu_utilisation
+          expr: |
+            cluster_cpu_usage / cluster_cpu_total
+
+        # Master nodes CPU total
+        - record: cluster_cpu_master_total
+          expr: |
+            sum(kube_node_status_allocatable{job="kube-state-metrics", resource="cpu", node=~".*master.*"})
+
+        # Master nodes CPU usage
+        - record: cluster_cpu_master_usage
+          expr: |
+            sum(
+              rate(node_cpu_seconds_total{job="node-exporter", mode!="idle"}[5m])
+              * on(instance) group_left(node)
+              label_replace(kube_node_info{job="kube-state-metrics", node=~".*master.*"}, "instance", "$1", "node", "(.*)")
+            )
+
+        # Master nodes CPU utilisation
+        - record: cluster_cpu_master_utilisation
+          expr: |
+            cluster_cpu_master_usage / cluster_cpu_master_total
+
+        # Worker nodes CPU total
+        - record: cluster_cpu_non_master_total
+          expr: |
+            sum(kube_node_status_allocatable{job="kube-state-metrics", resource="cpu", node!~".*master.*"})
+
+        # Worker nodes CPU usage
+        - record: cluster_cpu_non_master_usage
+          expr: |
+            sum(
+              rate(node_cpu_seconds_total{job="node-exporter", mode!="idle"}[5m])
+              * on(instance) group_left(node)
+              label_replace(kube_node_info{job="kube-state-metrics", node!~".*master.*"}, "instance", "$1", "node", "(.*)")
+            )
+
+        # Worker nodes CPU utilisation
+        - record: cluster_cpu_non_master_utilisation
+          expr: |
+            cluster_cpu_non_master_usage / cluster_cpu_non_master_total
+
+        # Pod CPU requests total
+        - record: cluster_pod_cpu_requests_total
+          expr: |
+            sum(kube_pod_container_resource_requests{job="kube-state-metrics", resource="cpu"})
+
+        # Pod CPU limits total
+        - record: cluster_pod_cpu_limits_total
+          expr: |
+            sum(kube_pod_container_resource_limits{job="kube-state-metrics", resource="cpu"})
+
+    - name: cluster-memory-metrics
+      interval: 30s
+      rules:
+        # Cluster memory total (allocatable)
+        - record: cluster_memory_total
+          expr: |
+            sum(kube_node_status_allocatable{job="kube-state-metrics", resource="memory"})
+
+        # Cluster memory available
+        - record: cluster_memory_available
+          expr: |
+            sum(node_memory_MemAvailable_bytes{job="node-exporter"})
+
+        # Cluster memory usage
+        - record: cluster_memory_usage
+          expr: |
+            sum(node_memory_MemTotal_bytes{job="node-exporter"} - node_memory_MemAvailable_bytes{job="node-exporter"})
+
+        # Cluster memory utilisation (0-1 ratio)
+        - record: cluster_memory_utilisation
+          expr: |
+            cluster_memory_usage / cluster_memory_total
+
+        # Master nodes memory total
+        - record: cluster_memory_master_total
+          expr: |
+            sum(
+              node_memory_MemTotal_bytes{job="node-exporter"}
+              * on(instance) group_left(node)
+              label_replace(kube_node_info{job="kube-state-metrics", node=~".*master.*"}, "instance", "$1", "node", "(.*)")
+            )
+
+        # Master nodes memory usage
+        - record: cluster_memory_master_usage
+          expr: |
+            sum(
+              (node_memory_MemTotal_bytes{job="node-exporter"} - node_memory_MemAvailable_bytes{job="node-exporter"})
+              * on(instance) group_left(node)
+              label_replace(kube_node_info{job="kube-state-metrics", node=~".*master.*"}, "instance", "$1", "node", "(.*)")
+            )
+
+        # Master nodes memory utilisation
+        - record: cluster_memory_master_utilisation
+          expr: |
+            cluster_memory_master_usage / cluster_memory_master_total
+
+        # Worker nodes memory total
+        - record: cluster_memory_non_master_total
+          expr: |
+            sum(
+              node_memory_MemTotal_bytes{job="node-exporter"}
+              * on(instance) group_left(node)
+              label_replace(kube_node_info{job="kube-state-metrics", node!~".*master.*"}, "instance", "$1", "node", "(.*)")
+            )
+
+        # Worker nodes memory usage
+        - record: cluster_memory_non_master_usage
+          expr: |
+            sum(
+              (node_memory_MemTotal_bytes{job="node-exporter"} - node_memory_MemAvailable_bytes{job="node-exporter"})
+              * on(instance) group_left(node)
+              label_replace(kube_node_info{job="kube-state-metrics", node!~".*master.*"}, "instance", "$1", "node", "(.*)")
+            )
+
+        # Worker nodes memory utilisation
+        - record: cluster_memory_non_master_utilisation
+          expr: |
+            cluster_memory_non_master_usage / cluster_memory_non_master_total
+
+        # Pod memory requests total
+        - record: cluster_pod_memory_requests_total
+          expr: |
+            sum(kube_pod_container_resource_requests{job="kube-state-metrics", resource="memory"})
+
+        # Pod memory limits total
+        - record: cluster_pod_memory_limits_total
+          expr: |
+            sum(kube_pod_container_resource_limits{job="kube-state-metrics", resource="memory"})
+
+    - name: cluster-disk-metrics
+      interval: 30s
+      rules:
+        # Cluster disk capacity
+        - record: cluster_disk_size_capacity
+          expr: |
+            sum(node_filesystem_size_bytes{job="node-exporter", mountpoint="/", fstype!~"tmpfs|fuse.*"})
+
+        # Cluster disk available
+        - record: cluster_disk_size_available
+          expr: |
+            sum(node_filesystem_avail_bytes{job="node-exporter", mountpoint="/", fstype!~"tmpfs|fuse.*"})
+
+        # Cluster disk usage (calculated)
+        - record: cluster_disk_size_usage
+          expr: |
+            cluster_disk_size_capacity - cluster_disk_size_available
+
+        # Cluster disk inode total
+        - record: cluster_disk_inode_total
+          expr: |
+            sum(node_filesystem_files{job="node-exporter", mountpoint="/", fstype!~"tmpfs|fuse.*"})
+
+        # Cluster disk inode usage
+        - record: cluster_disk_inode_usage
+          expr: |
+            sum(
+              node_filesystem_files{job="node-exporter", mountpoint="/", fstype!~"tmpfs|fuse.*"}
+              -
+              node_filesystem_files_free{job="node-exporter", mountpoint="/", fstype!~"tmpfs|fuse.*"}
+            )
+
+    - name: cluster-node-metrics
+      interval: 30s
+      rules:
+        # Total node count
+        - record: cluster_node_total
+          expr: |
+            count(kube_node_info{job="kube-state-metrics"})
+
+        # Master node count
+        - record: cluster_node_master_count
+          expr: |
+            count(kube_node_info{job="kube-state-metrics", node=~".*master.*"})
+
+        # Online nodes (Ready condition)
+        - record: cluster_node_online
+          expr: |
+            count(kube_node_status_condition{job="kube-state-metrics", condition="Ready", status="true"})
+
+        # Offline nodes (calculated)
+        - record: cluster_node_offline
+          expr: |
+            cluster_node_total - cluster_node_online
+
+    - name: cluster-pod-metrics
+      interval: 30s
+      rules:
+        # Pod quota (total allocatable pods)
+        - record: cluster_pod_quota
+          expr: |
+            sum(kube_node_status_allocatable{job="kube-state-metrics", resource="pods"})
+
+        # Running pod count
+        - record: cluster_pod_running_count
+          expr: |
+            count(kube_pod_status_phase{job="kube-state-metrics", phase="Running"})
+
+        # Total pod count
+        - record: cluster_pod_count
+          expr: |
+            count(kube_pod_info{job="kube-state-metrics"})
+
+    - name: cluster-network-metrics
+      interval: 30s
+      rules:
+        # Cluster network receive rate (bytes/s)
+        - record: cluster_net_bytes_received
+          expr: |
+            sum(rate(node_network_receive_bytes_total{job="node-exporter", device!~"lo|veth.*|docker.*|br.*"}[5m]))
+
+        # Cluster network transmit rate (bytes/s)
+        - record: cluster_net_bytes_transmitted
+          expr: |
+            sum(rate(node_network_transmit_bytes_total{job="node-exporter", device!~"lo|veth.*|docker.*|br.*"}[5m]))

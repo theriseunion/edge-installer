@@ -1,0 +1,131 @@
+backend:
+  fullnameOverride: "duty"
+  serviceUrl: "http://duty.observability-system.svc.cluster.local:80/v1/webhook/alertmanager"
+
+alertManagerConfig:
+  enabled: true
+  sendResolved: true
+  name: "duty-webhook-config"
+  namespace: "observability-system"
+  labels:
+    alertmanagerConfig: "duty"
+    app.kubernetes.io/name: "duty"
+    app.kubernetes.io/instance: "duty"
+  route:
+    receiver: "duty-webhook"
+    continue: true
+
+#backend
+duty:
+  replicaCount: 1
+  configEnv: prod
+  podAnnotations: {}
+  imagePullSecrets: []
+  securityContext: {}
+  nodeSelector: {}
+  tolerations:
+    - key: "node-role.kubernetes.io/edge"
+      operator: "Exists"
+      effect: "NoSchedule"
+  affinity: {}
+  serviceAccount:
+    create: true
+    name: ""
+    annotations: {}
+  helmEnable: true
+  fullnameOverride: backend
+  image:
+    repository: quanzhenglong.com/camp/duty
+    tag: "v1.1.2"
+    pullPolicy: IfNotPresent
+  env:
+    - name: NAMESPACE
+      value: rise-vast-system
+  resources:
+    limits:
+      cpu: 1000m
+      memory: 2Gi
+    requests:
+      cpu: 500m
+      memory: 1Gi
+  service:
+    type: NodePort
+    port: 80
+    httpPort: 8000
+    nodePort: 32013
+  database:
+    host: 1.92.198.206
+    port: 5431
+    user: duty
+    dbname: duty_test
+    password: DutyPwd123
+    debug: false
+  smtp:
+    host: "host"
+    port: 465
+    user: "user"
+    password: "password"
+    from: "from"
+  ali_config:
+    access_key_id: ""
+    access_key_secret: ""
+    sms_alert:
+      tts_code: ""
+      sign_name: ""
+    phone_call_alert:
+      tts_code: ""
+  prometheus:
+    address: http://prometheus-kube-prometheus-prometheus.prometheus.svc.cluster.local:9090
+    timeout: 1m
+    interval: 30m
+    auth:
+  trace:
+    disabled: true
+    batcher: otlpgrpc
+    sampler: 1.0
+    endpoint: tempo.rise-vast-system.svc.cluster.local:4317
+  http_forward:
+    rules: [ ]
+  cronjob:
+    apiVersion: batch/v1
+    generateSchedule:
+      enabled: true
+      backoffLimit: 1
+      schedule: "0 * * * *"  # 每小时执行一次
+      activeDeadlineSeconds: 600
+      retentionPolicy:
+        successfulJobsHistoryLimit: 3
+        failedJobsHistoryLimit: 2
+    # 定时执行所有值班小组的值班轮换
+    oncallRotation:
+      enabled: true
+      backoffLimit: 1
+      schedule: "0 */8 * * *"  # 每8小时执行一次
+      activeDeadlineSeconds: 60
+      retentionPolicy:
+        successfulJobsHistoryLimit: 3
+        failedJobsHistoryLimit: 2
+    closeZombieAlert:
+      enabled: true
+      backoffLimit: 1
+      schedule: "0 * * * *"  # 每小时执行一次
+      activeDeadlineSeconds: 60
+      retentionPolicy:
+        successfulJobsHistoryLimit: 3
+        failedJobsHistoryLimit: 2
+    dailyStatistic:
+      enabled: true
+      backoffLimit: 1
+      schedule: "0 0 * * *"  # 每天执行一次
+      activeDeadlineSeconds: 60
+      retentionPolicy:
+        successfulJobsHistoryLimit: 3
+        failedJobsHistoryLimit: 2
+    alertUpgrade:
+      enabled: true
+      backoffLimit: 1
+      schedule: "*/10 * * * *"  # 每十分钟执行一次
+      activeDeadlineSeconds: 60
+      retentionPolicy:
+        successfulJobsHistoryLimit: 3
+        failedJobsHistoryLimit: 2

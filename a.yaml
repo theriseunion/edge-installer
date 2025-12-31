@@ -1,0 +1,416 @@
+---
+# Source: edge-controller/templates/components/vast.yaml
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: rise-vast-system
+  labels:
+    helm.sh/chart: edge-controller-0.1.0
+    app.kubernetes.io/name: edge-controller
+    app.kubernetes.io/instance: edge-platform
+    app.kubernetes.io/version: "v1.0.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: namespace
+    app.kubernetes.io/part-of: edge-platform
+---
+# Source: edge-controller/templates/components/vast.yaml
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: cert-manager
+  labels:
+    helm.sh/chart: edge-controller-0.1.0
+    app.kubernetes.io/name: edge-controller
+    app.kubernetes.io/instance: edge-platform
+    app.kubernetes.io/version: "v1.0.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: namespace
+    app.kubernetes.io/part-of: edge-platform
+---
+# Source: edge-controller/templates/controller/serviceaccount.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: controller
+  labels:
+    helm.sh/chart: edge-controller-0.1.0
+    app.kubernetes.io/name: edge-controller
+    app.kubernetes.io/instance: edge-platform
+    app.kubernetes.io/version: "v1.0.0"
+    app.kubernetes.io/managed-by: Helm
+---
+# Source: edge-controller/templates/controller/clusterrole.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: controller
+  labels:
+    helm.sh/chart: edge-controller-0.1.0
+    app.kubernetes.io/name: edge-controller
+    app.kubernetes.io/instance: edge-platform
+    app.kubernetes.io/version: "v1.0.0"
+    app.kubernetes.io/managed-by: Helm
+rules:
+# Core Kubernetes resources
+- apiGroups: ["*"]
+  resources: ["*"]
+  verbs: ["*"]
+---
+# Source: edge-controller/templates/controller/clusterrolebinding.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: controller
+  labels:
+    helm.sh/chart: edge-controller-0.1.0
+    app.kubernetes.io/name: edge-controller
+    app.kubernetes.io/instance: edge-platform
+    app.kubernetes.io/version: "v1.0.0"
+    app.kubernetes.io/managed-by: Helm
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: controller
+subjects:
+- kind: ServiceAccount
+  name: controller
+  namespace: edge-system
+---
+# Source: edge-controller/charts/chartmuseum/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: chartmuseum
+  labels:
+    helm.sh/chart: chartmuseum-0.1.0
+    app.kubernetes.io/name: chartmuseum
+    app.kubernetes.io/instance: edge-platform
+    app.kubernetes.io/version: "main-qzl-v0.2-arm64"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: chartmuseum
+spec:
+  type: ClusterIP
+  ports:
+  - port: 8080
+    targetPort: 8080
+    protocol: TCP
+    name: http
+  selector:
+    app.kubernetes.io/name: chartmuseum
+    app.kubernetes.io/instance: edge-platform
+---
+# Source: edge-controller/templates/controller/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: controller
+  labels:
+    helm.sh/chart: edge-controller-0.1.0
+    app.kubernetes.io/name: edge-controller
+    app.kubernetes.io/instance: edge-platform
+    app.kubernetes.io/version: "v1.0.0"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8080
+      targetPort: http
+      protocol: TCP
+      name: http
+    - port: 8082
+      targetPort: 8082
+      protocol: TCP
+      name: metrics
+  selector:
+    app.kubernetes.io/name: edge-controller
+    app.kubernetes.io/instance: edge-platform
+---
+# Source: edge-controller/charts/chartmuseum/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: chartmuseum
+  labels:
+    helm.sh/chart: chartmuseum-0.1.0
+    app.kubernetes.io/name: chartmuseum
+    app.kubernetes.io/instance: edge-platform
+    app.kubernetes.io/version: "main-qzl-v0.2-arm64"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: chartmuseum
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: chartmuseum
+      app.kubernetes.io/instance: edge-platform
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: chartmuseum
+        app.kubernetes.io/instance: edge-platform
+        app.kubernetes.io/component: chartmuseum
+    spec:
+      containers:
+      - name: chartmuseum
+        image: "quanzhenglong.com/edge/edge-museum:main-qzl-v0.2-arm64"
+        imagePullPolicy: IfNotPresent
+        args:
+        - --port=8080
+        env:
+        - name: STORAGE
+          value: local
+        - name: STORAGE_LOCAL_ROOTDIR
+          value: /charts
+        - name: DISABLE_API
+          value: "false"
+        - name: ALLOW_OVERWRITE
+          value: "true"
+        - name: CONTEXT_PATH
+          value: /
+        ports:
+        - containerPort: 8080
+          name: http
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: http
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: http
+          initialDelaySeconds: 5
+          periodSeconds: 5
+        resources:
+            limits:
+              cpu: 100m
+              memory: 128Mi
+            requests:
+              cpu: 50m
+              memory: 64Mi
+---
+# Source: edge-controller/templates/controller/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: controller
+  labels:
+    helm.sh/chart: edge-controller-0.1.0
+    app.kubernetes.io/name: edge-controller
+    app.kubernetes.io/instance: edge-platform
+    app.kubernetes.io/version: "v1.0.0"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: edge-controller
+      app.kubernetes.io/instance: edge-platform
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: edge-controller
+        app.kubernetes.io/instance: edge-platform
+    spec:
+      serviceAccountName: controller
+      nodeSelector:
+        node-role.kubernetes.io/control-plane: ""
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65532
+      containers:
+        - name: edge-controller
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+              - ALL
+            runAsNonRoot: true
+            runAsUser: 65532
+          image: "quanzhenglong.com/edge/controller:main-qzl-v0.2-arm64"
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+            - name: health
+              containerPort: 8081
+              protocol: TCP
+          env:
+            - name: LOG_LEVEL
+              value: info
+            - name: METRICS_ADDR
+              value: ":8080"
+            - name: HEALTH_ADDR
+              value: ":8081"
+            - name: HOME
+              value: /tmp
+            - name: HELM_CACHE_HOME
+              value: /tmp/.helm/cache
+            - name: HELM_CONFIG_HOME
+              value: /tmp/.helm/config
+            - name: HELM_DATA_HOME
+              value: /tmp/.helm/data
+            - name: CHART_REPO_URL
+              value: http://controller-chartmuseum.edge-system.svc:8080
+            - name: CHARTMUSEUM_ENABLED
+              value: "true"
+          volumeMounts:
+            - name: helm-cache
+              mountPath: /tmp/.helm
+          resources:
+            null
+      volumes:
+        - name: helm-cache
+          emptyDir: {}
+---
+# Source: edge-controller/templates/components/apiserver.yaml
+apiVersion: ext.theriseunion.io/v1alpha1
+kind: Component
+metadata:
+  name: edge-apiserver
+  namespace: edge-system
+  labels:
+    helm.sh/chart: edge-controller-0.1.0
+    app.kubernetes.io/name: edge-controller
+    app.kubernetes.io/instance: edge-platform
+    app.kubernetes.io/version: "v1.0.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: apiserver
+    app.kubernetes.io/part-of: edge-platform
+    cluster.theriseunion.io/role: host
+spec:
+  enabled: true
+  version: 0.1.0
+  chart:
+    name: edge-apiserver
+    namespace: edge-system
+    releaseName: edge-apiserver
+    repository: http://chartmuseum.edge-system.svc:8080
+  values:
+    replicaCount: 1
+    service:
+      port: 8080
+      type: ClusterIP
+---
+# Source: edge-controller/templates/components/console.yaml
+apiVersion: ext.theriseunion.io/v1alpha1
+kind: Component
+metadata:
+  name: edge-console
+  namespace: edge-system
+  labels:
+    helm.sh/chart: edge-controller-0.1.0
+    app.kubernetes.io/name: edge-controller
+    app.kubernetes.io/instance: edge-platform
+    app.kubernetes.io/version: "v1.0.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: console
+    app.kubernetes.io/part-of: edge-platform
+    cluster.theriseunion.io/role: host
+spec:
+  enabled: true
+  version: 0.1.0
+  chart:
+    name: edge-console
+    namespace: edge-system
+    releaseName: edge-console
+    repository: http://chartmuseum.edge-system.svc:8080
+  values:
+    env:
+    - name: NEXT_PUBLIC_API_BASE_URL
+      value: http://apiserver:8080
+    replicaCount: 1
+    service:
+      port: 3000
+      type: ClusterIP
+---
+# Source: edge-controller/templates/components/controller.yaml
+apiVersion: ext.theriseunion.io/v1alpha1
+kind: Component
+metadata:
+  name: edge-controller
+  namespace: edge-system
+  labels:
+    helm.sh/chart: edge-controller-0.1.0
+    app.kubernetes.io/name: edge-controller
+    app.kubernetes.io/instance: edge-platform
+    app.kubernetes.io/version: "v1.0.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: controller
+    app.kubernetes.io/part-of: edge-platform
+    cluster.theriseunion.io/role: host
+  annotations:
+    # Mark as pre-installed to skip reconcile loop in host cluster
+    # Controller is already deployed as part of this Helm chart
+    ext.theriseunion.io/pre-installed: "true"
+    ext.theriseunion.io/skip-reconcile: "true"
+    ext.theriseunion.io/installation-method: "helm-direct"
+spec:
+  enabled: true
+  version: 0.1.0
+  chart:
+    name: edge-controller
+    namespace: edge-system
+    releaseName: edge-platform
+    repository: http://chartmuseum.edge-system.svc:8080
+  # NOTE: Chart configuration is used by Cluster Controller when installing to member clusters
+  # Host cluster's controller is pre-installed via Helm (skip-reconcile: true)
+  # Member clusters use this configuration for automated controller installation
+---
+# Source: edge-controller/templates/components/monitoring.yaml
+apiVersion: ext.theriseunion.io/v1alpha1
+kind: Component
+metadata:
+  name: edge-monitoring
+  namespace: observability-system
+  labels:
+    helm.sh/chart: edge-controller-0.1.0
+    app.kubernetes.io/name: edge-controller
+    app.kubernetes.io/instance: edge-platform
+    app.kubernetes.io/version: "v1.0.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: monitoring
+    app.kubernetes.io/part-of: edge-platform
+    cluster.theriseunion.io/role: host
+spec:
+  enabled: true
+  version: 0.1.0
+  chart:
+    name: edge-monitoring
+    namespace: observability-system
+    releaseName: edge-monitoring
+    repository: http://chartmuseum.edge-system.svc:8080
+  values:
+    alertManager:
+      enabled: true
+    grafana:
+      enabled: true
+    namespace: observability-system
+    prometheus:
+      enabled: true
+---
+# Source: edge-controller/templates/components/vast.yaml
+apiVersion: ext.theriseunion.io/v1alpha1
+kind: Component
+metadata:
+  name: edge-vast
+  namespace: rise-vast-system
+  labels:
+    helm.sh/chart: edge-controller-0.1.0
+    app.kubernetes.io/name: edge-controller
+    app.kubernetes.io/instance: edge-platform
+    app.kubernetes.io/version: "v1.0.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: vast
+    app.kubernetes.io/part-of: edge-platform
+    cluster.theriseunion.io/role: host
+spec:
+  enabled: true
+  version: 0.1.0
+  chart:
+    name: vast
+    namespace: rise-vast-system
+    releaseName: vast
+    repository: http://chartmuseum.edge-system.svc:8080
