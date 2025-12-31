@@ -51,10 +51,7 @@ securityContext:
 nodeSelector: {}
 
 # Tolerations (optional)
-tolerations:
-  - key: "node-role.kubernetes.io/edge"
-    operator: "Exists"
-    effect: "NoSchedule"
+tolerations: []
 
 # Affinity (optional)
 affinity: {}
