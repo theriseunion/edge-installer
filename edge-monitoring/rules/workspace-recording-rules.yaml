@@ -6,6 +6,7 @@ metadata:
   labels:
     prometheus: kube-prometheus
     role: recording-rules
+    release: edge-monitoring
     layer: workspace
 spec:
   groups:
