@@ -13,6 +13,32 @@ import yaml
 import os
 from pathlib import Path
 
+
+# Custom representer to preserve literal block style for multi-line strings
+class LiteralStr(str):
+    """String subclass that will be represented as literal block scalar"""
+    pass
+
+
+def literal_str_representer(dumper, data):
+    """Represent LiteralStr as literal block scalar (|)"""
+    return dumper.represent_scalar('tag:yaml.org,2002:str', data, style='|')
+
+
+yaml.add_representer(LiteralStr, literal_str_representer)
+
+
+def convert_to_literal_blocks(obj):
+    """Recursively convert multi-line strings to LiteralStr for literal block output"""
+    if isinstance(obj, dict):
+        return {k: convert_to_literal_blocks(v) for k, v in obj.items()}
+    elif isinstance(obj, list):
+        return [convert_to_literal_blocks(item) for item in obj]
+    elif isinstance(obj, str) and '\n' in obj:
+        # Convert multi-line strings to LiteralStr
+        return LiteralStr(obj.rstrip('\n'))
+    return obj
+
 # Define rule file priority order
 RULE_FILES = [
     # P1 - Foundation metrics (node, GPU)
@@ -54,8 +80,9 @@ def generate_combined_rules(rules_dir, output_file):
         all_groups.extend(groups)
         print(f"     Added {len(groups)} rule group(s)")
 
-    # Create combined structure
+    # Create combined structure and convert to literal blocks
     combined = {'groups': all_groups}
+    combined = convert_to_literal_blocks(combined)
 
     # Write with proper YAML formatting
     with open(output_file, 'w') as f:

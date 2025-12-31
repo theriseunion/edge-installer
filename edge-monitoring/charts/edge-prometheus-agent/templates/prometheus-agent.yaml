@@ -1,0 +1,147 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: prometheus-agent
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: prometheus-agent
+rules:
+  - apiGroups: [""]
+    resources: [nodes, nodes/metrics, nodes/proxy, services, endpoints, pods]
+    verbs: [get, list, watch]
+  - nonResourceURLs: [/metrics, /metrics/cadvisor]
+    verbs: [get]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: prometheus-agent
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: prometheus-agent
+subjects:
+  - kind: ServiceAccount
+    name: prometheus-agent
+    namespace: {{ .Release.Namespace }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prometheus-agent-config
+data:
+  prometheus.yml: |
+    global:
+      scrape_interval: {{ .Values.scrapeInterval }}
+      external_labels:
+        cluster: {{ .Values.clusterName | quote }}
+
+    remote_write:
+      - url: {{ .Values.remoteWriteUrl | quote }}
+
+    scrape_configs:
+      # 直接采集本地 kubelet 指标
+      - job_name: 'kubelet'
+        scheme: https
+        tls_config:
+          insecure_skip_verify: true
+        bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
+        static_configs:
+          - targets: ['${NODE_IP}:10250']
+        relabel_configs:
+          - target_label: instance
+            replacement: '${NODE_NAME}'
+
+      # 直接采集本地 cAdvisor 指标
+      - job_name: 'cadvisor'
+        scheme: https
+        metrics_path: /metrics/cadvisor
+        tls_config:
+          insecure_skip_verify: true
+        bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
+        static_configs:
+          - targets: ['${NODE_IP}:10250']
+        relabel_configs:
+          - target_label: instance
+            replacement: '${NODE_NAME}'
+
+      # 采集本地 node-exporter 指标
+      - job_name: 'node-exporter'
+        static_configs:
+          - targets: ['${NODE_IP}:9100']
+        relabel_configs:
+          - target_label: instance
+            replacement: '${NODE_NAME}'
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: prometheus-agent
+spec:
+  selector:
+    matchLabels:
+      app: prometheus-agent
+  template:
+    metadata:
+      labels:
+        app: prometheus-agent
+    spec:
+      serviceAccountName: prometheus-agent
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      tolerations:
+        - operator: "Exists"
+      initContainers:
+        - name: config-init
+          image: busybox:1.36
+          command:
+            - sh
+            - -c
+            - |
+              sed -e "s/\${NODE_IP}/$NODE_IP/g" \
+                  -e "s/\${NODE_NAME}/$NODE_NAME/g" \
+                  /etc/prometheus-template/prometheus.yml > /etc/prometheus/prometheus.yml
+              cat /etc/prometheus/prometheus.yml
+          env:
+            - name: NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+            - name: NODE_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
+          volumeMounts:
+            - name: config-template
+              mountPath: /etc/prometheus-template
+            - name: config
+              mountPath: /etc/prometheus
+      containers:
+        - name: prometheus
+          image: "{{ .Values.image.registry }}/{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          args:
+            - --enable-feature=agent
+            - --config.file=/etc/prometheus/prometheus.yml
+            - --storage.agent.path=/prometheus
+          ports:
+            - containerPort: 9090
+          volumeMounts:
+            - name: config
+              mountPath: /etc/prometheus
+            - name: storage
+              mountPath: /prometheus
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      volumes:
+        - name: config-template
+          configMap:
+            name: prometheus-agent-config
+        - name: config
+          emptyDir: {}
+        - name: storage
+          emptyDir: {}

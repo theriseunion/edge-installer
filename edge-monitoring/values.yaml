@@ -55,3 +55,29 @@ dutyProxy:
     scheme: http
     host: 116.63.161.198
     port: 30001
+
+# Edge Remote Write 配置 - 接收边缘节点的监控数据
+edgeRemoteWrite:
+  # 是否启用边缘数据接收
+  enabled: true
+  # NodePort 端口号，边缘节点通过此端口推送数据
+  nodePort: 30990
+
+# kube-prometheus-stack 覆盖配置
+kube-prometheus-stack:
+  prometheus:
+    prometheusSpec:
+      # 启用 Remote Write Receiver，允许接收边缘节点推送的监控数据
+      enableRemoteWriteReceiver: true
+      # 为边缘数据添加外部标签，便于区分数据来源
+      externalLabels:
+        cluster: "cloud"
+    # 暴露 Prometheus 服务，用于接收边缘 remote write
+    service:
+      type: NodePort
+      nodePort: 30990
+      additionalPorts:
+        - name: remote-write
+          port: 9090
+          targetPort: 9090
+          nodePort: 30990
