@@ -1,0 +1,20 @@
+{{- if and .Values.apiService.enabled (not .Values.crds.install) }}
+apiVersion: apiregistration.k8s.io/v1
+kind: APIService
+metadata:
+  name: {{ .Values.apiService.version }}.{{ .Values.apiService.group }}
+  labels:
+    {{- include "edge-ota.labels" . | nindent 4 }}
+spec:
+  group: {{ .Values.apiService.group }}
+  version: {{ .Values.apiService.version }}
+  service:
+    name: {{ include "edge-ota.fullname" . }}
+    namespace: {{ include "edge-ota.namespace" . }}
+    port: {{ .Values.service.httpsPort }}
+  groupPriorityMinimum: 1000
+  versionPriority: 100
+  {{- if .Values.apiService.insecureSkipTLSVerify }}
+  insecureSkipTLSVerify: true
+  {{- end }}
+{{- end }}

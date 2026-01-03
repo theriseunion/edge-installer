@@ -1,0 +1,33 @@
+---
+# ReverseProxy Configuration for OTA Server
+# This enables OTA API access through the IAM reverse proxy
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: ReverseProxy
+metadata:
+  name: ota-server-proxy
+  namespace: ota-system
+  labels:
+    app: ota-server
+    app.kubernetes.io/name: ota-server
+    app.kubernetes.io/component: api-server
+    app.kubernetes.io/managed-by: Helm
+  annotations:
+    meta.helm.sh/release-name: edge-ota
+    meta.helm.sh/release-namespace: ota-system
+    openapi-endpoint: /openapi/v2
+spec:
+  directives:
+    rewrite:
+      # Single universal rule handles all OTA resources
+      # Converts /oapis/ota.theriseunion.io/v1alpha1/* to /apis/ota.theriseunion.io/v1alpha1/*
+      - from: ^/oapis/ota\.theriseunion\.io/v1alpha1/(.*)$
+        to: /apis/ota.theriseunion.io/v1alpha1/$1
+  matcher:
+    method: '*'
+    path: /oapis/ota.theriseunion.io/v1alpha1/*
+  upstream:
+    host: ota-server.ota-system.svc.cluster.local
+    port: 9443
+    scheme: https
+    tls:
+      insecureSkipVerify: true  # Skip TLS verification for intra-cluster communication

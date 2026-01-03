@@ -1,0 +1,125 @@
+# Edge OTA Service Configuration
+
+# Global configuration
+global:
+  # Image registry override (optional)
+  imageRegistry: ""
+
+# Namespace configuration
+namespace:
+  create: true
+  name: ota-system
+
+# Server replica count
+replicaCount: 1
+
+# Override the full name
+fullnameOverride: "ota-server"
+
+# OTA Server image configuration
+image:
+  registry: ghcr.io
+  repository: outpostos/edge-ota/server
+  pullPolicy: Always
+  tag: "main"
+
+# Image pull secrets (if using private registry)
+imagePullSecrets: []
+
+# ServiceAccount configuration
+serviceAccount:
+  create: true
+  automount: true
+  name: ""
+  annotations: {}
+
+# Pod security context
+podSecurityContext:
+  fsGroup: 65534
+
+# Container security context
+securityContext:
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: true
+  runAsNonRoot: true
+  runAsUser: 65534
+  capabilities:
+    drop:
+      - ALL
+
+# Service configuration
+service:
+  type: ClusterIP
+  httpsPort: 443
+  metricsPort: 8080
+
+# Resource limits and requests
+resources:
+  limits:
+    cpu: 500m
+    memory: 256Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+# Node selector for scheduling
+nodeSelector: {}
+  # node-role.kubernetes.io/control-plane: ""
+
+# Tolerations for scheduling
+tolerations: []
+
+# Affinity rules
+affinity: {}
+
+# OTA Server specific configuration
+otaServer:
+  # Log level (debug, info, warn, error)
+  logLevel: info
+  # Secure port for HTTPS API
+  securePort: 9443
+  # Metrics port
+  metricsPort: 8080
+
+# NATS messaging configuration
+nats:
+  # Enable NATS subchart deployment
+  enabled: true
+  # NATS server URL (used when nats.enabled is false for external NATS)
+  externalUrl: ""
+
+# API Service configuration for Kubernetes API aggregation
+apiService:
+  # Enable API aggregation
+  enabled: true
+  # Group name
+  group: ota.theriseunion.io
+  # API version
+  version: v1alpha1
+  # Skip TLS verification (set to false in production with proper certs)
+  insecureSkipTLSVerify: true
+
+# Probes configuration
+probes:
+  liveness:
+    initialDelaySeconds: 10
+    periodSeconds: 30
+    timeoutSeconds: 5
+    failureThreshold: 3
+  readiness:
+    initialDelaySeconds: 5
+    periodSeconds: 10
+    timeoutSeconds: 3
+    failureThreshold: 3
+
+# CRD installation
+crds:
+  # Install CRDs (disable if CRDs are managed externally)
+  install: true
+
+# Playbooks configuration
+playbooks:
+  # Directory for predefined playbooks
+  directory: "/etc/ota/playbooks"
+  # Enable loading playbooks from directory
+  autoLoad: true

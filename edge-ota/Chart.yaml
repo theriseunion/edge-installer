@@ -1,0 +1,26 @@
+apiVersion: v2
+name: edge-ota
+description: Edge OTA Service - Over-The-Air device management with remote command execution, file transfer, and Ansible playbook orchestration
+type: application
+version: 0.1.0
+appVersion: "v1.0.0"
+home: https://github.com/theriseunion/edge-ota
+maintainers:
+  - name: Edge Team
+    email: dev@theriseunion.io
+keywords:
+  - edge
+  - ota
+  - device-management
+  - ansible
+  - remote-execution
+  - kubernetes
+sources:
+  - https://github.com/theriseunion/edge-ota
+
+# Dependencies - NATS is required for device communication
+dependencies:
+  - name: nats
+    version: "0.1.0"
+    repository: "file://./charts/nats"
+    condition: nats.enabled

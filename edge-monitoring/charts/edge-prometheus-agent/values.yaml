@@ -1,11 +1,26 @@
 # Edge Prometheus Agent 配置
-image:
-  registry: "quay.io"
-  repository: prometheus/prometheus
-  tag: v2.50.1
-  pullPolicy: IfNotPresent
 
-# 边缘集群名称
+# 全局镜像仓库配置
+global:
+  imageRegistry: "quanzhenglong.com"
+
+# Prometheus Agent 镜像配置
+prometheus:
+  image:
+    registry: ""  # 留空则使用 global.imageRegistry
+    repository: edge/prometheus
+    tag: v2.50.1
+    pullPolicy: IfNotPresent
+
+# Init Container 镜像配置（用于配置文件初始化）
+configInit:
+  image:
+    registry: ""  # 留空则使用 global.imageRegistry
+    repository: edge/busybox
+    tag: "1.36"
+    pullPolicy: IfNotPresent
+
+# 边缘集群名称（必须配置，用于区分不同边缘集群的数据）
 clusterName: "edge-cluster-1"
 
 # 云端 Remote Write 地址
@@ -14,6 +29,7 @@ remoteWriteUrl: "http://192.168.1.100:30990/api/v1/write"
 # 采集间隔
 scrapeInterval: 30s
 
+# Prometheus Agent 资源限制
 resources:
   requests:
     memory: "128Mi"
@@ -25,3 +41,7 @@ resources:
 # 节点选择器 - 限定只在边缘节点上部署
 nodeSelector:
   node.theriseunion.io/type: "edge"
+
+# 容忍度配置
+tolerations:
+  - operator: "Exists"
