@@ -18,7 +18,7 @@ cert-manager:
   # With this, resources will be named like: cert-manager-*
   fullnameOverride: cert-manager
   crds:
-    enabled: true
+    enabled: false  # Default to true for fresh installations, Makefile will override if CRDs exist
 
 # Enable/disable subcharts
 apiserver:
