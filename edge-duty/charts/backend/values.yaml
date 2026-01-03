@@ -49,10 +49,9 @@ duty:
       cpu: 500m
       memory: 1Gi
   service:
-    type: NodePort
+    type: ClusterIP
     port: 80
     httpPort: 8000
-    nodePort: 32013
   database:
     host: 1.92.198.206
     port: 5431
