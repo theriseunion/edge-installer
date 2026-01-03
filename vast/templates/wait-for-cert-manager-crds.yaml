@@ -82,7 +82,7 @@ spec:
       restartPolicy: OnFailure
       containers:
       - name: wait-for-crds
-        image: bitnami/kubectl:latest
+        image: quanzhenglong.com/base/kubectl:latest
         command:
         - /bin/sh
         - -c
