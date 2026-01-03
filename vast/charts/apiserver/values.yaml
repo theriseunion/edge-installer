@@ -69,7 +69,6 @@ livenessProbe:
   httpGet:
     path: /livez
     port: 8443
-    scheme: HTTPS
   initialDelaySeconds: 15
   periodSeconds: 20
   timeoutSeconds: 1
@@ -80,7 +79,6 @@ readinessProbe:
   httpGet:
     path: /readyz
     port: 8443
-    scheme: HTTPS
   initialDelaySeconds: 5
   periodSeconds: 10
   timeoutSeconds: 1

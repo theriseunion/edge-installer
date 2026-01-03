@@ -83,7 +83,7 @@ apiserver:
         write: "30s"
         idle: "120s"
       tls:
-        enabled: true
+        enabled: false
         certFile: "/tmp/k8s-webhook-server/serving-certs/tls.crt"
         keyFile: "/tmp/k8s-webhook-server/serving-certs/tls.key"
 

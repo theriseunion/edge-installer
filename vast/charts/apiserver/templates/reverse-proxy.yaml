@@ -1,11 +1,17 @@
-{{- if and .Values.enabled .Values.config.server.tls.enabled }}
-{{- if eq (include "apiserver.certManagerEnabled" .) "true" }}
-{{- $caBundle := include "apiserver.caBundle" . }}
+{{- if .Values.enabled }}
+{{- $tlsEnabled := .Values.config.server.tls.enabled | default false }}
+{{- $certManagerEnabled := eq (include "apiserver.certManagerEnabled" .) "true" }}
+{{- $caBundle := "" }}
+{{- if and $tlsEnabled $certManagerEnabled }}
+{{- $caBundle = include "apiserver.caBundle" . }}
+{{- end }}
 ---
 # ReverseProxy for device.vast.theriseunion.io API
+{{- if and $tlsEnabled $certManagerEnabled }}
 # The caBundle is automatically retrieved from the cert-manager Certificate secret during template rendering.
 # If the Secret doesn't exist yet (e.g., during initial deployment), insecureSkipVerify is used as a fallback.
 # After the certificate is ready, simply run `helm upgrade` to automatically populate caBundle.
+{{- end }}
 # This resource is created as a normal Helm resource (not a hook) to ensure it's always created reliably.
 apiVersion: iam.theriseunion.io/v1alpha1
 kind: ReverseProxy
@@ -22,19 +28,23 @@ spec:
   upstream:
     host: {{ include "apiserver.fullname" . }}.{{ include "apiserver.namespace" . }}.svc.cluster.local
     port: {{ .Values.service.port }}
-    scheme: https
+    scheme: {{ if $tlsEnabled }}https{{ else }}http{{ end }}
+    {{- if $tlsEnabled }}
     {{- if $caBundle }}
     caBundle: {{ $caBundle | quote }}
-    {{- else }}
+    {{- else if $certManagerEnabled }}
     # Temporary fallback: skip TLS verification until certificate is ready
     # This will be automatically updated on the next Helm upgrade when caBundle is available
     insecureSkipVerify: true
     {{- end }}
+    {{- end }}
 ---
 # ReverseProxy for registry.vast.theriseunion.io API
+{{- if and $tlsEnabled $certManagerEnabled }}
 # The caBundle is automatically retrieved from the cert-manager Certificate secret during template rendering.
 # If the Secret doesn't exist yet (e.g., during initial deployment), insecureSkipVerify is used as a fallback.
 # After the certificate is ready, simply run `helm upgrade` to automatically populate caBundle.
+{{- end }}
 # This resource is created as a normal Helm resource (not a hook) to ensure it's always created reliably.
 apiVersion: iam.theriseunion.io/v1alpha1
 kind: ReverseProxy
@@ -51,13 +61,14 @@ spec:
   upstream:
     host: {{ include "apiserver.fullname" . }}.{{ include "apiserver.namespace" . }}.svc.cluster.local
     port: {{ .Values.service.port }}
-    scheme: https
+    scheme: {{ if $tlsEnabled }}https{{ else }}http{{ end }}
+    {{- if $tlsEnabled }}
     {{- if $caBundle }}
     caBundle: {{ $caBundle | quote }}
-    {{- else }}
+    {{- else if $certManagerEnabled }}
     # Temporary fallback: skip TLS verification until certificate is ready
     # This will be automatically updated on the next Helm upgrade when caBundle is available
     insecureSkipVerify: true
     {{- end }}
-{{- end }}
+    {{- end }}
 {{- end }}
