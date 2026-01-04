@@ -66,15 +66,8 @@ spec:
           volumeMounts:
             - name: helm-cache
               mountPath: /tmp/.helm
-            - name: controller-config
-              mountPath: /config/controller.yaml
-              subPath: controller.yaml
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       volumes:
         - name: helm-cache
           emptyDir: {}
-        - name: controller-config
-          configMap:
-            defaultMode: 420
-            name: controller-config
