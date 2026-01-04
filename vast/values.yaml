@@ -404,6 +404,8 @@ hami:
       image: quanzhenglong.com/camp/kubesphere/kube-scheduler
     extender:
       image: quanzhenglong.com/camp/hami
+    service:
+      type: ClusterIP
     patch:
       image: quanzhenglong.com/camp/jettech-kube-webhook-certgen:v1.5.2
       imageNew: quanzhenglong.com/camp/liangjw-kube-webhook-certgen:v1.1.1
