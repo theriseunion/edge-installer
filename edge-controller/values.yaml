@@ -183,7 +183,7 @@ autoInstall:
       #   enabled: true
   
   iot:
-    enabled: true
+    enabled: false # Set to true to enable IOT platform installation
     # IOT component
     apiserver:
       version: "0.1.0"
