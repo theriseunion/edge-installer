@@ -28,7 +28,7 @@ apiserver:
     enabled: true
   # ReverseProxy configuration (only needed for edge scenarios)
   reverseProxy:
-    enabled: false
+    enabled: true
   # Override the full name to remove the release name prefix (vast-)
   # Without this, resources would be named like: vast-apiserver-*
   # With this, resources will be named like: apiserver-*
@@ -388,7 +388,7 @@ hami:
         # 如果没有，需要设置为false，设置为false时，dcgm-exporter会自动以sidecar的方式部署nv-hostengine进程
         isHostRunningNvHostEngineProcess: false
       serviceMonitor:
-        enabled: false
+        enabled: true
         additionalLabels:
           release: edge-monitoring
   scheduler:
