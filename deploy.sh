@@ -173,9 +173,9 @@ kubectl get pods -n $NAMESPACE
 if [ "$ENABLE_MONITORING" = "true" ]; then
   echo ""
   echo "监控服务访问方式："
-  echo "- Prometheus: kubectl port-forward svc/edge-prometheus 9090:9090 -n observability-system"
-  echo "- Grafana: kubectl port-forward svc/edge-grafana 3000:3000 -n observability-system (admin/admin123)"
-  echo "- AlertManager: kubectl port-forward svc/edge-alertmanager 9093:9093 -n observability-system"
+  echo "- Prometheus: kubectl port-forward svc/edge-monitoring-kube-prome-prometheus 9090:9090 -n observability-system"
+  echo "- Grafana: kubectl port-forward svc/edge-monitoring-grafana 3000:80 -n observability-system (admin/admin123)"
+  echo "- AlertManager: kubectl port-forward svc/edge-monitoring-kube-prome-alertmanager 9093:9093 -n observability-system"
   echo "- Monitoring Service API: kubectl port-forward svc/monitoring-service 8080:80 -n observability-system"
   echo "- 前端监控 API: 通过 apiserver 的 /oapis/monitoring.theriseunion.io/v1alpha1/* 访问"
   echo ""

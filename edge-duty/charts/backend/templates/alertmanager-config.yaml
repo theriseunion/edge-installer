@@ -1,0 +1,21 @@
+{{- if .Values.alertManagerConfig.enabled }}
+apiVersion: monitoring.coreos.com/v1alpha1
+# 关键：Kind 小写 m/c（与成功环境一致）
+kind: AlertmanagerConfig
+metadata:
+  name: {{ .Values.alertManagerConfig.name }}
+  namespace: {{ .Values.alertManagerConfig.namespace }}
+  labels:
+    {{- toYaml .Values.alertManagerConfig.labels | nindent 4 }}
+spec:
+  # 路由规则（极简版，与成功环境一致）
+  route:
+    receiver: {{ .Values.alertManagerConfig.route.receiver }}
+    continue: {{ .Values.alertManagerConfig.route.continue }}
+  # 接收器配置（完全照搬成功环境格式）
+  receivers:
+    - name: {{ .Values.alertManagerConfig.route.receiver }}
+      webhookConfigs:
+        - sendResolved: {{ .Values.alertManagerConfig.sendResolved }}
+          url: {{ .Values.backend.serviceUrl }}
+{{- end }}

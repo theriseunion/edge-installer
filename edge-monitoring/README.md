@@ -61,13 +61,13 @@ alertmanager:
 
 ```bash
 # 访问 Prometheus (端口 9090)
-kubectl port-forward svc/edge-prometheus 9090:9090 -n edge-system
+kubectl port-forward svc/edge-monitoring-kube-prome-prometheus 9090:9090 -n observability-system
 
 # 访问 Grafana (端口 3000，用户名/密码: admin/admin123)
-kubectl port-forward svc/edge-grafana 3000:3000 -n edge-system
+kubectl port-forward svc/edge-monitoring-grafana 3000:3000 -n observability-system
 
 # 访问 AlertManager (端口 9093)
-kubectl port-forward svc/edge-alertmanager 9093:9093 -n edge-system
+kubectl port-forward svc/edge-monitoring-kube-prome-alertmanager 9093:9093 -n observability-system
 ```
 
 ## 监控指标
@@ -132,13 +132,13 @@ AlertManager 默认配置包括：
 
 ```bash
 # 查看所有监控组件状态
-kubectl get pods -n edge-system -l component=monitoring
+kubectl get pods -n observability-system -l component=monitoring
 
 # 查看 Prometheus 配置
-kubectl get configmap edge-prometheus-config -n edge-system -o yaml
+kubectl get configmap edge-monitoring-kube-prome-prometheus -n observability-system -o yaml
 
 # 查看服务发现状态
-kubectl port-forward svc/edge-prometheus 9090:9090 -n edge-system
+kubectl port-forward svc/edge-monitoring-kube-prome-prometheus 9090:9090 -n observability-system
 # 然后访问 http://localhost:9090/targets
 ```
 
@@ -146,7 +146,7 @@ kubectl port-forward svc/edge-prometheus 9090:9090 -n edge-system
 
 ```bash
 # 卸载监控套件
-helm uninstall monitoring -n edge-system
+helm uninstall monitoring -n observability-system
 
 # 清理持久化数据 (可选)
 kubectl delete pvc edge-prometheus-pvc edge-grafana-pvc -n edge-system

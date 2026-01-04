@@ -1,0 +1,85 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: gpu-recording-rules
+  namespace: observability-system
+  labels:
+    prometheus: kube-prometheus
+    role: recording-rules
+    layer: container-gpu
+spec:
+  groups:
+    # ========================================================================
+    # Container-level GPU Recording Rules
+    # Purpose: Aggregate DCGM GPU metrics to container/pod/namespace level
+    # Priority: P1 - Foundation for workspace and namespace GPU metrics
+    # Dependencies: dcgm-exporter (NVIDIA GPU metrics)
+    # ========================================================================
+    - name: container-gpu-metrics
+      interval: 30s
+      rules:
+        # Container GPU utilisation (0-100) - requires pod mapping
+        # This joins DCGM GPU metrics with pod information
+        - record: container_gpu_usage
+          expr: |
+            DCGM_FI_DEV_GPU_UTIL
+            * on(uuid) group_left(pod, namespace, container)
+            label_replace(
+              kube_pod_container_info{container!="POD"},
+              "uuid", "$1", "pod", ".*-([a-f0-9\\-]+)$"
+            )
+
+        # Container GPU memory usage (bytes) - requires pod mapping
+        - record: container_gpu_memory_usage
+          expr: |
+            DCGM_FI_DEV_FB_USED * 1024 * 1024
+            * on(uuid) group_left(pod, namespace, container)
+            label_replace(
+              kube_pod_container_info{container!="POD"},
+              "uuid", "$1", "pod", ".*-([a-f0-9\\-]+)$"
+            )
+
+    - name: node-gpu-metrics
+      interval: 30s
+      rules:
+        # Node GPU memory total (bytes) - sum all GPUs on node
+        - record: node_gpu_memory_total
+          expr: |
+            sum by (cluster, instance) (
+              DCGM_FI_DEV_FB_TOTAL * 1024 * 1024
+            )
+
+        # Node GPU memory usage (bytes) - sum all GPUs on node
+        - record: node_gpu_memory_usage
+          expr: |
+            sum by (cluster, instance) (
+              DCGM_FI_DEV_FB_USED * 1024 * 1024
+            )
+
+        # Node GPU count
+        - record: node_gpu_count
+          expr: |
+            count by (cluster, instance) (
+              DCGM_FI_DEV_FB_TOTAL
+            )
+
+        # Node GPU average utilisation (0-100)
+        - record: node_gpu_utilisation_avg
+          expr: |
+            avg by (cluster, instance) (
+              DCGM_FI_DEV_GPU_UTIL
+            )
+
+        # Node GPU average temperature (Celsius)
+        - record: node_gpu_temperature_avg
+          expr: |
+            avg by (cluster, instance) (
+              DCGM_FI_DEV_GPU_TEMP
+            )
+
+        # Node GPU total power (Watts)
+        - record: node_gpu_power_total
+          expr: |
+            sum by (cluster, instance) (
+              DCGM_FI_DEV_POWER_USAGE
+            )

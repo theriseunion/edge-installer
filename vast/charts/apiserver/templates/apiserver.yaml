@@ -101,9 +101,70 @@ spec:
               containerPort: {{ .Values.service.targetPort }}
               protocol: TCP
           livenessProbe:
-            {{- toYaml .Values.livenessProbe | nindent 12 }}
+            {{- $tlsEnabled := .Values.config.server.tls.enabled | default false }}
+            {{- if .Values.livenessProbe }}
+            {{- if .Values.livenessProbe.httpGet }}
+            httpGet:
+              path: {{ .Values.livenessProbe.httpGet.path }}
+              port: {{ .Values.livenessProbe.httpGet.port }}
+              scheme: {{ if $tlsEnabled }}HTTPS{{ else }}HTTP{{ end }}
+            {{- end }}
+            {{- if .Values.livenessProbe.tcpSocket }}
+            tcpSocket:
+              {{- toYaml .Values.livenessProbe.tcpSocket | nindent 14 }}
+            {{- end }}
+            {{- if .Values.livenessProbe.exec }}
+            exec:
+              {{- toYaml .Values.livenessProbe.exec | nindent 14 }}
+            {{- end }}
+            {{- if hasKey .Values.livenessProbe "initialDelaySeconds" }}
+            initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
+            {{- end }}
+            {{- if hasKey .Values.livenessProbe "periodSeconds" }}
+            periodSeconds: {{ .Values.livenessProbe.periodSeconds }}
+            {{- end }}
+            {{- if hasKey .Values.livenessProbe "timeoutSeconds" }}
+            timeoutSeconds: {{ .Values.livenessProbe.timeoutSeconds }}
+            {{- end }}
+            {{- if hasKey .Values.livenessProbe "successThreshold" }}
+            successThreshold: {{ .Values.livenessProbe.successThreshold }}
+            {{- end }}
+            {{- if hasKey .Values.livenessProbe "failureThreshold" }}
+            failureThreshold: {{ .Values.livenessProbe.failureThreshold }}
+            {{- end }}
+            {{- end }}
           readinessProbe:
-            {{- toYaml .Values.readinessProbe | nindent 12 }}
+            {{- if .Values.readinessProbe }}
+            {{- if .Values.readinessProbe.httpGet }}
+            httpGet:
+              path: {{ .Values.readinessProbe.httpGet.path }}
+              port: {{ .Values.readinessProbe.httpGet.port }}
+              scheme: {{ if $tlsEnabled }}HTTPS{{ else }}HTTP{{ end }}
+            {{- end }}
+            {{- if .Values.readinessProbe.tcpSocket }}
+            tcpSocket:
+              {{- toYaml .Values.readinessProbe.tcpSocket | nindent 14 }}
+            {{- end }}
+            {{- if .Values.readinessProbe.exec }}
+            exec:
+              {{- toYaml .Values.readinessProbe.exec | nindent 14 }}
+            {{- end }}
+            {{- if hasKey .Values.readinessProbe "initialDelaySeconds" }}
+            initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds }}
+            {{- end }}
+            {{- if hasKey .Values.readinessProbe "periodSeconds" }}
+            periodSeconds: {{ .Values.readinessProbe.periodSeconds }}
+            {{- end }}
+            {{- if hasKey .Values.readinessProbe "timeoutSeconds" }}
+            timeoutSeconds: {{ .Values.readinessProbe.timeoutSeconds }}
+            {{- end }}
+            {{- if hasKey .Values.readinessProbe "successThreshold" }}
+            successThreshold: {{ .Values.readinessProbe.successThreshold }}
+            {{- end }}
+            {{- if hasKey .Values.readinessProbe "failureThreshold" }}
+            failureThreshold: {{ .Values.readinessProbe.failureThreshold }}
+            {{- end }}
+            {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           securityContext:

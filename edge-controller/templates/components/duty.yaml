@@ -1,0 +1,24 @@
+{{- if and .Values.controller.enabled (and (ne .Values.global.mode "none") .Values.autoInstall.duty.enabled) }}
+apiVersion: ext.theriseunion.io/v1alpha1
+kind: Component
+metadata:
+  name: edge-duty
+  namespace: observability-system
+  labels:
+    {{- include "edge-controller.labels" . | nindent 4 }}
+    app.kubernetes.io/component: duty
+    app.kubernetes.io/part-of: edge-platform
+    cluster.theriseunion.io/role: {{ .Values.global.mode }}
+spec:
+  enabled: {{ .Values.autoInstall.duty.enabled }}
+  version: {{ .Values.autoInstall.duty.version | default .Chart.AppVersion }}
+  chart:
+    name: edge-duty
+    namespace: observability-system
+    releaseName: edge-duty
+    repository: http://chartmuseum.{{ .Release.Namespace }}.svc:8080
+  {{- if .Values.autoInstall.duty.values }}
+  values:
+    {{- toYaml .Values.autoInstall.duty.values | nindent 4 }}
+  {{- end }}
+{{- end }}

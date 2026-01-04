@@ -24,7 +24,7 @@ spec:
         runAsGroup: 65532
       containers:
       - name: monitoring-service
-        image: "{{ .Values.monitoringService.image.repository }}:{{ .Values.monitoringService.image.tag }}"
+        image: "{{ default .Values.monitoringService.image.registry .Values.global.imageRegistry }}/{{ .Values.monitoringService.image.repository }}:{{ .Values.monitoringService.image.tag }}"
         imagePullPolicy: {{ .Values.monitoringService.image.pullPolicy }}
         ports:
         - name: http
@@ -32,7 +32,7 @@ spec:
           protocol: TCP
         env:
         - name: PROMETHEUS_HOST
-          value: "http://edge-prometheus.{{ .Values.global.namespace }}.svc:9090"
+          value: "http://edge-monitoring-kube-prome-prometheus.{{ .Values.global.namespace }}.svc:9090"
         - name: PROMETHEUS_INSECURE_SKIP_VERIFY
           value: "true"
         - name: SERVICE_PORT

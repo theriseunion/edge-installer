@@ -6,8 +6,9 @@ enabled: true
 
 # Image configuration
 image:
-  repository: quanzhenglong.com/edge/edge-museum
-  tag: "latest"
+  registry: quanzhenglong.com
+  repository: edge/edge-museum
+  tag: main
   pullPolicy: IfNotPresent
 
 # Resource limits and requests

@@ -1,0 +1,112 @@
+duty:
+  duty:
+    image:
+      repository: quanzhenglong.com/camp/duty
+      tag: "v1.1.9"
+      pullPolicy: IfNotPresent
+    resources:
+      limits:
+        cpu: 1000m
+        memory: 500Mi
+      requests:
+        cpu: 500m
+        memory: 256Mi
+    service:
+      type: ClusterIP
+      port: 80
+      httpPort: 8000
+    database:
+      host: 1.92.198.206
+      port: 5431
+      user: duty
+      dbname: duty_test
+      password: DutyPwd123
+      debug: false
+    smtp:
+      host: "host"
+      port: 465
+      user: "user"
+      password: "password"
+      from: "from"
+    ali_config:
+      access_key_id: ""
+      access_key_secret: ""
+      sms_alert:
+        tts_code: ""
+        sign_name: ""
+      phone_call_alert:
+        tts_code: ""
+    prometheus:
+      namespace: observability-system
+      address: http://prometheus-kube-prometheus-prometheus.prometheus.svc.cluster.local:9090
+      timeout: 1m
+      interval: 30m
+      auth:
+    trace:
+      disabled: true
+      batcher: otlpgrpc
+      sampler: 1.0
+      endpoint: tempo.rise-vast-system.svc.cluster.local:4317
+    http_forward:
+      rules: [ ]
+    cronjob:
+      apiVersion: batch/v1
+      generateSchedule:
+        enabled: false
+        backoffLimit: 1
+        schedule: "0 * * * *"  # 每小时执行一次
+        activeDeadlineSeconds: 600
+        retentionPolicy:
+          successfulJobsHistoryLimit: 3
+          failedJobsHistoryLimit: 2
+      # 定时执行所有值班小组的值班轮换
+      oncallRotation:
+        enabled: false
+        backoffLimit: 1
+        schedule: "0 */8 * * *"  # 每8小时执行一次
+        activeDeadlineSeconds: 60
+        retentionPolicy:
+          successfulJobsHistoryLimit: 3
+          failedJobsHistoryLimit: 2
+      closeZombieAlert:
+        enabled: false
+        backoffLimit: 1
+        schedule: "0 * * * *"  # 每小时执行一次
+        activeDeadlineSeconds: 60
+        retentionPolicy:
+          successfulJobsHistoryLimit: 3
+          failedJobsHistoryLimit: 2
+      dailyStatistic:
+        enabled: false
+        backoffLimit: 1
+        schedule: "0 0 * * *"  # 每天执行一次
+        activeDeadlineSeconds: 60
+        retentionPolicy:
+          successfulJobsHistoryLimit: 3
+          failedJobsHistoryLimit: 2
+      alertUpgrade:
+        enabled: false
+        backoffLimit: 1
+        schedule: "*/10 * * * *"  # 每十分钟执行一次
+        activeDeadlineSeconds: 60
+        retentionPolicy:
+          successfulJobsHistoryLimit: 3
+          failedJobsHistoryLimit: 2
+
+duty-web:
+  image:
+    registry: "quanzhenglong.com"
+    repository: "camp/console-ui"
+    tag: "feat-simple-duty-09"
+    pullPolicy: IfNotPresent
+  containerPort: 80
+  svc:
+    port: 80
+    type: ClusterIP
+  resources:
+    requests:
+      cpu: "100m"
+      memory: "128Mi"
+    limits:
+      cpu: "500m"
+      memory: "256Mi"

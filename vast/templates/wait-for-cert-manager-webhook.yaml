@@ -1,0 +1,150 @@
+{{- if index .Values "cert-manager" "enabled" }}
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{ .Release.Name }}-wait-for-cert-manager-webhook
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    "helm.sh/hook": post-install,post-upgrade
+    "helm.sh/hook-weight": "-1"
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+  labels:
+    app.kubernetes.io/name: {{ .Chart.Name }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/component: wait-for-cert-manager-webhook
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: {{ .Release.Name }}-wait-for-cert-manager-webhook
+  annotations:
+    "helm.sh/hook": post-install,post-upgrade
+    "helm.sh/hook-weight": "-1"
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+  labels:
+    app.kubernetes.io/name: {{ .Chart.Name }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/component: wait-for-cert-manager-webhook
+rules:
+- apiGroups:
+  - apps
+  resources:
+  - deployments
+  verbs:
+  - get
+  - list
+- apiGroups:
+  - ""
+  resources:
+  - services
+  verbs:
+  - get
+  - list
+- apiGroups:
+  - ""
+  resources:
+  - pods
+  verbs:
+  - get
+  - list
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: {{ .Release.Name }}-wait-for-cert-manager-webhook
+  annotations:
+    "helm.sh/hook": post-install,post-upgrade
+    "helm.sh/hook-weight": "-1"
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+  labels:
+    app.kubernetes.io/name: {{ .Chart.Name }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/component: wait-for-cert-manager-webhook
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: {{ .Release.Name }}-wait-for-cert-manager-webhook
+subjects:
+- kind: ServiceAccount
+  name: {{ .Release.Name }}-wait-for-cert-manager-webhook
+  namespace: {{ .Release.Namespace }}
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ .Release.Name }}-wait-for-cert-manager-webhook
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    "helm.sh/hook": post-install,post-upgrade
+    "helm.sh/hook-weight": "-1"
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+  labels:
+    app.kubernetes.io/name: {{ .Chart.Name }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/component: wait-for-cert-manager-webhook
+spec:
+  backoffLimit: 20
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ .Chart.Name }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+        app.kubernetes.io/component: wait-for-cert-manager-webhook
+    spec:
+      serviceAccountName: {{ .Release.Name }}-wait-for-cert-manager-webhook
+      restartPolicy: OnFailure
+      containers:
+      - name: wait-for-webhook
+        image: quanzhenglong.com/base/kubectl:latest
+        command:
+        - /bin/sh
+        - -c
+        - |
+          set -e
+          echo "Waiting for cert-manager webhook to be ready..."
+          
+          WEBHOOK_NAMESPACE="cert-manager"
+          WEBHOOK_DEPLOYMENT="cert-manager-webhook"
+          WEBHOOK_SERVICE="cert-manager-webhook"
+          
+          # Wait for webhook deployment to be available
+          echo "Waiting for webhook deployment to be available..."
+          until kubectl get deployment -n "$WEBHOOK_NAMESPACE" "$WEBHOOK_DEPLOYMENT" >/dev/null 2>&1; do
+            echo "Webhook deployment not found, waiting..."
+            sleep 2
+          done
+          echo "Webhook deployment found"
+          
+          # Wait for webhook deployment to be ready
+          echo "Waiting for webhook deployment to be ready..."
+          kubectl wait --for=condition=available --timeout=300s deployment/"$WEBHOOK_DEPLOYMENT" -n "$WEBHOOK_NAMESPACE" || {
+            echo "Failed to wait for webhook deployment, checking status..."
+            kubectl get deployment -n "$WEBHOOK_NAMESPACE" "$WEBHOOK_DEPLOYMENT" -o yaml
+            exit 1
+          }
+          echo "Webhook deployment is ready"
+          
+          # Wait for webhook service to be available
+          echo "Waiting for webhook service to be available..."
+          until kubectl get service -n "$WEBHOOK_NAMESPACE" "$WEBHOOK_SERVICE" >/dev/null 2>&1; do
+            echo "Webhook service not found, waiting..."
+            sleep 2
+          done
+          echo "Webhook service found"
+          
+          # Wait for webhook pods to be ready
+          echo "Waiting for webhook pods to be ready..."
+          until kubectl get pods -n "$WEBHOOK_NAMESPACE" -l app.kubernetes.io/name=webhook,app.kubernetes.io/component=webhook --field-selector=status.phase=Running 2>/dev/null | grep -q "1/1.*Running"; do
+            echo "Webhook pods not ready, waiting..."
+            sleep 2
+          done
+          echo "Webhook pods are ready"
+          
+          # Additional wait to ensure webhook TLS certificates are ready
+          echo "Waiting additional time for webhook TLS certificates to be ready..."
+          sleep 10
+          
+          echo "cert-manager webhook is ready!"
+{{- end }}
+

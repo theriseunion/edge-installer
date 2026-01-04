@@ -1,0 +1,360 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: nodegroup-recording-rules
+  namespace: observability-system
+  labels:
+    prometheus: kube-prometheus
+    role: recording-rules
+    release: edge-monitoring
+    layer: nodegroup
+spec:
+  groups:
+    # ========================================================================
+    # NodeGroup-level Aggregation Recording Rules
+    # Purpose: Aggregate node-level metrics by nodegroup for multi-node management
+    # Priority: P2 - Depends on node-recording-rules
+    # Dependencies: node-exporter, kube-state-metrics, node-recording-rules
+    # Label: Requires label_theriseunion_io_nodegroup on nodes
+    # ========================================================================
+    - name: nodegroup-aggregation-rules
+      interval: 30s
+      rules:
+        # =====================================================
+        # Node count (aggregated by nodegroup)
+        # =====================================================
+
+        - record: nodegroup:kube_node_info:count
+          expr: |
+            count by (cluster, nodegroup) (
+              kube_node_info{job="kube-state-metrics"}
+              * on(node) group_left(nodegroup)
+              label_replace(
+                kube_node_labels{label_theriseunion_io_nodegroup!=""},
+                "nodegroup", "$1", "label_theriseunion_io_nodegroup", "(.*)"
+              )
+            )
+
+        # =====================================================
+        # CPU metrics (aggregated by nodegroup)
+        # =====================================================
+
+        - record: nodegroup:node_cpu_usage:sum_rate
+          expr: |
+            sum by (cluster, nodegroup) (
+              (1 - avg by (cluster, instance) (irate(node_cpu_seconds_total{job="node-exporter",mode="idle"}[5m])))
+              * on(instance) group_left(node)
+              label_replace(kube_node_info{job="kube-state-metrics"}, "instance", "$1", "node", "(.*)")
+              * on(node) group_left(nodegroup)
+              label_replace(
+                kube_node_labels{label_theriseunion_io_nodegroup!=""},
+                "nodegroup", "$1", "label_theriseunion_io_nodegroup", "(.*)"
+              )
+            )
+
+        - record: nodegroup:machine_cpu_cores:sum
+          expr: |
+            sum by (cluster, nodegroup) (
+              machine_cpu_cores
+              * on(instance) group_left(node)
+              label_replace(kube_node_info{job="kube-state-metrics"}, "instance", "$1", "node", "(.*)")
+              * on(node) group_left(nodegroup)
+              label_replace(
+                kube_node_labels{label_theriseunion_io_nodegroup!=""},
+                "nodegroup", "$1", "label_theriseunion_io_nodegroup", "(.*)"
+              )
+            )
+
+        # =====================================================
+        # Memory metrics (aggregated by nodegroup)
+        # =====================================================
+
+        - record: nodegroup:node_memory_usage_bytes:sum
+          expr: |
+            sum by (cluster, nodegroup) (
+              (node_memory_MemTotal_bytes{job="node-exporter"} - node_memory_MemAvailable_bytes{job="node-exporter"})
+              * on(instance) group_left(node)
+              label_replace(kube_node_info{job="kube-state-metrics"}, "instance", "$1", "node", "(.*)")
+              * on(node) group_left(nodegroup)
+              label_replace(
+                kube_node_labels{label_theriseunion_io_nodegroup!=""},
+                "nodegroup", "$1", "label_theriseunion_io_nodegroup", "(.*)"
+              )
+            )
+
+        - record: nodegroup:node_memory_available_bytes:sum
+          expr: |
+            sum by (cluster, nodegroup) (
+              node_memory_MemAvailable_bytes{job="node-exporter"}
+              * on(instance) group_left(node)
+              label_replace(kube_node_info{job="kube-state-metrics"}, "instance", "$1", "node", "(.*)")
+              * on(node) group_left(nodegroup)
+              label_replace(
+                kube_node_labels{label_theriseunion_io_nodegroup!=""},
+                "nodegroup", "$1", "label_theriseunion_io_nodegroup", "(.*)"
+              )
+            )
+
+        - record: nodegroup:node_memory_total_bytes:sum
+          expr: |
+            sum by (cluster, nodegroup) (
+              node_memory_MemTotal_bytes{job="node-exporter"}
+              * on(instance) group_left(node)
+              label_replace(kube_node_info{job="kube-state-metrics"}, "instance", "$1", "node", "(.*)")
+              * on(node) group_left(nodegroup)
+              label_replace(
+                kube_node_labels{label_theriseunion_io_nodegroup!=""},
+                "nodegroup", "$1", "label_theriseunion_io_nodegroup", "(.*)"
+              )
+            )
+
+        # =====================================================
+        # Network metrics (aggregated by nodegroup)
+        # =====================================================
+
+        - record: nodegroup:node_network_receive_bytes:sum_rate
+          expr: |
+            sum by (cluster, nodegroup) (
+              irate(node_network_receive_bytes_total{job="node-exporter",device!~"lo|veth.*|docker.*|br.*"}[5m])
+              * on(instance) group_left(node)
+              label_replace(kube_node_info{job="kube-state-metrics"}, "instance", "$1", "node", "(.*)")
+              * on(node) group_left(nodegroup)
+              label_replace(
+                kube_node_labels{label_theriseunion_io_nodegroup!=""},
+                "nodegroup", "$1", "label_theriseunion_io_nodegroup", "(.*)"
+              )
+            )
+
+        - record: nodegroup:node_network_transmit_bytes:sum_rate
+          expr: |
+            sum by (cluster, nodegroup) (
+              irate(node_network_transmit_bytes_total{job="node-exporter",device!~"lo|veth.*|docker.*|br.*"}[5m])
+              * on(instance) group_left(node)
+              label_replace(kube_node_info{job="kube-state-metrics"}, "instance", "$1", "node", "(.*)")
+              * on(node) group_left(nodegroup)
+              label_replace(
+                kube_node_labels{label_theriseunion_io_nodegroup!=""},
+                "nodegroup", "$1", "label_theriseunion_io_nodegroup", "(.*)"
+              )
+            )
+
+        - record: nodegroup:node_network_receive_packets:sum_rate
+          expr: |
+            sum by (cluster, nodegroup) (
+              irate(node_network_receive_packets_total{job="node-exporter",device!~"lo|veth.*|docker.*|br.*"}[5m])
+              * on(instance) group_left(node)
+              label_replace(kube_node_info{job="kube-state-metrics"}, "instance", "$1", "node", "(.*)")
+              * on(node) group_left(nodegroup)
+              label_replace(
+                kube_node_labels{label_theriseunion_io_nodegroup!=""},
+                "nodegroup", "$1", "label_theriseunion_io_nodegroup", "(.*)"
+              )
+            )
+
+        - record: nodegroup:node_network_transmit_packets:sum_rate
+          expr: |
+            sum by (cluster, nodegroup) (
+              irate(node_network_transmit_packets_total{job="node-exporter",device!~"lo|veth.*|docker.*|br.*"}[5m])
+              * on(instance) group_left(node)
+              label_replace(kube_node_info{job="kube-state-metrics"}, "instance", "$1", "node", "(.*)")
+              * on(node) group_left(nodegroup)
+              label_replace(
+                kube_node_labels{label_theriseunion_io_nodegroup!=""},
+                "nodegroup", "$1", "label_theriseunion_io_nodegroup", "(.*)"
+              )
+            )
+
+        # =====================================================
+        # Disk metrics (aggregated by nodegroup)
+        # =====================================================
+
+        # Disk usage: filter out virtual filesystems and deduplicate by device
+        # Excludes: virtiofs (OrbStack/macOS), tmpfs, overlay (container), rootfs
+        - record: nodegroup:node_filesystem_usage_bytes:sum
+          expr: |
+            sum by (cluster, nodegroup) (
+              max by (cluster, instance, device) (
+                (node_filesystem_size_bytes{job="node-exporter",fstype!~"virtiofs|tmpfs|overlay|rootfs|squashfs|fuse.*"}
+                 - node_filesystem_avail_bytes{job="node-exporter",fstype!~"virtiofs|tmpfs|overlay|rootfs|squashfs|fuse.*"})
+              )
+              * on(instance) group_left(node)
+              label_replace(kube_node_info{job="kube-state-metrics"}, "instance", "$1", "node", "(.*)")
+              * on(node) group_left(nodegroup)
+              label_replace(
+                kube_node_labels{label_theriseunion_io_nodegroup!=""},
+                "nodegroup", "$1", "label_theriseunion_io_nodegroup", "(.*)"
+              )
+            )
+
+        # Disk available: filter out virtual filesystems and deduplicate by device
+        - record: nodegroup:node_filesystem_available_bytes:sum
+          expr: |
+            sum by (cluster, nodegroup) (
+              max by (cluster, instance, device) (
+                node_filesystem_avail_bytes{job="node-exporter",fstype!~"virtiofs|tmpfs|overlay|rootfs|squashfs|fuse.*"}
+              )
+              * on(instance) group_left(node)
+              label_replace(kube_node_info{job="kube-state-metrics"}, "instance", "$1", "node", "(.*)")
+              * on(node) group_left(nodegroup)
+              label_replace(
+                kube_node_labels{label_theriseunion_io_nodegroup!=""},
+                "nodegroup", "$1", "label_theriseunion_io_nodegroup", "(.*)"
+              )
+            )
+
+        # Disk total: filter out virtual filesystems and deduplicate by device
+        - record: nodegroup:node_filesystem_total_bytes:sum
+          expr: |
+            sum by (cluster, nodegroup) (
+              max by (cluster, instance, device) (
+                node_filesystem_size_bytes{job="node-exporter",fstype!~"virtiofs|tmpfs|overlay|rootfs|squashfs|fuse.*"}
+              )
+              * on(instance) group_left(node)
+              label_replace(kube_node_info{job="kube-state-metrics"}, "instance", "$1", "node", "(.*)")
+              * on(node) group_left(nodegroup)
+              label_replace(
+                kube_node_labels{label_theriseunion_io_nodegroup!=""},
+                "nodegroup", "$1", "label_theriseunion_io_nodegroup", "(.*)"
+              )
+            )
+
+        - record: nodegroup:node_disk_reads:sum_rate
+          expr: |
+            sum by (cluster, nodegroup) (
+              irate(node_disk_reads_completed_total{job="node-exporter"}[5m])
+              * on(instance) group_left(node)
+              label_replace(kube_node_info{job="kube-state-metrics"}, "instance", "$1", "node", "(.*)")
+              * on(node) group_left(nodegroup)
+              label_replace(
+                kube_node_labels{label_theriseunion_io_nodegroup!=""},
+                "nodegroup", "$1", "label_theriseunion_io_nodegroup", "(.*)"
+              )
+            )
+
+        - record: nodegroup:node_disk_writes:sum_rate
+          expr: |
+            sum by (cluster, nodegroup) (
+              irate(node_disk_writes_completed_total{job="node-exporter"}[5m])
+              * on(instance) group_left(node)
+              label_replace(kube_node_info{job="kube-state-metrics"}, "instance", "$1", "node", "(.*)")
+              * on(node) group_left(nodegroup)
+              label_replace(
+                kube_node_labels{label_theriseunion_io_nodegroup!=""},
+                "nodegroup", "$1", "label_theriseunion_io_nodegroup", "(.*)"
+              )
+            )
+
+        - record: nodegroup:node_disk_read_bytes:sum_rate
+          expr: |
+            sum by (cluster, nodegroup) (
+              irate(node_disk_read_bytes_total{job="node-exporter"}[5m])
+              * on(instance) group_left(node)
+              label_replace(kube_node_info{job="kube-state-metrics"}, "instance", "$1", "node", "(.*)")
+              * on(node) group_left(nodegroup)
+              label_replace(
+                kube_node_labels{label_theriseunion_io_nodegroup!=""},
+                "nodegroup", "$1", "label_theriseunion_io_nodegroup", "(.*)"
+              )
+            )
+
+        - record: nodegroup:node_disk_written_bytes:sum_rate
+          expr: |
+            sum by (cluster, nodegroup) (
+              irate(node_disk_written_bytes_total{job="node-exporter"}[5m])
+              * on(instance) group_left(node)
+              label_replace(kube_node_info{job="kube-state-metrics"}, "instance", "$1", "node", "(.*)")
+              * on(node) group_left(nodegroup)
+              label_replace(
+                kube_node_labels{label_theriseunion_io_nodegroup!=""},
+                "nodegroup", "$1", "label_theriseunion_io_nodegroup", "(.*)"
+              )
+            )
+
+        # =====================================================
+        # Node load metrics (aggregated by nodegroup)
+        # =====================================================
+
+        - record: nodegroup:node_load1:sum
+          expr: |
+            sum by (cluster, nodegroup) (
+              node_load1{job="node-exporter"}
+              * on(instance) group_left(node)
+              label_replace(kube_node_info{job="kube-state-metrics"}, "instance", "$1", "node", "(.*)")
+              * on(node) group_left(nodegroup)
+              label_replace(
+                kube_node_labels{label_theriseunion_io_nodegroup!=""},
+                "nodegroup", "$1", "label_theriseunion_io_nodegroup", "(.*)"
+              )
+            )
+
+        - record: nodegroup:node_load5:sum
+          expr: |
+            sum by (cluster, nodegroup) (
+              node_load5{job="node-exporter"}
+              * on(instance) group_left(node)
+              label_replace(kube_node_info{job="kube-state-metrics"}, "instance", "$1", "node", "(.*)")
+              * on(node) group_left(nodegroup)
+              label_replace(
+                kube_node_labels{label_theriseunion_io_nodegroup!=""},
+                "nodegroup", "$1", "label_theriseunion_io_nodegroup", "(.*)"
+              )
+            )
+
+        - record: nodegroup:node_load15:sum
+          expr: |
+            sum by (cluster, nodegroup) (
+              node_load15{job="node-exporter"}
+              * on(instance) group_left(node)
+              label_replace(kube_node_info{job="kube-state-metrics"}, "instance", "$1", "node", "(.*)")
+              * on(node) group_left(nodegroup)
+              label_replace(
+                kube_node_labels{label_theriseunion_io_nodegroup!=""},
+                "nodegroup", "$1", "label_theriseunion_io_nodegroup", "(.*)"
+              )
+            )
+
+        # =====================================================
+        # Resource utilization (calculated by nodegroup)
+        # =====================================================
+
+        # CPU utilisation (0-100 percent)
+        - record: nodegroup:cpu_utilization_percent
+          expr: |
+            (
+              nodegroup:node_cpu_usage:sum_rate
+              /
+              nodegroup:machine_cpu_cores:sum
+            ) * 100
+
+        # CPU utilisation (0-1 ratio)
+        - record: nodegroup:node_cpu_utilisation:avg
+          expr: |
+            nodegroup:node_cpu_usage:sum_rate
+            /
+            nodegroup:machine_cpu_cores:sum
+
+        # Memory utilisation (0-100 percent)
+        - record: nodegroup:memory_utilization_percent
+          expr: |
+            (
+              nodegroup:node_memory_usage_bytes:sum
+              /
+              nodegroup:node_memory_total_bytes:sum
+            ) * 100
+
+        # Memory utilisation (0-1 ratio)
+        - record: nodegroup:node_memory_utilisation:avg
+          expr: |
+            (nodegroup:node_memory_total_bytes:sum -
+             nodegroup:node_memory_available_bytes:sum)
+            /
+            nodegroup:node_memory_total_bytes:sum
+
+        # Filesystem utilisation (0-100 percent)
+        - record: nodegroup:filesystem_utilization_percent
+          expr: |
+            (
+              nodegroup:node_filesystem_usage_bytes:sum
+              /
+              nodegroup:node_filesystem_total_bytes:sum
+            ) * 100

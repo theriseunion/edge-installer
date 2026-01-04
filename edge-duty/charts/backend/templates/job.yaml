@@ -1,0 +1,239 @@
+{{- if .Values.duty.cronjob.generateSchedule.enabled }}
+apiVersion: {{ .Values.duty.cronjob.apiVersion }}
+kind: CronJob
+metadata:
+  name: {{ include "duty.backend.fullname" . }}-generate-schedule
+  labels:
+    {{- include "duty.labels" . | nindent 4 }}
+spec:
+  schedule: "{{ .Values.duty.cronjob.generateSchedule.schedule }}"
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          name: {{ include "duty.backend.fullname" . }}-generate-schedule
+          labels:
+            app.kubernetes.io/name: backend-generate-schedule
+        spec:
+          serviceAccountName: {{ include "duty.serviceAccountName" . }}
+          containers:
+          - name: {{ .Chart.Name }}
+            image: "{{ .Values.duty.image.repository }}:{{ .Values.duty.image.tag | default .Chart.AppVersion }}"
+            imagePullPolicy: {{ .Values.duty.image.pullPolicy }}
+            command:
+              - "/apps/task"
+            env:
+              {{- with .Values.duty.env }}
+              {{- toYaml . | nindent 14 }}
+              {{- end }}
+            args:
+              - "--conf"
+              - "/apps/config/config.prod.yaml"
+              - "--action"
+              - "generateSchedule"
+            volumeMounts:
+              - name: config
+                mountPath: /apps/config/
+          restartPolicy: Never
+          volumes:
+            - name: config
+              configMap:
+                name: {{ include "duty.backend.fullname" . }}-config
+          {{- with .Values.duty.affinity }}
+          affinity:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+      backoffLimit: {{ .Values.duty.cronjob.generateSchedule.backoffLimit }}
+{{- end }}
+---
+{{- if .Values.duty.cronjob.oncallRotation.enabled }}
+apiVersion: {{ .Values.duty.cronjob.apiVersion }}
+kind: CronJob
+metadata:
+  name: {{ include "duty.backend.fullname" . }}-oncall-rotation
+  labels:
+    {{- include "duty.labels" . | nindent 4 }}
+spec:
+  schedule: "{{ .Values.duty.cronjob.oncallRotation.schedule }}"
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          name: {{ include "duty.backend.fullname" . }}-oncall-rotation
+          labels:
+            app.kubernetes.io/name: backend-oncall-rotation
+        spec:
+          serviceAccountName: {{ include "duty.serviceAccountName" . }}
+          containers:
+          - name: {{ .Chart.Name }}
+            image: "{{ .Values.duty.image.repository }}:{{ .Values.duty.image.tag | default .Chart.AppVersion }}"
+            imagePullPolicy: {{ .Values.duty.image.pullPolicy }}
+            command:
+              - "/apps/task"
+            env:
+              {{- with .Values.duty.env }}
+              {{- toYaml . | nindent 14 }}
+              {{- end }}
+            args:
+              - "--conf"
+              - "/apps/config/config.prod.yaml"
+              - "--action"
+              - "oncallRotation"
+            volumeMounts:
+              - name: config
+                mountPath: /apps/config/
+          restartPolicy: Never
+          volumes:
+            - name: config
+              configMap:
+                name: {{ include "duty.backend.fullname" . }}-config
+          {{- with .Values.duty.affinity }}
+          affinity:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+      backoffLimit: {{ .Values.duty.cronjob.oncallRotation.backoffLimit }}
+{{- end }}
+---
+{{- if .Values.duty.cronjob.closeZombieAlert.enabled }}
+apiVersion: {{ .Values.duty.cronjob.apiVersion }}
+kind: CronJob
+metadata:
+  name: {{ include "duty.backend.fullname" . }}-close-zombie-alert
+  labels:
+    {{- include "duty.labels" . | nindent 4 }}
+spec:
+  schedule: "{{ .Values.duty.cronjob.closeZombieAlert.schedule }}"
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          name: {{ include "duty.backend.fullname" . }}-close-zombie-alert
+          labels:
+            app.kubernetes.io/name: backend-close-zombie-alert
+        spec:
+          serviceAccountName: {{ include "duty.serviceAccountName" . }}
+          containers:
+          - name: {{ .Chart.Name }}
+            image: "{{ .Values.duty.image.repository }}:{{ .Values.duty.image.tag | default .Chart.AppVersion }}"
+            imagePullPolicy: {{ .Values.duty.image.pullPolicy }}
+            command:
+              - "/apps/task"
+            env:
+              {{- with .Values.duty.env }}
+              {{- toYaml . | nindent 14 }}
+              {{- end }}
+            args:
+              - "--conf"
+              - "/apps/config/config.prod.yaml"
+              - "--action"
+              - "closeZombieAlert"
+            volumeMounts:
+              - name: config
+                mountPath: /apps/config/
+          restartPolicy: Never
+          volumes:
+            - name: config
+              configMap:
+                name: {{ include "duty.backend.fullname" . }}-config
+          {{- with .Values.duty.affinity }}
+          affinity:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+      backoffLimit: {{ .Values.duty.cronjob.closeZombieAlert.backoffLimit }}
+{{- end }}
+---
+{{- if .Values.duty.cronjob.dailyStatistic.enabled }}
+apiVersion: {{ .Values.duty.cronjob.apiVersion }}
+kind: CronJob
+metadata:
+  name: {{ include "duty.backend.fullname" . }}-daily-statistic
+  labels:
+    {{- include "duty.labels" . | nindent 4 }}
+spec:
+  schedule: "{{ .Values.duty.cronjob.dailyStatistic.schedule }}"
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          name: {{ include "duty.backend.fullname" . }}-daily-statistic
+          labels:
+            app.kubernetes.io/name: backend-daily-statistic
+        spec:
+          serviceAccountName: {{ include "duty.serviceAccountName" . }}
+          containers:
+          - name: {{ .Chart.Name }}
+            image: "{{ .Values.duty.image.repository }}:{{ .Values.duty.image.tag | default .Chart.AppVersion }}"
+            imagePullPolicy: {{ .Values.duty.image.pullPolicy }}
+            command:
+              - "/apps/task"
+            env:
+              {{- with .Values.duty.env }}
+              {{- toYaml . | nindent 14 }}
+              {{- end }}
+            args:
+              - "--conf"
+              - "/apps/config/config.prod.yaml"
+              - "--action"
+              - "dailyStatistic"
+            volumeMounts:
+              - name: config
+                mountPath: /apps/config/
+          restartPolicy: Never
+          volumes:
+            - name: config
+              configMap:
+                name: {{ include "duty.backend.fullname" . }}-config
+          {{- with .Values.duty.affinity }}
+          affinity:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+      backoffLimit: {{ .Values.duty.cronjob.dailyStatistic.backoffLimit }}
+{{- end }}
+---
+{{- if .Values.duty.cronjob.alertUpgrade.enabled }}
+apiVersion: {{ .Values.duty.cronjob.apiVersion }}
+kind: CronJob
+metadata:
+  name: {{ include "duty.backend.fullname" . }}-alert-upgrade
+  labels:
+    {{- include "duty.labels" . | nindent 4 }}
+spec:
+  schedule: "{{ .Values.duty.cronjob.alertUpgrade.schedule }}"
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          name: {{ include "duty.backend.fullname" . }}-alert-upgrade
+          labels:
+            app.kubernetes.io/name: backend-alert-upgrade
+        spec:
+          serviceAccountName: {{ include "duty.serviceAccountName" . }}
+          containers:
+          - name: {{ .Chart.Name }}
+            image: "{{ .Values.duty.image.repository }}:{{ .Values.duty.image.tag | default .Chart.AppVersion }}"
+            imagePullPolicy: {{ .Values.duty.image.pullPolicy }}
+            command:
+              - "/apps/task"
+            env:
+              {{- with .Values.duty.env }}
+              {{- toYaml . | nindent 14 }}
+              {{- end }}
+            args:
+              - "--conf"
+              - "/apps/config/config.prod.yaml"
+              - "--action"
+              - "alertUpgrade"
+            volumeMounts:
+              - name: config
+                mountPath: /apps/config/
+          restartPolicy: Never
+          volumes:
+            - name: config
+              configMap:
+                name: {{ include "duty.backend.fullname" . }}-config
+          {{- with .Values.duty.affinity }}
+          affinity:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+      backoffLimit: {{ .Values.duty.cronjob.alertUpgrade.backoffLimit }}
+{{- end }}
