@@ -384,6 +384,9 @@ hami:
         # 是否主机上运行nv-hostengine进程，部署dcgm-exporter之前需要确认主机上是否有nv-hostengine进程，如果有，需要设置为true，
         # 如果没有，需要设置为false，设置为false时，dcgm-exporter会自动以sidecar的方式部署nv-hostengine进程
         isHostRunningNvHostEngineProcess: false
+      serviceMonitor:
+        additionalLabels:
+          release: edge-monitoring
   scheduler:
     nodeSelector:
       node-role.kubernetes.io/control-plane: ""
