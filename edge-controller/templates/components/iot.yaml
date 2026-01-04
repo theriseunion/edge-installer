@@ -1,0 +1,79 @@
+{{- if .Values.autoInstall.iot.enabled }}
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: {{ .Values.autoInstall.iot.apiserver.namespace | default .Release.Namespace }}
+  labels:
+    {{- include "edge-controller.labels" . | nindent 4 }}
+    app.kubernetes.io/component: namespace
+    app.kubernetes.io/part-of: iot-platform
+---
+apiVersion: ext.theriseunion.io/v1alpha1
+kind: Component
+metadata:
+  name: iot-apiserver
+  namespace: {{ .Values.autoInstall.iot.apiserver.namespace | default .Release.Namespace }}
+  labels:
+    {{- include "edge-controller.labels" . | nindent 4 }}
+    app.kubernetes.io/component: iot-apiserver
+    app.kubernetes.io/part-of: iot-platform
+    cluster.theriseunion.io/role: {{ .Values.global.mode }}
+spec:
+  enabled: {{ .Values.autoInstall.iot.apiserver.enabled }}
+  version: {{ .Values.autoInstall.iot.apiserver.version | default .Chart.AppVersion }}
+  chart:
+    name: iot-apiserver
+    namespace: {{ .Values.autoInstall.iot.apiserver.namespace | default .Release.Namespace }}
+    releaseName: iot-apiserver
+    repository: http://chartmuseum.{{ .Release.Namespace }}.svc:{{ .Values.chartmuseum.service.port }}
+  {{- if .Values.autoInstall.iot.apiserver.values }}
+  values:
+    {{- toYaml .Values.autoInstall.iot.apiserver.values | nindent 4 }}
+  {{- end }}
+---
+apiVersion: ext.theriseunion.io/v1alpha1
+kind: Component
+metadata:
+  name: iot-controller
+  namespace: {{ .Values.autoInstall.iot.controller.namespace | default .Release.Namespace }}
+  labels:
+    {{- include "edge-controller.labels" . | nindent 4 }}
+    app.kubernetes.io/component: iot-controller
+    app.kubernetes.io/part-of: iot-platform
+    cluster.theriseunion.io/role: {{ .Values.global.mode }}
+spec:
+  enabled: true
+  version: {{ .Values.autoInstall.iot.controller.version | default .Chart.Version }}
+  chart:
+    name: iot-controller
+    namespace: {{ .Values.autoInstall.iot.controller.namespace | default .Release.Namespace }}
+    releaseName: iot-controller
+    repository: http://chartmuseum.{{ .Release.Namespace }}.svc:{{ .Values.chartmuseum.service.port }}
+  {{- if .Values.autoInstall.iot.controller.values }}
+  values:
+    {{- toYaml .Values.autoInstall.iot.controller.values | nindent 4 }}
+  {{- end }}
+---
+apiVersion: ext.theriseunion.io/v1alpha1
+kind: Component
+metadata:
+  name: yurt-iot-dock
+  namespace: {{ .Values.autoInstall.iot.yurtIotDock.namespace | default .Release.Namespace }}
+  labels:
+    {{- include "edge-controller.labels" . | nindent 4 }}
+    app.kubernetes.io/component: yurt-iot-dock
+    app.kubernetes.io/part-of: iot-platform
+spec:
+  enabled: true
+  version: {{ .Values.autoInstall.iot.yurtIotDock.version | default .Chart.Version }}
+  chart:
+    name: yurt-iot-dock
+    namespace: {{ .Values.autoInstall.iot.yurtIotDock.namespace | default .Release.Namespace }}
+    releaseName: yurt-iot-dock
+    repository: http://chartmuseum.{{ .Release.Namespace }}.svc:{{ .Values.chartmuseum.service.port }}
+  {{- if .Values.autoInstall.iot.yurtIotDock.values }}
+  values:
+    {{- toYaml .Values.autoInstall.iot.yurtIotDock.values | nindent 4 }}
+  {{- end }}
+{{- end }}
