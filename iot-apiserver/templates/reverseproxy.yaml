@@ -1,0 +1,14 @@
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: ReverseProxy
+metadata:
+  name: {{ include "iot-apiserver.fullname" . }}
+  labels:
+    {{- include "iot-apiserver.labels" . | nindent 4 }}
+spec:
+  matcher:
+    method: "{{ .Values.reverseProxy.matcher.method }}"
+    path: {{ .Values.reverseProxy.matcher.path }}
+  upstream:
+    host: {{ include "iot-apiserver.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local
+    port: {{ .Values.reverseProxy.upstream.port }}
+    scheme: {{ .Values.reverseProxy.upstream.scheme }}
