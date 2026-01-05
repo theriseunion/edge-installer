@@ -24,7 +24,7 @@ CHARTS_SOURCE := .
 
 # List of charts to package - modify this when adding/removing charts
 # Note: monitoring-service is embedded in edge-monitoring chart
-CHARTS := edge-apiserver edge-console edge-controller edge-monitoring edge-duty kubeedge vcluster yurt-manager yurthub vast vcluster-k8s-addition yurt-iot-dock
+CHARTS := edge-apiserver edge-console edge-controller edge-monitoring edge-duty edge-ota kubeedge vcluster yurt-manager yurthub vast vcluster-k8s-addition yurt-iot-dock
 
 # ChartMuseum image
 MUSEUM_IMG ?= $(REGISTRY)/edge-museum:$(TAG)
@@ -256,3 +256,54 @@ uninstall-cert-manager: ## Uninstall cert-manager component and clean up resourc
 		kubectl delete namespace cert-manager --ignore-not-found=true --force --grace-period=0 2>/dev/null || true; \
 	fi || true
 	@echo "cert-manager uninstalled and cleaned up"
+
+##@ Edge OTA Management
+
+# Edge OTA configuration
+OTA_IMG ?= ghcr.io/theriseunion/edge-ota/server:$(TAG)
+
+.PHONY: install-ota
+install-ota: ## Install Edge OTA service
+	@echo "Installing Edge OTA service..."
+	helm upgrade --install edge-ota ./edge-ota -n ota-system --create-namespace
+
+.PHONY: install-ota-no-nats
+install-ota-no-nats: ## Install Edge OTA without NATS (use external NATS)
+	@echo "Installing Edge OTA service (without NATS)..."
+	helm upgrade --install edge-ota ./edge-ota -n ota-system --create-namespace \
+		--set nats.enabled=false \
+		--set nats.externalUrl=nats://external-nats:4222
+
+.PHONY: uninstall-ota
+uninstall-ota: ## Uninstall Edge OTA service
+	@echo "Uninstalling Edge OTA service..."
+	@echo "  - Step 1: Deleting APIService..."
+	@kubectl delete apiservice v1alpha1.ota.theriseunion.io --ignore-not-found=true || true
+	@echo "  - Step 2: Force deleting Pods..."
+	@kubectl delete pods -n ota-system -l app.kubernetes.io/part-of=edge-ota --ignore-not-found=true --force --grace-period=0 2>/dev/null || true
+	@echo "  - Step 3: Uninstalling Helm release..."
+	@helm uninstall edge-ota -n ota-system 2>/dev/null || echo "    Helm release not found or already deleted"
+	@echo "  - Step 4: Cleaning up cluster resources..."
+	@kubectl delete clusterrole,clusterrolebinding -l app.kubernetes.io/part-of=edge-ota --ignore-not-found=true || true
+	@echo "  - Step 5: Deleting namespace..."
+	@kubectl delete namespace ota-system --ignore-not-found=true || true
+	@echo "Edge OTA service uninstalled"
+
+.PHONY: uninstall-ota-crds
+uninstall-ota-crds: ## Uninstall Edge OTA CRDs (WARNING: This will delete all OTA resources)
+	@echo "WARNING: This will delete all OTA resources (OTANodes, Tasks, Playbooks)"
+	@echo "Press Ctrl+C to cancel, or wait 5 seconds to continue..."
+	@sleep 5
+	@echo "Deleting OTA CRDs..."
+	@kubectl delete crd otanodes.ota.theriseunion.io --ignore-not-found=true || true
+	@kubectl delete crd tasks.ota.theriseunion.io --ignore-not-found=true || true
+	@kubectl delete crd playbooks.ota.theriseunion.io --ignore-not-found=true || true
+	@echo "OTA CRDs deleted"
+
+.PHONY: lint-ota
+lint-ota: ## Lint the Edge OTA Helm chart
+	helm lint ./edge-ota
+
+.PHONY: template-ota
+template-ota: ## Show rendered Edge OTA templates
+	helm template edge-ota ./edge-ota -n ota-system

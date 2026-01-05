@@ -1,0 +1,63 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: {{ include "edge-ota.fullname" . }}
+  labels:
+    {{- include "edge-ota.labels" . | nindent 4 }}
+rules:
+  # OTA CRD resources - full management
+  - apiGroups:
+      - ota.theriseunion.io
+    resources:
+      - otanodes
+      - otanodes/status
+      - tasks
+      - tasks/status
+      - playbooks
+      - playbooks/status
+    verbs:
+      - get
+      - list
+      - watch
+      - create
+      - update
+      - patch
+      - delete
+  # Subresources for device operations
+  - apiGroups:
+      - ota.theriseunion.io
+    resources:
+      - otanodes/exec
+      - otanodes/read
+      - otanodes/write
+      - otanodes/playbook
+    verbs:
+      - get
+      - create
+  # Events for recording operations
+  - apiGroups:
+      - ""
+    resources:
+      - events
+    verbs:
+      - create
+      - patch
+  # ConfigMaps and Secrets for configuration
+  - apiGroups:
+      - ""
+    resources:
+      - configmaps
+      - secrets
+    verbs:
+      - get
+      - list
+      - watch
+  # Namespaces for multi-tenant support
+  - apiGroups:
+      - ""
+    resources:
+      - namespaces
+    verbs:
+      - get
+      - list
+      - watch

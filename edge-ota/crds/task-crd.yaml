@@ -1,0 +1,146 @@
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  name: tasks.ota.theriseunion.io
+  labels:
+    app.kubernetes.io/name: edge-ota
+    app.kubernetes.io/part-of: edge-ota
+spec:
+  group: ota.theriseunion.io
+  names:
+    kind: Task
+    listKind: TaskList
+    plural: tasks
+    singular: task
+    shortNames:
+      - otask
+  scope: Namespaced
+  versions:
+    - name: v1alpha1
+      served: true
+      storage: true
+      subresources:
+        status: {}
+      additionalPrinterColumns:
+        - name: Type
+          type: string
+          jsonPath: .spec.type
+        - name: Phase
+          type: string
+          jsonPath: .status.phase
+        - name: Targets
+          type: integer
+          jsonPath: .status.totalTargets
+        - name: Completed
+          type: integer
+          jsonPath: .status.completedTargets
+        - name: Age
+          type: date
+          jsonPath: .metadata.creationTimestamp
+      schema:
+        openAPIV3Schema:
+          type: object
+          properties:
+            apiVersion:
+              type: string
+            kind:
+              type: string
+            metadata:
+              type: object
+            spec:
+              type: object
+              required:
+                - type
+                - targets
+              properties:
+                type:
+                  type: string
+                  enum:
+                    - exec
+                    - read
+                    - write
+                    - playbook
+                  description: Task type
+                targets:
+                  type: array
+                  items:
+                    type: string
+                  description: List of target device names
+                timeout:
+                  type: integer
+                  default: 300
+                  description: Task timeout in seconds
+                priority:
+                  type: integer
+                  default: 0
+                  description: Task priority (higher = more urgent)
+                # Exec task fields
+                command:
+                  type: string
+                  description: Command to execute (for exec type)
+                # Read task fields
+                readPath:
+                  type: string
+                  description: File path to read (for read type)
+                maxSize:
+                  type: string
+                  description: Maximum file size to read
+                # Write task fields
+                writePath:
+                  type: string
+                  description: File path to write (for write type)
+                content:
+                  type: string
+                  description: Content to write
+                mode:
+                  type: string
+                  description: File permission mode
+                # Playbook task fields
+                playbookRef:
+                  type: string
+                  description: Reference to Playbook resource
+                varsJSON:
+                  type: string
+                  description: JSON-encoded variables for playbook
+            status:
+              type: object
+              properties:
+                phase:
+                  type: string
+                  enum:
+                    - Pending
+                    - Running
+                    - Completed
+                    - Failed
+                    - PartiallyFailed
+                startTime:
+                  type: string
+                  format: date-time
+                completionTime:
+                  type: string
+                  format: date-time
+                totalTargets:
+                  type: integer
+                completedTargets:
+                  type: integer
+                failedTargets:
+                  type: integer
+                results:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      target:
+                        type: string
+                      status:
+                        type: string
+                      output:
+                        type: string
+                      error:
+                        type: string
+                      startTime:
+                        type: string
+                        format: date-time
+                      endTime:
+                        type: string
+                        format: date-time
