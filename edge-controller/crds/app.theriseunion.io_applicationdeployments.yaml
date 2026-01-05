@@ -66,13 +66,6 @@ spec:
               application:
                 description: Application 应用名称
                 type: string
-              applicationVersion:
-                description: |-
-                  ApplicationVersion ApplicationVersion 资源名称
-                  可选，如果不指定则由 API Handler 根据 Application + Version 自动推断
-                  Controller 使用此字段查找 ApplicationVersion 资源
-                  Version 和 ApplicationVersion 至少需要提供一个
-                type: string
               topologies:
                 description: |-
                   Topologies 部署拓扑列表，每个拓扑会创建对应的工作负载
@@ -92,10 +85,11 @@ spec:
                 description: |-
                   Version 应用版本号（语义化版本，如 "1.0.0"）
                   用户友好的版本标识，支持特殊值 "latest" 表示使用最新版本
-                  Version 和 ApplicationVersion 至少需要提供一个
+                  API Handler 会根据 Application + Version 自动查找对应的 ApplicationVersion 资源
                 type: string
             required:
             - application
+            - version
             type: object
           status:
             description: ApplicationDeploymentStatus defines the observed state of
