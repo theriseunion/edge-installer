@@ -5,6 +5,10 @@ replicaCount: 1
 # Override the full name to remove edge- prefix
 fullnameOverride: "console"
 
+global:
+  # Image registry
+  imageRegistry: "quanzhenglong.com"
+
 image:
   registry: quanzhenglong.com
   repository: edge/console
