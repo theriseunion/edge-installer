@@ -123,3 +123,12 @@ playbooks:
   directory: "/etc/ota/playbooks"
   # Enable loading playbooks from directory
   autoLoad: true
+
+# Agent installation configuration (displayed in AddNodeDialog)
+agentConfig:
+  # MQTT Broker URL for agent connection (e.g., ssl://192.168.1.100:38883)
+  brokerUrl: ""
+  # Agent download URL
+  downloadUrl: "https://github.com/theriseunion/edge-ota/releases/latest/download"
+  # Agent version
+  version: "latest"

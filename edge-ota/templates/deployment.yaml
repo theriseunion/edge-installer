@@ -64,9 +64,31 @@ spec:
                   name: {{ include "edge-ota.fullname" . }}-config
                   key: log-level
                   optional: true
+            {{- if .Values.agentConfig.brokerUrl }}
+            - name: AGENT_BROKER_URL
+              value: {{ .Values.agentConfig.brokerUrl | quote }}
+            {{- end }}
+            {{- if .Values.agentConfig.downloadUrl }}
+            - name: AGENT_DOWNLOAD_URL
+              value: {{ .Values.agentConfig.downloadUrl | quote }}
+            {{- end }}
+            {{- if .Values.agentConfig.version }}
+            - name: AGENT_VERSION
+              value: {{ .Values.agentConfig.version | quote }}
+            {{- end }}
           args:
-            - --nats-url=$(NATS_URL)
-            - --secure-port={{ .Values.otaServer.securePort }}
+            - -nats-url=$(NATS_URL)
+            - -api-server-bind-address=0.0.0.0
+            - -api-server-bind-port={{ .Values.otaServer.securePort }}
+            {{- if .Values.agentConfig.brokerUrl }}
+            - -agent-broker-url={{ .Values.agentConfig.brokerUrl }}
+            {{- end }}
+            {{- if .Values.agentConfig.downloadUrl }}
+            - -agent-download-url={{ .Values.agentConfig.downloadUrl }}
+            {{- end }}
+            {{- if .Values.agentConfig.version }}
+            - -agent-version={{ .Values.agentConfig.version }}
+            {{- end }}
           livenessProbe:
             httpGet:
               path: /healthz
