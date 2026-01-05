@@ -270,9 +270,9 @@ spec:
                       description: Manufacturer defines the GPU manufacturer (e.g.,
                         "Alibaba", "AMD", "Intel")
                       type: string
-                    requested:
-                      description: Requested is the current resource requested of
-                        the node with the specified manufacturer
+                    request:
+                      description: Request is the current resource requested of the
+                        node with the specified manufacturer
                       properties:
                         core:
                           format: int32
