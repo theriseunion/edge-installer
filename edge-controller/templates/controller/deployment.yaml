@@ -63,6 +63,8 @@ spec:
             - name: CLUSTER_ROLE
               value: host
             {{- end }}
+            - name: VCLUSTER_VALUES_PATH
+              value: /charts/config/vcluster-values-local.yaml
           volumeMounts:
             - name: helm-cache
               mountPath: /tmp/.helm
