@@ -116,7 +116,12 @@ spec:
             {{- end }}
           command:
             - /usr/local/bin/yurt-manager
-          image: {{ .Values.image.registry }}/{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}
+          {{- $registry := .Values.image.registry | default .Values.global.imageRegistry }}
+          {{- if $registry }}
+          image: {{ $registry }}/{{ .Values.image.project }}/{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}
+          {{- else }}
+          image: {{ .Values.image.project }}/{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}
+          {{- end }}
           imagePullPolicy: IfNotPresent
           name: yurt-manager
           ports:
