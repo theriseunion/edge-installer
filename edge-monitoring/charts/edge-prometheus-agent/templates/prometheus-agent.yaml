@@ -83,7 +83,7 @@ data:
           - role: pod
             namespaces:
               names:
-                - rise-vast-system
+                - {{ .Values.dcgmExporter.namespace }}
         relabel_configs:
           # 只选择 dcgm-exporter pods
           - source_labels: [__meta_kubernetes_pod_label_app_kubernetes_io_component]
@@ -96,7 +96,7 @@ data:
           # 设置采集端口
           - source_labels: [__meta_kubernetes_pod_ip]
             target_label: __address__
-            replacement: $1:9400
+            replacement: $1:{{ .Values.dcgmExporter.port }}
           # 设置 instance 标签
           - target_label: instance
             replacement: '${NODE_NAME}'
@@ -122,49 +122,7 @@ spec:
       tolerations:
         - operator: "Exists"
       hostNetwork: false
-      {{- if .Values.networkFix.enabled }}
-      hostPID: true
-      {{- end }}
       initContainers:
-        {{- if .Values.networkFix.enabled }}
-        # 修复 Docker 导致的 iptables FORWARD DROP 问题
-        # Docker 默认会将 FORWARD 链策略设为 DROP，导致 cni0 网桥流量被丢弃
-        - name: network-fix
-          image: {{ .Values.busyboxImage }}
-          command:
-            - nsenter
-            - -t
-            - "1"
-            - -n
-            - sh
-            - -c
-            - |
-              echo "=== 检查 iptables FORWARD 链 ==="
-              # 检查是否存在 cni0 的 ACCEPT 规则
-              if iptables -C FORWARD -i cni0 -j ACCEPT 2>/dev/null; then
-                echo "cni0 入站规则已存在，跳过"
-              else
-                echo "添加 cni0 入站 ACCEPT 规则"
-                iptables -I FORWARD -i cni0 -j ACCEPT
-              fi
-
-              if iptables -C FORWARD -o cni0 -m state --state RELATED,ESTABLISHED -j ACCEPT 2>/dev/null; then
-                echo "cni0 出站规则已存在，跳过"
-              else
-                echo "添加 cni0 出站 ACCEPT 规则"
-                iptables -I FORWARD -o cni0 -m state --state RELATED,ESTABLISHED -j ACCEPT
-              fi
-
-              echo "=== 当前 FORWARD 链规则 ==="
-              iptables -L FORWARD -n --line-numbers | head -10
-              echo "=== 网络修复完成 ==="
-          securityContext:
-            privileged: true
-            capabilities:
-              add:
-                - NET_ADMIN
-                - NET_RAW
-        {{- end }}
         - name: config-init
           image: {{ .Values.busyboxImage }}
           command:

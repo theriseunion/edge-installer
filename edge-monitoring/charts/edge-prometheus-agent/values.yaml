@@ -8,11 +8,10 @@ image:
 # busybox 镜像（用于 initContainers）
 busyboxImage: "busybox:1.36"
 
-# 网络修复配置
-# Docker 会将 iptables FORWARD 策略设为 DROP，导致 cni0 网桥流量被丢弃
-# 启用此选项会在 pod 启动时自动添加 iptables 规则修复此问题
-networkFix:
-  enabled: true
+# DCGM Exporter 配置（GPU 指标采集）
+dcgmExporter:
+  namespace: rise-vast-system
+  port: 9400
 
 # 边缘集群名称
 clusterName: "edge-cluster-1"
