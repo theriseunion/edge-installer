@@ -4,7 +4,7 @@
 
 nameOverride: ""
 
-cacheAgents: ""
+cacheAgents: "kubelet,kube-proxy,vgpumonitor,calico-node,nvidia-device-plugin,go-http-client"
 
 yurthubBindingAddr: 127.0.0.1
 kubernetesServerAddr: https://127.0.0.1:6443
