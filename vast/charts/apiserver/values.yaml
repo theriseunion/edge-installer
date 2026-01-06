@@ -7,7 +7,7 @@ enabled: true
 # Image configuration
 image:
   repository: quanzhenglong.com/edge/apiserver
-  tag: main-qzl-v0.2-arm64
+  tag: main-qzl-v0.3-arm64
   pullPolicy: Always
 
 # Name override for resources
