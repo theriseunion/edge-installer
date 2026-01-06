@@ -85,6 +85,9 @@ spec:
                 default: spread
                 description: GPUScheduling 显卡调度策略（紧凑 / 均衡），默认均衡
                 type: string
+              license:
+                description: License 系统License配置，用于存储用户导入的License
+                type: string
               nodeScheduling:
                 allOf:
                 - enum:

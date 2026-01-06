@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "edge-ota.fullname" . }}-config
+  namespace: {{ include "edge-ota.namespace" . }}
+  labels:
+    {{- include "edge-ota.labels" . | nindent 4 }}
+data:
+  # NATS server URL for device communication
+  nats-url: {{ include "edge-ota.natsUrl" . | quote }}
+  # Log level configuration
+  log-level: {{ .Values.otaServer.logLevel | quote }}

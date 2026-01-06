@@ -1,0 +1,38 @@
+Edge OTA Service has been deployed successfully!
+
+Namespace: {{ include "edge-ota.namespace" . }}
+
+Components installed:
+  - OTA Server: {{ include "edge-ota.fullname" . }}
+{{- if .Values.nats.enabled }}
+  - NATS Server: nats (messaging broker)
+{{- end }}
+
+CRDs installed:
+  - OTANode (ota.theriseunion.io/v1alpha1)
+  - Task (ota.theriseunion.io/v1alpha1)
+  - Playbook (ota.theriseunion.io/v1alpha1)
+
+API Endpoint:
+{{- if .Values.apiService.enabled }}
+  The OTA API is available through Kubernetes API aggregation:
+  kubectl get otanodes -n <namespace>
+  kubectl get tasks -n <namespace>
+  kubectl get playbooks
+{{- end }}
+
+NATS Configuration:
+{{- if .Values.nats.enabled }}
+  Internal NATS URL: {{ include "edge-ota.natsUrl" . }}
+  MQTT Port: 8883 (for device connections)
+{{- else }}
+  External NATS URL: {{ .Values.nats.externalUrl }}
+{{- end }}
+
+Next Steps:
+1. Deploy edge-ota-agent on your edge devices
+2. Configure devices to connect to NATS via MQTT
+3. Create OTANode resources to register devices
+4. Use Tasks and Playbooks to manage devices
+
+For more information, visit: https://github.com/theriseunion/edge-ota

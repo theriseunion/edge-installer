@@ -1,0 +1,55 @@
+# NATS Server Configuration for Edge OTA
+
+# Replica count (single node for now, can scale later)
+replicaCount: 1
+
+# NATS image configuration
+image:
+  repository: nats
+  tag: "2.10-alpine"
+  pullPolicy: IfNotPresent
+
+# Service configuration
+service:
+  type: ClusterIP
+  # NATS native protocol port
+  natsPort: 4222
+  # MQTT protocol port (for device connections)
+  mqttPort: 8883
+  # HTTP monitoring port
+  monitoringPort: 8222
+
+# Resource limits and requests
+resources:
+  limits:
+    cpu: 200m
+    memory: 256Mi
+  requests:
+    cpu: 50m
+    memory: 64Mi
+
+# NATS configuration
+nats:
+  # Server name
+  serverName: edge-ota-nats
+  # Max payload size
+  maxPayload: "8MB"
+  # Max pending size
+  maxPending: "64MB"
+  # Max connections
+  maxConnections: 10000
+  # Ping interval
+  pingInterval: "30s"
+  # Write deadline
+  writeDeadline: "10s"
+  # Debug mode
+  debug: false
+  # Trace mode
+  trace: false
+
+# MQTT configuration
+mqtt:
+  # Enable MQTT protocol
+  enabled: true
+  # MQTT port
+  port: 8883

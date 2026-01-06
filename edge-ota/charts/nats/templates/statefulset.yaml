@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "nats.fullname" . }}
+  labels:
+    {{- include "nats.labels" . | nindent 4 }}
+spec:
+  serviceName: {{ include "nats.fullname" . }}-headless
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "nats.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "nats.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+        - name: nats
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          args:
+            - -c
+            - /etc/nats/nats.conf
+          ports:
+            - name: nats
+              containerPort: {{ .Values.service.natsPort }}
+              protocol: TCP
+            {{- if .Values.mqtt.enabled }}
+            - name: mqtt
+              containerPort: {{ .Values.mqtt.port }}
+              protocol: TCP
+            {{- end }}
+            - name: monitoring
+              containerPort: {{ .Values.service.monitoringPort }}
+              protocol: TCP
+          volumeMounts:
+            - name: config
+              mountPath: /etc/nats
+            - name: data
+              mountPath: /data
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: monitoring
+            initialDelaySeconds: 10
+            periodSeconds: 30
+            timeoutSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: monitoring
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 3
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      volumes:
+        - name: config
+          configMap:
+            name: {{ include "nats.fullname" . }}-config
+        - name: data
+          emptyDir: {}

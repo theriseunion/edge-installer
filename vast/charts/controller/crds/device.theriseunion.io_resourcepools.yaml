@@ -105,7 +105,7 @@ spec:
                 - memory
                 - splitCount
                 type: object
-              requested:
+              request:
                 properties:
                   core:
                     format: int32

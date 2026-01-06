@@ -18,13 +18,16 @@ cert-manager:
   # With this, resources will be named like: cert-manager-*
   fullnameOverride: cert-manager
   crds:
-    enabled: true
+    enabled: false  # Default to true for fresh installations, Makefile will override if CRDs exist
 
 # Enable/disable subcharts
 apiserver:
   enabled: true
   # Pass cert-manager enabled status to subchart
   cert-manager:
+    enabled: true
+  # ReverseProxy configuration (only needed for edge scenarios)
+  reverseProxy:
     enabled: true
   # Override the full name to remove the release name prefix (vast-)
   # Without this, resources would be named like: vast-apiserver-*
@@ -33,7 +36,7 @@ apiserver:
   # Image configuration
   image:
     repository: quanzhenglong.com/edge/apiserver
-    tag: vast-v0.1.31
+    tag: vast-v0.1.47
     pullPolicy: IfNotPresent
 
   # Namespace override (defaults to Release.Namespace)
@@ -83,7 +86,7 @@ apiserver:
         write: "30s"
         idle: "120s"
       tls:
-        enabled: true
+        enabled: false
         certFile: "/tmp/k8s-webhook-server/serving-certs/tls.crt"
         keyFile: "/tmp/k8s-webhook-server/serving-certs/tls.key"
 
@@ -164,7 +167,7 @@ controller:
   # Image configuration
   image:
     repository: quanzhenglong.com/edge/controller
-    tag: vast-v0.1.31
+    tag: vast-v0.1.47
     pullPolicy: IfNotPresent
 
   # Kube RBAC Proxy configuration
@@ -384,6 +387,10 @@ hami:
         # 是否主机上运行nv-hostengine进程，部署dcgm-exporter之前需要确认主机上是否有nv-hostengine进程，如果有，需要设置为true，
         # 如果没有，需要设置为false，设置为false时，dcgm-exporter会自动以sidecar的方式部署nv-hostengine进程
         isHostRunningNvHostEngineProcess: false
+      serviceMonitor:
+        enabled: true
+        additionalLabels:
+          release: edge-monitoring
   scheduler:
     nodeSelector:
       node-role.kubernetes.io/control-plane: ""
@@ -397,6 +404,8 @@ hami:
       image: quanzhenglong.com/camp/kubesphere/kube-scheduler
     extender:
       image: quanzhenglong.com/camp/hami
+    service:
+      type: ClusterIP
     patch:
       image: quanzhenglong.com/camp/jettech-kube-webhook-certgen:v1.5.2
       imageNew: quanzhenglong.com/camp/liangjw-kube-webhook-certgen:v1.1.1

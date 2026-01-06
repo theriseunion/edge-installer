@@ -12,10 +12,9 @@ duty:
         cpu: 500m
         memory: 256Mi
     service:
-      type: NodePort
+      type: ClusterIP
       port: 80
       httpPort: 8000
-      nodePort: 32013
     database:
       host: 1.92.198.206
       port: 5431
@@ -103,8 +102,7 @@ duty-web:
   containerPort: 80
   svc:
     port: 80
-    nodePort: 30001
-    type: NodePort
+    type: ClusterIP
   resources:
     requests:
       cpu: "100m"

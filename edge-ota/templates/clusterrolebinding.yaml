@@ -1,0 +1,47 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: {{ include "edge-ota.fullname" . }}
+  labels:
+    {{- include "edge-ota.labels" . | nindent 4 }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: {{ include "edge-ota.fullname" . }}
+subjects:
+  - kind: ServiceAccount
+    name: {{ include "edge-ota.serviceAccountName" . }}
+    namespace: {{ include "edge-ota.namespace" . }}
+---
+# Role binding for API aggregation authentication
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: {{ include "edge-ota.fullname" . }}-auth-reader
+  namespace: kube-system
+  labels:
+    {{- include "edge-ota.labels" . | nindent 4 }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: extension-apiserver-authentication-reader
+subjects:
+  - kind: ServiceAccount
+    name: {{ include "edge-ota.serviceAccountName" . }}
+    namespace: {{ include "edge-ota.namespace" . }}
+---
+# ClusterRoleBinding for API aggregation auth-delegator
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: {{ include "edge-ota.fullname" . }}-system:auth-delegator
+  labels:
+    {{- include "edge-ota.labels" . | nindent 4 }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: system:auth-delegator
+subjects:
+  - kind: ServiceAccount
+    name: {{ include "edge-ota.serviceAccountName" . }}
+    namespace: {{ include "edge-ota.namespace" . }}
