@@ -13,7 +13,7 @@ image:
   registry: quanzhenglong.com
   repository: edge/console
   pullPolicy: IfNotPresent
-  tag: "main-qzl-v0.3-arm64"
+  tag: "main-qzl-v0.4-arm64"
 
 imagePullSecrets: []
 nameOverride: ""

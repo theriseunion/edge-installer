@@ -5,7 +5,7 @@ metadata:
   name: edge-installer
   namespace: edge-system
   labels:
-    version: main-qzl-v0.3-arm64
+    version: main-qzl-v0.4-arm64
 spec:
   # 基础配置
   persistence:
@@ -26,7 +26,7 @@ spec:
       enabled: true           # 是否启用 API Server
       image:
         repository: quanzhenglong.com/edge/edge-apiserver
-        tag: main-qzl-v0.3-arm64
+        tag: main-qzl-v0.4-arm64
       replicas: 1
       resources:
         limits:
@@ -44,7 +44,7 @@ spec:
       enabled: true           # 是否启用 Controller
       image:
         repository: quanzhenglong.com/edge/edge-controller
-        tag: main-qzl-v0.3-arm64
+        tag: main-qzl-v0.4-arm64
       replicas: 1
       resources:
         limits:
@@ -62,7 +62,7 @@ spec:
       enabled: true           # 是否启用 Web Console
       image:
         repository: quanzhenglong.com/edge/edge-console
-        tag: main-qzl-v0.3-arm64
+        tag: main-qzl-v0.4-arm64
       replicas: 1
       resources:
         limits:
