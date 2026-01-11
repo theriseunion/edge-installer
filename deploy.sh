@@ -23,7 +23,7 @@ INSTALL_OPENYURT=${INSTALL_OPENYURT:-false}
 OPENYURT_API_SERVER=${OPENYURT_API_SERVER:-""}
 # Cert-Manager 版本与安装地址
 CERT_MANAGER_VERSION=${CERT_MANAGER_VERSION:-1.14.4}
-CERT_MANAGER_INSTALL_YAML="https://gh-proxy.net/https://github.com/cert-manager/cert-manager/releases/download/v${CERT_MANAGER_VERSION}/cert-manager.yaml"
+CERT_MANAGER_INSTALL_YAML="https://github.com/cert-manager/cert-manager/releases/download/v${CERT_MANAGER_VERSION}/cert-manager.yaml"
 
 
 # 显示所有部署参数
