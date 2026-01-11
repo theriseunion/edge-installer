@@ -1,0 +1,75 @@
+---
+apiVersion: device.theriseunion.io/v1alpha1
+kind: DeviceModel
+metadata:
+  labels:
+    theriseunion.io/config-type: fixed
+  name: nvidia-a100-40gb
+spec:
+  alias:
+  - A100
+  - Ampere A100
+  compute: "8.0"
+  computeCapabilities:
+  - precision: FP32
+    unit: TFLOPS
+    value: "19.5"
+  - precision: FP16
+    unit: TFLOPS
+    value: "312"
+  - precision: BF16
+    unit: TFLOPS
+    value: "312"
+  - precision: FP8
+    unit: TFLOPS
+    value: "624"
+  core: 100
+  description: NVIDIA A100 Tensor Core GPU with 40GB memory
+  family: Ampere
+  manufacturer: NVIDIA
+  memorySize: 40960
+  memoryStep: 256
+  model: NVIDIA A100-PCIE-40GB
+  supportComputeSplitMode:
+  - hard
+  - soft
+  supportVirtualDevice: true
+---
+apiVersion: device.theriseunion.io/v1alpha1
+kind: DeviceModel
+metadata:
+  labels:
+    theriseunion.io/config-type: fixed
+    theriseunion.io/virtual-model: "true"
+  name: nvidia-a100-half-20gb
+spec:
+  core: 50
+  manufacturer: NVIDIA
+  memorySize: 20480
+  model: NVIDIA A100-PCIE-40GB
+---
+apiVersion: device.theriseunion.io/v1alpha1
+kind: DeviceModel
+metadata:
+  labels:
+    theriseunion.io/config-type: fixed
+    theriseunion.io/virtual-model: "true"
+  name: nvidia-a100-quarter-10gb
+spec:
+  core: 25
+  manufacturer: NVIDIA
+  memorySize: 10240
+  model: NVIDIA A100-PCIE-40GB
+---
+apiVersion: device.theriseunion.io/v1alpha1
+kind: DeviceModel
+metadata:
+  labels:
+    theriseunion.io/config-type: fixed
+    theriseunion.io/virtual-model: "true"
+  name: nvidia-a100-eighth-5gb
+spec:
+  core: 12
+  manufacturer: NVIDIA
+  memorySize: 5120
+  model: NVIDIA A100-PCIE-40GB

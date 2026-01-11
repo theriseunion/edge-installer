@@ -11,7 +11,7 @@ spec:
   deviceMemoryScaling: "1.0"
   deviceCoreScaling: "1.0"
   deviceSplitCount: 10
-  computeSplitMode: "hami-core"
+  computeSplitMode: "soft"
   description: "default nvidia compute template"
 ---
 apiVersion: device.theriseunion.io/v1alpha1
@@ -27,7 +27,7 @@ spec:
   deviceMemoryScaling: "1"
   deviceCoreScaling: "1"
   deviceSplitCount: 4
-  computeSplitMode: "hami-core"
+  computeSplitMode: "soft"
   description: "default xpu-p800 oam compute template"
 ---
 apiVersion: device.theriseunion.io/v1alpha1
@@ -43,7 +43,7 @@ spec:
   deviceMemoryScaling: "1"
   deviceCoreScaling: "1"
   deviceSplitCount: 8
-  computeSplitMode: "hami-core"
+  computeSplitMode: "soft"
   description: "default ascend910b2 compute template"
 ---
 apiVersion: device.theriseunion.io/v1alpha1
@@ -59,7 +59,7 @@ spec:
   deviceMemoryScaling: "1"
   deviceCoreScaling: "1"
   deviceSplitCount: 4
-  computeSplitMode: "hami-core"
+  computeSplitMode: "soft"
   description: "default ascend910b3 compute template"
 ---
 apiVersion: device.theriseunion.io/v1alpha1
@@ -75,7 +75,7 @@ spec:
   deviceMemoryScaling: "1"
   deviceCoreScaling: "1"
   deviceSplitCount: 4
-  computeSplitMode: "hami-core"
+  computeSplitMode: "soft"
   description: "default ascend910b4 compute template"
 ---
 apiVersion: device.theriseunion.io/v1alpha1
@@ -91,7 +91,7 @@ spec:
   deviceMemoryScaling: "1"
   deviceCoreScaling: "1"
   deviceSplitCount: 7
-  computeSplitMode: "hami-core"
+  computeSplitMode: "soft"
   description: "default ascend310p compute template"
 ---
 apiVersion: device.theriseunion.io/v1alpha1
@@ -107,7 +107,7 @@ spec:
   deviceMemoryScaling: "1"
   deviceCoreScaling: "1"
   deviceSplitCount: 10
-  computeSplitMode: "hami-core"
+  computeSplitMode: "soft"
   description: "default hygon k100_ai compute template"
 ---
 apiVersion: device.theriseunion.io/v1alpha1
@@ -123,7 +123,7 @@ spec:
   deviceMemoryScaling: "1"
   deviceCoreScaling: "1"
   deviceSplitCount: 4
-  computeSplitMode: "hami-core"
+  computeSplitMode: "soft"
   description: "default hygon z100l compute template"
 ---
 apiVersion: device.theriseunion.io/v1alpha1
@@ -139,7 +139,7 @@ spec:
   deviceMemoryScaling: "1"
   deviceCoreScaling: "1"
   deviceSplitCount: 4
-  computeSplitMode: "hami-core"
+  computeSplitMode: "soft"
   description: "default hygon z100 compute template"
 ---
 apiVersion: device.theriseunion.io/v1alpha1
@@ -155,7 +155,7 @@ spec:
   deviceMemoryScaling: "1"
   deviceCoreScaling: "1"
   deviceSplitCount: 10
-  computeSplitMode: "hami-core"
+  computeSplitMode: "soft"
   description: "default iluvatar-mr-v100 compute template"
 ---
 apiVersion: device.theriseunion.io/v1alpha1
@@ -171,7 +171,7 @@ spec:
   deviceMemoryScaling: "1"
   deviceCoreScaling: "1"
   deviceSplitCount: 10
-  computeSplitMode: "hami-core"
+  computeSplitMode: "soft"
   description: "default iluvatar-bi-v150 compute template"
 ---
 apiVersion: device.theriseunion.io/v1alpha1
@@ -187,7 +187,7 @@ spec:
   deviceMemoryScaling: "1"
   deviceCoreScaling: "1"
   deviceSplitCount: 1
-  computeSplitMode: "hami-core"
+  computeSplitMode: "soft"
   description: "default metax-gpu-c500 compute template"
 ---
 apiVersion: device.theriseunion.io/v1alpha1
@@ -203,7 +203,7 @@ spec:
   deviceMemoryScaling: "1"
   deviceCoreScaling: "1"
   deviceSplitCount: 10
-  computeSplitMode: "hami-core"
+  computeSplitMode: "soft"
   description: "default metax-sgpu-c500 compute template"
 ---
 apiVersion: device.theriseunion.io/v1alpha1
@@ -219,7 +219,7 @@ spec:
   deviceMemoryScaling: "1"
   deviceCoreScaling: "1"
   deviceSplitCount: 10
-  computeSplitMode: "hami-core"
+  computeSplitMode: "soft"
   description: "default mlu compute template"
 ---
 apiVersion: device.theriseunion.io/v1alpha1
@@ -235,5 +235,5 @@ spec:
   deviceMemoryScaling: "1"
   deviceCoreScaling: "1"
   deviceSplitCount: 1
-  computeSplitMode: "hami-core"
+  computeSplitMode: "soft"
   description: "default ppu compute template"
