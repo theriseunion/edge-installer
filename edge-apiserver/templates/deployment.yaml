@@ -69,6 +69,12 @@ spec:
           - mountPath: /tmp/k8s-webhook-server/serving-certs
             name: cert
             readOnly: true
+          - mountPath: /etc/fault-configs/nvidia
+            name: fault-config-nvidia
+            readOnly: true
+          - mountPath: /etc/fault-configs/ascend
+            name: fault-config-ascend
+            readOnly: true
           {{- if .Values.edge.apiserver.config.enabled }}
           - mountPath: /etc/edge
             name: apiserver-config
@@ -78,6 +84,12 @@ spec:
       - name: cert
         secret:
           secretName: edge-apiserver-cert
+      - name: fault-config-nvidia
+        configMap:
+          name: device-fault-nvidia
+      - name: fault-config-ascend
+        configMap:
+          name: device-fault-ascend
       {{- if .Values.edge.apiserver.config.enabled }}
       - name: apiserver-config
         configMap:
