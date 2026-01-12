@@ -89,9 +89,10 @@ Get image reference
 */}}
 {{- define "edge-ota.image" -}}
 {{- $registry := default .Values.image.registry .Values.global.imageRegistry }}
+{{- $tag := .Values.image.tag | default .Values.global.imageTag | default .Chart.AppVersion }}
 {{- if $registry }}
-{{- printf "%s/%s:%s" $registry .Values.image.repository (.Values.image.tag | default .Chart.AppVersion) }}
+{{- printf "%s/%s:%s" $registry .Values.image.repository $tag }}
 {{- else }}
-{{- printf "%s:%s" .Values.image.repository (.Values.image.tag | default .Chart.AppVersion) }}
+{{- printf "%s:%s" .Values.image.repository $tag }}
 {{- end }}
 {{- end }}
