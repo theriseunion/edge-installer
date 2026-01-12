@@ -1,6 +1,6 @@
 apiVersion: v2
 name: edge-monitoring
-description: Edge 监控套件 - Prometheus + Grafana + AlertManager
+description: Edge 监控套件 - Prometheus + Grafana + AlertManager + Monitoring Service
 type: application
 version: 0.1.0
 dependencies:

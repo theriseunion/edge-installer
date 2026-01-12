@@ -7,6 +7,7 @@ metadata:
     prometheus: kube-prometheus
     role: recording-rules
     layer: node
+    release: edge-monitoring
 spec:
   groups:
     # ========================================================================
