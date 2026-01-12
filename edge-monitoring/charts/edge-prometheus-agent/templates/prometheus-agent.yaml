@@ -74,6 +74,32 @@ data:
         relabel_configs:
           - target_label: instance
             replacement: '${NODE_NAME}'
+
+      # 采集本地 dcgm-exporter 指标（GPU 节点）
+      # 使用 kubernetes 服务发现，只采集本节点上的 dcgm-exporter pod
+      - job_name: 'dcgm-exporter'
+        scrape_timeout: 10s
+        kubernetes_sd_configs:
+          - role: pod
+            namespaces:
+              names:
+                - {{ .Values.dcgmExporter.namespace }}
+        relabel_configs:
+          # 只选择 dcgm-exporter pods
+          - source_labels: [__meta_kubernetes_pod_label_app_kubernetes_io_component]
+            regex: dcgm-exporter
+            action: keep
+          # 只选择本节点上的 pods
+          - source_labels: [__meta_kubernetes_pod_node_name]
+            regex: '${NODE_NAME}'
+            action: keep
+          # 设置采集端口
+          - source_labels: [__meta_kubernetes_pod_ip]
+            target_label: __address__
+            replacement: $1:{{ .Values.dcgmExporter.port }}
+          # 设置 instance 标签
+          - target_label: instance
+            replacement: '${NODE_NAME}'
 ---
 apiVersion: apps/v1
 kind: DaemonSet
@@ -95,9 +121,10 @@ spec:
       {{- end }}
       tolerations:
         - operator: "Exists"
+      hostNetwork: false
       initContainers:
         - name: config-init
-          image: busybox:1.36
+          image: {{ .Values.busyboxImage }}
           command:
             - sh
             - -c

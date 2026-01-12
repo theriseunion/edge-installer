@@ -5,6 +5,14 @@ image:
   tag: v2.50.1
   pullPolicy: IfNotPresent
 
+# busybox 镜像（用于 initContainers）
+busyboxImage: "busybox:1.36"
+
+# DCGM Exporter 配置（GPU 指标采集）
+dcgmExporter:
+  namespace: rise-vast-system
+  port: 9400
+
 # 边缘集群名称
 clusterName: "edge-cluster-1"
 

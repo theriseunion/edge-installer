@@ -18,6 +18,8 @@ kind: ReverseProxy
 metadata:
   name: {{ include "apiserver.fullname" . }}-device-proxy
   namespace: {{ include "apiserver.namespace" . }}
+  annotations:
+    openapi-endpoint: /openapi/v2
   labels:
     {{- include "apiserver.labels" . | nindent 4 }}
     app.kubernetes.io/component: reverse-proxy
@@ -51,6 +53,8 @@ kind: ReverseProxy
 metadata:
   name: {{ include "apiserver.fullname" . }}-registry-proxy
   namespace: {{ include "apiserver.namespace" . }}
+  annotations:
+    openapi-endpoint: /openapi/v2
   labels:
     {{- include "apiserver.labels" . | nindent 4 }}
     app.kubernetes.io/component: reverse-proxy
