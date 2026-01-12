@@ -1,0 +1,28 @@
+{{- if .Values.edge.monitoring.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ include "edge-apiserver.fullname" . }}
+  labels:
+    {{- include "edge-apiserver.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "edge-apiserver.selectorLabels" . | nindent 6 }}
+  endpoints:
+  - port: https
+    path: /metrics
+    scheme: https
+    interval: 15s
+    scrapeTimeout: 10s
+    tlsConfig:
+      insecureSkipVerify: true
+  namespaceSelector:
+    matchNames:
+    - {{ .Release.Namespace }}
+{{- end }}
+
+
+
+
+
