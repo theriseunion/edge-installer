@@ -1,0 +1,408 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: device-fault-ascend
+data:
+  device-fault-ascend: |
+    - error_code: "0x80818C00"
+      severity: middle
+      error_type: SoC
+      error_info: aicpu检测到精度敏感特征异常
+      error_desc: 精度敏感特征异常导致训练失败； 可能是算子软件或硬件问题。
+      advice: 业务面： step1. 建议隔离NPU，重新执行AI任务； 运维面： step2. 首先使用ascend-dmi工具对该节点的NPU进行AIC压测，精准识别到故障卡；
+    - error_code: "0x81078603"
+      severity: middle
+      error_type: ETH_PORT
+      error_info: 网口Link状态变化，Up->Down
+      error_desc: 1.网口芯片检测到自身link状态故障； 2.网口芯片检测到对端link状态故障； 通常是硬件问题。
+      advice: 业务面： step1. 如果linkdown伴随RDMA重传超次（0x8C1F8608），则隔离NPU，重新执行AI任务；否则，无需处理； 运维面：
+    - error_code: "0x819B800A"
+      severity: high
+      error_type: HCCS
+      error_info: HCCS超时错误
+      error_desc: 芯片失效，包括软失效与硬失效； 通常是硬件问题。
+      advice: 业务面： step1. 建议复位NPU，重新执行AI任务； step2. 如果重执行仍失败，建议隔离NPU，重新执行AI任务； 运维面：
+    - error_code: "0x819B800D"
+      severity: middle
+      error_type: HCCS
+      error_info: HCCS链路错误
+      error_desc: 1.链路突发误码； 2.断链进行retraining重建链； 通常是硬件问题。
+      advice: 业务面： 无需处理，表示链路存在闪断； 运维面：
+    - error_code: "0x819B8605"
+      severity: middle
+      error_type: HCCS
+      error_info: HCCS端口部分LANE故障
+      error_desc: HCCS Port lane信号异常； 通常是硬件问题。
+      advice: 业务面： step1. 可选择继续训练，或主动保存checkpoint文件，建议隔离NPU，重新执行AI任务； 运维面： step2. 查看模组间是否存在松动，交叉两个存在降lane的故障模组，通过命令行查看是否恢复； step3 如果恢复，请执行p2p带宽测试，并查看眼图和snr是否在正常范围；
+    - error_code: "0x80CB8008"
+      severity: middle
+      error_type: AIV
+      error_info: AIV多bit ECC错误
+      error_desc: AIV内部RAM多bit ECC错误，包括： 1）I-Cache/D-Cache 2）Data buffer 通常是硬件问题。
+      advice: 业务面： step1. 重新执行AI任务；
+    - error_code: "0x80CB8002"
+      severity: middle
+      error_type: AIV
+      error_info: AIV检测到外部输入错误
+      error_desc: APP输入错误； 通常是算子实现问题。
+      advice: 业务面： step1. 重新执行AI任务； 运维面：
+    - error_code: "0x80CB8009"
+      severity: middle
+      error_type: AIV
+      error_info: AIV模块bus error
+      error_desc: AIV模块写CQE出现总线异常，导致硬件故障； 通常是硬件问题。
+      advice: 业务面： step1. 建议重新执行AI任务； step2. 如果重执行仍失败，建议隔离NPU，重新执行AI任务； 运维面：
+    - error_code: "0x4C1F8608"
+      severity: middle
+      error_type: HCCP
+      error_info: RDMA重传超次
+      error_desc: 1. 本节点link down； 2. 对端节点link down； 3. 外部网络故障。
+      advice: 业务面： step1. 如果本节点伴随link down等硬件故障告警，建议隔离该节点，重新执行AI任务；否则，重新执行AI任务； 运维面： step2. 排查本节点link down原因或外部网络故障原因。
+    - error_code: "0x80E18400"
+      severity: low
+      error_type: HBM
+      error_info: HBM多bit ECC错误
+      error_desc: 1. HBM颗粒失效； 2. HBM颗粒访问异常； 通常是硬件问题。
+      advice: 无需处理； 运维面： 无需处理。
+    - error_code: "0x80E18005"
+      severity: high
+      error_type: HBM
+      error_info: HBM模块parity错误
+      error_desc: HBM模块内部parity错误； 通常是硬件问题。
+      advice: 业务面： step1. 建议复位NPU，重新执行AI任务； step2. 如果重执行仍失败，建议隔离NPU，重新执行AI任务； 运维面： step3. 24小时内第一次故障不处理，第二次故障返厂维修。
+    - error_code: "0x80A58003"
+      severity: low
+      error_type: L3T
+      error_info: L3T配置错误
+      error_desc: L3T内部配置错误； 通常是软件问题。
+      advice: 2.记录错误日志 业务面： 无需处理； 运维面： 无需处理。
+    - error_code: "0x80A58008"
+      severity: high
+      error_type: L3T
+      error_info: L3T多bit ECC错误
+      error_desc: L3T片内SRAM多bit ECC错误； 通常是硬件问题。
+      advice: 业务面： step1. 建议复位NPU，重新执行AI任务； step2. 如果重执行仍失败，建议隔离NPU，重新执行AI任务； 运维面：
+    - error_code: "0x80B98000"
+      severity: high
+      error_type: PCIE
+      error_info: PCIE模块异常
+      error_desc: 对端发生异常，或者链路误码太多，流控异常； 可能是软件或硬件错误。
+      advice: 业务面： step1. 建议复位NPU，重新执行AI任务； step2. 如果重执行仍失败，建议隔离NPU，重新执行AI任务； 运维面：
+    - error_code: "0x80B98008"
+      severity: high
+      error_type: PCIE
+      error_info: PCIE多bit ECC错误
+      error_desc: PCIE多bit ECC错误； 通常是硬件问题。
+      advice: 业务面： step1. 建议复位NPU，重新执行AI任务； step2. 如果重执行仍失败，建议隔离NPU，重新执行AI任务； 运维面：
+    - error_code: "0x80BB8008"
+      severity: high
+      error_type: ROCE
+      error_info: ROCE多bit ECC错误
+      error_desc: ROCE多bit ECC错误； 通常是硬件问题。
+      advice: 业务面： step1. 建议复位NPU，重新执行AI任务； step2. 如果重执行仍失败，建议隔离NPU，重新执行AI任务； 运维面：
+    - error_code: "0x80CD8003"
+      severity: low
+      error_type: L2BUFF
+      error_info: L2BUFF配置错误
+      error_desc: 平台软件配置非预期错误，或硬件失效等导致地址非法； 可能是软件或硬件问题，大多是软件问题。
+      advice: 业务面： 无需处理； 运维面：
+    - error_code: "0x80CD8008"
+      severity: high
+      error_type: L2BUFF
+      error_info: L2BUFF多bit ECC错误
+      error_desc: 片内SRAM软失效，导致L2BUFF多bit错误； 通常是硬件问题。
+      advice: 业务面： step1. 建议复位NPU，重新执行AI任务； step2. 如果重执行仍失败，建议隔离NPU，重新执行AI任务； 运维面：
+    - error_code: "0x80CF8000"
+      severity: middle
+      error_type: SDMA
+      error_info: SDMA模块异常
+      error_desc: SDMA模块内部发生异常； 通常是硬件问题。
+      advice: 业务面： step1. 建议复位NPU，重新执行AI任务； step2. 如果重执行仍失败，建议隔离NPU，重新执行AI任务； 运维面：
+    - error_code: "0x80CF8008"
+      severity: middle
+      error_type: SDMA
+      error_info: SDMAM多bit ECC错误
+      error_desc: 片内SRAM颗粒失效； 通常是硬件问题。
+      advice: 业务面： step1. 建议重新执行AI任务； step2. 如果重执行失败，建议隔离NPU，重新执行AI任务； 运维面：
+    - error_code: "0x80CF8009"
+      severity: middle
+      error_type: SDMA
+      error_info: SDMA模块bus error
+      error_desc: SDMA模块写CQE出现总线异常，导致硬件故障； 通常是硬件问题。
+      advice: 业务面： step1. 建议重新执行AI任务； step2. 如果重执行失败，建议隔离NPU，重新执行AI任务； 运维面：
+    - error_code: "0x812F8000"
+      severity: high
+      error_type: TS
+      error_info: TSFW 子图调度系统异常
+      error_desc: 子图调度系统异常； 可能是软件或硬件问题，大多是软件问题。
+      advice: 业务面： step1. 建议复位NPU，重新执行AI任务； step2. 如果重执行仍失败，建议隔离NPU，重新执行AI任务； 运维面：
+    - error_code: "0x80C78008"
+      severity: high
+      error_type: TS
+      error_info: TS多bit ECC错误
+      error_desc: TS片内SRAM多bit ECC错误； 通常是硬件问题。
+      advice: 业务面： step1. 建议复位NPU，重新执行AI任务； step2. 如果重执行仍失败，建议隔离NPU，重新执行AI任务； 运维面：
+    - error_code: "0x80C98002"
+      severity: middle
+      error_type: AIC
+      error_info: AIC检测到外部输入错误
+      error_desc: APP输入错误； 通常是算子实现问题。
+      advice: 业务面： step1. 重新执行AI任务； 运维面：
+    - error_code: "0x80C98009"
+      severity: middle
+      error_type: AIC
+      error_info: AIC模块bus error
+      error_desc: AIC模块写CQE出现总线异常，导致硬件故障； 通常是硬件问题。
+      advice: 业务面： step1. 建议重新执行AI任务； step2. 如果重执行失败，建议隔离NPU，重新执行AI任务； 运维面： step3. 建议使用ascend-dmi工具执行AIC压测，根据结果确认是否需要更换硬件，否则使用msaicerr工具排查软件问题，无法解决联系华为工程师。
+    - error_code: "0x80D38009"
+      severity: middle
+      error_type: JPEGD
+      error_info: JPEGD总线访问错误
+      error_desc: JPEGD总线访问错误； 可能是软件或硬件问题。
+      advice: 业务面： 无需处理； 运维面：
+    - error_code: "0x80D58000"
+      severity: middle
+      error_type: JPEGE
+      error_info: JPEGE硬件编码异常
+      error_desc: JPEGE硬件编码异常； 可能是软件或硬件问题。
+      advice: 业务面： step1. 建议重新执行AI任务； step2. 如果重执行失败，建议隔离NPU，重新执行AI任务； 运维面：
+    - error_code: "0x80D98008"
+      severity: high
+      error_type: VDEC
+      error_info: VDEC多bit ECC错误
+      error_desc: VDEC多bit ECC错误； 通常是硬件问题。
+      advice: 业务面： step1. 建议复位NPU，重新执行AI任务； step2. 如果重执行仍失败，建议隔离NPU，重新执行AI任务； 运维面：
+    - error_code: "0x80DD8007"
+      severity: low
+      error_type: VPC
+      error_info: VPC单bit ECC未纠正错误
+      error_desc: VPC单bit ECC未纠正错误； 通常是软件问题。
+      advice: 无需处理（第一次无需处理，第二次升级到隔离NPU）； 运维面： step1. 24小时内第一次故障不处理，第二次故障返厂维修。
+    - error_code: "0x80DD8008"
+      severity: middle
+      error_type: VPC
+      error_info: VPC多bit ECC错误
+      error_desc: VPC多bit ECC错误； 通常是硬件问题。
+      advice: 业务面： 无需处理（第一次无需处理，第二次升级到隔离NPU）； 运维面： step1. 24小时内第一次故障不处理，第二次故障返厂维修。
+    - error_code: "0x80E01801"
+      severity: critical
+      error_type: HBM
+      error_info: HBM用户内存空间内存颗粒访问多bit ECC错误
+      error_desc: HBM内存空间被访问，触发多bit ECC错误且地址热隔离失败，可能原因为HBM颗粒部分失效且失效地址仍被占用； 通常是硬件问题。
+      advice: 业务面： step1. 如果警码已清除，重新执行AI任务；否则，复位NPU，重新执行AI任务。 运维面： step2. 建议使用ascend-dmi诊断工具，根据结果进一步处理。
+    - error_code: "0x80E01809"
+      severity: low
+      error_type: HBM
+      error_info: HBM巡检多bit ECC错误
+      error_desc: HBMC（HBM Control）巡检（Patrol Scrubbing和Demand Scrubbing）触发的多bit ECC错误，可能原因为HBM颗粒部分失效、HBM无法正常保持数据等； 通常是硬件问题。
+      advice: 业务面： 无需处理，表示巡检到HBM多bit ECC错误； 运维面：
+    - error_code: "0x80E18000"
+      severity: high
+      error_type: HBMC
+      error_info: HBMC模块故障
+      error_desc: HBMC模块内部故障，包括超过欠刷新个数等； 通常是硬件问题。
+      advice: 业务面： step1. 建议复位NPU，重新执行AI任务； step2. 如果重执行仍失败，建议隔离NPU，重新执行AI任务； 运维面：
+    - error_code: "0x80E18008"
+      severity: high
+      error_type: HBMC
+      error_info: HBMC多bit ECC错误
+      error_desc: HBMC内部SRAM多bit ECC错误； 通常是硬件问题。
+      advice: 业务面： step1. 建议复位NPU，重新执行AI任务； step2. 如果重执行仍失败，建议隔离NPU，重新执行AI任务； 运维面：
+    - error_code: "0x80E1800A"
+      severity: high
+      error_type: HBMC
+      error_info: HBMC同上下游交互超时异常
+      error_desc: HBMC同上下游(mesh、ring、hha等）交互超时错误，包括PHY读数据超时、DFI接口超时不返回等； 通常是硬件问题。
+      advice: 业务面： step1. 建议复位NPU，重新执行AI任务； step2. 如果重执行仍失败，建议隔离NPU，重新执行AI任务； 运维面：
+    - error_code: "0x80E18402"
+      severity: critical
+      error_type: HBM
+      error_info: 设备的HBM总的多bit ECC隔离行数达到64个
+      error_desc: HBM总的多bit ECC隔离行数达到64个； 通常是硬件问题。
+      advice: 业务面： step1. 建议隔离NPU，重新执行AI任务； 运维面：
+    - error_code: "0x80E39200"
+      severity: high
+      error_type: LPM
+      error_info: LPM Tsensor信号超时
+      error_desc: LPM Tsensor信号超时，无法获取温度数据，影响系统可靠性； 通常是硬件问题。
+      advice: 业务面： step1. 建议复位NPU，重新执行AI任务； step2. 如果重执行仍失败，建议隔离NPU，重新执行AI任务； 运维面：
+    - error_code: "0x80E3A201"
+      severity: high
+      error_type: LPM
+      error_info: LPM 检测到调压功能异常
+      error_desc: 电源模块异常或者总线异常，导致调频调压异常； 通常是硬件问题。
+      advice: 业务面： step1. 建议隔离NPU，重新执行AI任务； 运维面：
+    - error_code: "0x80E3A203"
+      severity: high
+      error_type: LPM
+      error_info: LPM 检测到芯片电流检测功能异常
+      error_desc: 1. 电流探头访问异常； 2. 电源上报异常； 3. 软件配置错误； 可能是软件或硬件问题。
+      advice: 业务面： step1. 建议复位NPU，重新执行AI任务； step2. 如果重执行仍失败，建议隔离NPU，重新执行AI任务； 运维面：
+    - error_code: "0x80E58E02"
+      severity: high
+      error_type: HSM
+      error_info: HSM密码算法模块错误
+      error_desc: HSM密码算法模块硬件Memery硬失效出现多bit ECC错误、读写总线错误等； 通常是硬件问题。
+      advice: 业务面： step1. 建议复位NPU，重新执行AI任务； step2. 如果重执行仍失败，建议隔离NPU，重新执行AI任务； 运维面：
+    - error_code: "0x80E58E03"
+      severity: high
+      error_type: HSM
+      error_info: HSM密钥管理模块错误
+      error_desc: HSM密钥管理模块硬件Memery硬失效出现多bit ECC错误、读写总线错误等； 通常是硬件问题。
+      advice: 业务面： step1. 可选择继续训练，或主动保存checkpoint文件，复位NPU，重新执行AI任务； 运维面：
+    - error_code: "0x80E78000"
+      severity: high
+      error_type: TEEDrv
+      error_info: TEEDrv硬件模块错误
+      error_desc: SFC模块对Flash的擦写失败，Flash硬件故障； 通常是硬件问题。
+      advice: 业务面： step1. 建议复位NPU，重新执行AI任务； step2. 如果重执行仍失败，建议隔离NPU，重新执行AI任务； 运维面：
+    - error_code: "0x80E78008"
+      severity: high
+      error_type: TEEDrv
+      error_info: TEEDrv侧硬件多bit ECC错误
+      error_desc: SFC模块硬件Memery硬失效出现多bit ECC错误； 通常是硬件问题。
+      advice: 业务面： step1. 建议复位NPU，重新执行AI任务； step2. 如果重执行仍失败，建议隔离NPU，重新执行AI任务； 运维面：
+    - error_code: "0x80F2180D"
+      severity: high
+      error_type: HBMA
+      error_info: HBMA/MATA镜像错误
+      error_desc: HBMA（HBM Agent）镜像主副空间均出现多bit ECC错误； 通常是硬件问题。
+      advice: 业务面： step1. 建议复位NPU，重新执行AI任务； step2. 如果重执行仍失败，建议隔离NPU，重新执行AI任务； 运维面：
+    - error_code: "0x80F38003"
+      severity: low
+      error_type: HBMA
+      error_info: HBMA内部软件配置错误
+      error_desc: HBMA配置错误，包括接收非法操作、跨安全域访问、MSD的invert/overlap/miss错误等； 可能是软件或硬件问题，大多是软件问题。
+      advice: 业务面： 无需处理； 运维面：
+    - error_code: "0x80F38008"
+      severity: high
+      error_type: HBMA
+      error_info: HBMA多bit ECC错误
+      error_desc: HBMA内部SRAM多bit ECC错误； 通常是硬件问题。
+      advice: 业务面： step1. 建议复位NPU，重新执行AI任务； step2. 如果重执行仍失败，建议隔离NPU，重新执行AI任务； 运维面：
+    - error_code: "0x80FB8000"
+      severity: high
+      error_type: TSCPU
+      error_info: TSCPU模块错误
+      error_desc: TSCPU模块内部发生异常； 通常是硬件问题。
+      advice: 业务面： 无需处理； 运维面：
+    - error_code: "0x81318008"
+      severity: middle
+      error_type: DSA
+      error_info: DSA 内部memory两bit ECC
+      error_desc: 片内SRAM颗粒失效； 通常是硬件问题。
+      advice: 业务面： step1. 建议重新执行AI任务； step2. 如果重执行失败，建议隔离NPU，重新执行AI任务； 运维面：
+    - error_code: "0x81338002"
+      severity: high
+      error_type: TS_DISP
+      error_info: TS Dispatch输入错误
+      error_desc: TS Dispatch输入错误； 通常是软件或硬件问题，大多是软件问题。
+      advice: 业务面： step1. 建议隔离NPU，重新执行AI任务； 运维面：
+    - error_code: "0x81338008"
+      severity: high
+      error_type: TS_DISP
+      error_info: TS Dispatch多bit ECC错误
+      error_desc: TS Dispatch多bit ECC错误； 通常是硬件问题。
+      advice: 业务面： step1. 建议复位NPU，重新执行AI任务； step2. 如果重执行仍失败，建议隔离NPU，重新执行AI任务； 运维面：
+    - error_code: "0x813B8002"
+      severity: high
+      error_type: AIC_DISP
+      error_info: AIC Dispatch输入错误
+      error_desc: AIC Dispatch输入错误； 通常是软件或硬件问题，大多是软件问题。
+      advice: 业务面： step1. 建议隔离NPU，重新执行AI任务； 运维面：
+    - error_code: "0x813B8008"
+      severity: high
+      error_type: AIC_DISP
+      error_info: AIC Dispatch多bit ECC错误
+      error_desc: AIC Dispatch多bit ECC错误； 通常是硬件问题。
+      advice: 业务面： step1. 建议复位NPU，重新执行AI任务； step2. 如果重执行仍失败，建议隔离NPU，重新执行AI任务； 运维面：
+    - error_code: "0x81478002"
+      severity: high
+      error_type: DVPP_DISP
+      error_info: DVPP Dispatch输入错误
+      error_desc: DVPP Dispatch输入错误； 通常是软件或硬件问题，大多是软件问题。
+      advice: 业务面： step1. 建议隔离NPU，重新执行AI任务； 运维面：
+    - error_code: "0x81478004"
+      severity: low
+      error_type: DVPP_DISP
+      error_info: DVPP Dispatch配置错误
+      error_desc: DVPP Dispatch配置错误； 可能是软件或硬件问题，大多是软件问题。
+      advice: 业务面： 无需处理。 运维面：
+    - error_code: "0x81478008"
+      severity: high
+      error_type: DVPP_DISP
+      error_info: DVPP Dispatch多bit ECC错误
+      error_desc: DVPP Dispatch多bit ECC错误； 通常是硬件问题。
+      advice: 业务面： step1. 建议复位NPU，重新执行AI任务； step2. 如果重执行仍失败，建议隔离NPU，重新执行AI任务； 运维面：
+    - error_code: "0x815F8002"
+      severity: high
+      error_type: PERI_DISP
+      error_info: PERI Dispatch输入错误
+      error_desc: PERI Dispatch输入错误； 通常是软件或硬件问题，大多是软件问题。
+      advice: 业务面： step1. 建议隔离NPU，重新执行AI任务； 运维面：
+    - error_code: "0x815F8004"
+      severity: low
+      error_type: PERI_DISP
+      error_info: PERI Dispatch配置错误
+      error_desc: PERI Dispatch配置错误； 可能是软件或硬件问题，大多是软件问题。
+      advice: 业务面： 无需处理。 运维面：
+    - error_code: "0x815F8008"
+      severity: high
+      error_type: PERI_DISP
+      error_info: PERI Dispatch多bit ECC错误
+      error_desc: PERI Dispatch多bit ECC错误； 通常是硬件问题。
+      advice: 业务面： step1. 建议复位NPU，重新执行AI任务； step2. 如果重执行仍失败，建议隔离NPU，重新执行AI任务； 运维面：
+    - error_code: "0x81938002"
+      severity: high
+      error_type: DSA_DISP
+      error_info: DSA Dispatch输入错误
+      error_desc: DSA Dispatch输入错误； 通常是软件或硬件问题，大多是软件问题。
+      advice: 业务面： step1. 建议隔离NPU，重新执行AI任务； 运维面：
+    - error_code: "0x81938008"
+      severity: high
+      error_type: DSA_DISP
+      error_info: DSA Dispatch多bit ECC错误
+      error_desc: DSA Dispatch多bit ECC错误； 通常是硬件问题。
+      advice: 业务面： step1. 建议复位NPU，重新执行AI任务； step2. 如果重执行仍失败，建议隔离NPU，重新执行AI任务； 运维面：
+    - error_code: "0x81958002"
+      severity: high
+      error_type: NIC_DISP
+      error_info: NIC Dispatch输入错误
+      error_desc: NIC Dispatch输入错误； 通常是软件或硬件问题，大多是软件问题。
+      advice: 业务面： step1. 建议隔离NPU，重新执行AI任务； 运维面： step2. 联系华为工程师处理。
+    - error_code: "0x81958004"
+      severity: low
+      error_type: NIC_DISP
+      error_info: NIC Dispatch配置错误
+      error_desc: NIC Dispatch配置错误； 可能是软件或硬件问题，大多是软件问题。
+      advice: 业务面： 无需处理； 运维面：
+    - error_code: "0x81958008"
+      severity: high
+      error_type: NIC_DISP
+      error_info: NIC Dispatch多bit ECC错误
+      error_desc: NIC Dispatch多bit ECC错误； 通常是硬件问题。
+      advice: 业务面： step1. 建议复位NPU，重新执行AI任务； step2. 如果重执行仍失败，建议隔离NPU，重新执行AI任务； 运维面：
+    - error_code: "0x81978002"
+      severity: high
+      error_type: PCIE_DISP
+      error_info: PCIE Dispatch输入错误
+      error_desc: PCIE Dispatch输入错误; 通常是软件或硬件问题，大多是软件问题。
+      advice: 业务面： step1. 建议隔离NPU，重新执行AI任务； 运维面：
+    - error_code: "0x81978004"
+      severity: low
+      error_type: PCIE_DISP
+      error_info: PCIE Dispatch配置错误
+      error_desc: PCIE Dispatch配置错误； 可能是软件或硬件问题，大多是软件问题。
+      advice: 业务面： 无需处理； 运维面：
+    - error_code: "0x81978008"
+      severity: high
+      error_type: PCIE_DISP
+      error_info: PCIE Dispatch多bit ECC错误
+      error_desc: PCIE Dispatch多bit ECC错误； 通常是硬件问题。
+      advice: 业务面： step1. 建议复位NPU，重新执行AI任务； step2. 如果重执行仍失败，建议隔离NPU，重新执行AI任务； 运维面：
+    - error_code: "0x819B8003"
+      severity: low
+      error_type: HCCS
+      error_info: HCCS配置错误
+      error_desc: HDLC信用证溢出中断状态寄存器，配置错误或对端返还包多（异常）， 可能是软件或硬件问题，大多是软件问题。
+      advice: 业务面： 无需处理； 运维面：

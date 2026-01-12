@@ -1,0 +1,76 @@
+---
+apiVersion: device.theriseunion.io/v1alpha1
+kind: DeviceModel
+metadata:
+  labels:
+    theriseunion.io/config-type: fixed
+  name: nvidia-nvidia-geforce-rtx-3060
+spec:
+  alias:
+  - RTX 3060
+  - GeForce RTX 3060
+  - NVIDIA-NVIDIA GeForce RTX 3060
+  compute: "8.6"
+  computeCapabilities:
+  - precision: FP32
+    unit: TFLOPS
+    value: "12.7"
+  - precision: FP16
+    unit: TFLOPS
+    value: "25.4"
+  - precision: BF16
+    unit: TFLOPS
+    value: "25.4"
+  - precision: FP8
+    unit: TFLOPS
+    value: "50.8"
+  core: 100
+  description: NVIDIA GeForce RTX 3060 GPU with 12GB GDDR6 memory
+  family: Ampere
+  manufacturer: NVIDIA
+  memorySize: 12288
+  memoryStep: 256
+  model: NVIDIA-NVIDIA GeForce RTX 3060
+  supportComputeSplitMode:
+  - soft
+  supportVirtualDevice: true
+---
+apiVersion: device.theriseunion.io/v1alpha1
+kind: DeviceModel
+metadata:
+  labels:
+    theriseunion.io/config-type: fixed
+    theriseunion.io/virtual-model: "true"
+  name: nvidia-3060-half-6gb
+spec:
+  core: 50
+  manufacturer: NVIDIA
+  memorySize: 6144
+  model: NVIDIA-NVIDIA GeForce RTX 3060
+---
+apiVersion: device.theriseunion.io/v1alpha1
+kind: DeviceModel
+metadata:
+  labels:
+    theriseunion.io/config-type: fixed
+    theriseunion.io/virtual-model: "true"
+  name: nvidia-3060-quarter-3gb
+spec:
+  core: 25
+  manufacturer: NVIDIA
+  memorySize: 3072
+  model: NVIDIA-NVIDIA GeForce RTX 3060
+---
+apiVersion: device.theriseunion.io/v1alpha1
+kind: DeviceModel
+metadata:
+  labels:
+    theriseunion.io/config-type: fixed
+    theriseunion.io/virtual-model: "true"
+  name: nvidia-3060-eighth-1.5gb
+spec:
+  core: 12
+  manufacturer: NVIDIA
+  memorySize: 1536
+  model: NVIDIA-NVIDIA GeForce RTX 3060
+

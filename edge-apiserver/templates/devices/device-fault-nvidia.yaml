@@ -1,0 +1,150 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: device-fault-nvidia
+data:
+  device-fault-nvidia: |
+    - error_code: "13"
+      severity: high
+      error_type: "XID 错误"
+      error_info: "GR: SW Notify Error"
+      error_desc: "通常是应用程序访问越界或其他错误，小概率是硬件或系统软件故障导致。"
+      advice: "使用cuda-gdb或Compute Sanitizer进行调试，或设置CUDA_DEVICE_WAITS_ON_EXCEPTION=1。如持续发生且未发现代码问题，可尝试重置 GPU 或重启节点。"
+    - error_code: "31"
+      severity: high
+      error_type: "XID 错误"
+      error_info: "FIFO: MMU Error"
+      error_desc: "发生非法地址访问，通常是应用程序错误，小概率是驱动或硬件故障。"
+      advice: "使用cuda-gdb或Compute Sanitizer进行调试，或设置CUDA_DEVICE_WAITS_ON_EXCEPTION=1。如持续发生且未发现代码问题，可尝试重置 GPU 或重启节点。"
+    - error_code: "32"
+      severity: middle
+      error_type: "XID 错误"
+      error_info: "PBDMA Error"
+      error_desc: "DMA 控制器故障，通常与 PCI 总线质量问题有关。"
+      advice: "检查 PCI 连接，联系硬件厂商确认问题来源。重启可能缓解此问题。"
+    - error_code: "43"
+      severity: high
+      error_type: "XID 错误"
+      error_info: "Reset Channel Verif Error"
+      error_desc: "用户应用程序遇到软件引发的故障并被终止。"
+      advice: "检查应用程序代码，确保没有非法操作或错误。重启可能缓解此问题。"
+    - error_code: "45"
+      severity: middle
+      error_type: "XID 错误"
+      error_info: "OS: Preemptive Channel Removal"
+      error_desc: "应用程序中断，通常由操作系统或用户行为引起，如信号中断等。"
+      advice: "检查应用程序是否异常中断或关闭，调整应用程序行为。"
+    - error_code: "48"
+      severity: critical
+      error_type: "ECC 错误"
+      error_info: "DBE (Double Bit Error) ECC Error"
+      error_desc: "检测到无法纠正的 ECC 错误，需要 GPU 重置或节点重启。"
+      advice: "使用nvidia-smi检查 ECC 错误，建议重置 GPU 或重启节点。"
+    - error_code: "63"
+      severity: critical
+      error_type: "ECC 错误"
+      error_info: "ECC Page Retirement or Row Remapping"
+      error_desc: "处理 ECC 内存错误，涉及 ECC 行重映射或页面退休。"
+      advice: "使用 NVIDIA 提供的文档检查 GPU 内存错误管理，必要时重置 GPU。"
+    - error_code: "64"
+      severity: critical
+      error_type: "ECC 错误"
+      error_info: "ECC Page Retirement or Row Remapping"
+      error_desc: "处理 ECC 内存错误，涉及 ECC 行重映射或页面退休。"
+      advice: "使用 NVIDIA 提供的文档检查 GPU 内存错误管理，必要时重置 GPU。"
+    - error_code: "74"
+      severity: critical
+      error_type: "NVLink 错误"
+      error_info: "NVLink Error"
+      error_desc: "NVLink 连接问题，可能是硬件故障或链路设备出现问题，建议下线维修。"
+      advice: "检查 NVLink 连接状态，使用nvidia-smi nvlink查看错误信息，必要时重置 GPU 或重启节点。"
+    - error_code: "79"
+      severity: critical
+      error_type: "XID 错误"
+      error_info: "GPU has fallen off the bus"
+      error_desc: "GPU 无法通过 PCI Express 连接进行访问，通常是硬件故障导致，建议下线维修。"
+      advice: "检查 PCI Express 连接，查看系统事件日志，确认是否为硬件故障。建议重启节点。"
+    - error_code: "92"
+      severity: critical
+      error_type: "XID 错误"
+      error_info: "GPU has fallen off the bus"
+      error_desc: "GPU 无法通过 PCI Express 连接进行访问，通常是硬件故障导致，建议下线维修。"
+      advice: "检查 PCI Express 连接，查看系统事件日志，确认是否为硬件故障。建议重启节点。"
+    - error_code: "93"
+      severity: critical
+      error_type: "ECC 错误"
+      error_info: "InfoROM wear limit violation"
+      error_desc: "GPU InfoROM 写入失败。"
+      advice: "建议重置 GPU，如果无效，建议重启节点。"
+    - error_code: "94"
+      severity: middle
+      error_type: "ECC 错误"
+      error_info: "Contained ECC error"
+      error_desc: "可控的 ECC 错误，GPU 能够检测到错误并防止其扩散。"
+      advice: "监测 ECC 统计信息，如错误率持续上升，考虑更换GPU。"
+    - error_code: "95"
+      severity: critical
+      error_type: "ECC 错误"
+      error_info: "Uncontained ECC error"
+      error_desc: "不可控的 ECC 错误，可能导致数据损坏或计算错误，可能需要重启 GPU。"
+      advice: "立即重启 GPU，如错误持续存在，建议重启节点。"
+    - error_code: "119"
+      severity: critical
+      error_type: "XID 错误"
+      error_info: "GSP RPC Timeout/GSP"
+      error_desc: "GSP（GPU System Processor）超时或故障，可能会影响 GPU 正常工作。"
+      advice: "建议启用 GSP 调试日志，以便捕捉与 GPU 任务调度和 GSP 核心通信相关的错误。建议重置 GPU 或重启节点。"
+    - error_code: "120"
+      severity: critical
+      error_type: "XID 错误"
+      error_info: "GSP RPC Timeout/GSP"
+      error_desc: "GSP（GPU System Processor）超时或故障，可能会影响 GPU 正常工作。"
+      advice: "建议启用 GSP 调试日志，以便捕捉与 GPU 任务调度和 GSP 核心通信相关的错误。建议重置 GPU 或重启节点。"
+    - error_code: "121"
+      severity: critical
+      error_type: "NVLink 错误"
+      error_info: "C2C Link corrected error"
+      error_desc: "Grace CPU 之间的 NVLink 连接错误。"
+      advice: "如果频繁发生，建议重启节点。"
+    - error_code: "122"
+      severity: high
+      error_type: "电源和散热错误"
+      error_info: "Power Supply Failure"
+      error_desc: "电源模块故障或不稳定导致 GPU 无法正常工作。"
+      advice: "检查电源系统是否稳定，确认电源适配器是否正常工作。"
+    - error_code: "123"
+      severity: middle
+      error_type: "电源和散热错误"
+      error_info: "Voltage Drop / Spike Error"
+      error_desc: "电压波动或下降导致 GPU 无法正常工作。"
+      advice: "检查电源供应和电压波动问题，确认电源适配器是否稳定工作。"
+    - error_code: "124"
+      severity: high
+      error_type: "电源和散热错误"
+      error_info: "Power Sequence Fault"
+      error_desc: "启动过程中电源序列错误，通常是电源模块或连接问题。"
+      advice: "检查电源模块连接和启动顺序，确保电源系统正常。"
+    - error_code: "125"
+      severity: high
+      error_type: "电源和散热错误"
+      error_info: "Overcurrent Protection Triggered"
+      error_desc: "电流超出容许范围，通常与电源过载或不稳定有关。"
+      advice: "检查电源是否过载或不稳定，确认电源模块的规格是否匹配 GPU 需求。"
+    - error_code: "126"
+      severity: high
+      error_type: "电源和散热错误"
+      error_info: "Overheating Protection"
+      error_desc: "GPU 温度过高，进入过热保护模式。"
+      advice: "检查 GPU 散热系统是否正常工作，确保风扇运转正常，必要时清理散热器。"
+    - error_code: "127"
+      severity: middle
+      error_type: "电源和散热错误"
+      error_info: "Fan Failure"
+      error_desc: "GPU 风扇故障导致散热不良。"
+      advice: "检查风扇是否工作正常，确保散热系统无故障。"
+    - error_code: "140"
+      severity: critical
+      error_type: "ECC 错误"
+      error_info: "ECC unrecovered error"
+      error_desc: "GPU 发现不可恢复 ECC 错误，影响正常运行。"
+      advice: "无法恢复的 ECC 错误，导致 GPU 失效，建议重启节点。"
