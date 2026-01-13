@@ -51,7 +51,8 @@ cloudHub:
   advertiseAddress:
     - 10.0.242.176
 
-  dnsNames: []
+  dnsNames: 
+    - "cloudcore.kubeedge.local"
 
   nodeLimit: 1000
 
