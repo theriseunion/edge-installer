@@ -1,0 +1,13 @@
+apiVersion: v2
+name: bin-downloader
+description: A Helm chart for Bin Downloader - Static file server for edge binaries
+type: application
+version: 0.1.0
+appVersion: "v1.0.0"
+keywords:
+  - bin-downloader
+  - file-server
+  - edge
+maintainers:
+  - name: Edge Team
+    email: dev@edge.io

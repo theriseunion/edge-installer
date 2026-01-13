@@ -184,7 +184,11 @@ autoInstall:
 
   # Traefik Ingress Controller
   traefik:
-    enabled: true # 设置为 true 启用 Traefik 自动安装
+    enabled: true  # 设置为 true 启用 Traefik 自动安装
+
+  # Bin Downloader - 静态文件服务器
+  binDownloader:
+    enabled: true  # 设置为 true 启用 Bin Downloader 自动安装
 
 # Hook configuration
 hooks:

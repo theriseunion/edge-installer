@@ -1,0 +1,20 @@
+{{- if .Values.ingressRoute.enabled }}
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: {{ include "bin-downloader.fullname" . }}
+  namespace: {{ include "bin-downloader.namespace" . }}
+  labels:
+    {{- include "bin-downloader.labels" . | nindent 4 }}
+spec:
+  entryPoints:
+    - {{ .Values.ingressRoute.entryPoint }}
+  routes:
+    - match: Host(`{{ .Values.ingressRoute.host }}`)
+      kind: Rule
+      priority: {{ .Values.ingressRoute.priority }}
+      services:
+        - name: {{ include "bin-downloader.fullname" . }}
+          namespace: {{ include "bin-downloader.namespace" . }}
+          port: {{ .Values.service.port }}
+{{- end }}
