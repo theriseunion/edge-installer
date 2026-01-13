@@ -1,0 +1,34 @@
+{{- if and .Values.controller.enabled .Values.autoInstall.traefik.enabled }}
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: {{ .Values.autoInstall.traefik.namespace | default "traefik" }}
+  labels:
+    {{- include "edge-controller.labels" . | nindent 4 }}
+    app.kubernetes.io/component: namespace
+    app.kubernetes.io/part-of: edge-platform
+---
+apiVersion: ext.theriseunion.io/v1alpha1
+kind: Component
+metadata:
+  name: edge-traefik
+  namespace: {{ .Values.autoInstall.traefik.namespace | default "traefik" }}
+  labels:
+    {{- include "edge-controller.labels" . | nindent 4 }}
+    app.kubernetes.io/component: traefik
+    app.kubernetes.io/part-of: edge-platform
+    cluster.theriseunion.io/role: {{ .Values.global.mode }}
+spec:
+  enabled: {{ .Values.autoInstall.traefik.enabled }}
+  version: {{ .Values.autoInstall.traefik.version | default .Chart.AppVersion }}
+  chart:
+    name: traefik
+    namespace: {{ .Values.autoInstall.traefik.namespace | default "traefik" }}
+    releaseName: traefik
+    repository: http://chartmuseum.{{ .Release.Namespace }}.svc:8080
+  {{- if .Values.autoInstall.traefik.values }}
+  values:
+    {{- toYaml .Values.autoInstall.traefik.values | nindent 4 }}
+  {{- end }}
+{{- end }}

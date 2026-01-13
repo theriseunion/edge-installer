@@ -182,6 +182,10 @@ autoInstall:
       # hami:
       #   enabled: true
 
+  # Traefik Ingress Controller
+  traefik:
+    enabled: true # 设置为 true 启用 Traefik 自动安装
+
 # Hook configuration
 hooks:
   # Enable chart packaging/upload hooks

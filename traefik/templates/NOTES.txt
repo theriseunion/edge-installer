@@ -1,0 +1,55 @@
+
+Traefik Proxy has been successfully installed!
+
+Release: {{ .Release.Name }}
+Namespace: {{ include "traefik.namespace" . }}
+
+=== Service Information ===
+
+Service Type: {{ .Values.service.type }}
+
+{{- if eq .Values.service.type "NodePort" }}
+Access Traefik via NodePort:
+
+{{- if .Values.entryPoints.web.enabled }}
+  HTTP:     http://<node-ip>:{{ .Values.entryPoints.web.nodePort }}
+{{- end }}
+{{- if .Values.entryPoints.websecure.enabled }}
+  HTTPS:    https://<node-ip>:{{ .Values.entryPoints.websecure.nodePort }}
+{{- end }}
+{{- if .Values.entryPoints.websocket.enabled }}
+  WebSocket: ws://<node-ip>:{{ .Values.entryPoints.websocket.nodePort }}
+{{- end }}
+{{- end }}
+
+=== TLS Configuration ===
+
+{{- if .Values.tls.enabled }}
+TLS is enabled with {{ if .Values.tls.autogenerate }}auto-generated self-signed certificates{{ else }}custom certificates{{ end }}.
+Certificate secret: {{ include "traefik.fullname" . }}-default-cert
+{{- else }}
+TLS is disabled.
+{{- end }}
+
+=== KubeEdge CloudCore Ports ===
+
+{{- if .Values.entryPoints.ccWs.enabled }}
+  CloudCore WebSocket: {{ .Values.entryPoints.ccWs.port }} (NodePort: {{ .Values.entryPoints.ccWs.nodePort }})
+{{- end }}
+{{- if .Values.entryPoints.ccHttps.enabled }}
+  CloudCore HTTPS:     {{ .Values.entryPoints.ccHttps.port }} (NodePort: {{ .Values.entryPoints.ccHttps.nodePort }})
+{{- end }}
+{{- if .Values.entryPoints.ccStream.enabled }}
+  CloudCore Stream:    {{ .Values.entryPoints.ccStream.port }} (NodePort: {{ .Values.entryPoints.ccStream.nodePort }})
+{{- end }}
+{{- if .Values.entryPoints.ccTunnel.enabled }}
+  CloudCore Tunnel:    {{ .Values.entryPoints.ccTunnel.port }} (NodePort: {{ .Values.entryPoints.ccTunnel.nodePort }})
+{{- end }}
+
+=== Health Check ===
+
+{{- if .Values.ping.enabled }}
+Health endpoint: http://traefik.{{ include "traefik.namespace" . }}.svc:{{ .Values.entryPoints.web.port }}/ping
+{{- end }}
+
+For more information, visit: https://doc.traefik.io/traefik/

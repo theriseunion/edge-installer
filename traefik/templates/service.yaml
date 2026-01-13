@@ -1,0 +1,79 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "traefik.fullname" . }}
+  namespace: {{ include "traefik.namespace" . }}
+  labels:
+    {{- include "traefik.labels" . | nindent 4 }}
+  {{- with .Values.service.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  type: {{ .Values.service.type }}
+  selector:
+    {{- include "traefik.selectorLabels" . | nindent 4 }}
+  ports:
+    {{- if .Values.entryPoints.web.enabled }}
+    - name: web
+      port: {{ .Values.entryPoints.web.port }}
+      targetPort: {{ .Values.entryPoints.web.port }}
+      {{- if and (eq .Values.service.type "NodePort") .Values.entryPoints.web.nodePort }}
+      nodePort: {{ .Values.entryPoints.web.nodePort }}
+      {{- end }}
+      protocol: {{ .Values.entryPoints.web.protocol | default "TCP" }}
+    {{- end }}
+    {{- if .Values.entryPoints.websecure.enabled }}
+    - name: websecure
+      port: {{ .Values.entryPoints.websecure.port }}
+      targetPort: {{ .Values.entryPoints.websecure.port }}
+      {{- if and (eq .Values.service.type "NodePort") .Values.entryPoints.websecure.nodePort }}
+      nodePort: {{ .Values.entryPoints.websecure.nodePort }}
+      {{- end }}
+      protocol: {{ .Values.entryPoints.websecure.protocol | default "TCP" }}
+    {{- end }}
+    {{- if .Values.entryPoints.websocket.enabled }}
+    - name: websocket
+      port: {{ .Values.entryPoints.websocket.port }}
+      targetPort: {{ .Values.entryPoints.websocket.port }}
+      {{- if and (eq .Values.service.type "NodePort") .Values.entryPoints.websocket.nodePort }}
+      nodePort: {{ .Values.entryPoints.websocket.nodePort }}
+      {{- end }}
+      protocol: {{ .Values.entryPoints.websocket.protocol | default "TCP" }}
+    {{- end }}
+    {{- if .Values.entryPoints.ccWs.enabled }}
+    - name: cc-ws
+      port: {{ .Values.entryPoints.ccWs.port }}
+      targetPort: {{ .Values.entryPoints.ccWs.port }}
+      {{- if and (eq .Values.service.type "NodePort") .Values.entryPoints.ccWs.nodePort }}
+      nodePort: {{ .Values.entryPoints.ccWs.nodePort }}
+      {{- end }}
+      protocol: {{ .Values.entryPoints.ccWs.protocol | default "TCP" }}
+    {{- end }}
+    {{- if .Values.entryPoints.ccHttps.enabled }}
+    - name: cc-https
+      port: {{ .Values.entryPoints.ccHttps.port }}
+      targetPort: {{ .Values.entryPoints.ccHttps.port }}
+      {{- if and (eq .Values.service.type "NodePort") .Values.entryPoints.ccHttps.nodePort }}
+      nodePort: {{ .Values.entryPoints.ccHttps.nodePort }}
+      {{- end }}
+      protocol: {{ .Values.entryPoints.ccHttps.protocol | default "TCP" }}
+    {{- end }}
+    {{- if .Values.entryPoints.ccStream.enabled }}
+    - name: cc-stream
+      port: {{ .Values.entryPoints.ccStream.port }}
+      targetPort: {{ .Values.entryPoints.ccStream.port }}
+      {{- if and (eq .Values.service.type "NodePort") .Values.entryPoints.ccStream.nodePort }}
+      nodePort: {{ .Values.entryPoints.ccStream.nodePort }}
+      {{- end }}
+      protocol: {{ .Values.entryPoints.ccStream.protocol | default "TCP" }}
+    {{- end }}
+    {{- if .Values.entryPoints.ccTunnel.enabled }}
+    - name: cc-tunnel
+      port: {{ .Values.entryPoints.ccTunnel.port }}
+      targetPort: {{ .Values.entryPoints.ccTunnel.port }}
+      {{- if and (eq .Values.service.type "NodePort") .Values.entryPoints.ccTunnel.nodePort }}
+      nodePort: {{ .Values.entryPoints.ccTunnel.nodePort }}
+      {{- end }}
+      protocol: {{ .Values.entryPoints.ccTunnel.protocol | default "TCP" }}
+    {{- end }}

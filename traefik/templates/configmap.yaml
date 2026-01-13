@@ -1,0 +1,120 @@
+---
+# Static configuration
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "traefik.fullname" . }}-config
+  namespace: {{ include "traefik.namespace" . }}
+  labels:
+    {{- include "traefik.labels" . | nindent 4 }}
+data:
+  traefik.yaml: |
+    # Global configuration
+    global:
+      checkNewVersion: false
+      sendAnonymousUsage: false
+    
+    # Log configuration
+    log:
+      level: {{ .Values.log.level | default "INFO" }}
+      {{- if eq .Values.log.format "json" }}
+      format: json
+      {{- end }}
+
+    {{- if .Values.accessLog.enabled }}
+    # Access log configuration
+    accessLog:
+      format: {{ .Values.accessLog.format | default "json" }}
+      bufferingSize: {{ .Values.accessLog.bufferingSize | default 100 }}
+    {{- end }}
+    
+    # EntryPoints definition
+    entryPoints:
+      {{- if .Values.entryPoints.web.enabled }}
+      # HTTP entry point - port 80
+      web:
+        address: ":{{ .Values.entryPoints.web.port }}"
+      {{- end }}
+      
+      {{- if .Values.entryPoints.websecure.enabled }}
+      # HTTPS entry point - port 443
+      websecure:
+        address: ":{{ .Values.entryPoints.websecure.port }}"
+      {{- end }}
+      
+      {{- if .Values.entryPoints.websocket.enabled }}
+      # WebSocket entry point - port 8080
+      websocket:
+        address: ":{{ .Values.entryPoints.websocket.port }}"
+      {{- end }}
+
+      {{- if .Values.entryPoints.ccWs.enabled }}
+      # CloudCore WebSocket
+      cc-ws:
+        address: ":{{ .Values.entryPoints.ccWs.port }}"
+      {{- end }}
+
+      {{- if .Values.entryPoints.ccHttps.enabled }}
+      # CloudCore HTTPS
+      cc-https:
+        address: ":{{ .Values.entryPoints.ccHttps.port }}"
+      {{- end }}
+
+      {{- if .Values.entryPoints.ccStream.enabled }}
+      # CloudCore Stream
+      cc-stream:
+        address: ":{{ .Values.entryPoints.ccStream.port }}"
+      {{- end }}
+
+      {{- if .Values.entryPoints.ccTunnel.enabled }}
+      # CloudCore Tunnel
+      cc-tunnel:
+        address: ":{{ .Values.entryPoints.ccTunnel.port }}"
+      {{- end }}
+    
+    # Providers configuration
+    providers:
+      {{- if .Values.providers.kubernetesCRD.enabled }}
+      kubernetesCRD:
+        allowCrossNamespace: {{ .Values.providers.kubernetesCRD.allowCrossNamespace }}
+        allowExternalNameServices: {{ .Values.providers.kubernetesCRD.allowExternalNameServices }}
+      {{- end }}
+      
+      {{- if .Values.providers.file.enabled }}
+      # File Provider
+      file:
+        directory: {{ .Values.providers.file.directory }}
+        watch: {{ .Values.providers.file.watch }}
+      {{- end }}
+    
+    {{- if .Values.ping.enabled }}
+    # Ping health check
+    ping:
+      entryPoint: {{ .Values.ping.entryPoint }}
+    {{- end }}
+
+---
+# Dynamic configuration
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "traefik.fullname" . }}-dynamic-config
+  namespace: {{ include "traefik.namespace" . }}
+  labels:
+    {{- include "traefik.labels" . | nindent 4 }}
+data:
+  {{- if .Values.tls.enabled }}
+  # TLS configuration
+  tls.yaml: |
+    tls:
+      options:
+        default:
+          minVersion: {{ .Values.tls.options.minVersion }}
+          sniStrict: {{ .Values.tls.options.sniStrict }}
+      
+      stores:
+        default:
+          defaultCertificate:
+            certFile: /certs/tls.crt
+            keyFile: /certs/tls.key
+  {{- end }}
