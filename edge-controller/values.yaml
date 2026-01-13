@@ -153,19 +153,19 @@ autoInstall:
 
   # Monitoring component
   monitoring:
-    enabled: true
+    enabled: false
     version: "0.1.0"
     values:
       namespace: "observability-system"
 
   duty:
-    enabled: true
+    enabled: false
     version: "0.1.0"
     values:
       namespace: "observability-system"
   # VAST component
   vast:
-    enabled: true # Set to true to enable VAST platform installation
+    enabled: false # Set to true to enable VAST platform installation
     version: "0.1.0"
     namespace: "rise-vast-system" # Namespace for VAST platform
     values:
@@ -181,6 +181,18 @@ autoInstall:
       #   enabled: true
       # hami:
       #   enabled: true
+
+  # Traefik Ingress Controller
+  traefik:
+    enabled: true  # 设置为 true 启用 Traefik 自动安装
+    version: "0.1.0"
+    namespace: "edge-system"
+
+  # Bin Downloader - 静态文件服务器
+  binDownloader:
+    enabled: true  # 设置为 true 启用 Bin Downloader 自动安装
+    version: "0.1.0"
+    namespace: "edge-system"
 
 # Hook configuration
 hooks:
