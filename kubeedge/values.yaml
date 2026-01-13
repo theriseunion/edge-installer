@@ -184,3 +184,10 @@ serviceAccount:
   create: true
   name: cloudcore
   annotations: {}
+
+# Traefik IngressRoute configuration
+traefikIngress:
+  # 总开关，控制是否安装 Traefik IngressRouteTCP 规则
+  enabled: true
+  # 域名配置
+  host: "cloudcore.kubeedge.local"
