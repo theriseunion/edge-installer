@@ -1,14 +1,5 @@
 {{- if and .Values.controller.enabled .Values.autoInstall.traefik.enabled }}
 ---
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: {{ .Values.autoInstall.traefik.namespace | default .Release.Namespace }}
-  labels:
-    {{- include "edge-controller.labels" . | nindent 4 }}
-    app.kubernetes.io/component: namespace
-    app.kubernetes.io/part-of: edge-platform
----
 apiVersion: ext.theriseunion.io/v1alpha1
 kind: Component
 metadata:
