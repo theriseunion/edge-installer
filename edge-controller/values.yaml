@@ -153,19 +153,19 @@ autoInstall:
 
   # Monitoring component
   monitoring:
-    enabled: false
+    enabled: true
     version: "0.1.0"
     values:
       namespace: "observability-system"
 
   duty:
-    enabled: false
+    enabled: true
     version: "0.1.0"
     values:
       namespace: "observability-system"
   # VAST component
   vast:
-    enabled: false # Set to true to enable VAST platform installation
+    enabled: true # Set to true to enable VAST platform installation
     version: "0.1.0"
     namespace: "rise-vast-system" # Namespace for VAST platform
     values:
