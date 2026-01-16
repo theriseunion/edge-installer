@@ -1,4 +1,4 @@
-{{- if .Values.edge.oauth.enabled }}
+{{- if .Values.edge.auth.oauth.enabled }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -8,7 +8,7 @@ metadata:
 data:
   clients.yaml: |
     clients:
-      {{- range .Values.edge.oauth.clients }}
+      {{- range .Values.edge.auth.oauth.clients }}
       {{ .clientId }}: {{ .clientSecret | quote }}
       {{- end }}
 {{- end }}
