@@ -60,3 +60,19 @@ Create the name of the service account to use
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
 {{- end }}
+
+{{- define "terminal.kubectl.image" -}}
+{{- if .Values.global.imageRegistry }}
+{{ .Values.global.imageRegistry }}/{{ .Values.edge.terminal.kubectl.image }}
+{{- else }}
+{{ .Values.edge.terminal.kubectl.image }}
+{{- end }}
+{{- end }}
+
+{{- define "terminal.node.image" -}}
+{{- if .Values.global.imageRegistry }}
+{{ .Values.global.imageRegistry }}/{{ .Values.edge.terminal.node.image }}
+{{- else }}
+{{ .Values.edge.terminal.node.image }}
+{{- end }}
+{{- end }}

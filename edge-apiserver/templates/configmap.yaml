@@ -1,0 +1,108 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "edge-apiserver.fullname" . }}-config
+  labels:
+    {{- include "edge-apiserver.labels" . | nindent 4 }}
+data:
+  apiserver.yaml: |
+    # Edge APIServer 全局配置文件
+    # 配置文件采用YAML格式，支持环境变量覆盖
+
+    # 服务器基础配置
+    server:
+      # HTTP服务端口
+      port: {{ .Values.edge.apiserver.port }}
+
+      # 服务绑定地址
+      host: {{ .Values.edge.apiserver.host | quote }}
+
+      # 超时配置
+      timeout:
+        read: {{ .Values.edge.apiserver.timeout.read | quote }}
+        write: {{ .Values.edge.apiserver.timeout.write | quote }}
+        idle: {{ .Values.edge.apiserver.timeout.idle | quote }}
+
+      # TLS配置（可选）
+      tls:
+        enabled: {{ .Values.edge.apiserver.tls.enabled }}
+        {{- if .Values.edge.apiserver.tls.certFile }}
+        certFile: {{ .Values.edge.apiserver.tls.certFile | quote }}
+        {{- end }}
+        {{- if .Values.edge.apiserver.tls.keyFile }}
+        keyFile: {{ .Values.edge.apiserver.tls.keyFile | quote }}
+        {{- end }}
+
+    # 认证配置
+    auth:
+      # 认证模式：RBAC（推荐）, AlwaysAllow（仅开发环境）
+      mode: {{ .Values.edge.auth.mode | quote }}
+
+      # JWT配置
+      jwt:
+        # JWT密钥（生产环境请通过环境变量设置 JWT_SECRET）
+        secret: {{ .Values.edge.auth.jwt.secret | quote }}
+        # Token过期时间
+        expiry: {{ .Values.edge.auth.jwt.expiry | quote }}
+        # 刷新Token有效期
+        refreshTTL: {{ .Values.edge.auth.jwt.refreshTTL | quote }}
+
+      {{- if .Values.edge.auth.oauth.enabled }}
+      # OAuth配置（可选）
+      oauth:
+        issuer: {{ .Values.edge.auth.oauth.issuer | quote }}
+        clientId: {{ .Values.edge.auth.oauth.clientId | quote }}
+        clientSecret: {{ .Values.edge.auth.oauth.clientSecret | quote }}
+      {{- end }}
+
+    # 指标监控配置
+    metrics:
+      # 是否启用metrics功能
+      enabled: {{ .Values.edge.monitoring.metrics.enabled }}
+
+      # Prometheus配置
+      prometheus:
+        # Prometheus服务端点
+        endpoint: {{ .Values.edge.monitoring.metrics.prometheus.endpoint | quote }}
+
+        # 查询超时时间
+        timeout: {{ .Values.edge.monitoring.metrics.prometheus.timeout | quote }}
+
+        # 最大并发查询数
+        maxConcurrentQueries: {{ .Values.edge.monitoring.metrics.prometheus.maxConcurrentQueries }}
+
+        # 重试配置
+        retryCount: {{ .Values.edge.monitoring.metrics.prometheus.retryCount }}
+        retryInterval: {{ .Values.edge.monitoring.metrics.prometheus.retryInterval | quote }}
+
+        # TLS配置（开发环境可以跳过验证）
+        tlsInsecureSkipVerify: {{ .Values.edge.monitoring.metrics.prometheus.tlsInsecureSkipVerify }}
+
+      # 缓存配置
+      cache:
+        # 是否启用缓存
+        enabled: {{ .Values.edge.monitoring.metrics.cache.enabled }}
+
+        # 缓存过期时间
+        ttl: {{ .Values.edge.monitoring.metrics.cache.ttl | quote }}
+
+        # 缓存大小（条目数）
+        size: {{ .Values.edge.monitoring.metrics.cache.size }}
+
+    # 终端配置
+    terminal:
+      # Kubectl 终端配置
+      kubectl:
+        image: {{ include "terminal.kubectl.image" . | quote }}
+
+      # Node Shell 配置
+      node:
+        image: {{ include "terminal.node.image" . | quote }}
+        timeout: {{ .Values.edge.terminal.node.timeout }}
+        memoryRequest: {{ .Values.edge.terminal.node.memoryRequest | quote }}
+        memoryLimit: {{ .Values.edge.terminal.node.memoryLimit | quote }}
+        cpuRequest: {{ .Values.edge.terminal.node.cpuRequest | quote }}
+        cpuLimit: {{ .Values.edge.terminal.node.cpuLimit | quote }}
+
+      # 文件上传限制
+      uploadFileLimit: {{ .Values.edge.terminal.uploadFileLimit | quote }}
