@@ -13,7 +13,7 @@ image:
   registry: quanzhenglong.com
   repository: edge/console
   pullPolicy: IfNotPresent
-  # tag: ""  # Leave empty to use global.imageTag
+  tag: "main"
 
 imagePullSecrets: []
 nameOverride: ""

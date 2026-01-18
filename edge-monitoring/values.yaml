@@ -17,7 +17,7 @@ monitoringService:
   image:
     registry: "quanzhenglong.com"  # 留空则使用 global.imageRegistry
     repository: edge/monitoring-service
-    # tag: ""  # Leave empty to use global.imageTag
+    tag: "main"
     pullPolicy: IfNotPresent
 
   service:

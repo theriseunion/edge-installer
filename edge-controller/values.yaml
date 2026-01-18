@@ -26,7 +26,7 @@ controller:
 
   image:
     repository: edge/controller
-    # tag: ""  # Leave empty to use global.imageTag
+    tag: "main"
     pullPolicy: IfNotPresent
 
   resources:
@@ -88,6 +88,8 @@ chartmuseum:
   # Fixed service name for chartmuseum
   # This ensures Components can reliably access it at chartmuseum.{namespace}.svc
   fullnameOverride: "chartmuseum"
+  image:
+    tag: "main"
 
   image:
     repository: edge/edge-museum
@@ -137,6 +139,8 @@ autoInstall:
       service:
         type: ClusterIP
         port: 8080
+      image:
+        tag: "main"
 
   # Console component (only for host/all modes)
   console:
@@ -150,6 +154,8 @@ autoInstall:
       env:
         - name: NEXT_PUBLIC_API_BASE_URL
           value: "http://apiserver:8080"
+      image:
+        tag: "main"
 
   # Monitoring component
   monitoring:
@@ -157,12 +163,19 @@ autoInstall:
     version: "0.1.0"
     values:
       namespace: "observability-system"
+      monitoringService:
+        image:
+          tag: "main"
 
   duty:
     enabled: true
     version: "0.1.0"
     values:
       namespace: "observability-system"
+      duty-web:
+        image:
+          tag: "main"
+
   # VAST component
   vast:
     enabled: true # Set to true to enable VAST platform installation

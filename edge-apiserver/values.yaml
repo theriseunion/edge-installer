@@ -18,7 +18,7 @@ image:
   registry: quanzhenglong.com
   repository: edge/apiserver
   pullPolicy: IfNotPresent  # Options: Always, IfNotPresent, Never
-  # tag: ""  # Leave empty to use global.imageTag
+  tag: "main"
 
 # ServiceAccount configuration
 serviceAccount:
