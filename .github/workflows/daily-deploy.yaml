@@ -1,9 +1,6 @@
 name: Daily K8s Cluster Deployment
 
 on:
-  push:
-    branches:
-      - main
   schedule:
     # 每天凌晨 6 点执行（北京时间 UTC+8，所以是 22:00 UTC）
     - cron: '0 22 * * *'
@@ -26,7 +23,6 @@ jobs:
 
       - name: Setup SSH
         run: |
-          pwd && ls
           mkdir -p ~/.ssh
           echo "${{ secrets.DEPLOY_SSH_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
@@ -131,11 +127,28 @@ jobs:
             fi
           EOF
 
-      - name: Step 5 - Install Edge Platform
+      - name: Step 5 - Sync code to remote server
+        run: |
+          echo "====== 同步代码到远程服务器 ======"
+
+          # 使用 rsync 同步代码到 /root/deploy 目录
+          rsync -avz --delete \
+            -e "ssh -o StrictHostKeyChecking=no" \
+            --exclude='.git' \
+            --exclude='node_modules' \
+            --exclude='.github' \
+            ./ root@${{ secrets.DEPLOY_HOST }}:/root/deploy/
+
+          echo "====== 代码同步完成 ======"
+
+      - name: Step 6 - Install Edge Platform
         run: |
           ssh -o StrictHostKeyChecking=no root@${{ secrets.DEPLOY_HOST }} << 'EOF'
             set -e
             echo "====== 开始安装 Edge Platform ======"
+
+            # 切换到部署目录
+            cd /root/deploy
 
             helm upgrade --install controller ./edge-controller \
               --namespace edge-system \
@@ -151,16 +164,16 @@ jobs:
             echo "====== Edge Platform 安装完成 ======"
           EOF
 
-      - name: Step 6 - Wait for Edge Platform pods running
+      - name: Step 7 - Wait for Edge Platform pods running
         run: |
           ssh -o StrictHostKeyChecking=no root@${{ secrets.DEPLOY_HOST }} << 'EOF'
             set -e
             echo "====== 等待 Edge Platform Pod 进入 Running 状态 ======"
 
-            # 最多等待 15 分钟
-            TIMEOUT=900
+            # 最多等待 30 分钟
+            TIMEOUT=1800
             ELAPSED=0
-            INTERVAL=10
+            INTERVAL=20
 
             while [ $ELAPSED -lt $TIMEOUT ]; do
               # 检查 edge-system namespace 中非 Running 状态的 Pod
@@ -186,7 +199,7 @@ jobs:
             fi
           EOF
 
-      - name: Step 7 - Deployment summary
+      - name: Step 8 - Deployment summary
         if: success()
         run: |
           ssh -o StrictHostKeyChecking=no root@${{ secrets.DEPLOY_HOST }} << 'EOF'
