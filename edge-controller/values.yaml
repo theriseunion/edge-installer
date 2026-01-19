@@ -88,12 +88,10 @@ chartmuseum:
   # Fixed service name for chartmuseum
   # This ensures Components can reliably access it at chartmuseum.{namespace}.svc
   fullnameOverride: "chartmuseum"
-  image:
-    tag: "main"
 
   image:
     repository: edge/edge-museum
-    # tag: ""  # Leave empty to use global.imageTag
+    tag: "main"
     pullPolicy: IfNotPresent
 
   resources:
