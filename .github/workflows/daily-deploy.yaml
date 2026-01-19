@@ -26,6 +26,7 @@ jobs:
 
       - name: Setup SSH
         run: |
+          pwd && ls
           mkdir -p ~/.ssh
           echo "${{ secrets.DEPLOY_SSH_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
@@ -92,6 +93,7 @@ jobs:
             echo "====== 开始安装 K8s 集群 ======"
             cd /root
             ./kk create cluster -f config-sample.yaml --with-local-storage -y
+            sleep 180
             echo "====== K8s 集群安装完成 ======"
           EOF
 
