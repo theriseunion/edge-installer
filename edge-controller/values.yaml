@@ -147,8 +147,9 @@ autoInstall:
     values:
       replicaCount: 1
       service:
-        type: ClusterIP
+        type: NodePort
         port: 3000
+        nodePort: 30446
       env:
         - name: NEXT_PUBLIC_API_BASE_URL
           value: "http://apiserver:8080"
