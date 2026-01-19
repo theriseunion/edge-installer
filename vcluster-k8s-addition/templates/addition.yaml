@@ -233,7 +233,7 @@ data:
         keyFile: /etc/ssl/etcd/ssl/node-master-key.pem
     imageRepository: edge
     kind: ClusterConfiguration
-    kubernetesVersion: v1.23.14
+    kubernetesVersion: v1.24.17
     networking:
       dnsDomain: cluster.local
       podSubnet: 10.233.64.0/18 # 修改
