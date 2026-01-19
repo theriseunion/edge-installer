@@ -3,7 +3,7 @@ name: Daily K8s Cluster Deployment
 on:
   schedule:
     # 每天凌晨 6 点执行（北京时间 UTC+8，所以是 22:00 UTC）
-    - cron: '0 12 * * *'
+    - cron: '25 13 * * *'
   workflow_dispatch: # 允许手动触发
 
 env:
@@ -148,9 +148,9 @@ jobs:
             echo "====== 开始安装 Edge Platform ======"
 
             # 切换到部署目录
-            cd /root/deploy
+            cd /root/deploy && \
 
-            helm upgrade --install controller ./edge-controller \
+            helm install controller ./edge-controller \
               --namespace edge-system \
               --set global.imageRegistry=quanzhenglong.com \
               --set controller.image.tag=nightly-{{date 'YYYYMMDD'}} \
