@@ -14,7 +14,7 @@ env:
 jobs:
   deploy:
     name: Deploy K8s Cluster and Edge Platform
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     timeout-minutes: 120
 
     steps:
@@ -143,17 +143,17 @@ jobs:
 
       - name: Step 6 - Install Edge Platform
         run: |
-          ssh -o StrictHostKeyChecking=no root@${{ secrets.DEPLOY_HOST }} << 'EOF'
+          # 在 GitHub Runner 上生成夜间构建标签
+          NIGHTLY_TAG="nightly-$(date +'%Y%m%d')"
+          echo "使用镜像标签: ${NIGHTLY_TAG}"
+
+          ssh -o StrictHostKeyChecking=no root@${{ secrets.DEPLOY_HOST }} << EOF
             set -e
             echo "====== 开始安装 Edge Platform ======"
 
-            # 生成夜间构建标签
-            NIGHTLY_TAG="nightly-$(date +'%Y%m%d')"
-            echo "使用镜像标签: ${NIGHTLY_TAG}"
-
             # 切换到部署目录
-            cd /root/deploy 
-            
+            cd /root/deploy
+
             helm upgrade --install controller ./edge-controller \
               --namespace edge-system \
               --set global.imageRegistry=quanzhenglong.com \
