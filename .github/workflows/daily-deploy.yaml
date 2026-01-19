@@ -147,17 +147,21 @@ jobs:
             set -e
             echo "====== 开始安装 Edge Platform ======"
 
-            # 切换到部署目录
-            cd /root/deploy && \
+            # 生成夜间构建标签
+            NIGHTLY_TAG="nightly-$(date +'%Y%m%d')"
+            echo "使用镜像标签: ${NIGHTLY_TAG}"
 
-            helm install controller ./edge-controller \
+            # 切换到部署目录
+            cd /root/deploy 
+            
+            helm upgrade --install controller ./edge-controller \
               --namespace edge-system \
               --set global.imageRegistry=quanzhenglong.com \
-              --set controller.image.tag=nightly-{{date 'YYYYMMDD'}} \
-              --set chartmuseum.image.tag=nightly-{{date 'YYYYMMDD'}} \
-              --set autoInstall.apiserver.values.image.tag=nightly-{{date 'YYYYMMDD'}} \
-              --set autoInstall.console.values.image.tag=nightly-{{date 'YYYYMMDD'}} \
-              --set autoInstall.monitoring.values.monitoringService.image.tag=nightly-{{date 'YYYYMMDD'}} \
+              --set controller.image.tag=${NIGHTLY_TAG} \
+              --set chartmuseum.image.tag=${NIGHTLY_TAG} \
+              --set autoInstall.apiserver.values.image.tag=${NIGHTLY_TAG} \
+              --set autoInstall.console.values.image.tag=${NIGHTLY_TAG} \
+              --set autoInstall.monitoring.values.monitoringService.image.tag=${NIGHTLY_TAG} \
               --create-namespace
 
             echo "====== Edge Platform 安装完成 ======"
