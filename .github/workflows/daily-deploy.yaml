@@ -1,10 +1,6 @@
 name: Daily K8s Cluster Deployment
 
 on:
-  push:
-    branches:
-      - main
-
   schedule:
     # 每天凌晨 6 点执行（北京时间 UTC+8，所以是 22:00 UTC）
     - cron: '0 22 * * *'
@@ -157,12 +153,11 @@ jobs:
             helm upgrade --install controller ./edge-controller \
               --namespace edge-system \
               --set global.imageRegistry=quanzhenglong.com \
-              --set controller.image.tag=main \
-              --set chartmuseum.image.tag=main \
-              --set autoInstall.apiserver.values.image.tag=main \
-              --set autoInstall.console.values.image.tag=main \
-              --set autoInstall.monitoring.values.monitoringService.image.tag=main \
-              --set autoInstall.duty.values.duty-web.image.tag=feat-simple-duty-test \
+              --set controller.image.tag=nightly-{{date 'YYYYMMDD'}} \
+              --set chartmuseum.image.tag=nightly-{{date 'YYYYMMDD'}} \
+              --set autoInstall.apiserver.values.image.tag=nightly-{{date 'YYYYMMDD'}} \
+              --set autoInstall.console.values.image.tag=nightly-{{date 'YYYYMMDD'}} \
+              --set autoInstall.monitoring.values.monitoringService.image.tag=nightly-{{date 'YYYYMMDD'}} \
               --create-namespace
 
             echo "====== Edge Platform 安装完成 ======"
