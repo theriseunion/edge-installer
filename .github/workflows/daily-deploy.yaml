@@ -3,7 +3,7 @@ name: Daily K8s Cluster Deployment
 on:
   schedule:
     # 每天凌晨 6 点执行（北京时间 UTC+8，所以是 22:00 UTC）
-    - cron: '0 22 * * *'
+    - cron: '0 12 * * *'
   workflow_dispatch: # 允许手动触发
 
 env:
