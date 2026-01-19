@@ -1,6 +1,10 @@
 name: Daily K8s Cluster Deployment
 
 on:
+  push:
+    branches:
+      - main
+
   schedule:
     # 每天凌晨 6 点执行（北京时间 UTC+8，所以是 22:00 UTC）
     - cron: '0 22 * * *'
