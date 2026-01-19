@@ -97,7 +97,7 @@ duty-web:
   image:
     registry: "quanzhenglong.com"
     repository: "camp/console-ui"
-    tag: "feat-simple-duty-09"
+    tag: "main"
     pullPolicy: IfNotPresent
   containerPort: 80
   svc:
