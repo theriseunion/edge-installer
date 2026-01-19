@@ -90,7 +90,7 @@ data:
       # Node Shell 配置
       node:
         image: {{ include "terminal.node.image" . | quote }}
-        timeout: {{ .Values.edge.terminal.node.timeout | quote }}
+        timeout: {{ .Values.edge.terminal.node.timeout }}
         memoryRequest: {{ .Values.edge.terminal.node.memoryRequest | quote }}
         memoryLimit: {{ .Values.edge.terminal.node.memoryLimit | quote }}
         cpuRequest: {{ .Values.edge.terminal.node.cpuRequest | quote }}

@@ -62,17 +62,17 @@ Create the name of the service account to use
 {{- end }}
 
 {{- define "terminal.kubectl.image" -}}
-{{- if .Values.global.imageRegistry }}
-{{ .Values.global.imageRegistry }}/{{ .Values.edge.terminal.kubectl.image.repository }}
-{{- else }}
-{{ .Values.edge.terminal.kubectl.image.repository }}
-{{- end }}
-{{- end }}
+{{- if .Values.global.imageRegistry -}}
+{{ .Values.global.imageRegistry }}/{{ .Values.edge.terminal.kubectl.image.repository -}}
+{{- else -}}
+{{ .Values.edge.terminal.kubectl.image.repository -}}
+{{- end -}}
+{{- end -}}
 
 {{- define "terminal.node.image" -}}
-{{- if .Values.global.imageRegistry }}
-{{ .Values.global.imageRegistry }}/{{ .Values.edge.terminal.node.image.repository }}
-{{- else }}
-{{ .Values.edge.terminal.node.image.repository }}
-{{- end }}
-{{- end }}
+{{- if .Values.global.imageRegistry -}}
+{{ .Values.global.imageRegistry }}/{{ .Values.edge.terminal.node.image.repository -}}
+{{- else -}}
+{{ .Values.edge.terminal.node.image.repository -}}
+{{- end -}}
+{{- end -}}
