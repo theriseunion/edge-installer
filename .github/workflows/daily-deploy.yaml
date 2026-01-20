@@ -154,6 +154,8 @@ jobs:
             # 切换到部署目录
             cd /root/deploy
 
+            kubectl create ns observability-system
+
             helm upgrade --install controller ./edge-controller \
               --namespace edge-system \
               --set global.imageRegistry=quanzhenglong.com \
