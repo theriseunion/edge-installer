@@ -24,7 +24,7 @@ spec:
         runAsGroup: 65532
       containers:
       - name: monitoring-service
-        image: "{{ default .Values.monitoringService.image.registry .Values.global.imageRegistry }}/{{ .Values.monitoringService.image.repository }}:{{ .Values.monitoringService.image.tag | default .Values.global.imageTag }}"
+        image: "{{ default .Values.monitoringService.image.registry .Values.global.imageRegistry }}/{{ .Values.monitoringService.image.repository }}:{{ .Values.monitoringService.image.tag | default .Chart.AppVersion }}"
         imagePullPolicy: {{ .Values.monitoringService.image.pullPolicy }}
         ports:
         - name: http

@@ -247,10 +247,14 @@ autoInstall:
 ### 自定义安装
 
 ```bash
-# 自定义镜像仓库
+# 自定义镜像仓库和版本
 helm install edge-platform ./edge-controller \
   --set global.imageRegistry=your-registry.com/edge \
-  --set global.imageTag=v1.0.0
+  --set controller.image.tag=v1.0.0 \
+  --set chartmuseum.image.tag=v1.0.0 \
+  --set autoInstall.apiserver.values.image.tag=v1.0.0 \
+  --set autoInstall.console.values.image.tag=v1.0.0 \
+  --set autoInstall.monitoring.values.monitoringService.image.tag=v1.0.0
 
 # 自定义组件配置
 helm install edge-platform ./edge-controller \

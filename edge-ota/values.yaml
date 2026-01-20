@@ -21,7 +21,7 @@ image:
   registry: ghcr.io
   repository: outpostos/edge-ota/server
   pullPolicy: Always
-  # tag: ""  # Leave empty to use global.imageTag
+  tag: "main"  # Leave empty to use Chart.AppVersion
 
 # Image pull secrets (if using private registry)
 imagePullSecrets: []

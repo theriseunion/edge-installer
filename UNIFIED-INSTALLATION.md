@@ -113,7 +113,11 @@ chartmuseum:
 helm install edge-platform ./edge-controller \
   --set global.mode=host \
   --set global.imageRegistry=your-registry.com/edge \
-  --set global.imageTag=v1.0.0 \
+  --set controller.image.tag=v1.0.0 \
+  --set chartmuseum.image.tag=v1.0.0 \
+  --set autoInstall.apiserver.values.image.tag=v1.0.0 \
+  --set autoInstall.console.values.image.tag=v1.0.0 \
+  --set autoInstall.monitoring.values.monitoringService.image.tag=v1.0.0 \
   --set autoInstall.apiserver.values.replicaCount=3 \
   --set autoInstall.apiserver.values.resources.requests.cpu=1000m \
   --set autoInstall.apiserver.values.resources.requests.memory=2Gi
@@ -125,7 +129,10 @@ helm install edge-platform ./edge-controller \
 helm install edge-platform ./edge-controller \
   --set global.mode=member \
   --set global.imageRegistry=local/edge \
-  --set global.imageTag=latest \
+  --set controller.image.tag=latest \
+  --set chartmuseum.image.tag=latest \
+  --set autoInstall.apiserver.values.image.tag=latest \
+  --set autoInstall.monitoring.values.monitoringService.image.tag=latest \
   --set autoInstall.monitoring.enabled=false
 ```
 
