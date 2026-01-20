@@ -1,12 +1,12 @@
 # Edge Prometheus Agent 配置
 image:
-  registry: "quay.io"
-  repository: prometheus/prometheus
+  registry: "quanzhenglong.com"
+  repository: edge/prometheus
   tag: v2.50.1
   pullPolicy: IfNotPresent
 
 # busybox 镜像（用于 initContainers）
-busyboxImage: "busybox:1.36"
+busyboxImage: "quanzhenglong.com/edge/busybox:1.36"
 
 # DCGM Exporter 配置（GPU 指标采集）
 dcgmExporter:
