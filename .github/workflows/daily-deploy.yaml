@@ -30,7 +30,7 @@ jobs:
 
       - name: Step 1 - Uninstall existing K8s cluster
         run: |
-          ssh -o StrictHostKeyChecking=no root@${{ secrets.DEPLOY_HOST }} << 'EOF'
+          ssh -t -o StrictHostKeyChecking=no root@${{ secrets.DEPLOY_HOST }} << 'EOF'
             set -e
             echo "====== 开始卸载 K8s 集群 ======"
             cd /root
@@ -43,7 +43,7 @@ jobs:
           echo "等待 3 分钟后检查端口..."
           sleep 180
 
-          ssh -o StrictHostKeyChecking=no root@${{ secrets.DEPLOY_HOST }} << 'EOF'
+          ssh -t -o StrictHostKeyChecking=no root@${{ secrets.DEPLOY_HOST }} << 'EOF'
             set -e
             echo "====== 检查端口占用情况 ======"
             PORTS=(10250 10257 10259)
@@ -84,7 +84,7 @@ jobs:
 
       - name: Step 3 - Install K8s cluster
         run: |
-          ssh -o StrictHostKeyChecking=no root@${{ secrets.DEPLOY_HOST }} << 'EOF'
+          ssh -t -o StrictHostKeyChecking=no root@${{ secrets.DEPLOY_HOST }} << 'EOF'
             set -e
             echo "====== 开始安装 K8s 集群 ======"
             cd /root
@@ -95,7 +95,7 @@ jobs:
 
       - name: Step 4 - Wait for all pods running
         run: |
-          ssh -o StrictHostKeyChecking=no root@${{ secrets.DEPLOY_HOST }} << 'EOF'
+          ssh -t -o StrictHostKeyChecking=no root@${{ secrets.DEPLOY_HOST }} << 'EOF'
             set -e
             echo "====== 等待所有 Pod 进入 Running 状态 ======"
 
@@ -147,7 +147,7 @@ jobs:
           NIGHTLY_TAG="nightly-$(date +'%Y%m%d')"
           echo "使用镜像标签: ${NIGHTLY_TAG}"
 
-          ssh -o StrictHostKeyChecking=no root@${{ secrets.DEPLOY_HOST }} << EOF
+          ssh -t -o StrictHostKeyChecking=no root@${{ secrets.DEPLOY_HOST }} << EOF
             set -e
             echo "====== 开始安装 Edge Platform ======"
 
@@ -169,7 +169,7 @@ jobs:
 
       - name: Step 7 - Wait for Edge Platform pods running
         run: |
-          ssh -o StrictHostKeyChecking=no root@${{ secrets.DEPLOY_HOST }} << 'EOF'
+          ssh -t -o StrictHostKeyChecking=no root@${{ secrets.DEPLOY_HOST }} << 'EOF'
             set -e
             echo "====== 等待 Edge Platform Pod 进入 Running 状态 ======"
 
@@ -205,7 +205,7 @@ jobs:
       - name: Step 8 - Deployment summary
         if: success()
         run: |
-          ssh -o StrictHostKeyChecking=no root@${{ secrets.DEPLOY_HOST }} << 'EOF'
+          ssh -t -o StrictHostKeyChecking=no root@${{ secrets.DEPLOY_HOST }} << 'EOF'
             echo "====== 部署完成摘要 ======"
             echo ""
             echo "K8s 集群状态:"
