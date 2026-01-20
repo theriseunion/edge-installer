@@ -227,8 +227,20 @@ jobs:
         run: |
           rm -f ~/.ssh/id_rsa
 
-      - name: Notify on failure
+      - name: Send Success Notification 
+        uses: jefferyjob/notify-actions@v1
+        if: success()
+        with:
+          NOTICE_TYPE: 'dingtalk'
+          MSG_TYPE: 'markdown'
+          STATUS: '1'
+          WEBHOOK_URL: ${{ secrets.DINGTALK_WEBHOOK }}
+      
+      - name: Send Failure Notification
+        uses: jefferyjob/notify-actions@v1
         if: failure()
-        run: |
-          echo "部署失败！请检查日志。"
-          # 可以在这里添加其他通知方式，如发送邮件、Slack 等
+        with:
+          NOTICE_TYPE: 'dingtalk'
+          MSG_TYPE: 'markdown'
+          STATUS: '0'
+          WEBHOOK_URL: ${{ secrets.DINGTALK_WEBHOOK }}
