@@ -17,7 +17,7 @@ dcgmExporter:
 clusterName: "edge-cluster-1"
 
 # 云端 Remote Write 地址
-remoteWriteUrl: "http://192.168.1.100:30990/api/v1/write"
+remoteWriteUrl: "http://host.rise.io:30990/api/v1/write"
 
 # 采集间隔
 scrapeInterval: 30s

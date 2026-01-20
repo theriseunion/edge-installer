@@ -60,8 +60,8 @@ dutyProxy:
 edgeRemoteWrite:
   # 是否启用边缘数据接收
   enabled: true
-  # NodePort 端口号，边缘节点通过此端口推送数据
-  nodePort: 30990
+  # 通过 Traefik IngressRoute 访问的域名
+  remote-hostname: host.rise.io
 
 # kube-prometheus-stack 覆盖配置
 kube-prometheus-stack:
@@ -72,12 +72,3 @@ kube-prometheus-stack:
       # 为边缘数据添加外部标签，便于区分数据来源
       externalLabels:
         cluster: "cloud"
-    # 暴露 Prometheus 服务，用于接收边缘 remote write
-    service:
-      type: NodePort
-      nodePort: 30990
-      additionalPorts:
-        - name: remote-write
-          port: 9090
-          targetPort: 9090
-          nodePort: 30990
