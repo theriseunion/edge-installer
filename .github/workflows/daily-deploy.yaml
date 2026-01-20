@@ -16,6 +16,8 @@ jobs:
     name: Deploy K8s Cluster and Edge Platform
     runs-on: ubuntu-latest
     timeout-minutes: 120
+    env:
+      TZ: Asia/Shanghai
 
     steps:
       - name: Checkout code
