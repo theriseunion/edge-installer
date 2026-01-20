@@ -74,6 +74,11 @@ spec:
               containerPort: {{ .Values.entryPoints.ccTunnel.port }}
               protocol: {{ .Values.entryPoints.ccTunnel.protocol | default "TCP" }}
             {{- end }}
+            {{- if .Values.entryPoints.prometheusRemoteWrite.enabled }}
+            - name: prom-rw
+              containerPort: {{ .Values.entryPoints.prometheusRemoteWrite.port }}
+              protocol: {{ .Values.entryPoints.prometheusRemoteWrite.protocol | default "TCP" }}
+            {{- end }}
           volumeMounts:
             - name: config
               mountPath: /etc/traefik

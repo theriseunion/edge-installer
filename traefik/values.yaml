@@ -106,6 +106,13 @@ entryPoints:
     nodePort: 30004
     protocol: TCP
 
+  # Prometheus Remote Write - port 9090 exposed as NodePort 30990
+  prometheusRemoteWrite:
+    enabled: true
+    port: 9090
+    nodePort: 30990
+    protocol: TCP
+
 # Providers configuration
 providers:
   kubernetesCRD:

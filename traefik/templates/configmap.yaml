@@ -71,6 +71,12 @@ data:
       cc-tunnel:
         address: ":{{ .Values.entryPoints.ccTunnel.port }}"
       {{- end }}
+
+      {{- if .Values.entryPoints.prometheusRemoteWrite.enabled }}
+      # Prometheus Remote Write
+      prometheusRemoteWrite:
+        address: ":{{ .Values.entryPoints.prometheusRemoteWrite.port }}"
+      {{- end }}
     
     # Providers configuration
     providers:

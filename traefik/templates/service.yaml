@@ -77,3 +77,12 @@ spec:
       {{- end }}
       protocol: {{ .Values.entryPoints.ccTunnel.protocol | default "TCP" }}
     {{- end }}
+    {{- if .Values.entryPoints.prometheusRemoteWrite.enabled }}
+    - name: prom-rw
+      port: {{ .Values.entryPoints.prometheusRemoteWrite.port }}
+      targetPort: {{ .Values.entryPoints.prometheusRemoteWrite.port }}
+      {{- if and (eq .Values.service.type "NodePort") .Values.entryPoints.prometheusRemoteWrite.nodePort }}
+      nodePort: {{ .Values.entryPoints.prometheusRemoteWrite.nodePort }}
+      {{- end }}
+      protocol: {{ .Values.entryPoints.prometheusRemoteWrite.protocol | default "TCP" }}
+    {{- end }}
