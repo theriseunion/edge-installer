@@ -3,7 +3,7 @@ name: Daily K8s Cluster Deployment
 on:
   schedule:
     # 每天凌晨 6 点执行（北京时间 UTC+8，所以是 22:00 UTC）
-    - cron: '25 13 * * *'
+    - cron: '0 22 * * *'
   workflow_dispatch: # 允许手动触发
 
 env:
@@ -30,7 +30,7 @@ jobs:
 
       - name: Step 1 - Uninstall existing K8s cluster
         run: |
-          ssh -o StrictHostKeyChecking=no root@${{ secrets.DEPLOY_HOST }} << 'EOF'
+          ssh -t -o StrictHostKeyChecking=no root@${{ secrets.DEPLOY_HOST }} << 'EOF'
             set -e
             echo "====== 开始卸载 K8s 集群 ======"
             cd /root
@@ -43,7 +43,7 @@ jobs:
           echo "等待 3 分钟后检查端口..."
           sleep 180
 
-          ssh -o StrictHostKeyChecking=no root@${{ secrets.DEPLOY_HOST }} << 'EOF'
+          ssh -t -o StrictHostKeyChecking=no root@${{ secrets.DEPLOY_HOST }} << 'EOF'
             set -e
             echo "====== 检查端口占用情况 ======"
             PORTS=(10250 10257 10259)
@@ -84,7 +84,7 @@ jobs:
 
       - name: Step 3 - Install K8s cluster
         run: |
-          ssh -o StrictHostKeyChecking=no root@${{ secrets.DEPLOY_HOST }} << 'EOF'
+          ssh -t -o StrictHostKeyChecking=no root@${{ secrets.DEPLOY_HOST }} << 'EOF'
             set -e
             echo "====== 开始安装 K8s 集群 ======"
             cd /root
@@ -95,7 +95,7 @@ jobs:
 
       - name: Step 4 - Wait for all pods running
         run: |
-          ssh -o StrictHostKeyChecking=no root@${{ secrets.DEPLOY_HOST }} << 'EOF'
+          ssh -t -o StrictHostKeyChecking=no root@${{ secrets.DEPLOY_HOST }} << 'EOF'
             set -e
             echo "====== 等待所有 Pod 进入 Running 状态 ======"
 
@@ -143,21 +143,27 @@ jobs:
 
       - name: Step 6 - Install Edge Platform
         run: |
-          ssh -o StrictHostKeyChecking=no root@${{ secrets.DEPLOY_HOST }} << 'EOF'
+          # 在 GitHub Runner 上生成夜间构建标签
+          NIGHTLY_TAG="nightly-$(date +'%Y%m%d')"
+          echo "使用镜像标签: ${NIGHTLY_TAG}"
+
+          ssh -t -o StrictHostKeyChecking=no root@${{ secrets.DEPLOY_HOST }} << EOF
             set -e
             echo "====== 开始安装 Edge Platform ======"
 
             # 切换到部署目录
-            cd /root/deploy && \
+            cd /root/deploy
 
-            helm install controller ./edge-controller \
+            kubectl create ns observability-system
+
+            helm upgrade --install controller ./edge-controller \
               --namespace edge-system \
               --set global.imageRegistry=quanzhenglong.com \
-              --set controller.image.tag=nightly-{{date 'YYYYMMDD'}} \
-              --set chartmuseum.image.tag=nightly-{{date 'YYYYMMDD'}} \
-              --set autoInstall.apiserver.values.image.tag=nightly-{{date 'YYYYMMDD'}} \
-              --set autoInstall.console.values.image.tag=nightly-{{date 'YYYYMMDD'}} \
-              --set autoInstall.monitoring.values.monitoringService.image.tag=nightly-{{date 'YYYYMMDD'}} \
+              --set controller.image.tag=${NIGHTLY_TAG} \
+              --set chartmuseum.image.tag=${NIGHTLY_TAG} \
+              --set autoInstall.apiserver.values.image.tag=${NIGHTLY_TAG} \
+              --set autoInstall.console.values.image.tag=${NIGHTLY_TAG} \
+              --set autoInstall.monitoring.values.monitoringService.image.tag=${NIGHTLY_TAG} \
               --create-namespace
 
             echo "====== Edge Platform 安装完成 ======"
@@ -165,7 +171,7 @@ jobs:
 
       - name: Step 7 - Wait for Edge Platform pods running
         run: |
-          ssh -o StrictHostKeyChecking=no root@${{ secrets.DEPLOY_HOST }} << 'EOF'
+          ssh -t -o StrictHostKeyChecking=no root@${{ secrets.DEPLOY_HOST }} << 'EOF'
             set -e
             echo "====== 等待 Edge Platform Pod 进入 Running 状态 ======"
 
@@ -201,7 +207,7 @@ jobs:
       - name: Step 8 - Deployment summary
         if: success()
         run: |
-          ssh -o StrictHostKeyChecking=no root@${{ secrets.DEPLOY_HOST }} << 'EOF'
+          ssh -t -o StrictHostKeyChecking=no root@${{ secrets.DEPLOY_HOST }} << 'EOF'
             echo "====== 部署完成摘要 ======"
             echo ""
             echo "K8s 集群状态:"
