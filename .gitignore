@@ -1,1 +1,2 @@
-.vscode
+.vscode*.tar
+# Docker image tar files
