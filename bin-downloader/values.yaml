@@ -53,7 +53,7 @@ podAnnotations: {}
 ingressRoute:
   enabled: true
   # Host for the IngressRoute
-  host: "bin-downloader.default.local"
+  host: "bin-downloader.rise.io"
   # Entry point (web for HTTP, websecure for HTTPS)
   entryPoint: web
   # Priority for the route

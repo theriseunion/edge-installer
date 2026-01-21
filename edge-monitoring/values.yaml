@@ -63,6 +63,12 @@ edgeRemoteWrite:
   # 通过 Traefik IngressRoute 访问的域名
   remote-hostname: host.rise.io
 
+# edge-prometheus-agent 子 chart 配置
+# 边缘节点上的 Prometheus Agent，推送监控数据到云端
+edge-prometheus-agent:
+  # 云端 Remote Write 地址，格式: http://{clusterName}.rise.io:30990/api/v1/write
+  remoteWriteUrl: "http://host.rise.io:30990/api/v1/write"
+
 # kube-prometheus-stack 覆盖配置
 kube-prometheus-stack:
   prometheus:
