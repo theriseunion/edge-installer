@@ -368,19 +368,19 @@ data:
     volumeStatsAggPeriod: 0s
 kind: ConfigMap
 metadata:
-  name: kubelet-config-1.23
+  name: kubelet-config-1.24
   namespace: kube-system
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
-  name: kubeadm:kubelet-config-1.23
+  name: kubeadm:kubelet-config-1.24
   namespace: kube-system
 rules:
   - apiGroups:
       - ""
     resourceNames:
-      - kubelet-config-1.23
+      - kubelet-config-1.24
     resources:
       - configmaps
     verbs:
@@ -389,12 +389,12 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
-  name: kubeadm:kubelet-config-1.23
+  name: kubeadm:kubelet-config-1.24
   namespace: kube-system
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role
-  name: kubeadm:kubelet-config-1.23
+  name: kubeadm:kubelet-config-1.24
 subjects:
   - apiGroup: rbac.authorization.k8s.io
     kind: Group
