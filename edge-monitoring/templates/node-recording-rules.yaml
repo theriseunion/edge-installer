@@ -20,23 +20,33 @@ spec:
       interval: 30s
       rules:
         # Node CPU total cores
+        # Use label_replace to copy node -> instance for Monitoring Service compatibility
         - record: node_cpu_total
           expr: |
-            count by (cluster, instance) (
-              node_cpu_seconds_total{job="node-exporter", mode="idle"}
+            label_replace(
+              count by (cluster, node) (
+                node_cpu_seconds_total{job="node-exporter", mode="idle"}
+              ),
+              "instance", "$1", "node", "(.*)"
             )
 
         # Node CPU usage (cores in use)
         - record: node_cpu_usage
           expr: |
-            sum by (cluster, instance) (
-              rate(node_cpu_seconds_total{job="node-exporter", mode!="idle"}[5m])
+            label_replace(
+              sum by (cluster, node) (
+                rate(node_cpu_seconds_total{job="node-exporter", mode!="idle"}[5m])
+              ),
+              "instance", "$1", "node", "(.*)"
             )
 
         # Node CPU utilisation (0-1 ratio)
         - record: node_cpu_utilisation
           expr: |
-            node_cpu_usage / node_cpu_total
+            label_replace(
+              node_cpu_usage / on(cluster, node) node_cpu_total,
+              "instance", "$1", "node", "(.*)"
+            )
 
         # Node CPU allocatable (from K8s)
         - record: node_cpu_allocatable_total
@@ -46,27 +56,46 @@ spec:
     - name: node-memory-metrics
       interval: 30s
       rules:
-        # Node memory total
+        # Node memory total - aggregate by node first, then add instance label
         - record: node_memory_total
           expr: |
-            node_memory_MemTotal_bytes{job="node-exporter"}
+            label_replace(
+              sum without (instance) (
+                sum by (cluster, node, instance) (node_memory_MemTotal_bytes{job="node-exporter"})
+              ),
+              "instance", "$1", "node", "(.*)"
+            )
 
         # Node memory available
         - record: node_memory_available
           expr: |
-            node_memory_MemAvailable_bytes{job="node-exporter"}
+            label_replace(
+              sum without (instance) (
+                sum by (cluster, node, instance) (node_memory_MemAvailable_bytes{job="node-exporter"})
+              ),
+              "instance", "$1", "node", "(.*)"
+            )
 
-        # Node memory usage
+        # Node memory usage (internal)
         - record: node_memory_usage
           expr: |
-            node_memory_MemTotal_bytes{job="node-exporter"}
-            -
-            node_memory_MemAvailable_bytes{job="node-exporter"}
+            label_replace(
+              node_memory_total - on(cluster, node) node_memory_available,
+              "instance", "$1", "node", "(.*)"
+            )
+
+        # Node memory used (alias for API compatibility)
+        - record: node_memory_used
+          expr: |
+            node_memory_usage
 
         # Node memory utilisation (0-1 ratio)
         - record: node_memory_utilisation
           expr: |
-            node_memory_usage / node_memory_total
+            label_replace(
+              node_memory_usage / on(cluster, node) node_memory_total,
+              "instance", "$1", "node", "(.*)"
+            )
 
         # Node memory allocatable (from K8s)
         - record: node_memory_allocatable_total
@@ -79,36 +108,51 @@ spec:
         # Node disk capacity (bytes) - root filesystem only
         - record: node_disk_size_capacity
           expr: |
-            sum by (cluster, instance) (
-              node_filesystem_size_bytes{job="node-exporter", mountpoint="/", fstype!~"tmpfs|fuse.*"}
+            label_replace(
+              sum by (cluster, node) (
+                node_filesystem_size_bytes{job="node-exporter", mountpoint="/", fstype!~"tmpfs|fuse.*"}
+              ),
+              "instance", "$1", "node", "(.*)"
             )
 
         # Node disk available (bytes)
         - record: node_disk_size_available
           expr: |
-            sum by (cluster, instance) (
-              node_filesystem_avail_bytes{job="node-exporter", mountpoint="/", fstype!~"tmpfs|fuse.*"}
+            label_replace(
+              sum by (cluster, node) (
+                node_filesystem_avail_bytes{job="node-exporter", mountpoint="/", fstype!~"tmpfs|fuse.*"}
+              ),
+              "instance", "$1", "node", "(.*)"
             )
 
         # Node disk usage (bytes)
         - record: node_disk_size_usage
           expr: |
-            node_disk_size_capacity - node_disk_size_available
+            label_replace(
+              node_disk_size_capacity - on(cluster, node) node_disk_size_available,
+              "instance", "$1", "node", "(.*)"
+            )
 
         # Node disk inode total
         - record: node_disk_inode_total
           expr: |
-            sum by (cluster, instance) (
-              node_filesystem_files{job="node-exporter", mountpoint="/", fstype!~"tmpfs|fuse.*"}
+            label_replace(
+              sum by (cluster, node) (
+                node_filesystem_files{job="node-exporter", mountpoint="/", fstype!~"tmpfs|fuse.*"}
+              ),
+              "instance", "$1", "node", "(.*)"
             )
 
         # Node disk inode usage
         - record: node_disk_inode_usage
           expr: |
-            sum by (cluster, instance) (
-              node_filesystem_files{job="node-exporter", mountpoint="/", fstype!~"tmpfs|fuse.*"}
-              -
-              node_filesystem_files_free{job="node-exporter", mountpoint="/", fstype!~"tmpfs|fuse.*"}
+            label_replace(
+              sum by (cluster, node) (
+                node_filesystem_files{job="node-exporter", mountpoint="/", fstype!~"tmpfs|fuse.*"}
+                -
+                node_filesystem_files_free{job="node-exporter", mountpoint="/", fstype!~"tmpfs|fuse.*"}
+              ),
+              "instance", "$1", "node", "(.*)"
             )
 
         # Node ephemeral storage allocatable

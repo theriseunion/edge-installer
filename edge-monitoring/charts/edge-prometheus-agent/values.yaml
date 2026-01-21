@@ -51,3 +51,12 @@ resources:
 # 节点选择器 - 限定只在边缘节点上部署
 nodeSelector:
   node.theriseunion.io/type: "edge"
+
+# hostAliases - 用于边缘节点无法通过 DNS 解析主机名的场景
+# 将主机名映射到 IP 地址，注入到 Pod 的 /etc/hosts
+# 示例:
+#   hostAliases:
+#     - ip: "188.239.62.17"
+#       hostnames:
+#         - "host.rise.io"
+hostAliases: []
