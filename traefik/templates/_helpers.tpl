@@ -74,7 +74,7 @@ This generates a CA and signs a certificate for Traefik
 {{- define "traefik.genCerts" -}}
 {{- $altNames := list }}
 {{- $altNames = append $altNames "*.local" }}
-{{- $altNames = append $altNames "*.vcluster.local" }}
+{{- $altNames = append $altNames "*.rise.io" }}
 {{- $altNames = append $altNames (printf "traefik.%s.svc.cluster.local" (include "traefik.namespace" .)) }}
 {{- $altNames = append $altNames (printf "traefik.%s.svc" (include "traefik.namespace" .)) }}
 {{- $altNames = append $altNames "traefik" }}
