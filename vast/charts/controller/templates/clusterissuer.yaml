@@ -1,13 +1,13 @@
 {{- if and .Values.enabled .Values.webhook.enabled }}
 {{- if and (eq (include "controller.certManagerEnabled" .) "true") (or (.Values.webhook.cert.issuer.create | default false) (.Values.webhook.cert.createIssuer | default false)) }}
 ---
+# ClusterIssuer for webhook TLS certificates
+# Note: No post-install hook to ensure it's created before Certificate resources
 apiVersion: cert-manager.io/v1
 kind: ClusterIssuer
 metadata:
   name: {{ if and .Values.webhook.cert.issuer .Values.webhook.cert.issuer.name }}{{ .Values.webhook.cert.issuer.name }}{{ else }}selfsigned-issuer{{ end }}
   annotations:
-    "helm.sh/hook": post-install,post-upgrade
-    "helm.sh/hook-weight": "1"
     "helm.sh/resource-policy": keep
   labels:
     {{- include "controller.labels" . | nindent 4 }}
