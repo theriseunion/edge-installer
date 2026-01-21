@@ -1,4 +1,15 @@
 # Edge Prometheus Agent 配置
+# 用于边缘节点采集监控数据并上报到对应集群的 Prometheus
+#
+# Remote Write URL 自动拼接规则:
+#   http://{clusterName}.{remoteWrite.baseDomain}:{remoteWrite.port}/api/v1/write
+#
+# 示例:
+#   clusterName: xxx
+#   remoteWrite.baseDomain: rise.io
+#   remoteWrite.port: 30990
+#   => http://xxx.rise.io:30990/api/v1/write
+
 image:
   registry: "quanzhenglong.com"
   repository: edge/prometheus
@@ -14,10 +25,17 @@ dcgmExporter:
   port: 9400
 
 # 边缘集群名称
-clusterName: "edge-cluster-1"
+# 此值用于：
+#   1. 作为 external_labels.cluster 标识数据来源
+#   2. 拼接 Remote Write URL（{clusterName}.{baseDomain}）
+clusterName: "host"
 
-# 云端 Remote Write 地址
-remoteWriteUrl: "http://host.rise.io:30990/api/v1/write"
+# Remote Write 配置
+remoteWrite:
+  # 基础域名（不含集群名前缀）
+  baseDomain: "rise.io"
+  # NodePort 端口
+  port: 30990
 
 # 采集间隔
 scrapeInterval: 30s
@@ -33,3 +51,12 @@ resources:
 # 节点选择器 - 限定只在边缘节点上部署
 nodeSelector:
   node.theriseunion.io/type: "edge"
+
+# hostAliases - 用于边缘节点无法通过 DNS 解析主机名的场景
+# 将主机名映射到 IP 地址，注入到 Pod 的 /etc/hosts
+# 示例:
+#   hostAliases:
+#     - ip: "188.239.62.17"
+#       hostnames:
+#         - "host.rise.io"
+hostAliases: []

@@ -39,7 +39,7 @@ data:
         cluster: {{ .Values.clusterName | quote }}
 
     remote_write:
-      - url: {{ .Values.remoteWriteUrl | quote }}
+      - url: "http://{{ .Values.clusterName }}.{{ .Values.remoteWrite.baseDomain }}:{{ .Values.remoteWrite.port }}/api/v1/write"
 
     scrape_configs:
       # 直接采集本地 kubelet 指标
@@ -115,6 +115,8 @@ spec:
         app: prometheus-agent
     spec:
       serviceAccountName: prometheus-agent
+      # 使用节点 DNS 解析外部域名（如 host.rise.io）
+      dnsPolicy: Default
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
@@ -122,6 +124,10 @@ spec:
       tolerations:
         - operator: "Exists"
       hostNetwork: false
+      {{- with .Values.hostAliases }}
+      hostAliases:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       initContainers:
         - name: config-init
           image: {{ .Values.busyboxImage }}

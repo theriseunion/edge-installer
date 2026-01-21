@@ -145,7 +145,13 @@ prometheus:
     - action: replace
       sourceLabels:
       - __meta_kubernetes_pod_node_name
-      targetLabel: nodename
+      targetLabel: node
+    # Override instance label to use node name instead of IP:port
+    # This ensures Monitoring Service can query metrics by node name
+    - action: replace
+      sourceLabels:
+      - __meta_kubernetes_pod_node_name
+      targetLabel: instance
     metricRelabelings: []
     interval: ""
     scrapeTimeout: 10s

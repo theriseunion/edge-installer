@@ -27,7 +27,7 @@ spec:
         - record: workspace:container_cpu_usage_seconds:sum_rate
           expr: |
             sum by (cluster, workspace) (
-              irate(container_cpu_usage_seconds_total{job="kubelet", container!="POD", container!="", image!=""}[5m])
+              irate(container_cpu_usage_seconds_total{job="kubelet"}[5m])
               * on(namespace) group_left(workspace)
               label_replace(
                 kube_namespace_labels{label_theriseunion_io_workspace!=""},
@@ -42,7 +42,7 @@ spec:
         - record: workspace:container_memory_usage_bytes:sum
           expr: |
             sum by (cluster, workspace) (
-              container_memory_usage_bytes{job="kubelet", container!="POD", container!="", image!=""}
+              container_memory_usage_bytes{job="kubelet"}
               * on(namespace) group_left(workspace)
               label_replace(
                 kube_namespace_labels{label_theriseunion_io_workspace!=""},
@@ -53,7 +53,7 @@ spec:
         - record: workspace:container_memory_rss:sum
           expr: |
             sum by (cluster, workspace) (
-              container_memory_rss{job="kubelet", container!="POD", container!="", image!=""}
+              container_memory_rss{job="kubelet"}
               * on(namespace) group_left(workspace)
               label_replace(
                 kube_namespace_labels{label_theriseunion_io_workspace!=""},
