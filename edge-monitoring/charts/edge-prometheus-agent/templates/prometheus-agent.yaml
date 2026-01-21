@@ -39,7 +39,7 @@ data:
         cluster: {{ .Values.clusterName | quote }}
 
     remote_write:
-      - url: {{ .Values.remoteWriteUrl | quote }}
+      - url: "http://{{ .Values.clusterName }}.{{ .Values.remoteWrite.baseDomain }}:{{ .Values.remoteWrite.port }}/api/v1/write"
 
     scrape_configs:
       # 直接采集本地 kubelet 指标
