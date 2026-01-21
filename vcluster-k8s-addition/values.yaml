@@ -7,7 +7,10 @@ global:
   tag:
   imagePullSecrets: []
 caCertificate: "xxxxxxxxx"
-edgeGatewayName: ".vcluster-k8s-ke-101"
+# Domain suffix for IngressRoute hostname
+# Format: {ReleaseName}.rise.io where ReleaseName = clusterName
+# Must be consistent with DomainSuffix in edge-apiserver/pkg/constants/constants.go
+edgeGatewayName: "host.rise.io"
 edgeGatewayPort: 30443
 etcdIP: "x.x.x.x"
 installCni:

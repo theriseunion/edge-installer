@@ -5,7 +5,7 @@ data:
     clusters:
     - cluster:
         certificate-authority-data: {{ .Values.caCertificate }}
-        server: https://{{ .Release.Name }}{{ .Values.edgeGatewayName }}:{{ .Values.edgeGatewayPort }}
+        server: https://{{ .Values.edgeGatewayName }}:{{ .Values.edgeGatewayPort }}
       name: ""
     contexts: null
     current-context: ""
@@ -111,7 +111,7 @@ data:
     clusters:
     - cluster:
         certificate-authority: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
-        server: https://{{ .Release.Name }}{{ .Values.edgeGatewayName }}:{{ .Values.edgeGatewayPort }}
+        server: https://{{ .Values.edgeGatewayName }}:{{ .Values.edgeGatewayPort }}
       name: default
     contexts:
     - context:
@@ -197,7 +197,7 @@ data:
       - kubernetes.default
       - kubernetes.default.svc
       - kubernetes.default.svc.cluster.local
-      - {{ .Release.Name }}{{ .Values.edgeGatewayName }}
+      - {{ .Values.edgeGatewayName }}
       extraArgs:
         audit-log-maxage: "30"
         audit-log-maxbackup: "10"
@@ -209,7 +209,7 @@ data:
     apiVersion: kubeadm.k8s.io/v1beta3
     certificatesDir: /etc/kubernetes/pki
     clusterName: cluster.local
-    controlPlaneEndpoint: {{ .Release.Name }}{{ .Values.edgeGatewayName }}:{{ .Values.edgeGatewayPort }}
+    controlPlaneEndpoint: {{ .Values.edgeGatewayName }}:{{ .Values.edgeGatewayPort }}
     controllerManager:
       extraArgs:
         bind-address: 0.0.0.0
