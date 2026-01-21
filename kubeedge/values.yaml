@@ -52,7 +52,7 @@ cloudHub:
     - 10.0.242.176
 
   dnsNames: 
-    - "cloudcore.kubeedge.local"
+    - "host.rise.io"
 
   nodeLimit: 1000
 
@@ -191,4 +191,4 @@ traefikIngress:
   # 总开关，控制是否安装 Traefik IngressRouteTCP 规则
   enabled: true
   # 域名配置
-  host: "cloudcore.kubeedge.local"
+  host: "host.rise.io"

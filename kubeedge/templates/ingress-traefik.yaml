@@ -1,6 +1,6 @@
 {{- if .Values.traefikIngress.enabled }}
 {{- $namespace := .Values.namespace | default "kubeedge" }}
-{{- $host := .Values.traefikIngress.host | default "cloudcore.kubeedge.local" }}
+{{- $host := .Values.traefikIngress.host | default "host.rise.io" }}
 ---
 apiVersion: traefik.io/v1alpha1
 kind: IngressRouteTCP

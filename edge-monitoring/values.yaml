@@ -57,7 +57,7 @@ dutyProxy:
     port: 80
 
 # Edge Remote Write 配置 - 接收边缘节点的监控数据
-edgeRemoteWrite:
+edgeTraefikRemoteWrite:
   # 是否启用边缘数据接收
   enabled: true
   # 通过 Traefik IngressRoute 访问的域名
