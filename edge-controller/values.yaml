@@ -50,7 +50,7 @@ controller:
     allowPrivilegeEscalation: false
     capabilities:
       drop:
-      - ALL
+        - ALL
 
   # Service configuration
   service:
@@ -126,7 +126,7 @@ autoInstall:
 
   # Controller component configuration (used for member cluster installation)
   controller:
-    version: "0.1.0"  # Chart version for member cluster installation
+    version: "0.1.0" # Chart version for member cluster installation
 
   # APIServer component
   apiserver:
@@ -142,7 +142,7 @@ autoInstall:
 
   # Console component (only for host/all modes)
   console:
-    enabled: false  # Will be set based on global.mode
+    enabled: false # Will be set based on global.mode
     version: "0.1.0"
     values:
       replicaCount: 1
@@ -203,40 +203,16 @@ autoInstall:
       #   enabled: true
       # hami:
       #   enabled: true
-  
-  iot:
-    enabled: false # Set to true to enable IOT platform installation
-    # IOT component
-    apiserver:
-      version: "0.1.0"
-      namespace: "iot-system"
-      values:
-        replicaCount: 1
-        service:
-          type: ClusterIP
-          port: 8080
-    # IOT controller component
-    controller:
-      version: "0.1.0"
-      namespace: "iot-system"
-      values:
-        replicaCount: 1
-        service:
-          type: ClusterIP
-          port: 8080
-    yurtIotDock:
-      version: "1.6.0"
-      namespace: "kube-system"
 
   # Traefik Ingress Controller
   traefik:
-    enabled: true  # 设置为 true 启用 Traefik 自动安装
+    enabled: true # 设置为 true 启用 Traefik 自动安装
     version: "0.1.0"
     namespace: "edge-system"
 
   # Bin Downloader - 静态文件服务器
   binDownloader:
-    enabled: true  # 设置为 true 启用 Bin Downloader 自动安装
+    enabled: true # 设置为 true 启用 Bin Downloader 自动安装
     version: "0.1.0"
     namespace: "edge-system"
 
