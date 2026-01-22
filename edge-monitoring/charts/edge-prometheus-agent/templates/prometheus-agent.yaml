@@ -124,9 +124,15 @@ spec:
       tolerations:
         - operator: "Exists"
       hostNetwork: false
-      {{- with .Values.hostAliases }}
+      {{- if .Values.gatewayIP }}
+      # 自动生成 hostAliases: {clusterName}.{baseDomain} -> gatewayIP
       hostAliases:
-        {{- toYaml . | nindent 8 }}
+        - ip: {{ .Values.gatewayIP | quote }}
+          hostnames:
+            - {{ printf "%s.%s" .Values.clusterName .Values.remoteWrite.baseDomain | quote }}
+      {{- else if .Values.hostAliases }}
+      hostAliases:
+        {{- toYaml .Values.hostAliases | nindent 8 }}
       {{- end }}
       initContainers:
         - name: config-init

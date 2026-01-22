@@ -52,8 +52,16 @@ resources:
 nodeSelector:
   node.theriseunion.io/type: "edge"
 
-# hostAliases - 用于边缘节点无法通过 DNS 解析主机名的场景
-# 将主机名映射到 IP 地址，注入到 Pod 的 /etc/hosts
+# 云端 Gateway IP 地址（推荐方式）
+# 配置后自动生成 hostAliases: {clusterName}.{baseDomain} -> gatewayIP
+# 边缘节点 DNS 无法解析自定义域名，需要通过此配置注入 /etc/hosts
+# 示例: gatewayIP: "188.239.62.17"
+#       => 自动生成 hostAliases: host.rise.io -> 188.239.62.17
+gatewayIP: ""
+
+# hostAliases - 手动配置（高级用法）
+# 如果 gatewayIP 已配置，此项会被忽略
+# 仅在需要自定义映射时使用
 # 示例:
 #   hostAliases:
 #     - ip: "188.239.62.17"
