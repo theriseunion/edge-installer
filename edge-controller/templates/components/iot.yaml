@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: iot-system
+  name: edge-system
   labels:
     {{- include "edge-controller.labels" . | nindent 4 }}
     app.kubernetes.io/component: namespace
@@ -12,7 +12,7 @@ apiVersion: ext.theriseunion.io/v1alpha1
 kind: Component
 metadata:
   name: iot-apiserver
-  namespace: iot-system
+  namespace: edge-system
   labels:
     {{- include "edge-controller.labels" . | nindent 4 }}
     app.kubernetes.io/component: iot-apiserver
@@ -23,7 +23,7 @@ spec:
   version: "0.1.0"
   chart:
     name: iot-apiserver
-    namespace: iot-system
+    namespace: edge-system
     releaseName: iot-apiserver
     repository: http://chartmuseum.{{ .Release.Namespace }}.svc:{{ .Values.chartmuseum.service.port }}
   values:
@@ -36,7 +36,7 @@ apiVersion: ext.theriseunion.io/v1alpha1
 kind: Component
 metadata:
   name: iot-controller
-  namespace: iot-system
+  namespace: edge-system
   labels:
     {{- include "edge-controller.labels" . | nindent 4 }}
     app.kubernetes.io/component: iot-controller
@@ -47,7 +47,7 @@ spec:
   version: "0.1.0"
   chart:
     name: iot-controller
-    namespace: iot-system
+    namespace: edge-system
     releaseName: iot-controller
     repository: http://chartmuseum.{{ .Release.Namespace }}.svc:{{ .Values.chartmuseum.service.port }}
   values:
