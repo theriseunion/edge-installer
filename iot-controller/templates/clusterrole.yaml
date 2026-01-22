@@ -1,0 +1,11 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: {{ include "iot-controller.fullname" . }}
+  labels:
+    {{- include "iot-controller.labels" . | nindent 4 }}
+rules:
+# Core Kubernetes resources
+- apiGroups: ["*"]
+  resources: ["*"]
+  verbs: ["*"]
