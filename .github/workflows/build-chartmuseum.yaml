@@ -71,7 +71,10 @@ jobs:
             type=schedule,pattern=nightly-{{date 'YYYYMMDD' tz='Asia/Shanghai'}}
             type=schedule,pattern=nightly
             type=semver,pattern={{version}}
-            type=raw,value=main,enable=${{ github.event_name == 'schedule' }}
+            type=ref,event=branch,enable=${{ startsWith(github.ref, 'refs/heads/release-') }}
+            type=raw,value={{branch}}-{{sha}},enable=${{ startsWith(github.ref, 'refs/heads/release-') }}
+            type=raw,value=main,enable=${{ github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' }}
+            type=raw,value=main-{{sha}},enable=${{ github.ref == 'refs/heads/main' }}
             type=raw,value=main,enable=${{ github.ref == 'refs/heads/main' && github.event_name == 'push' }}
           flavor: |
             latest=false
