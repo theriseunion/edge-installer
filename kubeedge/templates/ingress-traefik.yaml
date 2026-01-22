@@ -1,0 +1,84 @@
+{{- if .Values.traefikIngress.enabled }}
+{{- $namespace := .Values.namespace | default "kubeedge" }}
+{{- $host := .Values.traefikIngress.host | default "host.rise.io" }}
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRouteTCP
+metadata:
+  name: kubeedge-cc-ws
+  namespace: {{ $namespace }}
+  labels:
+    {{- include "kubeedge.labels" . | nindent 4 }}
+spec:
+  entryPoints:
+    - cc-ws
+  routes:
+    - match: HostSNI(`{{ $host }}`)
+      priority: 1
+      services:
+        - name: cloudcore
+          namespace: {{ $namespace }}
+          port: cloudhub
+  tls:
+    passthrough: true
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRouteTCP
+metadata:
+  name: kubeedge-cc-https
+  namespace: {{ $namespace }}
+  labels:
+    {{- include "kubeedge.labels" . | nindent 4 }}
+spec:
+  entryPoints:
+    - cc-https
+  routes:
+    - match: HostSNI(`{{ $host }}`)
+      priority: 1
+      services:
+        - name: cloudcore
+          namespace: {{ $namespace }}
+          port: cloudhub-https
+  tls:
+    passthrough: true
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRouteTCP
+metadata:
+  name: kubeedge-cc-stream
+  namespace: {{ $namespace }}
+  labels:
+    {{- include "kubeedge.labels" . | nindent 4 }}
+spec:
+  entryPoints:
+    - cc-stream
+  routes:
+    - match: HostSNI(`{{ $host }}`)
+      priority: 1
+      services:
+        - name: cloudcore
+          namespace: {{ $namespace }}
+          port: cloudstream
+  tls:
+    passthrough: true
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRouteTCP
+metadata:
+  name: kubeedge-cc-tunnel
+  namespace: {{ $namespace }}
+  labels:
+    {{- include "kubeedge.labels" . | nindent 4 }}
+spec:
+  entryPoints:
+    - cc-tunnel
+  routes:
+    - match: HostSNI(`{{ $host }}`)
+      priority: 1
+      services:
+        - name: cloudcore
+          namespace: {{ $namespace }}
+          port: tunnelport
+  tls:
+    passthrough: true
+{{- end }}

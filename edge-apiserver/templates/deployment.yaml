@@ -63,3 +63,14 @@ spec:
             failureThreshold: 3
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            - name: config
+              mountPath: /config
+              readOnly: true
+      volumes:
+        - name: config
+          configMap:
+            name: {{ include "edge-apiserver.fullname" . }}-config
+            items:
+              - key: apiserver.yaml
+                path: apiserver.yaml

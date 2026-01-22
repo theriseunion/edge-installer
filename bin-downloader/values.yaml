@@ -1,0 +1,60 @@
+# Bin Downloader Configuration
+
+# Global configuration
+global:
+  imageRegistry: "quanzhenglong.com"
+  imagePullSecrets: []
+
+# Deployment configuration
+replicaCount: 1
+
+image:
+  registry: "quanzhenglong.com"
+  repository: base/bin-downloader
+  tag: "latest"
+  pullPolicy: Always
+
+# Resources configuration
+resources:
+  limits:
+    cpu: 200m
+    memory: 256Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+# Service configuration
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 80
+
+# Health check configuration
+healthCheck:
+  enabled: true
+  path: /
+  port: 80
+  livenessProbe:
+    initialDelaySeconds: 10
+    periodSeconds: 10
+  readinessProbe:
+    initialDelaySeconds: 5
+    periodSeconds: 5
+
+# Node selector and affinity
+nodeSelector: {}
+tolerations: []
+affinity: {}
+
+# Pod annotations
+podAnnotations: {}
+
+# Traefik IngressRoute configuration
+ingressRoute:
+  enabled: true
+  # Host for the IngressRoute
+  host: "bin-downloader.rise.io"
+  # Entry point (web for HTTP, websecure for HTTPS)
+  entryPoint: web
+  # Priority for the route
+  priority: 10

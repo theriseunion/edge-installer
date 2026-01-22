@@ -1,0 +1,23 @@
+
+Bin Downloader has been successfully installed!
+
+Release: {{ .Release.Name }}
+Namespace: {{ include "bin-downloader.namespace" . }}
+
+=== Service Information ===
+
+Service Type: {{ .Values.service.type }}
+
+=== IngressRoute ===
+
+{{- if .Values.ingressRoute.enabled }}
+IngressRoute is enabled.
+Host: {{ .Values.ingressRoute.host }}
+Entry Point: {{ .Values.ingressRoute.entryPoint }}
+
+To access the service via Traefik, make sure:
+1. Traefik is installed and running
+2. DNS or /etc/hosts is configured to resolve {{ .Values.ingressRoute.host }}
+{{- else }}
+IngressRoute is disabled.
+{{- end }}

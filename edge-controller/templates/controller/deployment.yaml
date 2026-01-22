@@ -26,7 +26,7 @@ spec:
         - name: {{ .Chart.Name }}
           securityContext:
             {{- toYaml .Values.controller.securityContext | nindent 12 }}
-          image: "{{ .Values.global.imageRegistry }}/{{ .Values.controller.image.repository }}:{{ .Values.controller.image.tag }}"
+          image: "{{ .Values.global.imageRegistry }}/{{ .Values.controller.image.repository }}:{{ .Values.controller.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.controller.image.pullPolicy }}
           ports:
             - name: http
@@ -63,6 +63,8 @@ spec:
             - name: CLUSTER_ROLE
               value: host
             {{- end }}
+            - name: VCLUSTER_VALUES_PATH
+              value: /charts/config/vcluster-values-local.yaml
           volumeMounts:
             - name: helm-cache
               mountPath: /tmp/.helm

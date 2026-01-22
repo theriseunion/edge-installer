@@ -5,7 +5,7 @@ data:
     clusters:
     - cluster:
         certificate-authority-data: {{ .Values.caCertificate }}
-        server: https://{{ .Release.Name }}{{ .Values.edgeGatewayName }}:{{ .Values.edgeGatewayPort }}
+        server: https://{{ .Values.edgeGatewayName }}:{{ .Values.edgeGatewayPort }}
       name: ""
     contexts: null
     current-context: ""
@@ -111,7 +111,7 @@ data:
     clusters:
     - cluster:
         certificate-authority: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
-        server: https://{{ .Release.Name }}{{ .Values.edgeGatewayName }}:{{ .Values.edgeGatewayPort }}
+        server: https://{{ .Values.edgeGatewayName }}:{{ .Values.edgeGatewayPort }}
       name: default
     contexts:
     - context:
@@ -197,7 +197,7 @@ data:
       - kubernetes.default
       - kubernetes.default.svc
       - kubernetes.default.svc.cluster.local
-      - {{ .Release.Name }}{{ .Values.edgeGatewayName }}
+      - {{ .Values.edgeGatewayName }}
       extraArgs:
         audit-log-maxage: "30"
         audit-log-maxbackup: "10"
@@ -209,7 +209,7 @@ data:
     apiVersion: kubeadm.k8s.io/v1beta3
     certificatesDir: /etc/kubernetes/pki
     clusterName: cluster.local
-    controlPlaneEndpoint: {{ .Release.Name }}{{ .Values.edgeGatewayName }}:{{ .Values.edgeGatewayPort }}
+    controlPlaneEndpoint: {{ .Values.edgeGatewayName }}:{{ .Values.edgeGatewayPort }}
     controllerManager:
       extraArgs:
         bind-address: 0.0.0.0
@@ -233,7 +233,7 @@ data:
         keyFile: /etc/ssl/etcd/ssl/node-master-key.pem
     imageRepository: edge
     kind: ClusterConfiguration
-    kubernetesVersion: v1.23.14
+    kubernetesVersion: v1.24.17
     networking:
       dnsDomain: cluster.local
       podSubnet: 10.233.64.0/18 # 修改
@@ -368,19 +368,19 @@ data:
     volumeStatsAggPeriod: 0s
 kind: ConfigMap
 metadata:
-  name: kubelet-config-1.23
+  name: kubelet-config-1.24
   namespace: kube-system
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
-  name: kubeadm:kubelet-config-1.23
+  name: kubeadm:kubelet-config-1.24
   namespace: kube-system
 rules:
   - apiGroups:
       - ""
     resourceNames:
-      - kubelet-config-1.23
+      - kubelet-config-1.24
     resources:
       - configmaps
     verbs:
@@ -389,12 +389,12 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
-  name: kubeadm:kubelet-config-1.23
+  name: kubeadm:kubelet-config-1.24
   namespace: kube-system
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role
-  name: kubeadm:kubelet-config-1.23
+  name: kubeadm:kubelet-config-1.24
 subjects:
   - apiGroup: rbac.authorization.k8s.io
     kind: Group

@@ -1,0 +1,133 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "traefik.fullname" . }}
+  namespace: {{ include "traefik.namespace" . }}
+  labels:
+    {{- include "traefik.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.traefik.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "traefik.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "traefik.selectorLabels" . | nindent 8 }}
+      {{- with .Values.traefik.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    spec:
+      serviceAccountName: {{ include "traefik.serviceAccountName" . }}
+      {{- with .Values.global.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.traefik.securityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: traefik
+          image: {{ include "traefik.image" . }}
+          imagePullPolicy: {{ .Values.traefik.image.pullPolicy }}
+          args:
+            - --configFile=/etc/traefik/traefik.yaml
+          {{- with .Values.traefik.containerSecurityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          ports:
+            {{- if .Values.entryPoints.web.enabled }}
+            - name: web
+              containerPort: {{ .Values.entryPoints.web.port }}
+              protocol: {{ .Values.entryPoints.web.protocol | default "TCP" }}
+            {{- end }}
+            {{- if .Values.entryPoints.websecure.enabled }}
+            - name: websecure
+              containerPort: {{ .Values.entryPoints.websecure.port }}
+              protocol: {{ .Values.entryPoints.websecure.protocol | default "TCP" }}
+            {{- end }}
+            {{- if .Values.entryPoints.websocket.enabled }}
+            - name: websocket
+              containerPort: {{ .Values.entryPoints.websocket.port }}
+              protocol: {{ .Values.entryPoints.websocket.protocol | default "TCP" }}
+            {{- end }}
+            {{- if .Values.entryPoints.ccWs.enabled }}
+            - name: cc-ws
+              containerPort: {{ .Values.entryPoints.ccWs.port }}
+              protocol: {{ .Values.entryPoints.ccWs.protocol | default "TCP" }}
+            {{- end }}
+            {{- if .Values.entryPoints.ccHttps.enabled }}
+            - name: cc-https
+              containerPort: {{ .Values.entryPoints.ccHttps.port }}
+              protocol: {{ .Values.entryPoints.ccHttps.protocol | default "TCP" }}
+            {{- end }}
+            {{- if .Values.entryPoints.ccStream.enabled }}
+            - name: cc-stream
+              containerPort: {{ .Values.entryPoints.ccStream.port }}
+              protocol: {{ .Values.entryPoints.ccStream.protocol | default "TCP" }}
+            {{- end }}
+            {{- if .Values.entryPoints.ccTunnel.enabled }}
+            - name: cc-tunnel
+              containerPort: {{ .Values.entryPoints.ccTunnel.port }}
+              protocol: {{ .Values.entryPoints.ccTunnel.protocol | default "TCP" }}
+            {{- end }}
+            {{- if .Values.entryPoints.prometheusRemoteWrite.enabled }}
+            - name: prom-rw
+              containerPort: {{ .Values.entryPoints.prometheusRemoteWrite.port }}
+              protocol: {{ .Values.entryPoints.prometheusRemoteWrite.protocol | default "TCP" }}
+            {{- end }}
+          volumeMounts:
+            - name: config
+              mountPath: /etc/traefik
+            - name: dynamic-config
+              mountPath: /etc/traefik/dynamic
+            {{- if .Values.tls.enabled }}
+            - name: certs
+              mountPath: /certs
+              readOnly: true
+            {{- end }}
+          {{- with .Values.traefik.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- if .Values.ping.enabled }}
+          livenessProbe:
+            httpGet:
+              path: /ping
+              port: {{ .Values.entryPoints.web.port }}
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /ping
+              port: {{ .Values.entryPoints.web.port }}
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          {{- end }}
+      volumes:
+        - name: config
+          configMap:
+            name: {{ include "traefik.fullname" . }}-config
+        - name: dynamic-config
+          configMap:
+            name: {{ include "traefik.fullname" . }}-dynamic-config
+        {{- if .Values.tls.enabled }}
+        - name: certs
+          secret:
+            secretName: {{ include "traefik.fullname" . }}-default-cert
+        {{- end }}
+      {{- with .Values.traefik.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.traefik.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.traefik.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

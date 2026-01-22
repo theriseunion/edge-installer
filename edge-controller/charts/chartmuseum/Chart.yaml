@@ -3,7 +3,7 @@ name: chartmuseum
 description: ChartMuseum - Helm Chart Repository for Edge Platform
 type: application
 version: 0.1.0
-appVersion: "latest"
+appVersion: "main"
 home: https://github.com/helm/chartmuseum
 maintainers:
   - name: Edge Team

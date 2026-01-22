@@ -7,7 +7,7 @@ enabled: true
 # Image configuration
 image:
   repository: quanzhenglong.com/edge/apiserver
-  tag: latest
+  tag: main
   pullPolicy: Always
 
 # Name override for resources
@@ -198,6 +198,19 @@ config:
     enabledAggregator: true
     hamiDeviceConfig: "/config/device.yaml"
 
+# ReverseProxy configuration
+# This is only needed for edge scenarios where the API needs to be proxied
+reverseProxy:
+  # Whether to create ReverseProxy resources
+  # Default to false in apiserver subchart, can be overridden in parent chart
+  enabled: false
+  # CA bundle configuration for ReverseProxy
+  # Manual CA bundle override (base64 encoded PEM format)
+  # If not set, the CA bundle will be automatically retrieved from the cert-manager Certificate secret
+  # This is useful when the Secret doesn't exist yet during initial deployment
+  # Example: kubectl get secret -n <namespace> <cert-secret-name> -o jsonpath='{.data.ca\.crt}'
+  caBundle: ""
+
 # Certificate configuration
 cert:
   # Secret name for TLS certificates (if not set, will be generated from fullname)
@@ -209,7 +222,7 @@ cert:
   validityDays: 3650
   # Additional hostnames/IPs to include in certificate SAN
   additionalHosts: []
-  # ReverseProxy CA bundle configuration
+  # ReverseProxy CA bundle configuration (deprecated, use reverseProxy.caBundle instead)
   reverseProxy:
     # Manual CA bundle override (base64 encoded PEM format)
     # If not set, the CA bundle will be automatically retrieved from the cert-manager Certificate secret

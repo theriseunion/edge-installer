@@ -131,9 +131,19 @@ spec:
                   - type
                   type: object
                 type: array
+              latestVersion:
+                description: |-
+                  LatestVersion 最新审核通过的版本号
+                  由 ApplicationVersion Controller 自动维护
+                type: string
               phase:
                 description: Phase represents the current phase of application lifecycle
                 type: string
+              versionCount:
+                description: |-
+                  VersionCount 审核通过的版本总数
+                  由 ApplicationVersion Controller 自动维护
+                type: integer
             type: object
         type: object
     served: true

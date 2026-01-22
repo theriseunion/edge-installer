@@ -2,9 +2,12 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
+global:
+  imageRegistry: ""
+
 nameOverride: ""
 
-cacheAgents: ""
+cacheAgents: "kubelet,kube-proxy,vgpumonitor,calico-node,nvidia-device-plugin,go-http-client"
 
 yurthubBindingAddr: 127.0.0.1
 kubernetesServerAddr: https://127.0.0.1:6443
@@ -12,6 +15,7 @@ bootstrapFile: "/var/lib/yurthub/bootstrap-hub.conf"
 organizations: ""
 
 image:
-  registry: openyurt
+  registry: "quanzhenglong.com"
+  project: "openyurt"
   repository: yurthub
   tag: ""

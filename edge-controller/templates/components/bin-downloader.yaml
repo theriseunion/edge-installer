@@ -1,0 +1,25 @@
+{{- if and .Values.controller.enabled .Values.autoInstall.binDownloader.enabled }}
+---
+apiVersion: ext.theriseunion.io/v1alpha1
+kind: Component
+metadata:
+  name: edge-bin-downloader
+  namespace: {{ .Values.autoInstall.binDownloader.namespace | default "edge-system" }}
+  labels:
+    {{- include "edge-controller.labels" . | nindent 4 }}
+    app.kubernetes.io/component: bin-downloader
+    app.kubernetes.io/part-of: edge-platform
+    cluster.theriseunion.io/role: {{ .Values.global.mode }}
+spec:
+  enabled: {{ .Values.autoInstall.binDownloader.enabled }}
+  version: {{ .Values.autoInstall.binDownloader.version | default .Chart.AppVersion }}
+  chart:
+    name: bin-downloader
+    namespace: {{ .Values.autoInstall.binDownloader.namespace | default "edge-system" }}
+    releaseName: bin-downloader
+    repository: http://chartmuseum.{{ .Release.Namespace }}.svc:8080
+  {{- if .Values.autoInstall.binDownloader.values }}
+  values:
+    {{- toYaml .Values.autoInstall.binDownloader.values | nindent 4 }}
+  {{- end }}
+{{- end }}

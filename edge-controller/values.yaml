@@ -91,7 +91,7 @@ chartmuseum:
 
   image:
     repository: edge/edge-museum
-    tag: main
+    tag: "main"
     pullPolicy: IfNotPresent
 
   resources:
@@ -137,6 +137,8 @@ autoInstall:
       service:
         type: ClusterIP
         port: 8080
+      image:
+        tag: "main"
 
   # Console component (only for host/all modes)
   console:
@@ -145,11 +147,14 @@ autoInstall:
     values:
       replicaCount: 1
       service:
-        type: ClusterIP
+        type: NodePort
         port: 3000
+        nodePort: 30446
       env:
         - name: NEXT_PUBLIC_API_BASE_URL
           value: "http://apiserver:8080"
+      image:
+        tag: "main"
 
   # Monitoring component
   monitoring:
@@ -157,12 +162,29 @@ autoInstall:
     version: "0.1.0"
     values:
       namespace: "observability-system"
+      monitoringService:
+        image:
+          tag: "main"
+      edgeTraefikRemoteWrite:
+        # 是否启用边缘数据接收
+        enabled: true
+        # 通过 Traefik IngressRoute 访问的域名
+        remote-hostname: host.rise.io
+      # edge-prometheus-agent 子 chart 配置
+      # 边缘节点上的 Prometheus Agent，推送监控数据到云端
+      edge-prometheus-agent:
+        # 云端 Remote Write 地址，格式: http://{clusterName}.rise.io:30990/api/v1/write
+        remoteWriteUrl: "http://host.rise.io:30990/api/v1/write"
 
   duty:
     enabled: true
     version: "0.1.0"
     values:
       namespace: "observability-system"
+      duty-web:
+        image:
+          tag: "main"
+
   # VAST component
   vast:
     enabled: true # Set to true to enable VAST platform installation
@@ -205,6 +227,18 @@ autoInstall:
     yurtIotDock:
       version: "1.6.0"
       namespace: "kube-system"
+
+  # Traefik Ingress Controller
+  traefik:
+    enabled: true  # 设置为 true 启用 Traefik 自动安装
+    version: "0.1.0"
+    namespace: "edge-system"
+
+  # Bin Downloader - 静态文件服务器
+  binDownloader:
+    enabled: true  # 设置为 true 启用 Bin Downloader 自动安装
+    version: "0.1.0"
+    namespace: "edge-system"
 
 # Hook configuration
 hooks:

@@ -1,0 +1,20 @@
+{{- if and .Values.global.enabled .Values.edgeTraefikRemoteWrite.enabled }}
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: prometheus-remote-write
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    app: prometheus
+    component: remote-write
+spec:
+  entryPoints:
+    - prometheusRemoteWrite
+  routes:
+    - match: Host(`{{ index .Values.edgeTraefikRemoteWrite "remote-hostname" }}`)
+      kind: Rule
+      services:
+        - name: prometheus-operated
+          port: 9090
+          namespace: {{ .Values.global.namespace }}
+{{- end }}

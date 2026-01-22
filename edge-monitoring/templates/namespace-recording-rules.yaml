@@ -7,6 +7,7 @@ metadata:
     prometheus: kube-prometheus
     role: recording-rules
     layer: namespace
+    release: edge-monitoring
 spec:
   groups:
     # ========================================================================
@@ -78,7 +79,7 @@ spec:
         - record: namespace:container_cpu_usage_seconds:sum_rate
           expr: |
             sum by (cluster, namespace) (
-              irate(container_cpu_usage_seconds_total{container!="POD", container!="", image!=""}[5m])
+              irate(container_cpu_usage_seconds_total[5m])
             )
 
         # =====================================================
@@ -88,7 +89,7 @@ spec:
         - record: namespace:container_memory_usage_bytes:sum
           expr: |
             sum by (cluster, namespace) (
-              container_memory_usage_bytes{container!="POD", container!="", image!=""}
+              container_memory_usage_bytes
             )
 
         # =====================================================

@@ -18,6 +18,9 @@ on:
       - 'Dockerfile.museum'
       - 'Makefile'
       - '.github/workflows/build-chartmuseum.yaml'
+  schedule:
+    # 每天凌晨 5 点执行（北京时间 UTC+8，所以是 21:00 UTC）
+    - cron: '0 21 * * *'
   workflow_dispatch:
 
 env:
@@ -27,6 +30,8 @@ env:
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
+    env:
+      TZ: Asia/Shanghai
 
     steps:
       - name: Checkout code
@@ -57,17 +62,19 @@ jobs:
           echo "Packaged charts:"
           ls -lh bin/_output/*.tgz
 
-      - name: Extract metadata
+      - name: Extract Docker metadata
         id: meta
-        run: |
-          if [[ $GITHUB_REF == refs/tags/* ]]; then
-            VERSION=${GITHUB_REF#refs/tags/}
-          else
-            VERSION=main
-          fi
-          echo "version=${VERSION}" >> $GITHUB_OUTPUT
-          echo "tags=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${VERSION}" >> $GITHUB_OUTPUT
-          echo "Full image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${VERSION}"
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=schedule,pattern=nightly-{{date 'YYYYMMDD'}}
+            type=schedule,pattern=nightly
+            type=semver,pattern={{version}}
+            type=raw,value=main,enable=${{ github.event_name == 'schedule' }}
+            type=raw,value=main,enable=${{ github.ref == 'refs/heads/main' && github.event_name == 'push' }}
+          flavor: |
+            latest=false
 
       - name: Build and push multi-arch image
         uses: docker/build-push-action@v5
@@ -77,6 +84,7 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: true
           tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 

@@ -2095,6 +2095,11 @@ kube-state-metrics:
       #   replacement: $1
       #   action: replace
 
+  # Extra args for kube-state-metrics to enable custom label export
+  # This is required for nodegroup/workspace metrics to work correctly
+  extraArgs:
+    - --metric-labels-allowlist=nodes=[theriseunion.io/nodegroup,theriseunion.io/workspace,theriseunion.io/taint-request,node.theriseunion.io/type,apps.openyurt.io/nodepool],namespaces=[theriseunion.io/workspace]
+
   selfMonitor:
     enabled: false
 
@@ -2123,6 +2128,15 @@ prometheus-node-exporter:
     ##
     jobLabel: node-exporter
   releaseLabel: true
+  ## Exclude vcluster fake nodes to avoid hostPort conflict
+  ## vcluster syncs pods to host cluster using fake nodes with label vcluster.loft.sh/fake-node=true
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+          - matchExpressions:
+              - key: vcluster.loft.sh/fake-node
+                operator: DoesNotExist
   extraArgs:
     - --collector.filesystem.mount-points-exclude=^/(dev|proc|sys|var/lib/docker/.+|var/lib/kubelet/.+)($|/)
     - --collector.filesystem.fs-types-exclude=^(autofs|binfmt_misc|bpf|cgroup2?|configfs|debugfs|devpts|devtmpfs|fusectl|hugetlbfs|iso9660|mqueue|nsfs|overlay|proc|procfs|pstore|rpc_pipefs|securityfs|selinuxfs|squashfs|sysfs|tracefs)$

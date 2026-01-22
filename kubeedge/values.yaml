@@ -13,7 +13,8 @@ cloudCore:
   dnsPolicy: ClusterFirstWithHostNet
 
   image:
-    registry: ""
+    registry: "quanzhenglong.com"
+    project: "kubeedge"
     repository: cloudcore
     tag: "v1.20.0"
     pullPolicy: IfNotPresent
@@ -50,7 +51,8 @@ cloudHub:
   advertiseAddress:
     - 10.0.242.176
 
-  dnsNames: []
+  dnsNames: 
+    - "host.rise.io"
 
   nodeLimit: 1000
 
@@ -121,7 +123,8 @@ iptablesManager:
   enabled: true
 
   image:
-    registry: ""
+    registry: "quanzhenglong.com"
+    project: "kubeedge"
     repository: iptables-manager
     tag: "v1.20.0"
     pullPolicy: IfNotPresent
@@ -149,7 +152,8 @@ mosquitto:
   enabled: true
 
   image:
-    registry: ""
+    registry: "quanzhenglong.com"
+    project: "kubeedge"
     repository: eclipse-mosquitto
     tag: "1.6.15"
     pullPolicy: IfNotPresent
@@ -181,3 +185,10 @@ serviceAccount:
   create: true
   name: cloudcore
   annotations: {}
+
+# Traefik IngressRoute configuration
+traefikIngress:
+  # 总开关，控制是否安装 Traefik IngressRouteTCP 规则
+  enabled: true
+  # 域名配置
+  host: "host.rise.io"

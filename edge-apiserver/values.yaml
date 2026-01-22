@@ -76,6 +76,15 @@ edge:
     logLevel: info
     # API Server port
     port: 8080
+    host: "0.0.0.0"
+    timeout:
+      read: "30s"
+      write: "30s"
+      idle: "120s"
+    tls:
+      enabled: false
+      certFile: ""
+      keyFile: ""
 
   # RBAC configuration - Core functionality
   rbac:
@@ -97,15 +106,52 @@ edge:
     enabled: true
     serviceEndpoint: "http://monitoring-service.observability-system.svc.cluster.local:80"
 
-  # OAuth configuration
-  oauth:
-    enabled: true
-    clients:
-      - clientId: "edge-console"
-        clientSecret: "edge-secret"
-      - clientId: "test-client"
-        clientSecret: "test-secret"
-      - clientId: "kubectl"
-        clientSecret: "kubectl-secret"
-      - clientId: "default-client"
-        clientSecret: "default-secret"
+    # Metrics configuration
+    metrics:
+      enabled: true
+      prometheus:
+        endpoint: "http://prometheus.observability-system.svc.cluster.local:9090"
+        timeout: "30s"
+        maxConcurrentQueries: 10
+        retryCount: 3
+        retryInterval: "1s"
+        tlsInsecureSkipVerify: true
+      cache:
+        enabled: true
+        ttl: "30s"
+        size: 1000
+
+  # Authentication configuration
+  auth:
+    mode: "RBAC"  # RBAC or AlwaysAllow
+    jwt:
+      secret: ""  # Set via environment variable JWT_SECRET in production
+      expiry: "24h"
+      refreshTTL: "168h"  # 7 days
+    # OAuth configuration
+    oauth:
+      enabled: true
+      clients:
+        - clientId: "edge-console"
+          clientSecret: "edge-secret"
+        - clientId: "test-client"
+          clientSecret: "test-secret"
+        - clientId: "kubectl"
+          clientSecret: "kubectl-secret"
+        - clientId: "default-client"
+          clientSecret: "default-secret"
+
+  # Terminal configuration
+  terminal:
+    kubectl:
+      image:
+        repository: bitnami/kubectl:latest
+    node:
+      image:
+        repository: alpine:3.15
+      timeout: 600
+      memoryRequest: "64Mi"
+      memoryLimit: "128Mi"
+      cpuRequest: "100m"
+      cpuLimit: "200m"
+    uploadFileLimit: "100Mi"

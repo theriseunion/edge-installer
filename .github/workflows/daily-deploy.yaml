@@ -1,0 +1,246 @@
+name: Daily K8s Cluster Deployment
+
+on:
+  schedule:
+    # 每天凌晨 6 点执行（北京时间 UTC+8，所以是 22:00 UTC）
+    - cron: '0 22 * * *'
+  workflow_dispatch: # 允许手动触发
+
+env:
+  REMOTE_HOST: ${{ secrets.DEPLOY_HOST }}
+  REMOTE_USER: root
+  SSH_PRIVATE_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+
+jobs:
+  deploy:
+    name: Deploy K8s Cluster and Edge Platform
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    env:
+      TZ: Asia/Shanghai
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.DEPLOY_SSH_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.DEPLOY_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Step 1 - Uninstall existing K8s cluster
+        run: |
+          ssh -t -o StrictHostKeyChecking=no root@${{ secrets.DEPLOY_HOST }} << 'EOF'
+            set -e
+            echo "====== 开始卸载 K8s 集群 ======"
+            cd /root
+            ./kk delete cluster -y
+            echo "====== K8s 集群卸载完成 ======"
+          EOF
+
+      - name: Step 2 - Wait and check ports released
+        run: |
+          echo "等待 3 分钟后检查端口..."
+          sleep 180
+
+          ssh -t -o StrictHostKeyChecking=no root@${{ secrets.DEPLOY_HOST }} << 'EOF'
+            set -e
+            echo "====== 检查端口占用情况 ======"
+            PORTS=(10250 10257 10259)
+
+            for port in "${PORTS[@]}"; do
+              echo "检查端口 $port..."
+
+              # 获取占用端口的进程 PID
+              PIDS=$(lsof -ti :$port 2>/dev/null || echo "")
+
+              if [ -n "$PIDS" ]; then
+                echo "警告: 端口 $port 仍在占用，进程 PID: $PIDS"
+                lsof -i :$port
+
+                # 杀掉占用端口的进程
+                for pid in $PIDS; do
+                  echo "正在杀掉进程 $pid..."
+                  kill -9 $pid 2>/dev/null || echo "进程 $pid 已不存在"
+                done
+
+                # 等待 10 秒后再次检查
+                sleep 10
+
+                # 确认端口已释放
+                if lsof -i :$port > /dev/null 2>&1; then
+                  echo "错误: 端口 $port 仍然被占用，无法释放"
+                  exit 1
+                else
+                  echo "端口 $port 已成功释放"
+                fi
+              else
+                echo "端口 $port 已释放"
+              fi
+            done
+
+            echo "====== 所有端口检查完成 ======"
+          EOF
+
+      - name: Step 3 - Install K8s cluster
+        run: |
+          ssh -t -o StrictHostKeyChecking=no root@${{ secrets.DEPLOY_HOST }} << 'EOF'
+            set -e
+            echo "====== 开始安装 K8s 集群 ======"
+            cd /root
+            ./kk create cluster -f config-sample.yaml --with-local-storage -y
+            sleep 180
+            echo "====== K8s 集群安装完成 ======"
+          EOF
+
+      - name: Step 4 - Wait for all pods running
+        run: |
+          ssh -t -o StrictHostKeyChecking=no root@${{ secrets.DEPLOY_HOST }} << 'EOF'
+            set -e
+            echo "====== 等待所有 Pod 进入 Running 状态 ======"
+
+            # 最多等待 20 分钟
+            TIMEOUT=1200
+            ELAPSED=0
+            INTERVAL=10
+
+            while [ $ELAPSED -lt $TIMEOUT ]; do
+              # 获取非 Running 状态的 Pod 数量（排除 Completed 状态）
+              NOT_RUNNING=$(kubectl get pods --all-namespaces --no-headers 2>/dev/null | \
+                grep -v "Running\|Completed" | wc -l || echo "0")
+
+              if [ "$NOT_RUNNING" -eq "0" ]; then
+                echo "所有 Pod 都已进入 Running 或 Completed 状态"
+                kubectl get pods --all-namespaces
+                break
+              fi
+
+              echo "等待中... 还有 $NOT_RUNNING 个 Pod 未就绪 (已等待 ${ELAPSED}s)"
+              sleep $INTERVAL
+              ELAPSED=$((ELAPSED + INTERVAL))
+            done
+
+            if [ $ELAPSED -ge $TIMEOUT ]; then
+              echo "错误: 超时 - Pod 未能在规定时间内全部启动"
+              kubectl get pods --all-namespaces
+              exit 1
+            fi
+          EOF
+
+      - name: Step 5 - Sync code to remote server
+        run: |
+          echo "====== 同步代码到远程服务器 ======"
+
+          # 使用 rsync 同步代码到 /root/deploy 目录
+          rsync -avz --delete \
+            -e "ssh -o StrictHostKeyChecking=no" \
+            --exclude='.git' \
+            --exclude='node_modules' \
+            --exclude='.github' \
+            ./ root@${{ secrets.DEPLOY_HOST }}:/root/deploy/
+
+          echo "====== 代码同步完成 ======"
+
+      - name: Step 6 - Install Edge Platform
+        run: |
+          # 在 GitHub Runner 上生成夜间构建标签
+          NIGHTLY_TAG="nightly-$(date +'%Y%m%d')"
+          echo "使用镜像标签: ${NIGHTLY_TAG}"
+
+          ssh -t -o StrictHostKeyChecking=no root@${{ secrets.DEPLOY_HOST }} << EOF
+            set -e
+            echo "====== 开始安装 Edge Platform ======"
+
+            # 切换到部署目录
+            cd /root/deploy
+
+            kubectl create ns observability-system
+
+            helm upgrade --install controller ./edge-controller \
+              --namespace edge-system \
+              --set global.imageRegistry=quanzhenglong.com \
+              --set controller.image.tag=${NIGHTLY_TAG} \
+              --set chartmuseum.image.tag=${NIGHTLY_TAG} \
+              --set autoInstall.apiserver.values.image.tag=${NIGHTLY_TAG} \
+              --set autoInstall.console.values.image.tag=${NIGHTLY_TAG} \
+              --set autoInstall.monitoring.values.monitoringService.image.tag=${NIGHTLY_TAG} \
+              --create-namespace
+
+            echo "====== Edge Platform 安装完成 ======"
+          EOF
+
+      - name: Step 7 - Wait for Edge Platform pods running
+        run: |
+          ssh -t -o StrictHostKeyChecking=no root@${{ secrets.DEPLOY_HOST }} << 'EOF'
+            set -e
+            echo "====== 等待 Edge Platform Pod 进入 Running 状态 ======"
+
+            # 最多等待 30 分钟
+            TIMEOUT=1800
+            ELAPSED=0
+            INTERVAL=20
+
+            while [ $ELAPSED -lt $TIMEOUT ]; do
+              # 检查 edge-system namespace 中非 Running 状态的 Pod
+              NOT_RUNNING=$(kubectl get pods -n edge-system --no-headers 2>/dev/null | \
+                grep -v "Running\|Completed" | wc -l || echo "0")
+
+              if [ "$NOT_RUNNING" -eq "0" ]; then
+                echo "Edge Platform 所有 Pod 都已进入 Running 或 Completed 状态"
+                kubectl get pods -n edge-system
+                break
+              fi
+
+              echo "等待中... 还有 $NOT_RUNNING 个 Pod 未就绪 (已等待 ${ELAPSED}s)"
+              kubectl get pods -n edge-system | grep -v "Running\|Completed" || true
+              sleep $INTERVAL
+              ELAPSED=$((ELAPSED + INTERVAL))
+            done
+
+            if [ $ELAPSED -ge $TIMEOUT ]; then
+              echo "错误: 超时 - Edge Platform Pod 未能在规定时间内全部启动"
+              kubectl get pods -n edge-system
+              exit 1
+            fi
+          EOF
+
+      - name: Step 8 - Deployment summary
+        if: success()
+        run: |
+          ssh -t -o StrictHostKeyChecking=no root@${{ secrets.DEPLOY_HOST }} << 'EOF'
+            echo "====== 部署完成摘要 ======"
+            echo ""
+            echo "K8s 集群状态:"
+            kubectl get nodes -o wide
+            echo ""
+            echo "Edge Platform Pods 状态:"
+            kubectl get pods -n edge-system -o wide
+            echo ""
+            echo "Edge Platform Services:"
+            kubectl get svc -n edge-system
+          EOF
+
+      - name: Cleanup SSH
+        if: always()
+        run: |
+          rm -f ~/.ssh/id_rsa
+
+      - name: Send Success Notification 
+        uses: jefferyjob/notify-actions@v1
+        if: success()
+        with:
+          NOTICE_TYPE: 'dingtalk'
+          MSG_TYPE: 'markdown'
+          STATUS: '1'
+          WEBHOOK_URL: ${{ secrets.DINGTALK_WEBHOOK }}
+      
+      - name: Send Failure Notification
+        uses: jefferyjob/notify-actions@v1
+        if: failure()
+        with:
+          NOTICE_TYPE: 'dingtalk'
+          MSG_TYPE: 'markdown'
+          STATUS: '0'
+          WEBHOOK_URL: ${{ secrets.DINGTALK_WEBHOOK }}

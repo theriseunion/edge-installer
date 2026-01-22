@@ -10,7 +10,7 @@ createNamespace: false
 # Image configuration
 image:
   repository: quanzhenglong.com/edge/controller
-  tag: latest
+  tag: main
   pullPolicy: Always
 
 # Kube RBAC Proxy image configuration
