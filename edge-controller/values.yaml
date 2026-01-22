@@ -203,6 +203,30 @@ autoInstall:
       #   enabled: true
       # hami:
       #   enabled: true
+  
+  iot:
+    enabled: false # Set to true to enable IOT platform installation
+    # IOT component
+    apiserver:
+      version: "0.1.0"
+      namespace: "iot-system"
+      values:
+        replicaCount: 1
+        service:
+          type: ClusterIP
+          port: 8080
+    # IOT controller component
+    controller:
+      version: "0.1.0"
+      namespace: "iot-system"
+      values:
+        replicaCount: 1
+        service:
+          type: ClusterIP
+          port: 8080
+    yurtIotDock:
+      version: "1.6.0"
+      namespace: "kube-system"
 
   # Traefik Ingress Controller
   traefik:
