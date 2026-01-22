@@ -1,2 +1,3 @@
 .vscode*.tar
+bin
 # Docker image tar files
