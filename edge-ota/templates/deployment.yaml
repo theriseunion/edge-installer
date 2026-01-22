@@ -52,6 +52,9 @@ spec:
             - name: metrics
               containerPort: {{ .Values.otaServer.metricsPort }}
               protocol: TCP
+            - name: health
+              containerPort: 8081
+              protocol: TCP
           env:
             - name: NATS_URL
               valueFrom:
@@ -92,8 +95,8 @@ spec:
           livenessProbe:
             httpGet:
               path: /healthz
-              port: https
-              scheme: HTTPS
+              port: health
+              scheme: HTTP
             initialDelaySeconds: {{ .Values.probes.liveness.initialDelaySeconds }}
             periodSeconds: {{ .Values.probes.liveness.periodSeconds }}
             timeoutSeconds: {{ .Values.probes.liveness.timeoutSeconds }}
@@ -101,8 +104,8 @@ spec:
           readinessProbe:
             httpGet:
               path: /readyz
-              port: https
-              scheme: HTTPS
+              port: health
+              scheme: HTTP
             initialDelaySeconds: {{ .Values.probes.readiness.initialDelaySeconds }}
             periodSeconds: {{ .Values.probes.readiness.periodSeconds }}
             timeoutSeconds: {{ .Values.probes.readiness.timeoutSeconds }}
