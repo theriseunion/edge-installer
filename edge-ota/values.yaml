@@ -18,10 +18,10 @@ fullnameOverride: "ota-server"
 
 # OTA Server image configuration
 image:
-  registry: ghcr.io
-  repository: outpostos/edge-ota/server
-  pullPolicy: Always
   tag: "main"  # Leave empty to use Chart.AppVersion
+  registry: quanzhenglong.com
+  repository: edge/edge-ota/ota-server
+  pullPolicy: IfNotPresent
 
 # Image pull secrets (if using private registry)
 imagePullSecrets: []

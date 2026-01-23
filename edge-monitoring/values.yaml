@@ -68,6 +68,11 @@ edgeTraefikRemoteWrite:
 edge-prometheus-agent:
   # 云端 Remote Write 地址，格式: http://{clusterName}.rise.io:30990/api/v1/write
   remoteWriteUrl: "http://host.rise.io:30990/api/v1/write"
+  # 云端 Gateway IP 地址（必填）
+  # 边缘节点 DNS 无法解析自定义域名，需要通过此配置注入 /etc/hosts
+  # 配置后自动生成 hostAliases: {clusterName}.{baseDomain} -> gatewayIP
+  # 示例: gatewayIP: "188.239.62.17" => host.rise.io -> 188.239.62.17
+  gatewayIP: ""
 
 # kube-prometheus-stack 覆盖配置
 kube-prometheus-stack:

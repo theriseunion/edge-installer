@@ -7,6 +7,9 @@ metadata:
   labels:
     app: monitoring-service
     component: monitoring-service
+  annotations:
+    theriseunion.io/description: Monitoring Service API proxy - proxies metrics and monitoring queries
+    openapi-endpoint: /openapi/v2
 spec:
   matcher:
     method: '*'
