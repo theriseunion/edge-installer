@@ -183,6 +183,12 @@ spec:
             type: object
           status:
             description: IAMRoleStatus defines the observed state of IAMRole
+            properties:
+              memberCount:
+                description: MemberCount tracks the number of members bound to this
+                  role
+                format: int32
+                type: integer
             type: object
         type: object
     served: true

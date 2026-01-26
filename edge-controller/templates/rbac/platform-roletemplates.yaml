@@ -474,4 +474,37 @@ spec:
       - /metrics
       verbs:
       - '*'
+
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  name: platform-manage-monitoring
+  annotations:
+    theriseunion.io/creator: system
+    theriseunion.io/alias-name: "监控管理"
+    theriseunion.io/description: "允许管理所有监控数据"
+  labels:
+    theriseunion.io/managed: 'true'
+    iam.theriseunion.io/scope: platform
+    iam.theriseunion.io/category: global-manage-monitoring
+    iam.theriseunion.io/aggregate-to-admin: ""
+spec:
+  uiPermissions:
+    - platform/monitoring.manage
+  rules:
+  - apiGroups:
+      - resources.theriseunion.io
+    resources:
+      - "*"
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - monitoring.theriseunion.io
+    resources:
+      - "*"
+    verbs:
+      - "*"
 {{- end }}
