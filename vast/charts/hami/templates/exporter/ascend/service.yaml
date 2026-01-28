@@ -1,0 +1,18 @@
+{{- if .Values.exporter.ascend.enabled }}
+kind: Service
+apiVersion: v1
+metadata:
+  labels:
+    app.kubernetes.io/component: {{ include "hami-vgpu.exporter" . }}-ascend
+    {{- include "hami-vgpu.labels" . | nindent 4 }}
+  name: {{ include "hami-vgpu.exporter" . }}-ascend
+  namespace: {{ .Release.Namespace | quote }}
+spec:
+  selector:
+    app.kubernetes.io/component: {{ include "hami-vgpu.exporter" . }}-ascend
+  ports:
+    - name: "metrics"
+      port: {{ .Values.exporter.ascend.service.httpPort }}
+      targetPort: {{ .Values.exporter.ascend.containerPort | default 8082 }}
+  type: ClusterIP
+{{- end }}

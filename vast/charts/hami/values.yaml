@@ -576,4 +576,25 @@ exporter:
     tolerations: {}
     service:
       httpPort: 9400
-  ascend: {}
+  ascend:
+    enabled: false
+    image: "quanzhenglong.com/camp/npu-exporter:v1.0.1"
+    imagePullPolicy: IfNotPresent
+    containerPort: 8082
+    service:
+      httpPort: 8082
+    serviceMonitor:
+      enabled: true
+      additionalLabels:
+        release: prometheus
+    tolerations:
+      - key: node-role.kubernetes.io/edge
+        operator: Exists
+        effect: NoSchedule
+    resources:
+      requests:
+        memory: 1000Mi
+        cpu: 1000m
+      limits:
+        memory: 2000Mi
+        cpu: 2000m

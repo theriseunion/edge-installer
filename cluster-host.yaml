@@ -1,0 +1,14 @@
+apiVersion: scope.theriseunion.io/v1alpha1
+kind: Cluster
+metadata:
+  annotations:
+    cluster.theriseunion.io/edge-runtime: openyurt
+    cluster.theriseunion.io/type: host
+    theriseunion.io/api-server-address: https://127.0.0.1:46059
+    theriseunion.io/creator: admin
+  labels:
+    cluster.theriseunion.io/is-host-cluster: "true"
+  name: host
+spec:
+  connection:
+    type: direct

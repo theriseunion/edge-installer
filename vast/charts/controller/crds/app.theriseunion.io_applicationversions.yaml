@@ -1,0 +1,261 @@
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.16.1
+  name: applicationversions.app.theriseunion.io
+spec:
+  group: app.theriseunion.io
+  names:
+    categories:
+    - app
+    kind: ApplicationVersion
+    listKind: ApplicationVersionList
+    plural: applicationversions
+    singular: applicationversion
+  scope: Cluster
+  versions:
+  - additionalPrinterColumns:
+    - jsonPath: .spec.applicationRef
+      name: Application
+      type: string
+    - jsonPath: .spec.version
+      name: Version
+      type: string
+    - jsonPath: .status.reviewPhase
+      name: ReviewPhase
+      type: string
+    - jsonPath: .status.reviewer
+      name: Reviewer
+      type: string
+    - jsonPath: .status.reviewTime
+      name: ReviewTime
+      type: date
+    name: v1alpha1
+    schema:
+      openAPIV3Schema:
+        description: |-
+          ApplicationVersion is the Schema for the applicationversions API
+          ApplicationVersion 定义应用版本（包含具体配置）
+        properties:
+          apiVersion:
+            description: |-
+              APIVersion defines the versioned schema of this representation of an object.
+              Servers should convert recognized schemas to the latest internal value, and
+              may reject unrecognized values.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+            type: string
+          kind:
+            description: |-
+              Kind is a string value representing the REST resource this object represents.
+              Servers may infer this from the endpoint the client submits requests to.
+              Cannot be updated.
+              In CamelCase.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
+            type: string
+          metadata:
+            type: object
+          spec:
+            description: ApplicationVersionSpec defines the desired state of ApplicationVersion
+            properties:
+              applicationRef:
+                description: ApplicationRef 关联的 Application 名称
+                type: string
+              helmConfig:
+                description: HelmConfig Helm 配置（当 ApplicationClass.Provisioner = app.theriseunion.io/helm）
+                properties:
+                  chartName:
+                    description: ChartName Helm Chart 名称
+                    type: string
+                  chartVersion:
+                    description: ChartVersion Helm Chart 版本
+                    type: string
+                  repository:
+                    description: Repository Helm 仓库地址
+                    type: string
+                  values:
+                    description: Values Helm Values（YAML 格式）
+                    type: string
+                required:
+                - chartName
+                - chartVersion
+                - repository
+                type: object
+              modelConfig:
+                description: ModelConfig 模型配置（当 ApplicationClass.Provisioner = app.theriseunion.io/model）
+                properties:
+                  cpuRequest:
+                    description: CPURequest CPU 请求（如 "1000m"）
+                    type: string
+                  framework:
+                    description: Framework 模型框架（如 PyTorch, TensorFlow, ONNX）
+                    type: string
+                  gpu:
+                    description: GPU GPU 数量
+                    format: int32
+                    type: integer
+                  memoryRequest:
+                    description: MemoryRequest 内存请求（如 "2Gi"）
+                    type: string
+                  modelName:
+                    description: ModelName 模型名称
+                    type: string
+                  modelVersion:
+                    description: ModelVersion 模型版本
+                    type: string
+                  replicas:
+                    description: Replicas 副本数
+                    format: int32
+                    type: integer
+                  runtime:
+                    description: Runtime 推理运行时（如 TorchServe, TensorFlow Serving, Triton）
+                    type: string
+                  storageURI:
+                    description: StorageURI 模型存储地址（如 s3://bucket/model.zip）
+                    type: string
+                required:
+                - modelName
+                - modelVersion
+                - storageURI
+                type: object
+              version:
+                description: Version 版本号（如 1.0.0）
+                type: string
+              workloadConfig:
+                description: WorkloadConfig 工作负载配置（当 ApplicationClass.Provisioner
+                  = app.theriseunion.io/workload）
+                properties:
+                  deployments:
+                    description: Deployments 定义 Deployment 列表
+                    items:
+                      description: WorkloadDeployment 简化的 Deployment 定义
+                      properties:
+                        name:
+                          description: Name 工作负载名称
+                          type: string
+                        spec:
+                          description: Spec Deployment 规格（简化版，只保留必要字段）
+                          properties:
+                            replicas:
+                              description: Replicas 副本数
+                              format: int32
+                              type: integer
+                            strategy:
+                              description: |-
+                                Strategy 部署策略（使用 RawExtension 存储完整的 DeploymentStrategy，避免 CRD 文件膨胀）
+                                存储格式为标准 Kubernetes DeploymentStrategy
+                                Controller 需要将其反序列化为 appsv1.DeploymentStrategy 使用
+                              type: object
+                              x-kubernetes-preserve-unknown-fields: true
+                            template:
+                              description: |-
+                                Template Pod 模板（使用 RawExtension 存储完整的 PodTemplateSpec，避免 CRD 文件膨胀）
+                                存储格式为标准 Kubernetes PodTemplateSpec
+                                Controller 需要将其反序列化为 corev1.PodTemplateSpec 使用
+                              type: object
+                              x-kubernetes-preserve-unknown-fields: true
+                          required:
+                          - template
+                          type: object
+                      required:
+                      - name
+                      - spec
+                      type: object
+                    type: array
+                type: object
+            required:
+            - applicationRef
+            - version
+            type: object
+          status:
+            description: ApplicationVersionStatus defines the observed state of ApplicationVersion
+            properties:
+              conditions:
+                description: Conditions represent the latest available observations
+                  of application version state
+                items:
+                  description: Condition contains details for one aspect of the current
+                    state of this API Resource.
+                  properties:
+                    lastTransitionTime:
+                      description: |-
+                        lastTransitionTime is the last time the condition transitioned from one status to another.
+                        This should be when the underlying condition changed.  If that is not known, then using the time when the API field changed is acceptable.
+                      format: date-time
+                      type: string
+                    message:
+                      description: |-
+                        message is a human readable message indicating details about the transition.
+                        This may be an empty string.
+                      maxLength: 32768
+                      type: string
+                    observedGeneration:
+                      description: |-
+                        observedGeneration represents the .metadata.generation that the condition was set based upon.
+                        For instance, if .metadata.generation is currently 12, but the .status.conditions[x].observedGeneration is 9, the condition is out of date
+                        with respect to the current state of the instance.
+                      format: int64
+                      minimum: 0
+                      type: integer
+                    reason:
+                      description: |-
+                        reason contains a programmatic identifier indicating the reason for the condition's last transition.
+                        Producers of specific condition types may define expected values and meanings for this field,
+                        and whether the values are considered a guaranteed API.
+                        The value should be a CamelCase string.
+                        This field may not be empty.
+                      maxLength: 1024
+                      minLength: 1
+                      pattern: ^[A-Za-z]([A-Za-z0-9_,:]*[A-Za-z0-9_])?$
+                      type: string
+                    status:
+                      description: status of the condition, one of True, False, Unknown.
+                      enum:
+                      - "True"
+                      - "False"
+                      - Unknown
+                      type: string
+                    type:
+                      description: type of condition in CamelCase or in foo.example.com/CamelCase.
+                      maxLength: 316
+                      pattern: ^([a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*/)?(([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9])$
+                      type: string
+                  required:
+                  - lastTransitionTime
+                  - message
+                  - reason
+                  - status
+                  - type
+                  type: object
+                type: array
+              phase:
+                description: Phase represents the current phase of application version
+                  lifecycle
+                type: string
+              reviewMessage:
+                description: ReviewMessage 审核信息（拒绝原因等）
+                type: string
+              reviewPhase:
+                description: ReviewPhase 审核状态（Pending, Approved, Rejected）
+                type: string
+              reviewTime:
+                description: ReviewTime 审核时间
+                format: date-time
+                type: string
+              reviewer:
+                description: Reviewer 审核人
+                type: string
+              submitTime:
+                description: SubmitTime 提交审核时间
+                format: date-time
+                type: string
+              submitter:
+                description: Submitter 提交人（提交审核的用户）
+                type: string
+            type: object
+        type: object
+    served: true
+    storage: true
+    subresources:
+      status: {}

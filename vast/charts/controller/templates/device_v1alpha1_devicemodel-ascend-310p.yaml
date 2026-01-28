@@ -1,0 +1,76 @@
+---
+apiVersion: device.theriseunion.io/v1alpha1
+kind: DeviceModel
+metadata:
+  labels:
+    theriseunion.io/config-type: fixed
+    theriseunion.io/device-model-commonword: Ascend310P
+  name: ascend-310p
+spec:
+  alias:
+  - Ascend310P
+  - Ascend 310P
+  compute: ""
+  computeCapabilities:
+  - precision: FP32
+    unit: TFLOPS
+    value: "10.3"
+  - precision: FP16
+    unit: TFLOPS
+    value: "165"
+  - precision: BF16
+    unit: TFLOPS
+    value: "165"
+  core: 100
+  description: Ascend 310P Tensor Core GPU with 24GB memory
+  family: ""
+  manufacturer: Ascend
+  memorySize: 49152
+  memoryStep: 1
+  model: Ascend310P
+  supportComputeSplitMode:
+  - hard
+  - soft
+  supportVirtualDevice: true
+---
+apiVersion: device.theriseunion.io/v1alpha1
+kind: DeviceModel
+metadata:
+  labels:
+    theriseunion.io/config-type: fixed
+    theriseunion.io/virtual-model: "true"
+    theriseunion.io/device-model-commonword: Ascend310P
+  name: ascend-310p-half-24gb
+spec:
+  core: 50
+  manufacturer: Ascend
+  memorySize: 24576
+  model: Ascend310P
+---
+apiVersion: device.theriseunion.io/v1alpha1
+kind: DeviceModel
+metadata:
+  labels:
+    theriseunion.io/config-type: fixed
+    theriseunion.io/virtual-model: "true"
+    theriseunion.io/device-model-commonword: Ascend310P
+  name: ascend-310p-quarter-12gb
+spec:
+  core: 25
+  manufacturer: Ascend
+  memorySize: 12288
+  model: Ascend310P
+---
+apiVersion: device.theriseunion.io/v1alpha1
+kind: DeviceModel
+metadata:
+  labels:
+    theriseunion.io/config-type: fixed
+    theriseunion.io/virtual-model: "true"
+    theriseunion.io/device-model-commonword: Ascend310P
+  name: ascend-310p-eighth-6gb
+spec:
+  core: 12
+  manufacturer: Ascend
+  memorySize: 6144
+  model: Ascend310P

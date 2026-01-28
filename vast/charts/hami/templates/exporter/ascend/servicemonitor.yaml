@@ -1,0 +1,31 @@
+{{- if .Values.exporter.ascend.enabled }}
+{{- if .Values.exporter.ascend.serviceMonitor.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  labels:
+    app.kubernetes.io/component: {{ include "hami-vgpu.exporter" . }}-ascend
+    {{- if .Values.global.prometheus.serviceMonitorSelector }}
+    {{- toYaml .Values.global.prometheus.serviceMonitorSelector | nindent 4 }}
+    {{- end }}
+    {{- if .Values.exporter.ascend.serviceMonitor.additionalLabels }}
+    {{- toYaml .Values.exporter.ascend.serviceMonitor.additionalLabels | nindent 4 }}
+    {{- end }}
+  namespace: {{ .Release.Namespace | quote }}
+  name: {{ include "hami-vgpu.exporter" . }}-ascend
+spec:
+  endpoints:
+    - port: metrics
+      path: /metrics
+      relabelings:
+        - action: replace
+          sourceLabels: [ __meta_kubernetes_endpoint_node_name ]
+          targetLabel: node
+  namespaceSelector:
+    matchNames:
+      - {{ .Release.Namespace }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: {{ include "hami-vgpu.exporter" . }}-ascend
+{{- end }}
+{{- end }}

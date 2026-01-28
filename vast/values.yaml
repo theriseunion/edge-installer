@@ -28,7 +28,7 @@ apiserver:
     enabled: true
   # ReverseProxy configuration (only needed for edge scenarios)
   reverseProxy:
-    enabled: true
+    enabled: false
   # Override the full name to remove the release name prefix (vast-)
   # Without this, resources would be named like: vast-apiserver-*
   # With this, resources will be named like: apiserver-*
@@ -36,7 +36,7 @@ apiserver:
   # Image configuration
   image:
     repository: quanzhenglong.com/edge/apiserver
-    tag: vast-v0.1.47
+    tag: vast-zhongneng-v0.1.81
     pullPolicy: IfNotPresent
 
   # Namespace override (defaults to Release.Namespace)
@@ -106,7 +106,7 @@ apiserver:
     metrics:
       enabled: true
       prometheus:
-        endpoint: "http://edge-monitoring-kube-prome-prometheus.observability-system.svc:9090"
+        endpoint: "http://prometheus-kube-prometheus-prometheus.monitoring:9090"
         auth: ""
         timeout: "30s"
         maxConcurrentQueries: 10
@@ -167,7 +167,7 @@ controller:
   # Image configuration
   image:
     repository: quanzhenglong.com/edge/controller
-    tag: vast-v0.1.47
+    tag: vast-zhongneng-v0.1.81
     pullPolicy: IfNotPresent
 
   # Kube RBAC Proxy configuration
@@ -267,7 +267,7 @@ controller:
     metrics:
       enabled: true
       prometheus:
-        endpoint: "http://edge-monitoring-kube-prome-prometheus.observability-system.svc:9090"
+        endpoint: "http://prometheus-kube-prometheus-prometheus.monitoring:9090"
         auth: ""
         timeout: "30s"
         maxConcurrentQueries: 10
@@ -364,6 +364,24 @@ hami:
       additionalLabels:
         release: prometheus
     passDeviceSpecsEnabled: true
+  devices:
+    nvidia:
+      gpuCorePolicy: default
+    ascend:
+      enabled: true
+      image: "quanzhenglong.com/camp/ascend-device-plugin:v2.4.4-08"
+      imagePullPolicy: IfNotPresent
+      nodeSelector:
+        ascend: "on"
+      tolerations:
+        - key: "arm64"
+          operator: "Equal"
+          value: "true"
+          effect: "NoSchedule"
+        - key: "node-role.kubernetes.io/edge"
+          operator: "Exists"
+          effect: "NoSchedule"
+      ascend310P: ""
   exporter:
     kunlunxin:
       serviceMonitor:
@@ -390,7 +408,15 @@ hami:
       serviceMonitor:
         enabled: true
         additionalLabels:
-          release: edge-monitoring
+          # release: edge-monitoring
+          release: prometheus
+    ascend:
+      enabled: true
+      serviceMonitor:
+        enabled: true
+        additionalLabels:
+          # release: edge-monitoring
+          release: prometheus
   scheduler:
     nodeSelector:
       node-role.kubernetes.io/control-plane: ""
@@ -398,7 +424,7 @@ hami:
       - key: node-role.kubernetes.io/control-plane
         operator: Exists
         effect: NoSchedule
-    prometheusAddress: "http://edge-monitoring-kube-prome-prometheus.observability-system.svc:9090"
+    prometheusAddress: "http://prometheus-kube-prometheus-prometheus.monitoring:9090"
     kubeScheduler:
       imageTag: "v1.29.15"
       image: quanzhenglong.com/camp/kubesphere/kube-scheduler

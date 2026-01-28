@@ -25,6 +25,7 @@ spec:
         hami.io/webhook: ignore
         {{- include "hami-vgpu.selectorLabels" . | nindent 8 }}
     spec:
+      hostNetwork: true
       priorityClassName: "system-node-critical"
       serviceAccountName: {{ include "hami-vgpu.device-plugin" . }}-ascend
       containers:
