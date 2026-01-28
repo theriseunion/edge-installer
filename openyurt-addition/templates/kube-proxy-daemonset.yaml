@@ -58,8 +58,8 @@ spec:
       restartPolicy: Always
       schedulerName: default-scheduler
       securityContext: {}
-      serviceAccount: kube-proxy
-      serviceAccountName: kube-proxy
+      serviceAccount: kube-proxy-edge
+      serviceAccountName: kube-proxy-edge
       terminationGracePeriodSeconds: 30
       tolerations:
       - operator: Exists
