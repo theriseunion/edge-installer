@@ -24,7 +24,7 @@ CHARTS_SOURCE := .
 
 # List of charts to package - modify this when adding/removing charts
 # Note: monitoring-service is embedded in edge-monitoring chart
-CHARTS := edge-apiserver edge-console edge-controller edge-monitoring edge-duty edge-ota kubeedge yurt-manager yurthub vast vcluster-k8s-addition yurt-iot-dock traefik bin-downloader iot-apiserver iot-controller
+CHARTS := edge-apiserver edge-console edge-controller edge-monitoring edge-duty edge-ota kubeedge yurt-manager yurthub vast vcluster-k8s-addition yurt-iot-dock traefik bin-downloader iot-apiserver iot-controller openyurt-addition
 
 # ChartMuseum image
 MUSEUM_IMG ?= $(REGISTRY)/edge-museum:$(TAG)

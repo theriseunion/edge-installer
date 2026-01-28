@@ -1,0 +1,56 @@
+# Default values for openyurt-addition.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+global:
+  imageRegistry: ""
+  tag: ""
+  imagePullSecrets: []
+
+# Node selector for edge nodes
+edgeNodeSelector:
+  openyurt.io/is-edge-worker: "true"
+
+# Kube-proxy configuration
+kubeProxy:
+  enabled: true
+  image:
+    registry: ""
+    repository: kubesphere/kube-proxy
+    tag: "v1.30.12"
+    pullPolicy: IfNotPresent
+
+  # Cluster CIDR configuration
+  clusterCIDR: "10.233.64.0/18"
+
+  # Proxy mode: ipvs or iptables
+  mode: "ipvs"
+
+  resources: {}
+    # limits:
+    #   memory: 200Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 100Mi
+
+# CoreDNS configuration
+coredns:
+  enabled: true
+  image:
+    registry: ""
+    repository: coredns/coredns
+    tag: "1.9.3"
+    pullPolicy: IfNotPresent
+
+  resources:
+    limits:
+      memory: 300Mi
+    requests:
+      cpu: 100m
+      memory: 70Mi
+
+  # Node affinity for control plane preference
+  preferControlPlane: true
+
+  # Pod anti-affinity
+  podAntiAffinity: true
