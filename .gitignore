@@ -1,3 +1,4 @@
 .vscode*.tar
-bin/
+bin/_output/
+kubeconfig
 # Docker image tar files
