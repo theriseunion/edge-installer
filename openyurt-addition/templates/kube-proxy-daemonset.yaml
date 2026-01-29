@@ -58,15 +58,15 @@ spec:
       restartPolicy: Always
       schedulerName: default-scheduler
       securityContext: {}
-      serviceAccount: kube-proxy-edge
-      serviceAccountName: kube-proxy-edge
+      serviceAccount: kube-proxy
+      serviceAccountName: kube-proxy
       terminationGracePeriodSeconds: 30
       tolerations:
       - operator: Exists
       volumes:
       - configMap:
           defaultMode: 420
-          name: kube-proxy-edge
+          name: kube-proxy
         name: kube-proxy
       - hostPath:
           path: /run/xtables.lock

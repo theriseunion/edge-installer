@@ -3,7 +3,7 @@
 # Declare variables to be passed into your templates.
 
 global:
-  imageRegistry: ""
+  imageRegistry: "quanzhenglong.com"
   tag: ""
   imagePullSecrets: []
 

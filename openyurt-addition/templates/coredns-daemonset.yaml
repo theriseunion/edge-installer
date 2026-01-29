@@ -109,8 +109,8 @@ spec:
       securityContext:
         seccompProfile:
           type: RuntimeDefault
-      serviceAccount: coredns-edge
-      serviceAccountName: coredns-edge
+      serviceAccount: coredns
+      serviceAccountName: coredns
       terminationGracePeriodSeconds: 30
       tolerations:
       - effect: NoSchedule
@@ -125,7 +125,7 @@ spec:
           items:
           - key: Corefile
             path: Corefile
-          name: coredns-edge
+          name: coredns
         name: config-volume
   updateStrategy:
     rollingUpdate:
