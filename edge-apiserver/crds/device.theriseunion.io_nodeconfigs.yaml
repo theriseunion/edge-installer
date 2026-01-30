@@ -1,3 +1,4 @@
+---
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
@@ -14,29 +15,20 @@ spec:
   scope: Cluster
   versions:
   - additionalPrinterColumns:
-    - jsonPath: .spec.devicePlugins
-      name: DevicePlugins
+    - description: Device plugin name
+      jsonPath: .spec.manufacturerSpec[0].devicePlugin
+      name: DevicePlugin
       type: string
-    - jsonPath: .status.allocatable.core
-      name: TotalCore
+    - description: Compute template name
+      jsonPath: .spec.manufacturerSpec[0].computeTemplate
+      name: ComputeTemplate
       type: string
-    - jsonPath: .status.allocatable.memory
-      name: TotalMemory
+    - description: Device plugin status
+      jsonPath: .status.manufacturerStatus[0].devicePlgingRuntime.devicePluginStatus
+      name: DevicePluginStatus
       type: string
-    - jsonPath: .status.allocatable.splitCount
-      name: TotalSplitCount
-      type: string
-    - jsonPath: .status.requested.core
-      name: RequestedCore
-      type: string
-    - jsonPath: .status.requested.memory
-      name: RequestedMemory
-      type: string
-    - jsonPath: .status.requested.splitCount
-      name: RequestedSplitCount
-      type: string
-    - jsonPath: .status.updateTime
-      name: UpdateTime
+    - jsonPath: .metadata.creationTimestamp
+      name: Age
       type: date
     name: v1alpha1
     schema:
@@ -65,275 +57,145 @@ spec:
           spec:
             description: NodeConfigSpec defines the desired state of NodeConfig
             properties:
-              devicePlugins:
-                description: DevicePlugins defines the device plugins to use for this
-                  node.
-                items:
-                  type: string
-                type: array
-              disabledDeviceUuids:
-                description: DisabledDeviceUuids defines the device uuids to disable
-                  for this node.
-                items:
-                  type: string
-                type: array
-              manufacturerConfig:
-                description: ManufacturerConfig defines the manufacturer-specific
-                  GPU configuration
+              manufacturerSpec:
+                description: ManufacturerSpecs is the list of manufacturer-specific
+                  device configurations
                 items:
                   properties:
-                    computeTemplateName:
-                      description: ComputeTemplateName is the name of the compute
-                        template to use for this node.
+                    computeTemplate:
+                      description: ComputeTemplate is the name of the compute template
+                        to use for this device plugin
                       type: string
-                    deviceComputeTemplateName:
-                      additionalProperties:
+                    deviceComputeTemplate:
+                      items:
+                        properties:
+                          computeTemplate:
+                            type: string
+                          name:
+                            type: string
+                        type: object
+                      type: array
+                    devicePlugin:
+                      description: DevicePlugin is the name of the device plugin
+                      type: string
+                    disabledDevices:
+                      items:
                         type: string
-                      description: |-
-                        DeviceComputeTemplateName is the name of the compute template to use for each device.
-                        key is device uuid, value is compute template name. priority is higher than ComputeTemplateName.
-                      type: object
-                    manufacturer:
-                      description: Manufacturer defines the GPU manufacturer (e.g.,
-                        "Alibaba", "AMD", "Intel")
-                      type: string
+                      type: array
                   type: object
                 type: array
             type: object
           status:
             description: NodeConfigStatus defines the observed state of NodeConfig
             properties:
-              allocatable:
-                description: Allocatable is the total resource allocatable of the
-                  node
-                properties:
-                  core:
-                    format: int32
-                    type: integer
-                  count:
-                    format: int32
-                    type: integer
-                  memory:
-                    format: int32
-                    type: integer
-                  splitCount:
-                    format: int32
-                    type: integer
-                required:
-                - core
-                - count
-                - memory
-                - splitCount
-                type: object
-              deviceStatus:
-                description: DeviceStatus is the status of each device
-                items:
-                  properties:
-                    computeTemplateName:
-                      description: ComputeTemplateName is the name of the compute
-                        template to use for this device.
-                      type: string
-                    computeTemplateSpec:
-                      description: ComputeTemplateSpec is the specification of the
-                        compute template to use for this device.
-                      properties:
-                        computeSplitMode:
-                          default: soft
-                          description: ComputeSplitMode defines the compute split
-                            mode (e.g., hard means mig, soft means hami-core)
-                          enum:
-                          - hard
-                          - soft
-                          type: string
-                        computeSplitStrategy:
-                          description: ComputeSplitStrategy 算力切分策略，不同的切分模式可能有不同的的切分策略
-                          type: string
-                        description:
-                          description: Description is the description of the compute
-                            template.
-                          type: string
-                        deviceCoreScaling:
-                          default: "1.0"
-                          description: |-
-                            DeviceCoreScaling defines the device core scaling factor (e.g., 2 means 2x)。 浮点数在CRD中被认为是危险类型，因此这里使用字符串表示。
-                            Must be a positive number in string format (e.g., "1.5", "2.0")
-                          pattern: ^[0-9]+(\.[0-9]+)?$
-                          type: string
-                        deviceMemoryScaling:
-                          default: "1.0"
-                          description: |-
-                            DeviceMemoryScaling defines the device memory scaling factor (e.g., 2 means 2x)。 浮点数在CRD中被认为是危险类型，因此这里使用字符串表示。
-                            Must be a positive number in string format (e.g., "1.5", "2.0")
-                          pattern: ^[0-9]+(\.[0-9]+)?$
-                          type: string
-                        deviceSplitCount:
-                          default: 10
-                          description: |-
-                            DeviceSplitCount defines the number of device splits (e.g., 2 means split into 2 devices)
-                            需要和切分模式联动
-                          maximum: 20
-                          minimum: 1
-                          type: integer
-                        manufacturer:
-                          description: Manufacturer is the manufacturer of the compute
-                            template.
-                          type: string
-                        model:
-                          description: |-
-                            Model is the model of the compute template.
-                            如果存在theriseunion.io/model-scope: "all"标签，那么表示该模板适用于当前厂商的所有型号的显卡
-                          type: string
-                      required:
-                      - manufacturer
-                      - model
-                      type: object
-                    name:
-                      description: Name is the unique identifier of the device
-                      type: string
-                  type: object
-                type: array
-              limit:
-                description: Limit is the current resource limit of the node
-                properties:
-                  core:
-                    format: int32
-                    type: integer
-                  count:
-                    format: int32
-                    type: integer
-                  memory:
-                    format: int32
-                    type: integer
-                  splitCount:
-                    format: int32
-                    type: integer
-                required:
-                - core
-                - count
-                - memory
-                - splitCount
-                type: object
-              manufactureStatuses:
+              manufacturerStatus:
                 description: ManufactureStatuses is the status of each manufacturer
                 items:
                   properties:
-                    allocatable:
-                      description: Allocatable is the total resource allocatable of
-                        the node with the specified manufacturer
+                    devicePlgingRuntime:
                       properties:
-                        core:
-                          format: int32
-                          type: integer
-                        count:
-                          format: int32
-                          type: integer
-                        memory:
-                          format: int32
-                          type: integer
-                        splitCount:
-                          format: int32
-                          type: integer
-                      required:
-                      - core
-                      - count
-                      - memory
-                      - splitCount
+                        computeTemplate:
+                          properties:
+                            computeSplitMode:
+                              default: soft
+                              description: ComputeSplitMode defines the compute split
+                                mode (e.g., hard means mig, soft means hami-core)
+                              enum:
+                              - hard
+                              - soft
+                              type: string
+                            computeSplitStrategy:
+                              description: ComputeSplitStrategy 算力切分策略，不同的切分模式可能有不同的的切分策略
+                              type: string
+                            description:
+                              description: Description is the description of the compute
+                                template.
+                              type: string
+                            deviceCoreScaling:
+                              default: "1.0"
+                              description: |-
+                                DeviceCoreScaling defines the device core scaling factor (e.g., 2 means 2x)。 浮点数在CRD中被认为是危险类型，因此这里使用字符串表示。
+                                Must be a positive number in string format (e.g., "1.5", "2.0")
+                              pattern: ^[0-9]+(\.[0-9]+)?$
+                              type: string
+                            deviceMemoryScaling:
+                              default: "1.0"
+                              description: |-
+                                DeviceMemoryScaling defines the device memory scaling factor (e.g., 2 means 2x)。 浮点数在CRD中被认为是危险类型，因此这里使用字符串表示。
+                                Must be a positive number in string format (e.g., "1.5", "2.0")
+                              pattern: ^[0-9]+(\.[0-9]+)?$
+                              type: string
+                            deviceSplitCount:
+                              default: 10
+                              description: |-
+                                DeviceSplitCount defines the number of device splits (e.g., 2 means split into 2 devices)
+                                需要和切分模式联动
+                              maximum: 20
+                              minimum: 1
+                              type: integer
+                            manufacturer:
+                              description: Manufacturer is the manufacturer of the
+                                compute template.
+                              type: string
+                            model:
+                              description: |-
+                                Model is the model of the compute template.
+                                如果存在theriseunion.io/model-scope: "all"标签，那么表示该模板适用于当前厂商的所有型号的显卡
+                              type: string
+                          required:
+                          - manufacturer
+                          - model
+                          type: object
+                        devicePluginStatus:
+                          description: DevicePluginStatus is the status of the device
+                            plugin (init, running, error)
+                          type: string
+                        driverVersion:
+                          description: DriverVersion is the version of the device
+                            driver
+                          type: string
+                        toolkitVersion:
+                          description: ToolkitVersion is the version of the device
+                            toolkit
+                          type: string
                       type: object
-                    driverVersion:
-                      description: DriverVersion is the version of the driver installed
-                        on the node
-                      type: string
-                    limit:
-                      description: Limit is the current resource limit of the node
-                        with the specified manufacturer
+                    devicePluginMeta:
                       properties:
-                        core:
-                          format: int32
-                          type: integer
-                        count:
-                          format: int32
-                          type: integer
-                        memory:
-                          format: int32
-                          type: integer
-                        splitCount:
-                          format: int32
-                          type: integer
+                        commonWord:
+                          type: string
+                        deviceModelAnnotation:
+                          type: string
+                        manufacturer:
+                          type: string
+                        name:
+                          type: string
+                        resourceCoreName:
+                          type: string
+                        resourceMemoryName:
+                          type: string
+                        resourceName:
+                          type: string
+                        scheduler:
+                          type: string
+                        supportDeviceLevelSchedule:
+                          description: 是否支持设备级别调度，若为false，则只能以节点级别调度
+                          type: boolean
+                        supportVirtualMetrics:
+                          type: boolean
                       required:
-                      - core
-                      - count
-                      - memory
-                      - splitCount
+                      - commonWord
+                      - deviceModelAnnotation
+                      - manufacturer
+                      - name
+                      - resourceCoreName
+                      - resourceMemoryName
+                      - resourceName
+                      - scheduler
+                      - supportDeviceLevelSchedule
+                      - supportVirtualMetrics
                       type: object
-                    manufacturer:
-                      description: Manufacturer defines the GPU manufacturer (e.g.,
-                        "Alibaba", "AMD", "Intel")
-                      type: string
-                    request:
-                      description: Request is the current resource requested of the
-                        node with the specified manufacturer
-                      properties:
-                        core:
-                          format: int32
-                          type: integer
-                        count:
-                          format: int32
-                          type: integer
-                        memory:
-                          format: int32
-                          type: integer
-                        splitCount:
-                          format: int32
-                          type: integer
-                      required:
-                      - core
-                      - count
-                      - memory
-                      - splitCount
-                      type: object
-                    supportDeviceLevelSchedule:
-                      default: true
-                      description: |-
-                        SupportDeviceLevelSchedule indicates whether the node supports device level scheduling
-                        如阿里的PPU, device-plugin不支持指定显卡，因此无法支持按照显卡颗粒度进行调度，只能以节点的维度调度
-                      type: boolean
-                    supportMig:
-                      default: false
-                      description: |-
-                        SupportMig indicates whether the node supports MIG (Multi-Instance GPU)
-                        节点是否支持Mig，主要是看节点上是否插入了支持MIG的卡，如果插入了Mig卡，就支持Mig。
-                      type: boolean
-                    toolkitVersion:
-                      description: ToolkitVersion is the version of the toolkit installed
-                        on the node
-                      type: string
                   type: object
                 type: array
-              request:
-                description: Request is the current resource requested of the node
-                properties:
-                  core:
-                    format: int32
-                    type: integer
-                  count:
-                    format: int32
-                    type: integer
-                  memory:
-                    format: int32
-                    type: integer
-                  splitCount:
-                    format: int32
-                    type: integer
-                required:
-                - core
-                - count
-                - memory
-                - splitCount
-                type: object
-              updateTime:
-                description: UpdateTime 节点配置最后更新时间
-                format: date-time
-                type: string
             type: object
         type: object
     served: true

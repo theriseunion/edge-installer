@@ -1,3 +1,4 @@
+---
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
@@ -54,6 +55,9 @@ spec:
             properties:
               allocatable:
                 properties:
+                  compute:
+                    format: int32
+                    type: integer
                   core:
                     format: int32
                     type: integer
@@ -67,6 +71,7 @@ spec:
                     format: int32
                     type: integer
                 required:
+                - compute
                 - core
                 - count
                 - memory
@@ -86,6 +91,9 @@ spec:
                 type: array
               limit:
                 properties:
+                  compute:
+                    format: int32
+                    type: integer
                   core:
                     format: int32
                     type: integer
@@ -99,6 +107,7 @@ spec:
                     format: int32
                     type: integer
                 required:
+                - compute
                 - core
                 - count
                 - memory
@@ -106,6 +115,9 @@ spec:
                 type: object
               request:
                 properties:
+                  compute:
+                    format: int32
+                    type: integer
                   core:
                     format: int32
                     type: integer
@@ -119,6 +131,7 @@ spec:
                     format: int32
                     type: integer
                 required:
+                - compute
                 - core
                 - count
                 - memory

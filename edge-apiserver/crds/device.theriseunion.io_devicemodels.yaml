@@ -1,3 +1,4 @@
+---
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
@@ -22,6 +23,10 @@ spec:
       jsonPath: .spec.model
       name: Model
       type: string
+    - description: The type of the device model
+      jsonPath: .spec.deviceType
+      name: Type
+      type: string
     - description: The core size of the device model in percent
       jsonPath: .spec.core
       name: Core
@@ -34,10 +39,6 @@ spec:
       jsonPath: .spec.memoryStep
       name: MemoryStep
       type: integer
-    - description: Whether the device model supports virtual device
-      jsonPath: .spec.supportVirtualDevice
-      name: SupportVirtualDevice
-      type: boolean
     - description: The compute split mode supported by the device model
       jsonPath: .spec.supportComputeSplitMode
       name: SupportComputeSplitMode
@@ -79,7 +80,10 @@ spec:
             description: DeviceModelSpec defines the desired state of DeviceModel
             properties:
               alias:
-                description: Alias of the device model
+                description: |-
+                  Alias of the device model
+                  加入希望使用的别名，HAMI Type, CommonWord
+                  注意：HAMI Type和CommonWord必须要加入，确保功能的正常使用
                 items:
                   type: string
                 type: array
@@ -127,13 +131,21 @@ spec:
               core:
                 default: 100
                 description: |-
-                  算力大小百分比。 如果是物理卡，那么算力必须是100
-                  如果是虚拟卡，那么算力大小必须小于100
+                  Core represents compute capacity percentage (0-100).
+                  For physical devices: must be 100 (full capacity)
+                  For virtual devices: must be < 100 (partial capacity)
                 maximum: 100
                 minimum: 0
                 type: integer
               description:
                 description: Description of the device model
+                type: string
+              deviceType:
+                description: DeviceType explicitly indicates whether this is a physical
+                  or virtual device.
+                enum:
+                - physical
+                - virtual
                 type: string
               family:
                 description: Family of the device model
@@ -142,10 +154,10 @@ spec:
                 description: Manufacturer of the device model
                 type: string
               memorySize:
-                default: 1
                 description: |-
                   MemorySize of the device model, unit is MB
-                  当IsVirtualModel=true时，代表虚拟型号的显存大小。
+                  For physical devices: represents total memory size
+                  For virtual devices: represents allocated memory size
                 minimum: 1
                 type: integer
               memoryStep:
@@ -182,17 +194,24 @@ spec:
                   type: array
                 type: array
               model:
-                description: Model of the device model，如果是物理型号，那么一个型号原则上只有一个
+                description: |-
+                  Model of the device model，如果是物理型号，那么一个型号原则上只有一个
+                  metadata.name和Model不做一一映射，这两个变量是独立的，但是意义保持一致都是说明当前显卡的型号
+                  这个字段主要有两个作用：1、页面展示； 2、虚拟卡管理物理的DeviceModel
                 type: string
               supportComputeSplitMode:
-                description: SupportComputeSplitMode represents the compute split
-                  mode supported by the device model.
+                description: |-
+                  SupportComputeSplitMode represents the compute split mode supported by the device model.
+                  当前型号支持的切分模式，目前又硬切分（hard）和软切分（soft）两种模式。 如果当前DeviceModel表示一个虚拟卡，那么当前字段表示当前虚拟卡使用的切分模式，
+                  也就是当前虚拟卡是通过什么方式切分出来的。
                 items:
                   type: string
                 type: array
               supportVirtualDevice:
-                description: 是否支持虚拟卡。
+                description: 是否支持虚拟卡。若不支持虚拟卡，则当前型号不允许创建虚拟卡。
                 type: boolean
+            required:
+            - deviceType
             type: object
           status:
             description: DeviceModelStatus defines the observed state of DeviceModel
@@ -240,10 +259,6 @@ spec:
               physicalMemorySize:
                 description: 物理卡的显存大小，单位是MB。
                 type: integer
-              status:
-                default: Unavailable
-                description: 设备型号在集群中的状态。Available表示集群中存在这个卡，NotExist表示集群中不存在这个卡。
-                type: string
               updateTime:
                 description: UpdateTime 设备型号最后更新时间
                 format: date-time
