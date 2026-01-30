@@ -1,36 +1,37 @@
----
 apiVersion: device.theriseunion.io/v1alpha1
 kind: DeviceModel
 metadata:
   labels:
     theriseunion.io/config-type: fixed
-  name: nvidia-a30
+  name: nvidia-geforce-rtx-3060
 spec:
   deviceType: physical
   alias:
-  - A30
-  - Ampere A30
-  - NVIDIA-NVIDIA A30
-  compute: "8.0"
+  - RTX 3060
+  - GeForce RTX 3060
+  - NVIDIA-NVIDIA GeForce RTX 3060
+  compute: "8.6"
   computeCapabilities:
   - precision: FP32
     unit: TFLOPS
-    value: "10.3"
+    value: "12.7"
   - precision: FP16
     unit: TFLOPS
-    value: "165"
+    value: "25.4"
   - precision: BF16
     unit: TFLOPS
-    value: "165"
+    value: "25.4"
+  - precision: FP8
+    unit: TFLOPS
+    value: "50.8"
   core: 100
-  description: NVIDIA A30 Tensor Core GPU with 24GB memory
+  description: NVIDIA GeForce RTX 3060 GPU with 12GB GDDR6 memory
   family: Ampere
   manufacturer: NVIDIA
-  memorySize: 24576
+  memorySize: 12288
   memoryStep: 256
-  model: NVIDIA A30
+  model: NVIDIA GeForce RTX 3060
   supportComputeSplitMode:
-  - hard
   - soft
   supportVirtualDevice: true
 ---
@@ -38,43 +39,46 @@ apiVersion: device.theriseunion.io/v1alpha1
 kind: DeviceModel
 metadata:
   labels:
-    theriseunion.io/config-type: fixed 
-  name: nvidia-a30-half-12gb
-spec:
-  core: 50
-  deviceType: virtual
-  manufacturer: NVIDIA
-  memorySize: 12288
-  model: NVIDIA A30
-  supportComputeSplitMode:
-  - soft
----
-apiVersion: device.theriseunion.io/v1alpha1
-kind: DeviceModel
-metadata:
-  labels:
     theriseunion.io/config-type: fixed
-  name: nvidia-a30-quarter-6gb
-spec:
-  core: 25
-  deviceType: virtual
-  manufacturer: NVIDIA
-  memorySize: 6144
-  model: NVIDIA A30
-  supportComputeSplitMode:
-  - soft
----
-apiVersion: device.theriseunion.io/v1alpha1
-kind: DeviceModel
-metadata:
-  labels:
-    theriseunion.io/config-type: fixed
-  name: nvidia-a30-eighth-3gb
+  name: nvidia-3060-eighth-1.5gb
 spec:
   core: 12
   deviceType: virtual
   manufacturer: NVIDIA
+  memorySize: 1536
+  memoryStep: 0
+  model: NVIDIA GeForce RTX 3060
+  supportComputeSplitMode:
+  - soft
+---
+apiVersion: device.theriseunion.io/v1alpha1
+kind: DeviceModel
+metadata:
+  labels:
+    theriseunion.io/config-type: fixed
+  name: nvidia-3060-half-6gb
+spec:
+  core: 50
+  deviceType: virtual
+  manufacturer: NVIDIA
+  memorySize: 6144
+  memoryStep: 0
+  model: NVIDIA GeForce RTX 3060
+  supportComputeSplitMode:
+  - soft
+---
+apiVersion: device.theriseunion.io/v1alpha1
+kind: DeviceModel
+metadata:
+  labels:
+    theriseunion.io/config-type: fixed
+  name: nvidia-3060-quarter-3gb
+spec:
+  core: 25
+  deviceType: virtual
+  manufacturer: NVIDIA
   memorySize: 3072
-  model: NVIDIA A30
+  memoryStep: 0
+  model: NVIDIA GeForce RTX 3060
   supportComputeSplitMode:
   - soft

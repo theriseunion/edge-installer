@@ -1,34 +1,35 @@
----
 apiVersion: device.theriseunion.io/v1alpha1
 kind: DeviceModel
 metadata:
   labels:
     theriseunion.io/config-type: fixed
-  name: nvidia-a30
+  name: nvidia-a100-80gb
 spec:
   deviceType: physical
   alias:
-  - A30
-  - Ampere A30
-  - NVIDIA-NVIDIA A30
+  - A100-SXM4-80GB
+  - NVIDIA-NVIDIA A100-SXM4-80GB
   compute: "8.0"
   computeCapabilities:
   - precision: FP32
     unit: TFLOPS
-    value: "10.3"
+    value: "19.5"
   - precision: FP16
     unit: TFLOPS
-    value: "165"
+    value: "312"
   - precision: BF16
     unit: TFLOPS
-    value: "165"
+    value: "312"
+  - precision: FP8
+    unit: TFLOPS
+    value: "624"
   core: 100
-  description: NVIDIA A30 Tensor Core GPU with 24GB memory
+  description: NVIDIA A100 Tensor Core GPU with 80GB memory
   family: Ampere
   manufacturer: NVIDIA
-  memorySize: 24576
+  memorySize: 81920
   memoryStep: 256
-  model: NVIDIA A30
+  model: NVIDIA A100-SXM4-80GB
   supportComputeSplitMode:
   - hard
   - soft
@@ -38,14 +39,15 @@ apiVersion: device.theriseunion.io/v1alpha1
 kind: DeviceModel
 metadata:
   labels:
-    theriseunion.io/config-type: fixed 
-  name: nvidia-a30-half-12gb
+    theriseunion.io/config-type: fixed
+  name: nvidia-a100-80gb-half-40gb
 spec:
+  deviceType: virtual
   core: 50
-  deviceType: virtual
   manufacturer: NVIDIA
-  memorySize: 12288
-  model: NVIDIA A30
+  memorySize: 40960
+  memoryStep: 0
+  model: NVIDIA A100-SXM4-80GB
   supportComputeSplitMode:
   - soft
 ---
@@ -54,27 +56,13 @@ kind: DeviceModel
 metadata:
   labels:
     theriseunion.io/config-type: fixed
-  name: nvidia-a30-quarter-6gb
+  name: nvidia-a100-80gb-quarter-20gb
 spec:
+  deviceType: virtual
   core: 25
-  deviceType: virtual
   manufacturer: NVIDIA
-  memorySize: 6144
-  model: NVIDIA A30
-  supportComputeSplitMode:
-  - soft
----
-apiVersion: device.theriseunion.io/v1alpha1
-kind: DeviceModel
-metadata:
-  labels:
-    theriseunion.io/config-type: fixed
-  name: nvidia-a30-eighth-3gb
-spec:
-  core: 12
-  deviceType: virtual
-  manufacturer: NVIDIA
-  memorySize: 3072
-  model: NVIDIA A30
+  memorySize: 20480
+  memoryStep: 0
+  model: NVIDIA A100-SXM4-80GB
   supportComputeSplitMode:
   - soft

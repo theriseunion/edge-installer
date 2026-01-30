@@ -1,0 +1,23 @@
+apiVersion: device.theriseunion.io/v1alpha1
+kind: DeviceModel
+metadata:
+  labels:
+    theriseunion.io/config-type: fixed
+  name: ascend-910b3
+spec:
+  deviceType: physical
+  alias:
+  - Ascend910B3
+  computeCapabilities:
+  - precision: FP16
+    unit: TFLOPS
+    value: "312"
+  core: 100
+  description: Ascend910B3 GPU with 64GB memory
+  manufacturer: Ascend
+  memorySize: 65536
+  memoryStep: 1
+  model: Ascend910B3
+  supportComputeSplitMode:
+  - hard
+  supportVirtualDevice: true

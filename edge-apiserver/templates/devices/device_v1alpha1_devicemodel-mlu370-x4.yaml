@@ -1,0 +1,24 @@
+
+apiVersion: device.theriseunion.io/v1alpha1
+kind: DeviceModel
+metadata:
+  labels:
+    theriseunion.io/config-type: fixed
+  name: mlu370-x4
+spec:
+  deviceType: physical
+  alias:
+  - MLU370-X4
+  computeCapabilities:
+  - precision: FP16
+    unit: TFLOPS
+    value: "312"
+  core: 100
+  description: Cambricon-MLU370-X4 GPU with 23GB memory
+  manufacturer: Cambricon
+  memorySize: 23308
+  memoryStep: 256
+  model: MLU370-X4
+  supportComputeSplitMode:
+  - soft
+  supportVirtualDevice: true

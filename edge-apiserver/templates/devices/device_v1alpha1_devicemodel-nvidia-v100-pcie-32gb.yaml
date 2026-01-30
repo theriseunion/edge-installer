@@ -4,8 +4,9 @@ kind: DeviceModel
 metadata:
   labels:
     theriseunion.io/config-type: fixed
-  name: nvidia-tesla-v100-pcie-32gb
+  name: nvidia-v100-pcie-32gb
 spec:
+  deviceType: physical
   alias:
   - V100
   - Volta V100
@@ -30,7 +31,7 @@ spec:
   manufacturer: NVIDIA
   memorySize: 32768
   memoryStep: 256
-  model: NVIDIA-Tesla V100-PCIE-32GB
+  model: V100-PCIE-32GB
   supportComputeSplitMode:
   - soft
   supportVirtualDevice: true
@@ -44,9 +45,12 @@ metadata:
   name: nvidia-v100-half-16gb
 spec:
   core: 50
+  deviceType: virtual
   manufacturer: NVIDIA
   memorySize: 16384
-  model: NVIDIA-Tesla V100-PCIE-32GB
+  model: V100-PCIE-32GB
+  supportComputeSplitMode:
+  - soft
 ---
 apiVersion: device.theriseunion.io/v1alpha1
 kind: DeviceModel
@@ -57,9 +61,12 @@ metadata:
   name: nvidia-v100-quarter-8gb
 spec:
   core: 25
+  deviceType: virtual
   manufacturer: NVIDIA
   memorySize: 8192
-  model: NVIDIA-Tesla V100-PCIE-32GB
+  model: V100-PCIE-32GB
+  supportComputeSplitMode:
+  - soft
 ---
 apiVersion: device.theriseunion.io/v1alpha1
 kind: DeviceModel
@@ -70,7 +77,10 @@ metadata:
   name: nvidia-v100-eighth-4gb
 spec:
   core: 12
+  deviceType: virtual
   manufacturer: NVIDIA
   memorySize: 4096
-  model: NVIDIA-Tesla V100-PCIE-32GB
+  model: V100-PCIE-32GB
+  supportComputeSplitMode:
+  - soft
 

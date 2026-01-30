@@ -1,0 +1,25 @@
+
+apiVersion: device.theriseunion.io/v1alpha1
+kind: DeviceModel
+metadata:
+  labels:
+    theriseunion.io/config-type: fixed
+  name: iluvatar-mr-v100
+spec:
+  deviceType: physical
+  alias:
+  - MR-V100
+  - Iluvatar-MR-V100
+  computeCapabilities:
+  - precision: FP16
+    unit: TFLOPS
+    value: "312"
+  core: 100
+  description: Iluvatar-MR-V100 GPU with 64GB memory
+  manufacturer: Iluvatar
+  memorySize: 65520
+  memoryStep: 1
+  model: Iluvatar-MR-V100
+  supportComputeSplitMode:
+  - soft
+  supportVirtualDevice: true

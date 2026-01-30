@@ -1,0 +1,29 @@
+
+apiVersion: device.theriseunion.io/v1alpha1
+kind: DeviceModel
+metadata:
+  labels:
+    theriseunion.io/config-type: fixed
+  name: metax-c500
+spec:
+  deviceType: physical
+  alias:
+  - Metax-SGPU-C500
+  - Metax-GPU-C500
+  - MetaX C500
+  - MXC500
+  - C500
+  computeCapabilities:
+  - precision: FP16
+    unit: TFLOPS
+    value: "312"
+  core: 100
+  description: Metax-GPU-C500 GPU with 64GB memory
+  family: MXC
+  manufacturer: Metax
+  memorySize: 65536
+  memoryStep: 1
+  model: Metax-C500
+  supportComputeSplitMode:
+  - soft
+  supportVirtualDevice: true

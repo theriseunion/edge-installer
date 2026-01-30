@@ -4,14 +4,12 @@ kind: DeviceModel
 metadata:
   labels:
     theriseunion.io/config-type: fixed
-  name: nvidia-a30
+  name: ascend-310p
 spec:
   deviceType: physical
   alias:
-  - A30
-  - Ampere A30
-  - NVIDIA-NVIDIA A30
-  compute: "8.0"
+  - Ascend310P
+  - Ascend 310P
   computeCapabilities:
   - precision: FP32
     unit: TFLOPS
@@ -23,58 +21,56 @@ spec:
     unit: TFLOPS
     value: "165"
   core: 100
-  description: NVIDIA A30 Tensor Core GPU with 24GB memory
-  family: Ampere
-  manufacturer: NVIDIA
-  memorySize: 24576
-  memoryStep: 256
-  model: NVIDIA A30
+  description: Ascend 310P Tensor Core GPU with 24GB memory
+  manufacturer: Ascend
+  memorySize: 49152
+  memoryStep: 1
+  model: Ascend310P
   supportComputeSplitMode:
   - hard
-  - soft
   supportVirtualDevice: true
 ---
 apiVersion: device.theriseunion.io/v1alpha1
 kind: DeviceModel
 metadata:
   labels:
-    theriseunion.io/config-type: fixed 
-  name: nvidia-a30-half-12gb
+    theriseunion.io/config-type: fixed
+  name: ascend-310p-half-24gb
 spec:
   core: 50
   deviceType: virtual
-  manufacturer: NVIDIA
-  memorySize: 12288
-  model: NVIDIA A30
+  manufacturer: Ascend
+  memorySize: 24576
+  model: Ascend310P
   supportComputeSplitMode:
-  - soft
+  - hard
 ---
 apiVersion: device.theriseunion.io/v1alpha1
 kind: DeviceModel
 metadata:
   labels:
     theriseunion.io/config-type: fixed
-  name: nvidia-a30-quarter-6gb
+  name: ascend-310p-quarter-12gb
 spec:
   core: 25
   deviceType: virtual
-  manufacturer: NVIDIA
-  memorySize: 6144
-  model: NVIDIA A30
+  manufacturer: Ascend
+  memorySize: 12288
+  model: Ascend310P
   supportComputeSplitMode:
-  - soft
+  - hard
 ---
 apiVersion: device.theriseunion.io/v1alpha1
 kind: DeviceModel
 metadata:
   labels:
     theriseunion.io/config-type: fixed
-  name: nvidia-a30-eighth-3gb
+  name: ascend-310p-eighth-6gb
 spec:
   core: 12
   deviceType: virtual
-  manufacturer: NVIDIA
-  memorySize: 3072
-  model: NVIDIA A30
+  manufacturer: Ascend
+  memorySize: 6144
+  model: Ascend310P
   supportComputeSplitMode:
-  - soft
+  - hard

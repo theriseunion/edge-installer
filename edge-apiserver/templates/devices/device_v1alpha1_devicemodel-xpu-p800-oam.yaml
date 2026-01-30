@@ -1,0 +1,33 @@
+
+apiVersion: device.theriseunion.io/v1alpha1
+kind: DeviceModel
+metadata:
+  labels:
+    theriseunion.io/config-type: fixed
+  name: xpu-p800-oam
+spec:
+  deviceType: physical
+  alias:
+  - XPU-P800 OAM
+  computeCapabilities:
+  - precision: FP32
+    unit: TFLOPS
+    value: "19.5"
+  - precision: FP16
+    unit: TFLOPS
+    value: "312"
+  - precision: BF16
+    unit: TFLOPS
+    value: "312"
+  - precision: FP8
+    unit: TFLOPS
+    value: "624"
+  core: 100
+  description: XPU-P800 OAM GPU with 40GB memory
+  manufacturer: Kunlunxin
+  memorySize: 98304
+  memoryStep: 24576
+  model: XPU-P800 OAM
+  supportComputeSplitMode:
+  - hard
+  supportVirtualDevice: true

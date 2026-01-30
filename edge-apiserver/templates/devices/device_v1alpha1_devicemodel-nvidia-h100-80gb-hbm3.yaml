@@ -1,80 +1,88 @@
----
 apiVersion: device.theriseunion.io/v1alpha1
 kind: DeviceModel
 metadata:
   labels:
     theriseunion.io/config-type: fixed
-  name: nvidia-a30
+  name: nvidia-h100-80gb-hbm3
 spec:
   deviceType: physical
   alias:
-  - A30
-  - Ampere A30
-  - NVIDIA-NVIDIA A30
-  compute: "8.0"
+  - H100
+  - Hopper H100
+  - NVIDIA H100 80GB HBM3
+  - NVIDIA-H100-SXM-80GB
+  - NVIDIA-NVIDIA H100 80GB HBM3
+  compute: "9.0"
   computeCapabilities:
   - precision: FP32
     unit: TFLOPS
-    value: "10.3"
+    value: "67"
   - precision: FP16
     unit: TFLOPS
-    value: "165"
+    value: "1979"
   - precision: BF16
     unit: TFLOPS
-    value: "165"
+    value: "1979"
+  - precision: FP8
+    unit: TFLOPS
+    value: "3958"
   core: 100
-  description: NVIDIA A30 Tensor Core GPU with 24GB memory
-  family: Ampere
+  description: NVIDIA H100 SXM GPU with 80GB HBM3 memory, 16,896 CUDA cores, and 528
+    4th-generation Tensor Cores
+  family: Hopper
   manufacturer: NVIDIA
-  memorySize: 24576
+  memorySize: 81920
   memoryStep: 256
-  model: NVIDIA A30
+  model: NVIDIA H100 80GB HBM3
   supportComputeSplitMode:
-  - hard
   - soft
+  - hard
   supportVirtualDevice: true
 ---
 apiVersion: device.theriseunion.io/v1alpha1
 kind: DeviceModel
 metadata:
   labels:
-    theriseunion.io/config-type: fixed 
-  name: nvidia-a30-half-12gb
-spec:
-  core: 50
-  deviceType: virtual
-  manufacturer: NVIDIA
-  memorySize: 12288
-  model: NVIDIA A30
-  supportComputeSplitMode:
-  - soft
----
-apiVersion: device.theriseunion.io/v1alpha1
-kind: DeviceModel
-metadata:
-  labels:
     theriseunion.io/config-type: fixed
-  name: nvidia-a30-quarter-6gb
+  name: nvidia-h100-eighth-10gb
 spec:
-  core: 25
   deviceType: virtual
-  manufacturer: NVIDIA
-  memorySize: 6144
-  model: NVIDIA A30
-  supportComputeSplitMode:
-  - soft
----
-apiVersion: device.theriseunion.io/v1alpha1
-kind: DeviceModel
-metadata:
-  labels:
-    theriseunion.io/config-type: fixed
-  name: nvidia-a30-eighth-3gb
-spec:
   core: 12
-  deviceType: virtual
   manufacturer: NVIDIA
-  memorySize: 3072
-  model: NVIDIA A30
+  memorySize: 10240
+  memoryStep: 0
+  model: NVIDIA H100 80GB HBM3
+  supportComputeSplitMode:
+  - soft
+---
+apiVersion: device.theriseunion.io/v1alpha1
+kind: DeviceModel
+metadata:
+  labels:
+    theriseunion.io/config-type: fixed
+  name: nvidia-h100-half-40gb
+spec:
+  deviceType: virtual
+  core: 50
+  manufacturer: NVIDIA
+  memorySize: 40960
+  memoryStep: 0
+  model: NVIDIA H100 80GB HBM3
+  supportComputeSplitMode:
+  - soft
+---
+apiVersion: device.theriseunion.io/v1alpha1
+kind: DeviceModel
+metadata:
+  labels:
+    theriseunion.io/config-type: fixed
+  name: nvidia-h100-quarter-20gb
+spec:
+  deviceType: virtual
+  core: 25
+  manufacturer: NVIDIA
+  memorySize: 20480
+  memoryStep: 0
+  model: NVIDIA H100 80GB HBM3
   supportComputeSplitMode:
   - soft

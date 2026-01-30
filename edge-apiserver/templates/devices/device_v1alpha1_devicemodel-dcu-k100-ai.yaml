@@ -1,0 +1,24 @@
+apiVersion: device.theriseunion.io/v1alpha1
+kind: DeviceModel
+metadata:
+  labels:
+    theriseunion.io/config-type: fixed
+  name: dcu-k100-ai
+spec:
+  deviceType: physical
+  alias:
+  - K100_AI
+  - DCU-K100_AI
+  computeCapabilities:
+  - precision: FP16
+    unit: TFLOPS
+    value: "312"
+  core: 100
+  description: DCU-K100_AI GPU with 64GB memory
+  manufacturer: Hygon
+  memorySize: 65520
+  memoryStep: 1
+  model: DCU-K100_AI
+  supportComputeSplitMode:
+  - soft
+  supportVirtualDevice: true
