@@ -14,9 +14,9 @@ spec:
     - workspace/basic.view
   rules:
   - apiGroups:
-    - '*'
+    - tenant.theriseunion.io
     resources:
-    - '*'
+    - workspaces
     verbs:
     - get
     - watch
@@ -128,7 +128,7 @@ spec:
     - workspace/projects.create
   rules:
   - apiGroups:
-    - '*'
+    - tenant.theriseunion.io
     resources:
     - workspaces
     - workspacemembers

@@ -8,17 +8,25 @@ metadata:
   labels:
     theriseunion.io/managed: 'true'
     iam.theriseunion.io/scope: cluster
+    iam.theriseunion.io/aggregate-to-regular: ""
 spec:
   rules:
   - apiGroups:
-    - resources.theriseunion.io
-    - iam.theriseunion.io
+    - tenant.theriseunion.io
     resources:
     - clusters
     verbs:
     - get
     - watch
     - list
+  - apiGroups:
+    - monitoring.theriseunion.io
+    resources:
+    - cluster/metrics
+    verbs:
+    - get
+    - list
+    - watch
 
 ---
 apiVersion: iam.theriseunion.io/v1alpha1
@@ -53,19 +61,16 @@ spec:
     - monitoring.theriseunion.io
     resources:
     - nodes/metrics
-    - metrics
     verbs:
     - get
     - list
     - watch
-  - apiGroups:
-    - ""
-    resources:
-    - events
+  - nonResourceURLs:
+      - api/v1/namespaces/_all_/events
     verbs:
-    - list
-    - get
-    - watch
+      - get
+      - list
+      - watch
 
 ---
 apiVersion: iam.theriseunion.io/v1alpha1
@@ -135,19 +140,16 @@ spec:
     - monitoring.theriseunion.io
     resources:
     - nodes/metrics
-    - metrics
     verbs:
     - get
     - list
     - watch
-  - apiGroups:
-    - ""
-    resources:
-    - events
+  - nonResourceURLs:
+      - api/v1/namespaces/_all_/events
     verbs:
-    - list
-    - get
-    - watch
+      - get
+      - list
+      - watch
 
 ---
 apiVersion: iam.theriseunion.io/v1alpha1
@@ -207,10 +209,38 @@ spec:
     - tenant.theriseunion.io
     resources:
     - nodegroups
+    - nodes
     verbs:
     - get
     - list
     - watch
+
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  annotations:
+    theriseunion.io/creator: system
+    theriseunion.io/alias-name: "节点组创建"
+    theriseunion.io/description: "创建节点组并成为管理员"
+    iam.theriseunion.io/dependencies: "cluster-basic"
+  labels:
+    theriseunion.io/managed: 'true'
+    iam.theriseunion.io/scope: cluster
+    iam.theriseunion.io/category: cluster-resource
+    iam.theriseunion.io/aggregate-to-admin: ""
+    iam.theriseunion.io/aggregate-to-self-provisioner: ""
+  name: cluster-create-nodegroups
+spec:
+  uiPermissions:
+    - cluster/nodegroups.create
+  rules:
+  - apiGroups:
+    - tenant.theriseunion.io
+    resources:
+    - nodegroups
+    verbs:
+    - create
 
 ---
 apiVersion: iam.theriseunion.io/v1alpha1

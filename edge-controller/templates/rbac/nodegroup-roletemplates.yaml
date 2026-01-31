@@ -22,12 +22,28 @@ spec:
   - apiGroups:
     - monitoring.theriseunion.io
     resources:
-    - metrics
     - nodegroups/metrics
     verbs:
     - get
     - list
     - watch
+  - apiGroups:
+    - tenant.theriseunion.io
+    resources:
+    - nodegroups
+    - nodegroups/nodes
+    verbs:
+    - get
+    - watch
+    - list
+  - apiGroups:
+    - device.vast.theriseunion.io
+    resources:
+    - nodes/devices
+    verbs:
+    - get
+    - watch
+    - list
 
 ---
 apiVersion: iam.theriseunion.io/v1alpha1
@@ -90,17 +106,11 @@ spec:
   rules:
   - apiGroups:
     - tenant.theriseunion.io
-    - resources.theriseunion.io
     resources:
     - nodes
     - nodegroups/nodes
     verbs:
     - "*"
-
-# =============================================================================
-# Category: nodegroup-access-control
-# Purpose: Manage members and roles within the nodegroup
-# =============================================================================
 
 ---
 apiVersion: iam.theriseunion.io/v1alpha1
@@ -183,7 +193,7 @@ spec:
     - iam.theriseunion.io
     resources:
     - nodegroups/members
-    - users
+    - iamrolebindings
     verbs:
     - get
     - list

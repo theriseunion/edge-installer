@@ -14,25 +14,43 @@ metadata:
 spec:
   rules:
     - apiGroups:
-      - resources.theriseunion.io
       - monitoring.theriseunion.io
       resources:
       - metrics
+      - query
       verbs:
       - watch
       - list
       - get
     - apiGroups:
-      - tenant.theriseunion.io
+        - iam.theriseunion.io
       resources:
-      - workspaces
-      - clusters
+        - users/password
       verbs:
-      - watch
-      - list
-      - get
+        - '*'
+    - apiGroups:
+        - iam.theriseunion.io
+      resources:
+        - permissions
+      verbs:
+        - get
+        - list
+        - watch
+    - apiGroups:
+        - app.theriseunion.io
+      resources:
+        - appcategories
+        - applications
+        - store
+        - store/applications
+        - applications/versions
+      verbs:
+        - get
+        - list
+        - watch
     - nonResourceURLs:
       - /oauth/userinfo
+      - /oapis/version
       verbs:
       - get
 
@@ -57,38 +75,12 @@ spec:
   rules:
     - apiGroups:
         - tenant.theriseunion.io
-        - resources.theriseunion.io
-        - iam.theriseunion.io
       resources:
-        - configmaps
-        - endpoints
-        - events
-        - namespaces
-        - persistentvolumeclaims
-        - resourcequotas
-        - secrets
-        - serviceaccounts
-        - services
-        - applications
-        - deployments
-        - replicasets
-        - statefulsets
-        - daemonsets
-        - cronjobs
-        - jobs
-        - horizontalpodautoscalers
-        - events
-        - ingresses
-        - pods
-        - networkpolicies
-        - podsecuritypolicies
-        - users
-        - rolebindings
-        - roles
+        - workspaces
       verbs:
-        - get
-        - list
         - watch
+        - list
+        - get
 
 ---
 apiVersion: iam.theriseunion.io/v1alpha1
@@ -98,12 +90,13 @@ metadata:
     theriseunion.io/creator: system
     theriseunion.io/description: "允许创建租户空间"
     theriseunion.io/alias-name: "租户空间创建"
-    iam.theriseunion.io/dependencies: platform-view-workspaces
+    iam.theriseunion.io/dependencies: "platform-basic"
   labels:
     theriseunion.io/managed: 'true'
     iam.theriseunion.io/category: global-workspace-management
     iam.theriseunion.io/scope: platform
     iam.theriseunion.io/aggregate-to-admin: ""
+    iam.theriseunion.io/aggregate-to-self-provisioner: ""
   name: platform-create-workspaces
 spec:
   uiPermissions:
@@ -114,13 +107,7 @@ spec:
       resources:
       - workspaces
       verbs:
-      - '*'
-    - apiGroups:
-      - tenant.theriseunion.io
-      resources:
-      - clusters
-      verbs:
-      - list
+      - create
 
 ---
 apiVersion: iam.theriseunion.io/v1alpha1
@@ -139,50 +126,14 @@ metadata:
   name: platform-manage-workspaces
 spec:
   uiPermissions:
-    - platform/workspaces.manage  # 创建新租户空间
+    - platform/workspaces.manage
   rules:
     - apiGroups:
         - tenant.theriseunion.io
-        - resources.theriseunion.io
       resources:
-        - '*'
+        - workspaces
       verbs:
         - '*'
-    - apiGroups:
-        - '*'
-      resources:
-        - configmaps
-        - endpoints
-        - events
-        - namespaces
-        - persistentvolumeclaims
-        - resourcequotas
-        - secrets
-        - serviceaccounts
-        - services
-        - applications
-        - deployments
-        - replicasets
-        - statefulsets
-        - daemonsets
-        - cronjobs
-        - jobs
-        - horizontalpodautoscalers
-        - events
-        - ingresses
-        - pods
-        - networkpolicies
-        - podsecuritypolicies
-        - rolebindings
-        - roles
-      verbs:
-        - '*'
-    - apiGroups:
-      - tenant.theriseunion.io
-      resources:
-      - clusters
-      verbs:
-      - list
 
 ---
 apiVersion: iam.theriseunion.io/v1alpha1
@@ -204,38 +155,9 @@ spec:
     - platform/clusters.view
   rules:
   - apiGroups:
-    - ''
-    - apiextensions.k8s.io
-    - app.k8s.io
-    - apps
-    - autoscaling
-    - batch
-    - config.istio.io
-    - events.k8s.io
-    - events.theriseunion.io
-    - extensions
-    - metrics.k8s.io
-    - networking.k8s.io
-    - node.k8s.io
-    - rbac.istio.io
-    - scheduling.k8s.io
-    - security.istio.io
-    - storage.k8s.io
-    - storage.theriseunion.io
-    - resources.theriseunion.io
-    - cluster.theriseunion.io
-    resources:
-    - '*'
-    verbs:
-    - get
-    - list
-    - watch
-  - apiGroups:
     - tenant.theriseunion.io
-    - resource.theriseunion.io
-    - iam.theriseunion.io
     resources:
-    - '*'
+    - clusters
     verbs:
     - get
     - list
@@ -252,7 +174,7 @@ metadata:
   annotations:
     theriseunion.io/creator: system
     theriseunion.io/alias-name: "集群管理"
-    theriseunion.io/description: 创建集群、删除集群和管理集群中的所有资源。
+    theriseunion.io/description: 创建集群、删除集群和管理集群中的所有资源
     iam.theriseunion.io/dependencies: "platform-view-clusters"
   labels:
     theriseunion.io/managed: 'true'
@@ -265,36 +187,9 @@ spec:
     - platform/clusters.manage
   rules:
   - apiGroups:
-    - ''
-    - apiextensions.k8s.io
-    - app.k8s.io
-    - apps
-    - autoscaling
-    - batch
-    - config.istio.io
-    - events.k8s.io
-    - events.theriseunion.io
-    - extensions
-    - metrics.k8s.io
-    - networking.k8s.io
-    - node.k8s.io
-    - rbac.istio.io
-    - scheduling.k8s.io
-    - security.istio.io
-    - storage.k8s.io
-    - storage.theriseunion.io
-    - resources.theriseunion.io
-    - cluster.theriseunion.io
-    resources:
-    - '*'
-    verbs:
-    - '*'
-  - apiGroups:
     - tenant.theriseunion.io
-    - resource.theriseunion.io
-    - iam.theriseunion.io
     resources:
-    - '*'
+    - clusters
     verbs:
     - '*'
   - nonResourceURLs:
@@ -323,10 +218,11 @@ spec:
     - platform/users.view
   rules:
   - apiGroups:
-    - '*'
+    - iam.theriseunion.io
     resources:
     - users
     - loginrecords
+    - iamrolebindings
     verbs:
     - get
     - list
@@ -495,6 +391,7 @@ spec:
   rules:
   - apiGroups:
       - resources.theriseunion.io
+      - tenant.theriseunion.io
     resources:
       - "*"
     verbs:

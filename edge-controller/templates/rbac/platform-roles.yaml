@@ -32,8 +32,10 @@ metadata:
     iam.theriseunion.io/scope-value: global
 spec:
   aggregationRoleTemplates:
-    templateNames:
-      - platform-create-workspaces
+    roleSelector:
+      matchLabels:
+        iam.theriseunion.io/aggregate-to-self-provisioner: ""
+        iam.theriseunion.io/scope: platform
 
 ---
 apiVersion: iam.theriseunion.io/v1alpha1
