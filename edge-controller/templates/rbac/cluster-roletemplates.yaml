@@ -160,7 +160,7 @@ metadata:
     theriseunion.io/creator: system
     theriseunion.io/alias-name: "节点组创建"
     theriseunion.io/description: "创建节点组并成为管理员"
-    iam.theriseunion.io/dependencies: "cluster-view-nodegroups"
+    iam.theriseunion.io/dependencies: "cluster-basic"
   labels:
     theriseunion.io/managed: 'true'
     iam.theriseunion.io/scope: cluster
@@ -625,12 +625,7 @@ spec:
   - apiGroups:
     - iam.theriseunion.io
     resources:
-    - roles
     - clusters/roles
-    - iamroles
-    - iamrolebindings
-    - categories
-    - roletemplates
     verbs:
     - get
     - list
@@ -658,12 +653,7 @@ spec:
   - apiGroups:
     - iam.theriseunion.io
     resources:
-    - roles
     - clusters/roles
-    - iamroles
-    - iamrolebindings
-    - categories
-    - roletemplates
     verbs:
     - '*'
 
@@ -691,7 +681,6 @@ spec:
   - apiGroups:
     - iam.theriseunion.io
     resources:
-    - members
     - clusters/members
     verbs:
     - get
@@ -720,7 +709,6 @@ spec:
   - apiGroups:
     - iam.theriseunion.io
     resources:
-    - members
     - clusters/members
     verbs:
     - '*'
@@ -728,6 +716,7 @@ spec:
     - iam.theriseunion.io
     resources:
     - users
+    - clusters/roles
     verbs:
     - get
     - list

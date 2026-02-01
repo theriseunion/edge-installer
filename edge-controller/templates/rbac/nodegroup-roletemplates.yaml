@@ -36,14 +36,6 @@ spec:
     - get
     - watch
     - list
-  - apiGroups:
-    - device.vast.theriseunion.io
-    resources:
-    - nodes/devices
-    verbs:
-    - get
-    - watch
-    - list
 
 ---
 apiVersion: iam.theriseunion.io/v1alpha1
@@ -109,6 +101,7 @@ spec:
     resources:
     - nodes
     - nodegroups/nodes
+    - nodegroups/join-token
     verbs:
     - "*"
 
@@ -135,7 +128,7 @@ spec:
   - apiGroups:
     - iam.theriseunion.io
     resources:
-    - iamroles
+    - nodegroups/roles
     - roletemplates
     verbs:
     - get
@@ -164,7 +157,7 @@ spec:
   - apiGroups:
     - iam.theriseunion.io
     resources:
-    - iamroles
+    - nodegroups/roles
     - roletemplates
     verbs:
     - '*'
@@ -193,7 +186,7 @@ spec:
     - iam.theriseunion.io
     resources:
     - nodegroups/members
-    - iamrolebindings
+    - nodegroups/roles
     verbs:
     - get
     - list
@@ -222,9 +215,15 @@ spec:
     - iam.theriseunion.io
     resources:
     - nodegroups/members
-    - iamrolebindings
     verbs:
     - '*'
+  - apiGroups:
+    - iam.theriseunion.io
+    resources:
+    - cluster/members
+    verbs:
+    - list
+    - get
 
 # =============================================================================
 # Category: nodegroup-settings
@@ -348,21 +347,21 @@ spec:
 apiVersion: iam.theriseunion.io/v1alpha1
 kind: RoleTemplate
 metadata:
-  name: cluster-view-devices
+  name: nodegroup-view-devices
   annotations:
     theriseunion.io/creator: system
     theriseunion.io/alias-name: "算力查看"
     theriseunion.io/description: "查看当前集群下算力资源"
-    iam.theriseunion.io/dependencies: "cluster-basic"
+    iam.theriseunion.io/dependencies: "nodegroup-basic"
   labels:
     theriseunion.io/managed: 'true'
-    iam.theriseunion.io/scope: cluster
-    iam.theriseunion.io/category: cluster-devices
+    iam.theriseunion.io/scope: nodegroup
+    iam.theriseunion.io/category: nodegroup-devices
     iam.theriseunion.io/aggregate-to-viewer: ""
     iam.theriseunion.io/aggregate-to-admin: ""
 spec:
   uiPermissions:
-    - cluster/devices.view
+    - nodegroup/devices.view
   rules:
   - apiGroups:
     - device.vast.theriseunion.io
@@ -370,6 +369,8 @@ spec:
     - devices
     - devicemodels
     - computetemplates
+    - nodes
+    - nodes/devices
     verbs:
     - get
     - list
@@ -379,20 +380,20 @@ spec:
 apiVersion: iam.theriseunion.io/v1alpha1
 kind: RoleTemplate
 metadata:
-  name: cluster-manage-devices
+  name: nodegroup-manage-devices
   annotations:
     theriseunion.io/creator: system
     theriseunion.io/alias-name: "算力管理"
     theriseunion.io/description: "管理当前集群下算力资源"
-    iam.theriseunion.io/dependencies: "cluster-view-devices"
+    iam.theriseunion.io/dependencies: "nodegroup-view-devices"
   labels:
     theriseunion.io/managed: 'true'
-    iam.theriseunion.io/scope: cluster
-    iam.theriseunion.io/category: cluster-devices
+    iam.theriseunion.io/scope: nodegroup
+    iam.theriseunion.io/category: nodegroup-devices
     iam.theriseunion.io/aggregate-to-admin: ""
 spec:
   uiPermissions:
-    - cluster/devices.manage
+    - nodegroup/devices.manage
   rules:
   - apiGroups:
     - device.vast.theriseunion.io

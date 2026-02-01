@@ -32,6 +32,7 @@ spec:
         - iam.theriseunion.io
       resources:
         - permissions
+        - users
       verbs:
         - get
         - list
