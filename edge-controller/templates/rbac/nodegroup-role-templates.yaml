@@ -25,7 +25,7 @@ metadata:
   name: nodegroup-viewer
   annotations:
     theriseunion.io/creator: system
-    theriseunion.io/description: "查看节点组中的所有节点"
+    theriseunion.io/description: "查看节点组中的所有资源"
   labels:
     theriseunion.io/managed: "true"
     iam.theriseunion.io/builtin: "true"

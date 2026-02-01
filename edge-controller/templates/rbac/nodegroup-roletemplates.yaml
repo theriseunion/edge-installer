@@ -22,12 +22,20 @@ spec:
   - apiGroups:
     - monitoring.theriseunion.io
     resources:
-    - metrics
     - nodegroups/metrics
     verbs:
     - get
     - list
     - watch
+  - apiGroups:
+    - tenant.theriseunion.io
+    resources:
+    - nodegroups
+    - nodegroups/nodes
+    verbs:
+    - get
+    - watch
+    - list
 
 ---
 apiVersion: iam.theriseunion.io/v1alpha1
@@ -90,17 +98,12 @@ spec:
   rules:
   - apiGroups:
     - tenant.theriseunion.io
-    - resources.theriseunion.io
     resources:
     - nodes
     - nodegroups/nodes
+    - nodegroups/join-token
     verbs:
     - "*"
-
-# =============================================================================
-# Category: nodegroup-access-control
-# Purpose: Manage members and roles within the nodegroup
-# =============================================================================
 
 ---
 apiVersion: iam.theriseunion.io/v1alpha1
@@ -125,7 +128,7 @@ spec:
   - apiGroups:
     - iam.theriseunion.io
     resources:
-    - iamroles
+    - nodegroups/roles
     - roletemplates
     verbs:
     - get
@@ -154,7 +157,7 @@ spec:
   - apiGroups:
     - iam.theriseunion.io
     resources:
-    - iamroles
+    - nodegroups/roles
     - roletemplates
     verbs:
     - '*'
@@ -183,7 +186,7 @@ spec:
     - iam.theriseunion.io
     resources:
     - nodegroups/members
-    - users
+    - nodegroups/roles
     verbs:
     - get
     - list
@@ -212,9 +215,15 @@ spec:
     - iam.theriseunion.io
     resources:
     - nodegroups/members
-    - iamrolebindings
     verbs:
     - '*'
+  - apiGroups:
+    - iam.theriseunion.io
+    resources:
+    - cluster/members
+    verbs:
+    - list
+    - get
 
 # =============================================================================
 # Category: nodegroup-settings
@@ -333,3 +342,64 @@ spec:
     - nodegroups/namespaces
     verbs:
     - '*'
+
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  name: nodegroup-view-devices
+  annotations:
+    theriseunion.io/creator: system
+    theriseunion.io/alias-name: "算力查看"
+    theriseunion.io/description: "查看当前集群下算力资源"
+    iam.theriseunion.io/dependencies: "nodegroup-basic"
+  labels:
+    theriseunion.io/managed: 'true'
+    iam.theriseunion.io/scope: nodegroup
+    iam.theriseunion.io/category: nodegroup-devices
+    iam.theriseunion.io/aggregate-to-viewer: ""
+    iam.theriseunion.io/aggregate-to-admin: ""
+spec:
+  uiPermissions:
+    - nodegroup/devices.view
+  rules:
+  - apiGroups:
+    - device.vast.theriseunion.io
+    resources:
+    - devices
+    - devicemodels
+    - computetemplates
+    - nodes
+    - nodes/devices
+    verbs:
+    - get
+    - list
+    - watch
+
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  name: nodegroup-manage-devices
+  annotations:
+    theriseunion.io/creator: system
+    theriseunion.io/alias-name: "算力管理"
+    theriseunion.io/description: "管理当前集群下算力资源"
+    iam.theriseunion.io/dependencies: "nodegroup-view-devices"
+  labels:
+    theriseunion.io/managed: 'true'
+    iam.theriseunion.io/scope: nodegroup
+    iam.theriseunion.io/category: nodegroup-devices
+    iam.theriseunion.io/aggregate-to-admin: ""
+spec:
+  uiPermissions:
+    - nodegroup/devices.manage
+  rules:
+  - apiGroups:
+    - device.vast.theriseunion.io
+    resources:
+    - devices
+    - devicemodels
+    - computetemplates
+    verbs:
+    - "*"
