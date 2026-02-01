@@ -343,3 +343,62 @@ spec:
     - nodegroups/namespaces
     verbs:
     - '*'
+
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  name: cluster-view-devices
+  annotations:
+    theriseunion.io/creator: system
+    theriseunion.io/alias-name: "算力查看"
+    theriseunion.io/description: "查看当前集群下算力资源"
+    iam.theriseunion.io/dependencies: "cluster-basic"
+  labels:
+    theriseunion.io/managed: 'true'
+    iam.theriseunion.io/scope: cluster
+    iam.theriseunion.io/category: cluster-devices
+    iam.theriseunion.io/aggregate-to-viewer: ""
+    iam.theriseunion.io/aggregate-to-admin: ""
+spec:
+  uiPermissions:
+    - cluster/devices.view
+  rules:
+  - apiGroups:
+    - device.vast.theriseunion.io
+    resources:
+    - devices
+    - devicemodels
+    - computetemplates
+    verbs:
+    - get
+    - list
+    - watch
+
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  name: cluster-manage-devices
+  annotations:
+    theriseunion.io/creator: system
+    theriseunion.io/alias-name: "算力管理"
+    theriseunion.io/description: "管理当前集群下算力资源"
+    iam.theriseunion.io/dependencies: "cluster-view-devices"
+  labels:
+    theriseunion.io/managed: 'true'
+    iam.theriseunion.io/scope: cluster
+    iam.theriseunion.io/category: cluster-devices
+    iam.theriseunion.io/aggregate-to-admin: ""
+spec:
+  uiPermissions:
+    - cluster/devices.manage
+  rules:
+  - apiGroups:
+    - device.vast.theriseunion.io
+    resources:
+    - devices
+    - devicemodels
+    - computetemplates
+    verbs:
+    - "*"
