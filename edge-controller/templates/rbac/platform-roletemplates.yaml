@@ -45,6 +45,7 @@ spec:
         - store
         - store/applications
         - applications/versions
+        - applicationversions
       verbs:
         - get
         - list
@@ -101,6 +102,7 @@ metadata:
   name: platform-create-workspaces
 spec:
   uiPermissions:
+    - platform/workspaces.view    # 查看租户空间列表
     - platform/workspaces.create  # 创建新租户空间
   rules:
     - apiGroups:
