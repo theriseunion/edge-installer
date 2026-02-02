@@ -30,7 +30,7 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           args:
           - --config=/etc/edge/apiserver.yaml
-          - --authorization-mode=RBAC
+          # - --authorization-mode=RBAC
           - --v=4
           ports:
             - name: https
