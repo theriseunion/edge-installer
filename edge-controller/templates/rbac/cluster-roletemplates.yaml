@@ -625,7 +625,7 @@ spec:
   - apiGroups:
     - iam.theriseunion.io
     resources:
-    - clusters/roles
+    - roles
     verbs:
     - get
     - list
@@ -653,7 +653,7 @@ spec:
   - apiGroups:
     - iam.theriseunion.io
     resources:
-    - clusters/roles
+    - roles
     verbs:
     - '*'
 
@@ -681,7 +681,8 @@ spec:
   - apiGroups:
     - iam.theriseunion.io
     resources:
-    - clusters/members
+    - members
+    - roles
     verbs:
     - get
     - list
@@ -709,17 +710,9 @@ spec:
   - apiGroups:
     - iam.theriseunion.io
     resources:
-    - clusters/members
+    - members
     verbs:
     - '*'
-  - apiGroups:
-    - iam.theriseunion.io
-    resources:
-    - users
-    - clusters/roles
-    verbs:
-    - get
-    - list
 
 ---
 apiVersion: iam.theriseunion.io/v1alpha1
