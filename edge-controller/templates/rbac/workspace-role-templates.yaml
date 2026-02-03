@@ -36,7 +36,12 @@ spec:
     roleSelector:
       matchLabels:
         iam.theriseunion.io/aggregate-to-admin: ""
-        iam.theriseunion.io/scope: workspace
+      matchExpressions:
+        - key: iam.theriseunion.io/scope
+          operator: In
+          values:
+          - workspace
+          - namespace
 
 ---
 apiVersion: iam.theriseunion.io/v1alpha1
@@ -55,7 +60,13 @@ spec:
     roleSelector:
       matchLabels:
         iam.theriseunion.io/aggregate-to-viewer: ""
-        iam.theriseunion.io/scope: workspace
+      matchExpressions:
+        - key: iam.theriseunion.io/scope
+          operator: In
+          values:
+          - workspace
+          - namespace
+      
 
 ---
 apiVersion: iam.theriseunion.io/v1alpha1
