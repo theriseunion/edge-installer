@@ -9,6 +9,7 @@ spec:
   deviceType: physical
   alias:
   - XPU-P800 OAM
+  - XPU-P800-96G-OAM
   computeCapabilities:
   - precision: FP32
     unit: TFLOPS
@@ -27,7 +28,7 @@ spec:
   manufacturer: Kunlunxin
   memorySize: 98304
   memoryStep: 24576
-  model: XPU-P800 OAM
+  model: XPU-P800-96G-OAM
   supportComputeSplitMode:
   - hard
   supportVirtualDevice: true

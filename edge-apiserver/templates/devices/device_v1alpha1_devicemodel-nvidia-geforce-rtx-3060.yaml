@@ -10,6 +10,7 @@ spec:
   - RTX 3060
   - GeForce RTX 3060
   - NVIDIA-NVIDIA GeForce RTX 3060
+  - RTX3060-12GB-PCIE
   compute: "8.6"
   computeCapabilities:
   - precision: FP32
@@ -30,7 +31,7 @@ spec:
   manufacturer: NVIDIA
   memorySize: 12288
   memoryStep: 256
-  model: NVIDIA GeForce RTX 3060
+  model: RTX3060-12GB-PCIE
   supportComputeSplitMode:
   - soft
   supportVirtualDevice: true
@@ -47,7 +48,7 @@ spec:
   manufacturer: NVIDIA
   memorySize: 1536
   memoryStep: 0
-  model: NVIDIA GeForce RTX 3060
+  model: RTX3060-12GB-PCIE
   supportComputeSplitMode:
   - soft
 ---
@@ -63,7 +64,7 @@ spec:
   manufacturer: NVIDIA
   memorySize: 6144
   memoryStep: 0
-  model: NVIDIA GeForce RTX 3060
+  model: RTX3060-12GB-PCIE
   supportComputeSplitMode:
   - soft
 ---
@@ -79,6 +80,6 @@ spec:
   manufacturer: NVIDIA
   memorySize: 3072
   memoryStep: 0
-  model: NVIDIA GeForce RTX 3060
+  model: RTX3060-12GB-PCIE
   supportComputeSplitMode:
   - soft

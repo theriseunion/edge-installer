@@ -9,6 +9,7 @@ spec:
   deviceType: physical
   alias:
   - MLU370-X4
+  - MLU370-X4-23G-PCIE
   computeCapabilities:
   - precision: FP16
     unit: TFLOPS
@@ -18,7 +19,7 @@ spec:
   manufacturer: Cambricon
   memorySize: 23308
   memoryStep: 256
-  model: MLU370-X4
+  model: MLU370-X4-23G-PCIE
   supportComputeSplitMode:
   - soft
   supportVirtualDevice: true

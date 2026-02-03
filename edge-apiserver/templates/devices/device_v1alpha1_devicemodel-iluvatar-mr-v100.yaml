@@ -10,6 +10,7 @@ spec:
   alias:
   - MR-V100
   - Iluvatar-MR-V100
+  - Iluvatar-MR-V100-64G-PCIE
   computeCapabilities:
   - precision: FP16
     unit: TFLOPS
@@ -19,7 +20,7 @@ spec:
   manufacturer: Iluvatar
   memorySize: 65520
   memoryStep: 1
-  model: Iluvatar-MR-V100
+  model: Iluvatar-MR-V100-64G-PCIE
   supportComputeSplitMode:
   - soft
   supportVirtualDevice: true

@@ -11,6 +11,7 @@ spec:
   - V100
   - Volta V100
   - NVIDIA-Tesla V100-PCIE-32GB
+  - V100-32GB-PCIE
   compute: "7.0"
   computeCapabilities:
   - precision: FP32
@@ -31,7 +32,7 @@ spec:
   manufacturer: NVIDIA
   memorySize: 32768
   memoryStep: 256
-  model: V100-PCIE-32GB
+  model: V100-32GB-PCIE
   supportComputeSplitMode:
   - soft
   supportVirtualDevice: true
@@ -48,7 +49,7 @@ spec:
   deviceType: virtual
   manufacturer: NVIDIA
   memorySize: 16384
-  model: V100-PCIE-32GB
+  model: V100-32GB-PCIE
   supportComputeSplitMode:
   - soft
 ---
@@ -64,7 +65,7 @@ spec:
   deviceType: virtual
   manufacturer: NVIDIA
   memorySize: 8192
-  model: V100-PCIE-32GB
+  model: V100-32GB-PCIE
   supportComputeSplitMode:
   - soft
 ---
@@ -80,7 +81,7 @@ spec:
   deviceType: virtual
   manufacturer: NVIDIA
   memorySize: 4096
-  model: V100-PCIE-32GB
+  model: V100-32GB-PCIE
   supportComputeSplitMode:
   - soft
 

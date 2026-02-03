@@ -11,6 +11,7 @@ spec:
   - A30
   - Ampere A30
   - NVIDIA-NVIDIA A30
+  - A30-24G-PCIE
   compute: "8.0"
   computeCapabilities:
   - precision: FP32
@@ -28,7 +29,7 @@ spec:
   manufacturer: NVIDIA
   memorySize: 24576
   memoryStep: 256
-  model: NVIDIA A30
+  model: A30-24G-PCIE
   supportComputeSplitMode:
   - hard
   - soft
@@ -45,7 +46,7 @@ spec:
   deviceType: virtual
   manufacturer: NVIDIA
   memorySize: 12288
-  model: NVIDIA A30
+  model: A30-24G-PCIE
   supportComputeSplitMode:
   - soft
 ---
@@ -60,7 +61,7 @@ spec:
   deviceType: virtual
   manufacturer: NVIDIA
   memorySize: 6144
-  model: NVIDIA A30
+  model: A30-24G-PCIE
   supportComputeSplitMode:
   - soft
 ---
@@ -75,6 +76,6 @@ spec:
   deviceType: virtual
   manufacturer: NVIDIA
   memorySize: 3072
-  model: NVIDIA A30
+  model: A30-24G-PCIE
   supportComputeSplitMode:
   - soft

@@ -13,6 +13,7 @@ spec:
   - MetaX C500
   - MXC500
   - C500
+  - Metax-C500-64G-PCIE
   computeCapabilities:
   - precision: FP16
     unit: TFLOPS
@@ -23,7 +24,7 @@ spec:
   manufacturer: Metax
   memorySize: 65536
   memoryStep: 1
-  model: Metax-C500
+  model: Metax-C500-64G-PCIE
   supportComputeSplitMode:
   - soft
   supportVirtualDevice: true

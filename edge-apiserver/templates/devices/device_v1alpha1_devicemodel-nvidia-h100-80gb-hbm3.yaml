@@ -12,6 +12,7 @@ spec:
   - NVIDIA H100 80GB HBM3
   - NVIDIA-H100-SXM-80GB
   - NVIDIA-NVIDIA H100 80GB HBM3
+  - H100-80GB-SXM5
   compute: "9.0"
   computeCapabilities:
   - precision: FP32
@@ -33,7 +34,7 @@ spec:
   manufacturer: NVIDIA
   memorySize: 81920
   memoryStep: 256
-  model: NVIDIA H100 80GB HBM3
+  model: H100-80GB-SXM5
   supportComputeSplitMode:
   - soft
   - hard
@@ -51,7 +52,7 @@ spec:
   manufacturer: NVIDIA
   memorySize: 10240
   memoryStep: 0
-  model: NVIDIA H100 80GB HBM3
+  model: H100-80GB-SXM5
   supportComputeSplitMode:
   - soft
 ---
@@ -67,7 +68,7 @@ spec:
   manufacturer: NVIDIA
   memorySize: 40960
   memoryStep: 0
-  model: NVIDIA H100 80GB HBM3
+  model: H100-80GB-SXM5
   supportComputeSplitMode:
   - soft
 ---
@@ -83,6 +84,6 @@ spec:
   manufacturer: NVIDIA
   memorySize: 20480
   memoryStep: 0
-  model: NVIDIA H100 80GB HBM3
+  model: H100-80GB-SXM5
   supportComputeSplitMode:
   - soft

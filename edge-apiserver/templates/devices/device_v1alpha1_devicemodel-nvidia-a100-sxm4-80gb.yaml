@@ -9,6 +9,7 @@ spec:
   alias:
   - A100-SXM4-80GB
   - NVIDIA-NVIDIA A100-SXM4-80GB
+  - A100-80GB-SXM4
   compute: "8.0"
   computeCapabilities:
   - precision: FP32
@@ -29,7 +30,7 @@ spec:
   manufacturer: NVIDIA
   memorySize: 81920
   memoryStep: 256
-  model: NVIDIA A100-SXM4-80GB
+  model: A100-80GB-SXM4
   supportComputeSplitMode:
   - hard
   - soft
@@ -47,7 +48,7 @@ spec:
   manufacturer: NVIDIA
   memorySize: 40960
   memoryStep: 0
-  model: NVIDIA A100-SXM4-80GB
+  model: A100-80GB-SXM4
   supportComputeSplitMode:
   - soft
 ---
@@ -63,6 +64,6 @@ spec:
   manufacturer: NVIDIA
   memorySize: 20480
   memoryStep: 0
-  model: NVIDIA A100-SXM4-80GB
+  model: A100-80GB-SXM4
   supportComputeSplitMode:
   - soft

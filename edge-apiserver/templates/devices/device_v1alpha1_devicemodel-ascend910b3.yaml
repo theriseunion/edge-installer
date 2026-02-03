@@ -8,6 +8,7 @@ spec:
   deviceType: physical
   alias:
   - Ascend910B3
+  - Ascend910B3-64G
   computeCapabilities:
   - precision: FP16
     unit: TFLOPS
@@ -17,7 +18,7 @@ spec:
   manufacturer: Ascend
   memorySize: 65536
   memoryStep: 1
-  model: Ascend910B3
+  model: Ascend910B3-64G
   supportComputeSplitMode:
   - hard
   supportVirtualDevice: true
