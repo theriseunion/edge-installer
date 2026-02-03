@@ -46,6 +46,7 @@ spec:
         - store/applications
         - storeapps
         - storeapps/versions
+        - applications/versions
         - applicationversions
       verbs:
         - get
