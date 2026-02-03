@@ -144,7 +144,6 @@ spec:
       - jobs
       - cronjobs
       - pods
-      - pods/log
       - pods/containers
       - services
       - ingresses
@@ -163,13 +162,6 @@ spec:
       - pods/log
       verbs:
       - get
-    - apiGroups:
-      - device.vast.theriseunion.io
-      resources:
-      - devicemodels
-      verbs:
-      - get
-      - list
 
 ---
 apiVersion: iam.theriseunion.io/v1alpha1
@@ -204,7 +196,6 @@ spec:
       - jobs
       - cronjobs
       - pods
-      - pods/log
       - pods/containers
       - services
       - ingresses

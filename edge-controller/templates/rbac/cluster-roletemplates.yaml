@@ -28,6 +28,13 @@ spec:
     - get
     - list
     - watch
+  - apiGroups:
+    - device.vast.theriseunion.io
+    resources:
+    - devicemodels
+    verbs:
+    - get
+    - list
 
 ---
 apiVersion: iam.theriseunion.io/v1alpha1
@@ -280,7 +287,6 @@ spec:
     - ingresses
     - router
     - pods
-    - pods/log
     - pods/containers
     - namespacenetworkpolicies
     - networkpolicies
@@ -337,7 +343,6 @@ spec:
     - ingresses
     - router
     - pods
-    - pods/log
     - pods/containers
     - namespacenetworkpolicies
     - networkpolicies
@@ -625,7 +630,7 @@ spec:
   - apiGroups:
     - iam.theriseunion.io
     resources:
-    - roles
+    - clusters/roles
     verbs:
     - get
     - list
@@ -653,7 +658,7 @@ spec:
   - apiGroups:
     - iam.theriseunion.io
     resources:
-    - roles
+    - clusters/roles
     verbs:
     - '*'
 
@@ -681,8 +686,8 @@ spec:
   - apiGroups:
     - iam.theriseunion.io
     resources:
-    - members
-    - roles
+    - clusters/members
+    - clusters/roles
     verbs:
     - get
     - list
@@ -710,7 +715,7 @@ spec:
   - apiGroups:
     - iam.theriseunion.io
     resources:
-    - members
+    - clusters/members
     verbs:
     - '*'
 
