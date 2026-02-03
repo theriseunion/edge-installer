@@ -1,4 +1,5 @@
 .vscode*.tar
+.idea
 bin/_output/
 kubeconfig
 # Docker image tar files
