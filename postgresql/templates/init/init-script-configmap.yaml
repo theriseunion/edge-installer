@@ -1,0 +1,31 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-init-scripts
+  namespace: {{ .Release.Namespace | quote }}
+data:
+  init.sql: |
+    CREATE DATABASE auc;
+    CREATE USER auc WITH PASSWORD 'aucpwd';
+    ALTER DATABASE auc OWNER TO auc;
+    GRANT ALL PRIVILEGES ON DATABASE auc TO auc;
+
+    CREATE DATABASE vgpu;
+    CREATE USER vgpu WITH PASSWORD 'vgpupwd';
+    ALTER DATABASE vgpu OWNER TO vgpu;
+    GRANT ALL PRIVILEGES ON DATABASE vgpu TO vgpu;
+
+    CREATE DATABASE nova;
+    CREATE USER nova WITH PASSWORD 'novapwd';
+    ALTER DATABASE nova OWNER TO nova;
+    GRANT ALL PRIVILEGES ON DATABASE nova TO nova;
+
+    CREATE DATABASE sftpgo;
+    CREATE USER sftpgo WITH PASSWORD 'sftpgopwd';
+    ALTER DATABASE sftpgo OWNER TO sftpgo;
+    GRANT ALL PRIVILEGES ON DATABASE sftpgo TO sftpgo;
+
+    CREATE DATABASE k8sdashboard;
+    CREATE USER k8sdashboard WITH PASSWORD 'K8sDashboardPwd';
+    ALTER DATABASE k8sdashboard OWNER TO k8sdashboard;
+    GRANT ALL PRIVILEGES ON DATABASE k8sdashboard TO k8sdashboard;

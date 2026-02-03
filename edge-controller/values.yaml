@@ -185,6 +185,11 @@ autoInstall:
         image:
           tag: "main"
 
+  postgresql:
+    enabled: true
+    version: "0.1.0"
+    values:
+
   # VAST component
   vast:
     enabled: true # Set to true to enable VAST platform installation
