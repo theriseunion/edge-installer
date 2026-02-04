@@ -9,7 +9,7 @@ spec:
   alias:
   - K100_AI
   - DCU-K100_AI
-  - DCU-K100_AI-64G-OAM
+  - K100_AI-64G-OAM
   computeCapabilities:
   - precision: FP16
     unit: TFLOPS
@@ -19,7 +19,7 @@ spec:
   manufacturer: Hygon
   memorySize: 65520
   memoryStep: 1
-  model: DCU-K100_AI-64G-OAM
+  model: K100_AI-64G-OAM
   supportComputeSplitMode:
   - soft
   supportVirtualDevice: true
