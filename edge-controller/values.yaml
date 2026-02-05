@@ -183,7 +183,7 @@ autoInstall:
       namespace: "observability-system"
       duty-web:
         image:
-          tag: "v1.0.0"
+          tag: "v1.0.1"
 
   postgresql:
     enabled: true
