@@ -74,7 +74,7 @@ metadata:
   name: workspace-create-projects
   annotations:
     theriseunion.io/creator: system
-    theriseunion.io/alias-name: "项目管理"
+    theriseunion.io/alias-name: "项目创建"
     theriseunion.io/description: "允许在当前租户空间下创建项目并成为此项目管理员"
     iam.theriseunion.io/dependencies: "workspace-view-projects"
   labels:
@@ -92,7 +92,7 @@ spec:
     resources:
     - workspaces/namespaces
     verbs:
-    - '*'
+    - create
 
 ---
 apiVersion: iam.theriseunion.io/v1alpha1
@@ -114,49 +114,9 @@ spec:
     - workspace/projects.manage
   rules:
   - apiGroups:
-    - resources.theriseunion.io
+    - tenant.theriseunion.io
     resources:
-    - namespaces
-    - configmaps
-    - endpoints
-    - events
-    - limitranges
-    - persistentvolumeclaims
-    - podtemplates
-    - replicationcontrollers
-    - resourcequotas
-    - secrets
-    - serviceaccounts
-    - services
-    - applications
-    - controllerrevisions
-    - deployments
-    - replicasets
-    - statefulsets
-    - daemonsets
-    - meshpolicies
-    - cronjobs
-    - jobs
-    - events
-    - ingresses
-    - router
-    - pods
-    - pods/log
-    - pods/exec
-    - pods/containers
-    - namespacenetworkpolicies
-    - networkpolicies
-    - podsecuritypolicies
-    - rolebindings
-    - roles
-    - namespaces/members
-    - servicepolicies
-    - workspaces
-    - quotas
-    - abnormalworkloads
-    - workloads
-    - router
-    - strategies
+    - workspaces/namespaces
     verbs:
     - '*'
 

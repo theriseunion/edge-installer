@@ -192,6 +192,32 @@ kind: RoleTemplate
 metadata:
   annotations:
     theriseunion.io/creator: system
+    theriseunion.io/alias-name: "节点组管理"
+    theriseunion.io/description: "管理当前集群里的节点组"
+    iam.theriseunion.io/dependencies: "cluster-view-nodegroups"
+  labels:
+    theriseunion.io/managed: 'true'
+    iam.theriseunion.io/scope: cluster
+    iam.theriseunion.io/category: cluster-resource
+    iam.theriseunion.io/aggregate-to-admin: ""
+  name: cluster-manage-nodegroups
+spec:
+  uiPermissions:
+    - cluster/nodegroups.manage
+  rules:
+  - apiGroups:
+    - tenant.theriseunion.io
+    resources:
+    - nodegroups
+    verbs:
+    - '*'
+
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  annotations:
+    theriseunion.io/creator: system
     theriseunion.io/alias-name: "配置查看"
     theriseunion.io/description: "查看当前集群里的配置资源"
     iam.theriseunion.io/dependencies: "cluster-basic"
