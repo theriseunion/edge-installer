@@ -1,0 +1,95 @@
+{{- if .Values.nodelocaldns.enabled }}
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: nodelocaldns-edge
+  namespace: kube-system
+  labels:
+    {{- include "openyurt-addition.labels" . | nindent 4 }}
+    k8s-app: nodelocaldns-edge
+    kubernetes.io/name: nodelocaldns-edge
+    addonmanager.kubernetes.io/mode: Reconcile
+spec:
+  selector:
+    matchLabels:
+      k8s-app: nodelocaldns-edge
+  updateStrategy:
+    rollingUpdate:
+      maxUnavailable: 1
+  template:
+    metadata:
+      labels:
+        k8s-app: nodelocaldns-edge
+      annotations:
+        prometheus.io/port: "9253"
+        prometheus.io/scrape: "true"
+    spec:
+      priorityClassName: system-cluster-critical
+      serviceAccountName: nodelocaldns-edge
+      hostNetwork: true
+      dnsPolicy: Default  # Important: Use host's /etc/resolv.conf as upstream
+      tolerations:
+      - key: "CriticalAddonsOnly"
+        operator: "Exists"
+      - effect: "NoExecute"
+        operator: "Exists"
+      - effect: "NoSchedule"
+        operator: "Exists"
+      nodeSelector:
+        kubernetes.io/os: linux
+        {{- range $key, $value := .Values.edgeNodeSelector }}
+        {{ $key }}: {{ $value | quote }}
+        {{- end }}
+      containers:
+      - name: node-cache
+        image: {{ include "openyurt-addition.nodelocaldnsImage" . }}
+        imagePullPolicy: {{ .Values.nodelocaldns.image.pullPolicy }}
+        resources:
+          {{- toYaml .Values.nodelocaldns.resources | nindent 10 }}
+        args:
+        - -localip
+        - "{{ .Values.nodelocaldns.localIp }}"
+        - -conf
+        - /etc/coredns/Corefile
+        - -upstreamsvc
+        - coredns
+        securityContext:
+          capabilities:
+            add:
+            - NET_ADMIN
+            - NET_RAW
+        ports:
+        - containerPort: 53
+          name: dns
+          protocol: UDP
+        - containerPort: 53
+          name: dns-tcp
+          protocol: TCP
+        - containerPort: 9253
+          name: metrics
+          protocol: TCP
+        livenessProbe:
+          httpGet:
+            host: {{ .Values.nodelocaldns.localIp }}
+            path: /health
+            port: 8080
+          initialDelaySeconds: 60
+          timeoutSeconds: 5
+        volumeMounts:
+        - mountPath: /etc/coredns
+          name: config-volume
+        - mountPath: /run/xtables.lock
+          name: xtables-lock
+          readOnly: false
+      volumes:
+      - name: config-volume
+        configMap:
+          name: nodelocaldns-edge
+          items:
+          - key: Corefile
+            path: Corefile
+      - name: xtables-lock
+        hostPath:
+          path: /run/xtables.lock
+          type: FileOrCreate
+{{- end }}
