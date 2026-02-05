@@ -183,7 +183,12 @@ autoInstall:
       namespace: "observability-system"
       duty-web:
         image:
-          tag: "main"
+          tag: "v1.0.1"
+
+  postgresql:
+    enabled: true
+    version: "0.1.0"
+    values:
 
   # VAST component
   vast:

@@ -52,6 +52,25 @@ spec:
               mountPath: /apps/config/
           resources:
             {{- toYaml .Values.duty.resources | nindent 12 }}
+        - name: {{ .Chart.Name }}-cronjob
+          securityContext:
+            {{- toYaml .Values.duty.securityContext | nindent 12 }}
+          image: "{{ .Values.duty.image.repository }}:{{ .Values.duty.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.duty.image.pullPolicy }}
+          command:
+            - "/apps/cronjob"
+          args:
+            - "--conf"
+            - "/apps/config/config.{{ .Values.duty.configEnv }}.yaml"
+          {{- with .Values.duty.env }}
+          env:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          volumeMounts:
+            - name: config
+              mountPath: /apps/config/
+          resources:
+            {{- toYaml .Values.duty.resources | nindent 12 }}
       {{- with .Values.duty.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

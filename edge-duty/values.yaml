@@ -2,7 +2,7 @@ duty:
   duty:
     image:
       repository: quanzhenglong.com/camp/duty
-      tag: "v1.1.9"
+      tag: "v1.1.11"
       pullPolicy: IfNotPresent
     resources:
       limits:
@@ -50,54 +50,23 @@ duty:
     http_forward:
       rules: [ ]
     cronjob:
-      apiVersion: batch/v1
-      generateSchedule:
-        enabled: false
-        backoffLimit: 1
-        schedule: "0 * * * *"  # 每小时执行一次
-        activeDeadlineSeconds: 600
-        retentionPolicy:
-          successfulJobsHistoryLimit: 3
-          failedJobsHistoryLimit: 2
-      # 定时执行所有值班小组的值班轮换
-      oncallRotation:
-        enabled: false
-        backoffLimit: 1
-        schedule: "0 */8 * * *"  # 每8小时执行一次
-        activeDeadlineSeconds: 60
-        retentionPolicy:
-          successfulJobsHistoryLimit: 3
-          failedJobsHistoryLimit: 2
-      closeZombieAlert:
-        enabled: false
-        backoffLimit: 1
-        schedule: "0 * * * *"  # 每小时执行一次
-        activeDeadlineSeconds: 60
-        retentionPolicy:
-          successfulJobsHistoryLimit: 3
-          failedJobsHistoryLimit: 2
-      dailyStatistic:
-        enabled: false
-        backoffLimit: 1
-        schedule: "0 0 * * *"  # 每天执行一次
-        activeDeadlineSeconds: 60
-        retentionPolicy:
-          successfulJobsHistoryLimit: 3
-          failedJobsHistoryLimit: 2
-      alertUpgrade:
-        enabled: false
-        backoffLimit: 1
-        schedule: "*/10 * * * *"  # 每十分钟执行一次
-        activeDeadlineSeconds: 60
-        retentionPolicy:
-          successfulJobsHistoryLimit: 3
-          failedJobsHistoryLimit: 2
+      jobs:
+        - name: generateSchedule
+          schedule: "* * * * *"
+        - name: oncallRotation
+          schedule: "* * * * *"
+        - name: closeZombieAlert
+          schedule: "* * * * *"
+        - name: dailyStatistic
+          schedule: "0 0 * * *"
+        - name: alertUpgrade
+          schedule: "* * * * *"
 
 duty-web:
   image:
     registry: "quanzhenglong.com"
     repository: "camp/console-ui"
-    tag: "main"
+    tag: "v1.0.1"
     pullPolicy: IfNotPresent
   containerPort: 80
   svc:

@@ -8,16 +8,32 @@ metadata:
   labels:
     theriseunion.io/managed: 'true'
     iam.theriseunion.io/scope: cluster
+    iam.theriseunion.io/aggregate-to-regular: ""
 spec:
   rules:
   - apiGroups:
-    - resources.theriseunion.io
-    - iam.theriseunion.io
+    - tenant.theriseunion.io
     resources:
     - clusters
     verbs:
     - get
     - watch
+    - list
+  - apiGroups:
+    - monitoring.theriseunion.io
+    resources:
+    - cluster
+    - cluster/metrics
+    verbs:
+    - get
+    - list
+    - watch
+  - apiGroups:
+    - device.vast.theriseunion.io
+    resources:
+    - devicemodels
+    verbs:
+    - get
     - list
 
 ---
@@ -53,19 +69,16 @@ spec:
     - monitoring.theriseunion.io
     resources:
     - nodes/metrics
-    - metrics
     verbs:
     - get
     - list
     - watch
-  - apiGroups:
-    - ""
-    resources:
-    - events
+  - nonResourceURLs:
+      - api/v1/namespaces/_all_/events
     verbs:
-    - list
-    - get
-    - watch
+      - get
+      - list
+      - watch
 
 ---
 apiVersion: iam.theriseunion.io/v1alpha1
@@ -96,85 +109,10 @@ spec:
   - apiGroups:
     - terminal.theriseunion.io
     resources:
-    - nodes
-    - nodes/exec
-    verbs:
-    - '*'
-
----
-apiVersion: iam.theriseunion.io/v1alpha1
-kind: RoleTemplate
-metadata:
-  annotations:
-    theriseunion.io/creator: system
-    theriseunion.io/alias-name: "边缘节点查看"
-    theriseunion.io/description: "允许查看当前集群里的边缘节点"
-    iam.theriseunion.io/dependencies: "cluster-basic"
-  labels:
-    theriseunion.io/managed: 'true'
-    iam.theriseunion.io/scope: cluster
-    iam.theriseunion.io/category: cluster-resource
-    iam.theriseunion.io/aggregate-to-admin: ""
-    iam.theriseunion.io/aggregate-to-viewer: ""
-  name: cluster-view-edgenodes
-spec:
-  uiPermissions:
-    - cluster/nodes.view
-    - cluster/edgenodes.view
-  rules:
-  - apiGroups:
-    - resources.theriseunion.io
-    resources:
-    - nodes
-    - pods
+    - nodegroups
     verbs:
     - get
     - list
-    - watch
-  - apiGroups:
-    - monitoring.theriseunion.io
-    resources:
-    - nodes/metrics
-    - metrics
-    verbs:
-    - get
-    - list
-    - watch
-  - apiGroups:
-    - ""
-    resources:
-    - events
-    verbs:
-    - list
-    - get
-    - watch
-
----
-apiVersion: iam.theriseunion.io/v1alpha1
-kind: RoleTemplate
-metadata:
-  annotations:
-    theriseunion.io/creator: system
-    theriseunion.io/alias-name: "边缘节点管理"
-    theriseunion.io/description: "管理当前集群里的边缘节点"
-    iam.theriseunion.io/dependencies: "cluster-view-edgenodes"
-  labels:
-    theriseunion.io/managed: 'true'
-    iam.theriseunion.io/scope: cluster
-    iam.theriseunion.io/category: cluster-resource
-    iam.theriseunion.io/aggregate-to-admin: ""
-  name: cluster-manage-edgenodes
-spec:
-  uiPermissions:
-    - cluster/edgenodes.manage
-  rules:
-  - apiGroups:
-    - resources.theriseunion.io
-    resources:
-    - nodes
-    - pods
-    verbs:
-    - '*'
   - apiGroups:
     - terminal.theriseunion.io
     resources:
@@ -207,6 +145,15 @@ spec:
     - tenant.theriseunion.io
     resources:
     - nodegroups
+    - nodegroups/nodes
+    verbs:
+    - get
+    - list
+    - watch
+  - apiGroups:
+    - monitoring.theriseunion.io
+    resources:
+    - nodegroups/metrics
     verbs:
     - get
     - list
@@ -218,25 +165,26 @@ kind: RoleTemplate
 metadata:
   annotations:
     theriseunion.io/creator: system
-    theriseunion.io/alias-name: "节点组管理"
-    theriseunion.io/description: "管理当前集群里的节点组"
-    iam.theriseunion.io/dependencies: "cluster-view-nodegroups"
+    theriseunion.io/alias-name: "节点组创建"
+    theriseunion.io/description: "创建节点组并成为管理员"
+    iam.theriseunion.io/dependencies: "cluster-basic"
   labels:
     theriseunion.io/managed: 'true'
     iam.theriseunion.io/scope: cluster
     iam.theriseunion.io/category: cluster-resource
     iam.theriseunion.io/aggregate-to-admin: ""
-  name: cluster-manage-nodegroups
+    iam.theriseunion.io/aggregate-to-self-provisioner: ""
+  name: cluster-create-nodegroups
 spec:
   uiPermissions:
-    - cluster/nodegroups.manage
+    - cluster/nodegroups.create
   rules:
   - apiGroups:
     - tenant.theriseunion.io
     resources:
     - nodegroups
     verbs:
-    - '*'
+    - create
 
 ---
 apiVersion: iam.theriseunion.io/v1alpha1
@@ -339,7 +287,6 @@ spec:
     - ingresses
     - router
     - pods
-    - pods/log
     - pods/containers
     - namespacenetworkpolicies
     - networkpolicies
@@ -396,7 +343,6 @@ spec:
     - ingresses
     - router
     - pods
-    - pods/log
     - pods/containers
     - namespacenetworkpolicies
     - networkpolicies
@@ -484,7 +430,6 @@ metadata:
 spec:
   uiPermissions:
     - cluster/storages.view
-    - cluster/sc.view
   rules:
     - apiGroups:
         - resources.theriseunion.io
@@ -512,7 +457,7 @@ metadata:
   name: cluster-manage-sc
 spec:
   uiPermissions:
-    - cluster/sc.manage 
+    - cluster/storages.manage
   rules:
     - apiGroups:
         - resources.theriseunion.io
@@ -603,6 +548,7 @@ metadata:
     iam.theriseunion.io/category: cluster-settings
     iam.theriseunion.io/aggregate-to-admin: ""
     iam.theriseunion.io/aggregate-to-viewer: ""
+    iam.theriseunion.io/aggregate-to-self-provisioner: ""
   name: cluster-view-settings
 spec:
   uiPermissions:
@@ -684,12 +630,7 @@ spec:
   - apiGroups:
     - iam.theriseunion.io
     resources:
-    - roles
     - clusters/roles
-    - iamroles
-    - iamrolebindings
-    - categories
-    - roletemplates
     verbs:
     - get
     - list
@@ -717,12 +658,7 @@ spec:
   - apiGroups:
     - iam.theriseunion.io
     resources:
-    - roles
     - clusters/roles
-    - iamroles
-    - iamrolebindings
-    - categories
-    - roletemplates
     verbs:
     - '*'
 
@@ -750,8 +686,8 @@ spec:
   - apiGroups:
     - iam.theriseunion.io
     resources:
-    - members
     - clusters/members
+    - clusters/roles
     verbs:
     - get
     - list
@@ -779,14 +715,90 @@ spec:
   - apiGroups:
     - iam.theriseunion.io
     resources:
-    - members
     - clusters/members
     verbs:
     - '*'
+
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  name: cluster-view-devices
+  annotations:
+    theriseunion.io/creator: system
+    theriseunion.io/alias-name: "算力查看"
+    theriseunion.io/description: "查看当前集群下算力资源"
+    iam.theriseunion.io/dependencies: "cluster-basic"
+  labels:
+    theriseunion.io/managed: 'true'
+    iam.theriseunion.io/scope: cluster
+    iam.theriseunion.io/category: cluster-devices
+    iam.theriseunion.io/aggregate-to-viewer: ""
+    iam.theriseunion.io/aggregate-to-admin: ""
+spec:
+  uiPermissions:
+    - cluster/devices.view
+  rules:
   - apiGroups:
-    - iam.theriseunion.io
+    - device.vast.theriseunion.io
     resources:
-    - users
+    - devices
+    - devicemodels
+    - computetemplates
     verbs:
     - get
     - list
+    - watch
+
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  name: cluster-manage-devices
+  annotations:
+    theriseunion.io/creator: system
+    theriseunion.io/alias-name: "算力管理"
+    theriseunion.io/description: "管理当前集群下算力资源"
+    iam.theriseunion.io/dependencies: "cluster-view-devices"
+  labels:
+    theriseunion.io/managed: 'true'
+    iam.theriseunion.io/scope: cluster
+    iam.theriseunion.io/category: cluster-devices
+    iam.theriseunion.io/aggregate-to-admin: ""
+spec:
+  uiPermissions:
+    - cluster/devices.manage
+  rules:
+  - apiGroups:
+    - device.vast.theriseunion.io
+    resources:
+    - devices
+    - devicemodels
+    - computetemplates
+    verbs:
+    - "*"
+
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  name: cluster-manage-monitoring
+  annotations:
+    theriseunion.io/creator: system
+    theriseunion.io/alias-name: "监控告警管理"
+    theriseunion.io/description: "允许管理当前集群下的监控告警"
+  labels:
+    theriseunion.io/managed: 'true'
+    iam.theriseunion.io/scope: cluster
+    iam.theriseunion.io/category: cluster-monitoring
+    iam.theriseunion.io/aggregate-to-admin: ""
+spec:
+  uiPermissions:
+    - cluster/monitoring.manage
+  rules:
+  - apiGroups:
+      - duty.theriseunion.io
+    resources:
+      - "*"
+    verbs:
+      - "*"

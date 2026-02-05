@@ -229,7 +229,7 @@ percentage=$((total_completed * 100 / total_standard))
 
 echo "平台层级 (Platform):  $completed_platform/14 ✓"
 echo "集群层级 (Cluster):   $completed_cluster/12 ✓"
-echo "工作空间 (Workspace): $completed_workspace/10 ✓"
+echo "租户空间 (Workspace): $completed_workspace/10 ✓"
 echo "节点组 (NodeGroup):   $completed_nodegroup/6 ✓"
 echo "命名空间 (Namespace): $completed_namespace/14 ✓"
 echo "--------------------------------------"

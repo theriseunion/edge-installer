@@ -20,6 +20,8 @@ spec:
           values:
           - cluster
           - nodegroup
+          - workspace
+          - namespace
 
 ---
 apiVersion: iam.theriseunion.io/v1alpha1
@@ -38,6 +40,56 @@ spec:
     roleSelector:
       matchLabels:
         iam.theriseunion.io/aggregate-to-admin: ""
+      matchExpressions:
+        - key: iam.theriseunion.io/scope
+          operator: In
+          values:
+          - cluster
+          - nodegroup
+          - workspace
+          - namespace
+
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: IAMRole
+metadata:
+  name: cluster-self-provisioner
+  annotations:
+    theriseunion.io/creator: system
+    theriseunion.io/description: "允许创建节点组并成为管理员"
+  labels:
+    theriseunion.io/managed: "true"
+    iam.theriseunion.io/builtin: "true"
+    iam.theriseunion.io/scope: cluster
+spec:
+  aggregationRoleTemplates:
+    roleSelector:
+      matchLabels:
+        iam.theriseunion.io/aggregate-to-self-provisioner: ""
+      matchExpressions:
+        - key: iam.theriseunion.io/scope
+          operator: In
+          values:
+          - cluster
+          - nodegroup
+
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: IAMRole
+metadata:
+  name: cluster-regular
+  annotations:
+    theriseunion.io/creator: system
+    theriseunion.io/description: "被邀请加入节点组之前无法访问任何资源"
+  labels:
+    theriseunion.io/managed: "true"
+    iam.theriseunion.io/builtin: "true"
+    iam.theriseunion.io/scope: cluster
+spec:
+  aggregationRoleTemplates:
+    roleSelector:
+      matchLabels:
+        iam.theriseunion.io/aggregate-to-regular: ""
       matchExpressions:
         - key: iam.theriseunion.io/scope
           operator: In

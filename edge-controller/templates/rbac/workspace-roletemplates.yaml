@@ -14,9 +14,17 @@ spec:
     - workspace/basic.view
   rules:
   - apiGroups:
-    - '*'
+    - tenant.theriseunion.io
     resources:
-    - '*'
+    - workspaces
+    verbs:
+    - get
+    - watch
+    - list
+  - apiGroups:
+    - resources.theriseunion.io
+    resources:
+    - nodes
     verbs:
     - get
     - watch
@@ -43,68 +51,20 @@ metadata:
     iam.theriseunion.io/scope: workspace
     iam.theriseunion.io/category: workspace-project-management
     iam.theriseunion.io/aggregate-to-admin: ""
+    iam.theriseunion.io/aggregate-to-regular: ""
     iam.theriseunion.io/aggregate-to-viewer: ""
 spec:
   uiPermissions:
     - workspace/projects.view
   rules:
   - apiGroups:
-    - '*'
+    - tenant.theriseunion.io
     resources:
     - namespaces
-    - configmaps
-    - endpoints
-    - limitranges
-    - persistentvolumeclaims
-    - podtemplates
-    - replicationcontrollers
-    - resourcequotas
-    - secrets
-    - serviceaccounts
-    - services
-    - applications
-    - controllerrevisions
-    - deployments
-    - replicasets
-    - statefulsets
-    - daemonsets
-    - cronjobs
-    - jobs
-    - events
-    - ingresses
-    - router
-    - pods
-    - pods/log
-    - pods/containers
-    - namespacenetworkpolicies
-    - networkpolicies
-    - podsecuritypolicies
-    - rolebindings
-    - roles
-    - namespacemembers
-    - servicepolicies
-    - workspaces
-    - quotas
-    - abnormalworkloads
-    - workloads
-    - strategies
+    - workspaces/namespaces
     verbs:
     - get
     - list
-    - watch
-  - apiGroups:
-    - apps
-    - extensions
-    - batch
-    - autoscaling
-    - app.k8s.io
-    - operations.theriseunion.io
-    - resources.theriseunion.io
-    resources:
-    - '*'
-    verbs:
-    - list
-    - get
     - watch
 
 ---
@@ -128,24 +88,11 @@ spec:
     - workspace/projects.create
   rules:
   - apiGroups:
-    - '*'
+    - tenant.theriseunion.io
     resources:
-    - workspaces
-    - workspacemembers
-    - quotas
-    - abnormalworkloads
-    - pods
+    - workspaces/namespaces
     verbs:
-    - get
-    - list
-    - watch
-  - apiGroups:
     - '*'
-    resources:
-    - namespaces
-    verbs:
-    - create
-    - watch
 
 ---
 apiVersion: iam.theriseunion.io/v1alpha1
@@ -167,19 +114,7 @@ spec:
     - workspace/projects.manage
   rules:
   - apiGroups:
-    - apps
-    - extensions
-    - batch
-    - autoscaling
-    - app.k8s.io
-    - operations.theriseunion.io
     - resources.theriseunion.io
-    resources:
-    - '*'
-    verbs:
-    - '*'
-  - apiGroups:
-    - '*'
     resources:
     - namespaces
     - configmaps
@@ -214,7 +149,7 @@ spec:
     - podsecuritypolicies
     - rolebindings
     - roles
-    - namespacemembers
+    - namespaces/members
     - servicepolicies
     - workspaces
     - quotas
@@ -248,7 +183,7 @@ spec:
     - workspace/settings.view
   rules:
   - apiGroups:
-    - '*'
+    - tenant.theriseunion.io
     resources:
     - workspaces
     verbs:
@@ -276,7 +211,7 @@ spec:
     - workspace/settings.manage
   rules:
   - apiGroups:
-    - '*'
+    - tenant.theriseunion.io
     resources:
     - workspaces
     verbs:
@@ -297,21 +232,18 @@ metadata:
     iam.theriseunion.io/scope: workspace
     iam.theriseunion.io/category: workspace-access-control
     iam.theriseunion.io/aggregate-to-admin: ""
-    iam.theriseunion.io/aggregate-to-regular: ''
-    iam.theriseunion.io/aggregate-to-self-provisioner: ''
     iam.theriseunion.io/aggregate-to-viewer: ''
 spec:
   uiPermissions:
     - workspace/roles.view
   rules:
   - apiGroups:
-    - '*'
+    - iam.theriseunion.io
     resources:
     - roles
-    - workspaceroles
     verbs:
-    - get
     - list
+    - get
     - watch
 
 ---
@@ -334,10 +266,9 @@ spec:
     - workspace/roles.manage
   rules:
   - apiGroups:
-    - '*'
+    - iam.theriseunion.io
     resources:
     - roles
-    - workspaceroles
     verbs:
     - '*'
 
@@ -356,18 +287,16 @@ metadata:
     iam.theriseunion.io/scope: workspace
     iam.theriseunion.io/category: workspace-access-control
     iam.theriseunion.io/aggregate-to-admin: ""
-    iam.theriseunion.io/aggregate-to-regular: ''
-    iam.theriseunion.io/aggregate-to-self-provisioner: ''
     iam.theriseunion.io/aggregate-to-viewer: ''
 spec:
   uiPermissions:
     - workspace/members.view
   rules:
   - apiGroups:
-    - '*'
+    - iam.theriseunion.io
     resources:
-    - workspacemembers
     - members
+    - roles
     verbs:
     - get
     - list
@@ -393,9 +322,64 @@ spec:
     - workspace/members.manage
   rules:
   - apiGroups:
-    - '*'
+    - iam.theriseunion.io
     resources:
-    - workspacemembers
     - members
+    verbs:
+    - '*'
+
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  name: workspace-manage-application
+  annotations:
+    theriseunion.io/creator: system
+    theriseunion.io/alias-name: "应用管理"
+    theriseunion.io/description: "管理当前租户空间下的应用"
+    iam.theriseunion.io/dependencies: "workspace-basic"
+  labels:
+    theriseunion.io/managed: 'true'
+    iam.theriseunion.io/scope: workspace
+    iam.theriseunion.io/category: workspace-application-management
+    iam.theriseunion.io/aggregate-to-admin: ""
+spec:
+  uiPermissions:
+    - workspace/applications.manage
+  rules:
+  - apiGroups:
+    - tenant.theriseunion.io
+    resources:
+    - workspaces/namespaces
+    verbs:
+    - list
+    - get
+  - apiGroups:
+    - app.theriseunion.io
+    resources:
+    - appcategories
+    verbs:
+    - list
+    - get
+  - apiGroups:
+    - device.vast.theriseunion.io
+    resources:
+    - devicemodels
+    verbs:
+    - list
+    - get
+  - apiGroups:
+    - image.theriseunion.io
+    resources:
+    - namespaces/repositories
+    verbs:
+    - list
+    - get
+  - apiGroups:
+    - app.theriseunion.io
+    resources:
+    - applications
+    - workspaces/applications
+    - applications/versions
     verbs:
     - '*'

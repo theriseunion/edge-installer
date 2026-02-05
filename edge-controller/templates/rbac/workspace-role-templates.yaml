@@ -30,13 +30,18 @@ metadata:
     iam.theriseunion.io/scope: workspace
   annotations:
     iam.theriseunion.io/creator: "system"
-    iam.theriseunion.io/description: "管理工作空间中的所有资源"
+    theriseunion.io/description: "管理租户空间中的所有资源"
 spec:
   aggregationRoleTemplates:
     roleSelector:
       matchLabels:
         iam.theriseunion.io/aggregate-to-admin: ""
-        iam.theriseunion.io/scope: workspace
+      matchExpressions:
+        - key: iam.theriseunion.io/scope
+          operator: In
+          values:
+          - workspace
+          - namespace
 
 ---
 apiVersion: iam.theriseunion.io/v1alpha1
@@ -49,13 +54,19 @@ metadata:
     iam.theriseunion.io/scope: "workspace"
   annotations:
     iam.theriseunion.io/creator: "system"
-    iam.theriseunion.io/description: "查看工作空间中的所有资源"
+    theriseunion.io/description: "查看租户空间中的所有资源"
 spec:
   aggregationRoleTemplates:
     roleSelector:
       matchLabels:
         iam.theriseunion.io/aggregate-to-viewer: ""
-        iam.theriseunion.io/scope: workspace
+      matchExpressions:
+        - key: iam.theriseunion.io/scope
+          operator: In
+          values:
+          - workspace
+          - namespace
+      
 
 ---
 apiVersion: iam.theriseunion.io/v1alpha1
@@ -68,7 +79,7 @@ metadata:
     iam.theriseunion.io/scope: "workspace"
   annotations:
     iam.theriseunion.io/creator: "system"
-    iam.theriseunion.io/description: "查看工作空间设置"
+    theriseunion.io/description: "查看租户空间设置"
 spec:
   aggregationRoleTemplates:
     roleSelector:
@@ -87,7 +98,7 @@ metadata:
     iam.theriseunion.io/scope: "workspace"
   annotations:
     iam.theriseunion.io/creator: "system"
-    iam.theriseunion.io/description: "查看工作空间设置、创建项目"
+    theriseunion.io/description: "查看租户空间设置、创建项目"
 spec:
   aggregationRoleTemplates:
     roleSelector:

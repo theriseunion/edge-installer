@@ -15,7 +15,16 @@ spec:
   - apiGroups:
     - 'tenant.theriseunion.io'
     resources:
+    - 'namespaces'
     - 'workspaces/namespaces'
+    verbs:
+    - get
+    - list
+    - watch
+  - apiGroups:
+    - resources.theriseunion.io
+    resources:
+    - resourcequotas
     verbs:
     - get
     - list
@@ -26,6 +35,81 @@ spec:
       - get
       - list
       - watch
+
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  annotations:
+    theriseunion.io/creator: system
+    theriseunion.io/alias-name: "应用部署查看"
+    theriseunion.io/description: "允许查看当前项目下的应用部署"
+    iam.theriseunion.io/dependencies: "project-basic"
+  labels:
+    theriseunion.io/managed: 'true'
+    iam.theriseunion.io/scope: namespace
+    iam.theriseunion.io/category: project-appdeployments
+    iam.theriseunion.io/aggregate-to-admin: ""
+    iam.theriseunion.io/aggregate-to-operator: ""
+    iam.theriseunion.io/aggregate-to-viewer: ""
+  name: project-view-appdeployments
+spec:
+  uiPermissions:
+    - project/appdeployments.view
+  rules:
+    - apiGroups:
+      - app.theriseunion.io
+      resources:
+      - applicationdeployments
+      - applicationversions
+      verbs:
+      - get
+      - list
+      - watch
+
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  annotations:
+    theriseunion.io/creator: system
+    theriseunion.io/alias-name: "应用部署管理"
+    theriseunion.io/description: "管理当前项目下的应用部署"
+    iam.theriseunion.io/dependencies: "project-view-appdeployments"
+  labels:
+    theriseunion.io/managed: 'true'
+    iam.theriseunion.io/scope: namespace
+    iam.theriseunion.io/category: project-appdeployments
+    iam.theriseunion.io/aggregate-to-admin: ""
+    iam.theriseunion.io/aggregate-to-operator: ""
+  name: project-manage-appdeployments
+spec:
+  uiPermissions:
+    - project/appdeployments.manage
+  rules:
+    - apiGroups:
+      - app.theriseunion.io
+      resources:
+      - applicationversions
+      verbs:
+      - get
+      - list
+      - watch
+    - apiGroups:
+      - infra.theriseunion.io
+      resources:
+      - nodegroups
+      - namespaces/nodegroups
+      verbs:
+      - get
+      - list
+      - watch
+    - apiGroups:
+      - app.theriseunion.io
+      resources:
+      - applicationdeployments
+      verbs:
+      - '*'
 
 ---
 apiVersion: iam.theriseunion.io/v1alpha1
@@ -49,7 +133,7 @@ spec:
     - project/workloads.view
   rules:
     - apiGroups:
-      - '*'
+      - resources.theriseunion.io
       resources:
       - applications
       - controllerrevisions
@@ -60,7 +144,6 @@ spec:
       - jobs
       - cronjobs
       - pods
-      - pods/log
       - pods/containers
       - services
       - ingresses
@@ -72,6 +155,13 @@ spec:
       - get
       - list
       - watch
+    - apiGroups:
+      - ''
+      resources:
+      - pods
+      - pods/log
+      verbs:
+      - get
 
 ---
 apiVersion: iam.theriseunion.io/v1alpha1
@@ -94,7 +184,7 @@ spec:
     - project/workloads.manage
   rules:
     - apiGroups:
-      - '*'
+      - resources.theriseunion.io
       resources:
       - services
       - applications
@@ -106,7 +196,6 @@ spec:
       - jobs
       - cronjobs
       - pods
-      - pods/log
       - pods/containers
       - services
       - ingresses
@@ -116,6 +205,76 @@ spec:
       - secrets
       verbs:
       - '*'
+    - apiGroups:
+      - terminal.theriseunion.io
+      resources:
+      - pods
+      - pods/exec
+      verbs:
+      - get
+
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  annotations:
+    theriseunion.io/creator: system
+    theriseunion.io/alias-name: "镜像查看"
+    theriseunion.io/description: "允许查看当前项目下的镜像"
+    iam.theriseunion.io/dependencies: "project-basic"
+  labels:
+    theriseunion.io/managed: 'true'
+    iam.theriseunion.io/category: project-images
+    iam.theriseunion.io/scope: namespace
+    iam.theriseunion.io/aggregate-to-admin: ""
+    iam.theriseunion.io/aggregate-to-operator: ""
+    iam.theriseunion.io/aggregate-to-viewer: ""
+  name: project-view-images
+spec:
+  uiPermissions:
+    - project/images.view
+  rules:
+    - apiGroups:
+        - image.theriseunion.io
+      resources:
+        - repositories
+        - namespaces/repositories
+        - registry-secrets
+        - namespaces/registry-secrets
+      verbs:
+        - list
+        - get
+        - watch
+
+---
+apiVersion: iam.theriseunion.io/v1alpha1
+kind: RoleTemplate
+metadata:
+  annotations:
+    theriseunion.io/creator: system
+    theriseunion.io/alias-name: "镜像管理"
+    theriseunion.io/description: "允许管理当前项目下的镜像"
+    iam.theriseunion.io/dependencies: "project-view-images"
+  labels:
+    theriseunion.io/managed: 'true'
+    iam.theriseunion.io/category: project-images
+    iam.theriseunion.io/scope: namespace
+    iam.theriseunion.io/aggregate-to-admin: ""
+    iam.theriseunion.io/aggregate-to-operator: ""
+  name: project-manage-images
+spec:
+  uiPermissions:
+    - project/images.manage
+  rules:
+    - apiGroups:
+        - image.theriseunion.io
+      resources:
+        - repositories
+        - namespaces/repositories
+        - registry-secrets
+        - namespaces/registry-secrets
+      verbs:
+        - '*'
 
 ---
 apiVersion: iam.theriseunion.io/v1alpha1
@@ -200,7 +359,6 @@ spec:
   rules:
   - apiGroups:
     - resources.theriseunion.io
-    - tenant.theriseunion.io
     resources:
     - configmaps
     - secrets
@@ -232,7 +390,6 @@ spec:
   rules:
   - apiGroups:
     - resources.theriseunion.io
-    - tenant.theriseunion.io
     resources:
     - configmaps
     - secrets
@@ -264,16 +421,11 @@ spec:
   - apiGroups:
     - resources.theriseunion.io
     resources:
-    - quotas
-    - metrics
-    verbs:
-    - list
-  - apiGroups:
-    - ''
-    resources:
+    - resourcequotas
     - limitranges
     verbs:
     - list
+    - get
 
 ---
 apiVersion: iam.theriseunion.io/v1alpha1
@@ -295,7 +447,7 @@ spec:
     - project/settings.manage
   rules:
   - apiGroups:
-    - '*'
+    - tenant.theriseunion.io
     resources:
     - namespaces
     verbs:
@@ -303,13 +455,7 @@ spec:
   - apiGroups:
     - resources.theriseunion.io
     resources:
-    - quotas
-    - metrics
-    verbs:
-    - '*'
-  - apiGroups:
-    - ''
-    resources:
+    - resourcequotas
     - limitranges
     verbs:
     - '*'
@@ -337,21 +483,13 @@ spec:
     - project/roles.view
   rules:
   - apiGroups:
-    - '*'
+    - iam.theriseunion.io
     resources:
     - roles
-    - iamroles
-    - iamrolebindings
-    - categories
-    - roletemplates
     verbs:
     - get
     - list
     - watch
-  - nonResourceURLs:
-      - /boss/access/roles
-    verbs:
-      - get
 
 ---
 apiVersion: iam.theriseunion.io/v1alpha1
@@ -373,13 +511,9 @@ spec:
     - project/roles.manage
   rules:
   - apiGroups:
-    - '*'
+    - iam.theriseunion.io
     resources:
     - roles
-    - iamroles
-    - iamrolebindings
-    - categories
-    - roletemplates
     verbs:
     - '*'
 
@@ -408,7 +542,7 @@ spec:
     - iam.theriseunion.io
     resources:
     - members
-    - users
+    - roles
     verbs:
     - get
     - list
@@ -434,9 +568,8 @@ spec:
     - project/members.manage
   rules:
   - apiGroups:
-    - '*'
+    - iam.theriseunion.io
     resources:
     - members
-    - users
     verbs:
     - '*'
