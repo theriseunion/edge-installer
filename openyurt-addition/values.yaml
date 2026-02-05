@@ -54,3 +54,26 @@ coredns:
 
   # Pod anti-affinity
   podAntiAffinity: true
+
+# NodeLocal DNS configuration
+nodelocaldns:
+  enabled: true
+  image:
+    registry: "quanzhenglong.com"
+    repository: kubesphere/k8s-dns-node-cache
+    tag: "1.22.20"
+    pullPolicy: IfNotPresent
+
+  # The IP address of the upstream CoreDNS service
+  # Default is for host cluster, should be overridden for vcluster (e.g., 10.233.5.89)
+  upstreamCorednsIP: "10.233.0.3"
+
+  # Local listen IP for node-cache
+  localIp: "169.254.25.10"
+
+  resources:
+    limits:
+      memory: 200Mi
+    requests:
+      cpu: 100m
+      memory: 70Mi

@@ -75,3 +75,17 @@ Return the proper image name for coredns
 {{- printf "%s:%s" $repository $tag }}
 {{- end }}
 {{- end }}
+
+{{/*
+Return the proper image name for nodelocaldns
+*/}}
+{{- define "openyurt-addition.nodelocaldnsImage" -}}
+{{- $registry := .Values.nodelocaldns.image.registry | default .Values.global.imageRegistry }}
+{{- $repository := .Values.nodelocaldns.image.repository }}
+{{- $tag := .Values.nodelocaldns.image.tag | default .Values.global.tag }}
+{{- if $registry }}
+{{- printf "%s/%s:%s" $registry $repository $tag }}
+{{- else }}
+{{- printf "%s:%s" $repository $tag }}
+{{- end }}
+{{- end }}

@@ -1,0 +1,58 @@
+{{- if .Values.nodelocaldns.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nodelocaldns-edge
+  namespace: kube-system
+  labels:
+    {{- include "openyurt-addition.labels" . | nindent 4 }}
+    addonmanager.kubernetes.io/mode: EnsureExists
+data:
+  Corefile: |
+    cluster.local:53 {
+        errors
+        cache {
+            success 9984 30
+            denial 9984 5
+        }
+        reload
+        loop
+        bind {{ .Values.nodelocaldns.localIp }}
+        forward . {{ .Values.nodelocaldns.upstreamCorednsIP }} {
+            force_tcp
+        }
+        prometheus :9253
+        health {{ .Values.nodelocaldns.localIp }}:9254
+    }
+    in-addr.arpa:53 {
+        errors
+        cache 30
+        reload
+        loop
+        bind {{ .Values.nodelocaldns.localIp }}
+        forward . {{ .Values.nodelocaldns.upstreamCorednsIP }} {
+            force_tcp
+        }
+        prometheus :9253
+    }
+    ip6.arpa:53 {
+        errors
+        cache 30
+        reload
+        loop
+        bind {{ .Values.nodelocaldns.localIp }}
+        forward . {{ .Values.nodelocaldns.upstreamCorednsIP }} {
+            force_tcp
+        }
+        prometheus :9253
+    }
+    .:53 {
+        errors
+        cache 30
+        reload
+        loop
+        bind {{ .Values.nodelocaldns.localIp }}
+        forward . /etc/resolv.conf
+        prometheus :9253
+    }
+{{- end }}
