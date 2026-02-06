@@ -115,8 +115,8 @@ spec:
         app: prometheus-agent
     spec:
       serviceAccountName: prometheus-agent
-      # 使用节点 DNS 解析外部域名（如 host.rise.io）
-      dnsPolicy: Default
+      # 使用集群 DNS（nodelocaldns），通过 hosts 插件读取节点 /etc/hosts 解析自定义域名
+      dnsPolicy: ClusterFirst
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

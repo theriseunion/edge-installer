@@ -78,6 +78,9 @@ spec:
         volumeMounts:
         - mountPath: /etc/coredns
           name: config-volume
+        - mountPath: /etc/node-hosts
+          name: node-hosts
+          readOnly: true
         - mountPath: /run/xtables.lock
           name: xtables-lock
           readOnly: false
@@ -88,6 +91,10 @@ spec:
           items:
           - key: Corefile
             path: Corefile
+      - name: node-hosts
+        hostPath:
+          path: /etc/hosts
+          type: File
       - name: xtables-lock
         hostPath:
           path: /run/xtables.lock

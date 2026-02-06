@@ -48,6 +48,9 @@ data:
     }
     .:53 {
         errors
+        hosts /etc/node-hosts {
+            fallthrough
+        }
         cache 30
         reload
         loop
