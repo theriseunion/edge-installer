@@ -13,7 +13,7 @@ spec:
   enabled: {{ .Values.autoInstall.postgresql.enabled }}
   version: {{ .Values.autoInstall.postgresql.version | default .Chart.AppVersion }}
   chart:
-    name: edge-postgresql
+    name: postgresql
     namespace: observability-system
     releaseName: edge-postgresql
     repository: http://chartmuseum.{{ .Release.Namespace }}.svc:8080
