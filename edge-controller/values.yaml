@@ -26,13 +26,13 @@ controller:
 
   image:
     repository: edge/controller
-    tag: "main"
+    tag: "v1.0.0"
     pullPolicy: IfNotPresent
 
   resources:
     limits:
-      cpu: 200m
-      memory: 256Mi
+      cpu: 500m
+      memory: 1024Gi
     requests:
       cpu: 50m
       memory: 64Mi
@@ -91,7 +91,7 @@ chartmuseum:
 
   image:
     repository: edge/edge-museum
-    tag: "main"
+    tag: "v1.0.0"
     pullPolicy: IfNotPresent
 
   resources:
@@ -138,7 +138,7 @@ autoInstall:
         type: ClusterIP
         port: 8080
       image:
-        tag: "main"
+        tag: "v1.0.0"
 
   # Console component (only for host/all modes)
   console:
@@ -154,7 +154,7 @@ autoInstall:
         - name: NEXT_PUBLIC_API_BASE_URL
           value: "http://apiserver:8080"
       image:
-        tag: "main"
+        tag: "v1.0.0"
 
   # Monitoring component
   monitoring:
@@ -164,7 +164,7 @@ autoInstall:
       namespace: "observability-system"
       monitoringService:
         image:
-          tag: "main"
+          tag: "v1.0.0"
       edgeTraefikRemoteWrite:
         # 是否启用边缘数据接收
         enabled: true
