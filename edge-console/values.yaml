@@ -13,7 +13,7 @@ image:
   registry: quanzhenglong.com
   repository: edge/console
   pullPolicy: IfNotPresent
-  tag: "main"
+  tag: "v1.0.0"
 
 imagePullSecrets: []
 nameOverride: ""
@@ -75,7 +75,7 @@ ingressRoute:
 resources:
   limits:
     cpu: 500m
-    memory: 512Mi
+    memory: 1Gi
   requests:
     cpu: 100m
     memory: 128Mi
