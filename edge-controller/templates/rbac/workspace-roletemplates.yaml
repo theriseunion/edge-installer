@@ -61,7 +61,6 @@ spec:
     - tenant.theriseunion.io
     resources:
     - namespaces
-    - workspaces/namespaces
     verbs:
     - get
     - list
@@ -90,7 +89,7 @@ spec:
   - apiGroups:
     - tenant.theriseunion.io
     resources:
-    - workspaces/namespaces
+    - namespaces
     verbs:
     - create
 
@@ -116,7 +115,7 @@ spec:
   - apiGroups:
     - tenant.theriseunion.io
     resources:
-    - workspaces/namespaces
+    - namespaces
     verbs:
     - '*'
 
