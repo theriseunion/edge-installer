@@ -41,6 +41,10 @@ spec:
               value: {{ .Values.edge.apiserver.logLevel }}
             - name: PORT
               value: "{{ .Values.edge.apiserver.port }}"
+            - name: OAUTH_ISSUER_URL
+              value: {{ .Values.edge.auth.jwt.issuerUrl }}
+            - name: JWT_SECRET
+              value: {{ .Values.edge.auth.jwt.secret }}
             {{- if .Values.edge.monitoring.enabled }}
             - name: MONITORING_SERVICE_ENDPOINT
               value: {{ .Values.edge.monitoring.serviceEndpoint }}

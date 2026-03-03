@@ -125,21 +125,22 @@ edge:
   auth:
     mode: "RBAC"  # RBAC or AlwaysAllow
     jwt:
-      secret: ""  # Set via environment variable JWT_SECRET in production
+      issuerUrl: localhost:30080
+      secret: "c069c36be9c64acd4d3993d7e9ea44c3c65802e06a5909cee933af6768e2004e"  # Set via environment variable JWT_SECRET in production
       expiry: "24h"
       refreshTTL: "168h"  # 7 days
     # OAuth configuration
     oauth:
       enabled: true
       clients:
-        - clientId: "edge-console"
-          clientSecret: "edge-secret"
-        - clientId: "test-client"
-          clientSecret: "test-secret"
-        - clientId: "kubectl"
-          clientSecret: "kubectl-secret"
-        - clientId: "default-client"
-          clientSecret: "default-secret"
+        - id: "edge-console"
+          secret: "edge-secret"
+        - id: "test-client"
+          secret: "test-secret"
+        - id: "kubectl"
+          secret: "kubectl-secret"
+        - id: "default-client"
+          secret: "default-secret"
 
   # Terminal configuration
   terminal:
