@@ -139,6 +139,12 @@ autoInstall:
         port: 8080
       image:
         tag: "main"
+      edge:
+        auth:
+          # update this in production
+          jwt:
+            issuerUrl: localhost:30080
+            secret: "c069c36be9c64acd4d3993d7e9ea44c3c65802e06a5909cee933af6768e2004e"
 
   # Console component (only for host/all modes)
   console:
