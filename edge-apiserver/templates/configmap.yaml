@@ -47,6 +47,17 @@ data:
         # 刷新Token有效期
         refreshTTL: {{ .Values.edge.auth.jwt.refreshTTL | quote }}
 
+      {{- if .Values.edge.auth.oauth.enabled }}
+      oauth:
+        enabled: true
+        issuer: {{ .Values.edge.auth.oauth.issuerUrl | quote }}
+        clients:
+          {{- range .Values.edge.auth.oauth.clients }}
+          - id: {{ .id | quote }}
+            secret: {{ .secret | quote }}
+          {{- end }}
+      {{- end }}
+
     # 指标监控配置
     metrics:
       # 是否启用metrics功能

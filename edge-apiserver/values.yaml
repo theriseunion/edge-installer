@@ -125,13 +125,13 @@ edge:
   auth:
     mode: "RBAC"  # RBAC or AlwaysAllow
     jwt:
-      issuerUrl: localhost:30080
       secret: "c069c36be9c64acd4d3993d7e9ea44c3c65802e06a5909cee933af6768e2004e"  # Set via environment variable JWT_SECRET in production
       expiry: "24h"
       refreshTTL: "168h"  # 7 days
     # OAuth configuration
     oauth:
       enabled: true
+      issuerUrl: localhost:30080
       clients:
         - id: "edge-console"
           secret: "edge-secret"
