@@ -79,6 +79,58 @@ spec:
                     nodeName:
                       description: NodeName 节点名称（为空表示由调度器决定）
                       type: string
+                    workloadOverride:
+                      description: |-
+                        WorkloadOverride 工作负载配置覆盖（用于该拓扑的自定义配置）
+                        如果提供，将与 ApplicationVersion 的 WorkloadConfig 进行深度合并
+                        用户配置优先，未配置的字段使用模板默认值
+                        结构与 ApplicationVersion.Spec.WorkloadConfig 完全一致
+
+                        重要：移除 omitempty 标签以避免 Kubernetes Pruning 剪除
+                        注意：前端应始终提供此字段以避免被剪除（可以为空对象 {}）
+                      properties:
+                        deployments:
+                          description: |-
+                            Deployments 定义 Deployment 列表
+                            注意：移除 omitempty 以确保 WorkloadOverride 字段不被 Pruning 剪除
+                            如果为空，前端应发送空数组 []
+                          items:
+                            description: WorkloadDeployment 简化的 Deployment 定义
+                            properties:
+                              name:
+                                description: Name 工作负载名称
+                                type: string
+                              spec:
+                                description: Spec Deployment 规格（简化版，只保留必要字段）
+                                properties:
+                                  replicas:
+                                    description: Replicas 副本数
+                                    format: int32
+                                    type: integer
+                                  strategy:
+                                    description: |-
+                                      Strategy 部署策略（使用 RawExtension 存储完整的 DeploymentStrategy，避免 CRD 文件膨胀）
+                                      存储格式为标准 Kubernetes DeploymentStrategy
+                                      Controller 需要将其反序列化为 appsv1.DeploymentStrategy 使用
+                                    type: object
+                                    x-kubernetes-preserve-unknown-fields: true
+                                  template:
+                                    description: |-
+                                      Template Pod 模板（使用 RawExtension 存储完整的 PodTemplateSpec，避免 CRD 文件膨胀）
+                                      存储格式为标准 Kubernetes PodTemplateSpec
+                                      Controller 需要将其反序列化为 corev1.PodTemplateSpec 使用
+                                    type: object
+                                    x-kubernetes-preserve-unknown-fields: true
+                                required:
+                                - template
+                                type: object
+                            required:
+                            - name
+                            - spec
+                            type: object
+                          type: array
+                      type: object
+                      x-kubernetes-preserve-unknown-fields: true
                   type: object
                 type: array
               version:
@@ -205,6 +257,58 @@ spec:
                           nodeName:
                             description: NodeName 节点名称（为空表示由调度器决定）
                             type: string
+                          workloadOverride:
+                            description: |-
+                              WorkloadOverride 工作负载配置覆盖（用于该拓扑的自定义配置）
+                              如果提供，将与 ApplicationVersion 的 WorkloadConfig 进行深度合并
+                              用户配置优先，未配置的字段使用模板默认值
+                              结构与 ApplicationVersion.Spec.WorkloadConfig 完全一致
+
+                              重要：移除 omitempty 标签以避免 Kubernetes Pruning 剪除
+                              注意：前端应始终提供此字段以避免被剪除（可以为空对象 {}）
+                            properties:
+                              deployments:
+                                description: |-
+                                  Deployments 定义 Deployment 列表
+                                  注意：移除 omitempty 以确保 WorkloadOverride 字段不被 Pruning 剪除
+                                  如果为空，前端应发送空数组 []
+                                items:
+                                  description: WorkloadDeployment 简化的 Deployment 定义
+                                  properties:
+                                    name:
+                                      description: Name 工作负载名称
+                                      type: string
+                                    spec:
+                                      description: Spec Deployment 规格（简化版，只保留必要字段）
+                                      properties:
+                                        replicas:
+                                          description: Replicas 副本数
+                                          format: int32
+                                          type: integer
+                                        strategy:
+                                          description: |-
+                                            Strategy 部署策略（使用 RawExtension 存储完整的 DeploymentStrategy，避免 CRD 文件膨胀）
+                                            存储格式为标准 Kubernetes DeploymentStrategy
+                                            Controller 需要将其反序列化为 appsv1.DeploymentStrategy 使用
+                                          type: object
+                                          x-kubernetes-preserve-unknown-fields: true
+                                        template:
+                                          description: |-
+                                            Template Pod 模板（使用 RawExtension 存储完整的 PodTemplateSpec，避免 CRD 文件膨胀）
+                                            存储格式为标准 Kubernetes PodTemplateSpec
+                                            Controller 需要将其反序列化为 corev1.PodTemplateSpec 使用
+                                          type: object
+                                          x-kubernetes-preserve-unknown-fields: true
+                                      required:
+                                      - template
+                                      type: object
+                                  required:
+                                  - name
+                                  - spec
+                                  type: object
+                                type: array
+                            type: object
+                            x-kubernetes-preserve-unknown-fields: true
                         type: object
                       type: array
                     totalReplicas:
@@ -273,6 +377,58 @@ spec:
                         nodeName:
                           description: NodeName 节点名称（为空表示由调度器决定）
                           type: string
+                        workloadOverride:
+                          description: |-
+                            WorkloadOverride 工作负载配置覆盖（用于该拓扑的自定义配置）
+                            如果提供，将与 ApplicationVersion 的 WorkloadConfig 进行深度合并
+                            用户配置优先，未配置的字段使用模板默认值
+                            结构与 ApplicationVersion.Spec.WorkloadConfig 完全一致
+
+                            重要：移除 omitempty 标签以避免 Kubernetes Pruning 剪除
+                            注意：前端应始终提供此字段以避免被剪除（可以为空对象 {}）
+                          properties:
+                            deployments:
+                              description: |-
+                                Deployments 定义 Deployment 列表
+                                注意：移除 omitempty 以确保 WorkloadOverride 字段不被 Pruning 剪除
+                                如果为空，前端应发送空数组 []
+                              items:
+                                description: WorkloadDeployment 简化的 Deployment 定义
+                                properties:
+                                  name:
+                                    description: Name 工作负载名称
+                                    type: string
+                                  spec:
+                                    description: Spec Deployment 规格（简化版，只保留必要字段）
+                                    properties:
+                                      replicas:
+                                        description: Replicas 副本数
+                                        format: int32
+                                        type: integer
+                                      strategy:
+                                        description: |-
+                                          Strategy 部署策略（使用 RawExtension 存储完整的 DeploymentStrategy，避免 CRD 文件膨胀）
+                                          存储格式为标准 Kubernetes DeploymentStrategy
+                                          Controller 需要将其反序列化为 appsv1.DeploymentStrategy 使用
+                                        type: object
+                                        x-kubernetes-preserve-unknown-fields: true
+                                      template:
+                                        description: |-
+                                          Template Pod 模板（使用 RawExtension 存储完整的 PodTemplateSpec，避免 CRD 文件膨胀）
+                                          存储格式为标准 Kubernetes PodTemplateSpec
+                                          Controller 需要将其反序列化为 corev1.PodTemplateSpec 使用
+                                        type: object
+                                        x-kubernetes-preserve-unknown-fields: true
+                                    required:
+                                    - template
+                                    type: object
+                                required:
+                                - name
+                                - spec
+                                type: object
+                              type: array
+                          type: object
+                          x-kubernetes-preserve-unknown-fields: true
                       type: object
                     topologyIndex:
                       description: Topology 拓扑定义（复制自 Spec）
