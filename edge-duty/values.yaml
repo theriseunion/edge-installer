@@ -6,10 +6,10 @@ duty:
       pullPolicy: IfNotPresent
     resources:
       limits:
-        cpu: 1000m
+        cpu: 500m
         memory: 500Mi
       requests:
-        cpu: 500m
+        cpu: 50m
         memory: 256Mi
     service:
       type: ClusterIP
@@ -74,8 +74,8 @@ duty-web:
     type: ClusterIP
   resources:
     requests:
-      cpu: "100m"
+      cpu: 50m
       memory: "128Mi"
     limits:
-      cpu: "500m"
+      cpu: 500m
       memory: "256Mi"

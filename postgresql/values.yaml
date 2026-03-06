@@ -470,10 +470,10 @@ primary:
   ##
   resources:
      requests:
-       cpu: 2
+       cpu: 100m
        memory: 512Mi
      limits:
-       cpu: 3
+       cpu: 1
        memory: 1024Mi
   ## Pod Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/
