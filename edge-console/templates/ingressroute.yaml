@@ -14,7 +14,8 @@ spec:
       kind: Rule
       priority: {{ .Values.ingressRoute.priority }}
       middlewares:
-        - name: security-headers@file
+        - name: security-headers
+          namespace: traefik
       services:
         - name: {{ include "edge-console.fullname" . }}
           namespace: {{ .Release.Namespace }}
@@ -23,7 +24,8 @@ spec:
       kind: Rule
       priority: {{ .Values.ingressRoute.priority }}
       middlewares:
-        - name: security-headers@file
+        - name: security-headers
+          namespace: traefik
       services:
         - name: {{ include "edge-console.fullname" . }}
           namespace: {{ .Release.Namespace }}

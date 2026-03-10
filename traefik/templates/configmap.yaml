@@ -124,15 +124,3 @@ data:
             certFile: /certs/tls.crt
             keyFile: /certs/tls.key
   {{- end }}
-  # Security headers middleware
-  middlewares.yaml: |
-    http:
-      middlewares:
-        security-headers:
-          headers:
-            stsSeconds: 31536000
-            stsIncludeSubdomains: true
-            stsPreload: true
-            customResponseHeaders:
-              Cross-Origin-Embedder-Policy: "require-corp"
-              Clear-Site-Data: '"cache","cookies","storage"'
