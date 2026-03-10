@@ -117,7 +117,7 @@ data:
         default:
           minVersion: {{ .Values.tls.options.minVersion }}
           sniStrict: {{ .Values.tls.options.sniStrict }}
-      
+
       stores:
         default:
           defaultCertificate:

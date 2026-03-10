@@ -13,6 +13,9 @@ spec:
     - match: PathPrefix(`/`)
       kind: Rule
       priority: {{ .Values.ingressRoute.priority }}
+      middlewares:
+        - name: security-headers
+          namespace: traefik
       services:
         - name: {{ include "edge-console.fullname" . }}
           namespace: {{ .Release.Namespace }}
@@ -20,6 +23,9 @@ spec:
     - match: Path(`/`)
       kind: Rule
       priority: {{ .Values.ingressRoute.priority }}
+      middlewares:
+        - name: security-headers
+          namespace: traefik
       services:
         - name: {{ include "edge-console.fullname" . }}
           namespace: {{ .Release.Namespace }}
