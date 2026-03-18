@@ -11,11 +11,17 @@ spec:
       port: {{ .Values.service.natsPort }}
       targetPort: nats
       protocol: TCP
+      {{- if and (eq .Values.service.type "NodePort") .Values.service.natsNodePort }}
+      nodePort: {{ .Values.service.natsNodePort }}
+      {{- end }}
     {{- if .Values.mqtt.enabled }}
     - name: mqtt
       port: {{ .Values.service.mqttPort }}
       targetPort: mqtt
       protocol: TCP
+      {{- if and (eq .Values.service.type "NodePort") .Values.service.mqttNodePort }}
+      nodePort: {{ .Values.service.mqttNodePort }}
+      {{- end }}
     {{- end }}
     - name: monitoring
       port: {{ .Values.service.monitoringPort }}

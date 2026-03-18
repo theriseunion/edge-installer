@@ -11,11 +11,14 @@ image:
 
 # Service configuration
 service:
-  type: ClusterIP
+  # NodePort required for external edge nodes to connect via MQTT
+  type: NodePort
   # NATS native protocol port
   natsPort: 4222
+  natsNodePort: 31246
   # MQTT protocol port (for device connections)
   mqttPort: 8883
+  mqttNodePort: 30149
   # HTTP monitoring port
   monitoringPort: 8222
 

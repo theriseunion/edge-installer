@@ -126,9 +126,11 @@ playbooks:
 
 # Agent installation configuration (displayed in AddNodeDialog)
 agentConfig:
-  # MQTT Broker URL for agent connection (e.g., ssl://192.168.1.100:38883)
+  # MQTT Broker URL for agent connection
+  # Must use tcp:// protocol and the NodePort mapped to MQTT 8883
+  # Example: tcp://188.239.62.17:30149
   brokerUrl: ""
-  # Agent download URL
-  downloadUrl: "https://github.com/theriseunion/edge-ota/releases/latest/download"
+  # Agent download URL (Cloudflare R2 public storage)
+  downloadUrl: "https://s3.tkeel.io/edge/1.0/agents"
   # Agent version
   version: "latest"

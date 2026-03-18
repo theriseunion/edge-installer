@@ -4293,7 +4293,7 @@ spec:
     spec:
       nodeSelector:
         kubernetes.io/os: linux
-        node-role.kubernetes.io/edge: ""
+        openyurt.io/is-edge-worker: "true"
       hostNetwork: true
       tolerations:
         # Make sure calico-node gets scheduled on all nodes.
