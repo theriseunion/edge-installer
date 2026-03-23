@@ -153,6 +153,11 @@ spec:
                   - type
                   type: object
                 type: array
+              lastFailureTime:
+                description: LastFailureTime is the time of the last installation
+                  failure
+                format: date-time
+                type: string
               lastTransitionTime:
                 description: LastTransitionTime is the time of last status transition
                 format: date-time
@@ -172,6 +177,11 @@ spec:
                 type: string
               releaseVersion:
                 description: ReleaseVersion is the Helm release version number
+                type: integer
+              retryCount:
+                description: RetryCount is the number of retry attempts for failed
+                  installations
+                format: int32
                 type: integer
             type: object
         type: object
