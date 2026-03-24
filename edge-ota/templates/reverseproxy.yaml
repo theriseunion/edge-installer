@@ -5,15 +5,15 @@ apiVersion: iam.theriseunion.io/v1alpha1
 kind: ReverseProxy
 metadata:
   name: ota-server-proxy
-  namespace: ota-system
+  namespace: {{ include "edge-ota.namespace" . }}
   labels:
     app: ota-server
     app.kubernetes.io/name: ota-server
     app.kubernetes.io/component: api-server
     app.kubernetes.io/managed-by: Helm
   annotations:
-    meta.helm.sh/release-name: edge-ota
-    meta.helm.sh/release-namespace: ota-system
+    meta.helm.sh/release-name: {{ .Release.Name }}
+    meta.helm.sh/release-namespace: {{ include "edge-ota.namespace" . }}
     openapi-endpoint: /openapi/v2
 spec:
   directives:
@@ -26,7 +26,7 @@ spec:
     method: '*'
     path: /oapis/ota.theriseunion.io/v1alpha1/*
   upstream:
-    host: ota-server.ota-system.svc.cluster.local
+    host: {{ include "edge-ota.fullname" . }}.{{ include "edge-ota.namespace" . }}.svc.cluster.local
     port: 9443
     scheme: https
     insecureSkipVerify: true  # Skip TLS verification for intra-cluster communication
