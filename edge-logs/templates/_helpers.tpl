@@ -74,18 +74,6 @@ APIServer image
 {{- end }}
 
 {{/*
-Frontend image
-*/}}
-{{- define "edge-logs.frontend.image" -}}
-{{- $registry := .Values.frontend.image.registry | default .Values.global.imageRegistry -}}
-{{- if $registry }}
-{{- printf "%s/%s:%s" $registry .Values.frontend.image.repository .Values.frontend.image.tag }}
-{{- else }}
-{{- printf "%s:%s" .Values.frontend.image.repository .Values.frontend.image.tag }}
-{{- end }}
-{{- end }}
-
-{{/*
 ClickHouse image
 */}}
 {{- define "edge-logs.clickhouse.image" -}}
@@ -109,13 +97,6 @@ APIServer service name
 */}}
 {{- define "edge-logs.apiserver.serviceName" -}}
 {{- printf "%s-apiserver" (include "edge-logs.fullname" .) }}
-{{- end }}
-
-{{/*
-Frontend service name
-*/}}
-{{- define "edge-logs.frontend.serviceName" -}}
-{{- printf "%s-frontend" (include "edge-logs.fullname" .) }}
 {{- end }}
 
 {{/*

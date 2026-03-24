@@ -35,10 +35,6 @@ spec:
     # APIServer 在 Host 集群部署
     apiserver:
       enabled: true
-
-    # Frontend 在 Host 集群部署
-    frontend:
-      enabled: true
     {{- else }}
     # Member 集群不部署这些服务
     clickhouse:
@@ -48,9 +44,6 @@ spec:
       enabled: false
 
     apiserver:
-      enabled: false
-
-    frontend:
       enabled: false
     {{- end }}
 

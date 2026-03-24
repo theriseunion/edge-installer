@@ -250,10 +250,6 @@ autoInstall:
       apiserver:
         enabled: false # 将在模板中根据 global.mode 动态设置
 
-      # Frontend 在 Host 集群部署
-      frontend:
-        enabled: false # 将在模板中根据 global.mode 动态设置
-
       # 全局配置
       global:
         imageRegistry: "quanzhenglong.com/edge"
