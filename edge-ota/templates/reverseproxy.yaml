@@ -27,6 +27,6 @@ spec:
     path: /oapis/ota.theriseunion.io/v1alpha1/*
   upstream:
     host: {{ include "edge-ota.fullname" . }}.{{ include "edge-ota.namespace" . }}.svc.cluster.local
-    port: 9443
+    port: {{ .Values.service.httpsPort }}
     scheme: https
     insecureSkipVerify: true  # Skip TLS verification for intra-cluster communication
