@@ -4,7 +4,7 @@
 
 # Global settings
 global:
-  imageRegistry: "quanzhenglong.com/edge"
+  imageRegistry: "quanzhenglong.com"
   imagePullSecrets: []
   storageClass: ""
 
@@ -18,8 +18,8 @@ apiserver:
 
   image:
     registry: ""  # 使用global.imageRegistry
-    repository: logs-apiserver
-    tag: "main-c25d940"
+    repository: edge/logs-apiserver
+    tag: "main"
     pullPolicy: IfNotPresent
 
   service:
@@ -46,6 +46,10 @@ apiserver:
     initialDelaySeconds: 10
     periodSeconds: 10
 
+  # Init container to wait for ClickHouse before starting apiserver
+  initContainer:
+    enabled: true
+
   config:
     clickhouse:
       host: ""  # Will be auto-generated
@@ -71,13 +75,35 @@ frontend:
 
   image:
     registry: ""  # 使用global.imageRegistry
-    repository: logs-frontend
-    tag: "main-c25d940"
+    repository: edge/logs-frontend
+    tag: "main"
     pullPolicy: IfNotPresent
 
   service:
     type: ClusterIP
     port: 80
+
+  # Override global securityContext for nginx
+  # Nginx needs to run as root initially, then drops privileges internally
+  securityContext:
+    runAsUser: 0
+    runAsGroup: 0
+    fsGroup: null
+
+  # Container-level security context
+  containerSecurityContext:
+    runAsUser: 0
+    runAsGroup: 0
+    allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: false
+    capabilities:
+      drop:
+        - ALL
+      add:
+        - NET_BIND_SERVICE
+        - CHOWN
+        - SETUID
+        - SETGID
 
   resources:
     requests:
@@ -93,7 +119,7 @@ clickhouse:
 
   image:
     registry: ""  # 使用global.imageRegistry
-    repository: clickhouse-server
+    repository: edge/clickhouse-server
     tag: "24.3"
     pullPolicy: IfNotPresent
 
@@ -124,10 +150,21 @@ otelCollector:
   enabled: true
   replicaCount: 1
 
+  # Init container to initialize ClickHouse tables before OTEL Collector starts
+  initContainer:
+    enabled: true
+    resources:
+      requests:
+        memory: "128Mi"
+        cpu: "100m"
+      limits:
+        memory: "256Mi"
+        cpu: "200m"
+
   image:
-    registry: ""  # 使用global.imageRegistry
-    repository: opentelemetry-collector-contrib
-    tag: "0.98.0"
+    registry: "docker.io"  # 明确使用 Docker Hub
+    repository: otel/opentelemetry-collector-contrib
+    tag: "0.147.0"
     pullPolicy: IfNotPresent
 
   resources:
@@ -142,11 +179,15 @@ otelCollector:
 ilogtail:
   enabled: true
 
+  # Dataset name for this cluster (used to identify which cluster logs come from)
+  # Each cluster should have a unique dataset value (e.g., "host", "cluster-a", "cluster-b")
+  dataset: "host"
+
   image:
     registry: ""  # 使用global.imageRegistry
-    repository: ilogtail
+    repository: edge/ilogtail
     tag: "2.0.4"
-    pullPolicy: Always
+    pullPolicy: IfNotPresent
 
   resources:
     requests:

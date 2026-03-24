@@ -1,70 +1,6 @@
+{{- if .Values.ilogtail.enabled }}
 ---
-# iLogtail DaemonSet for log collection
-# Sends logs to OTEL Collector via OTLP gRPC (ADR-001)
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: ilogtail-config
-  namespace: {{ include "edge-logs.namespace" . }}
-data:
-  # iLogtail configuration for OTLP output
-  user_yaml_config.d: |
-    enable: true
-    inputs:
-      - Type: input_file
-        FilePaths:
-          - /var/log/containers/*.log
-        ExcludeFiles:
-          - ilogtail.*\.log
-          - otel-collector.*\.log
-    processors:
-      # Parse JSON log content
-      - Type: processor_json
-        SourceKey: content
-        KeepSource: false
-        ExpandDepth: 1
-        ExpandConnector: ""
-        KeepSourceIfParseError: true
-      # Extract log message from parsed JSON
-      - Type: processor_rename
-        SourceKeys: ["log"]
-        DestKeys: ["content"]
-        KeepSourceIfNotExist: true
-      # Add K8s metadata as resource attributes
-      - Type: processor_add_fields
-        Fields:
-          service.name: "edge-logs"
-    flushers:
-      # OTLP gRPC output to OTEL Collector
-      - Type: flusher_otlp
-        Logs:
-          Endpoint: "otel-collector.{{ include "edge-logs.namespace" . }}.svc.cluster.local:4317"
-          Timeout: 10000
-          WaitForReady: true
-          # Resource attributes mapping
-          ResourceAttributes:
-            - From: "__host_name__"
-              Key: "host.name"
-            - From: "__host_ip__"
-              Key: "host.ip"
-            - From: "_node_name_"
-              Key: "k8s.node.name"
-            - From: "_namespace_"
-              Key: "k8s.namespace.name"
-            - From: "_pod_name_"
-              Key: "k8s.pod.name"
-            - From: "_pod_uid_"
-              Key: "k8s.pod.uid"
-            - From: "_container_name_"
-              Key: "k8s.container.name"
-            - From: "_container_id_"
-              Key: "container.id"
-        Retry:
-          MaxCount: 5
-          InitialDelay: 1000
-          MaxDelay: 30000
-
----
+# iLogtail DaemonSet for log collection with K8s metadata
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
@@ -85,6 +21,10 @@ spec:
     spec:
       serviceAccountName: {{ include "edge-logs.serviceAccountName" . }}
       automountServiceAccountToken: false
+      initContainers:
+        - name: wait-for-otel
+          image: busybox:1.36
+          command: ['sh', '-c', 'until nc -z otel-collector 4317; do echo "waiting for otel-collector:4317"; sleep 2; done; echo "otel-collector is ready"']
       containers:
         - name: ilogtail
           image: {{ include "edge-logs.ilogtail.image" . }}
@@ -113,6 +53,10 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: spec.nodeName
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
             - name: POD_NAMESPACE
               valueFrom:
                 fieldRef:
@@ -153,13 +97,4 @@ spec:
         - operator: Exists
       nodeSelector:
         kubernetes.io/os: linux
-
----
-# Environment configuration for iLogtail
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: ilogtail-env
-  namespace: {{ include "edge-logs.namespace" . }}
-data:
-  dataset: "default"
+{{- end }}

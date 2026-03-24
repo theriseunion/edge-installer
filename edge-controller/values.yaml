@@ -227,6 +227,44 @@ autoInstall:
     version: "0.1.0"
     namespace: "edge-system"
 
+  # Edge Logs - 日志审计组件
+  edgeLogs:
+    enabled: true # 设置为 true 启用日志服务自动安装
+    version: "0.1.0"
+    namespace: "logging-system"
+    values:
+      # 根据集群角色控制服务部署
+      # iLogtail 在所有集群都部署（收集日志）
+      ilogtail:
+        enabled: true
+
+      # ClickHouse 只在 Host 集群部署（存储日志数据）
+      clickhouse:
+        enabled: false # 将在模板中根据 global.mode 动态设置
+
+      # OTEL Collector 只在 Host 集群部署（接收和处理日志）
+      otelCollector:
+        enabled: false # 将在模板中根据 global.mode 动态设置
+
+      # APIServer 在 Host 集群部署
+      apiserver:
+        enabled: false # 将在模板中根据 global.mode 动态设置
+
+      # Frontend 在 Host 集群部署
+      frontend:
+        enabled: false # 将在模板中根据 global.mode 动态设置
+
+      # 全局配置
+      global:
+        imageRegistry: "quanzhenglong.com/edge"
+
+      # 存储配置
+      clickhouse:
+        persistence:
+          enabled: true
+          storageClass: ""
+          size: 10Gi
+
 # Hook configuration
 hooks:
   # Enable chart packaging/upload hooks

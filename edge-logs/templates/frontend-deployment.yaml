@@ -23,15 +23,20 @@ spec:
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      # Frontend uses nginx which requires specific permissions
       securityContext:
-        fsGroup: 101
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
         - name: frontend
-          # nginx container needs write access to /var/cache/nginx
           securityContext:
-            runAsNonRoot: false
-            runAsUser: 0
+            {{- with .Values.frontend.containerSecurityContext }}
+            {{- toYaml . | nindent 12 }}
+            {{- else }}
+            {{- with .Values.frontend.securityContext }}
+            {{- toYaml . | nindent 12 }}
+            {{- else }}
+            {{- toYaml .Values.securityContext | nindent 12 }}
+            {{- end }}
+            {{- end }}
           image: {{ include "edge-logs.frontend.image" . }}
           imagePullPolicy: {{ .Values.frontend.image.pullPolicy }}
           ports:
@@ -55,24 +60,4 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: {{ include "edge-logs.frontend.serviceName" . }}
-  namespace: {{ include "edge-logs.namespace" . }}
-  labels:
-    {{- include "edge-logs.labels" . | nindent 4 }}
-    app.kubernetes.io/component: frontend
-spec:
-  type: {{ .Values.frontend.service.type }}
-  ports:
-    - name: http
-      port: {{ .Values.frontend.service.port }}
-      targetPort: http
-      protocol: TCP
-  selector:
-    {{- include "edge-logs.selectorLabels" . | nindent 4 }}
-    app.kubernetes.io/component: frontend
 {{- end }}
