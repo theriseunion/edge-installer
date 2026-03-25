@@ -573,3 +573,10 @@ spec:
     - members
     verbs:
     - '*'
+  - apiGroups:
+      - iam.theriseunion.io
+    resources:
+      - users
+    verbs:
+      - get
+      - list
