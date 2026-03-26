@@ -238,15 +238,6 @@ autoInstall:
       ilogtail:
         enabled: true
 
-      # ClickHouse、OTEL Collector、APIServer 的 enabled 状态
-      # 由模板根据 global.mode 自动设置，无需在此配置
-      # ClickHouse 和 OTEL Collector 只在 mode="all" 或 mode="host" 时启用
-      # APIServer 只在 mode="all" 或 mode="host" 时启用
-
-      # 全局配置
-      global:
-        imageRegistry: "quanzhenglong.com/edge"
-
       # 存储配置
       clickhouse:
         persistence:

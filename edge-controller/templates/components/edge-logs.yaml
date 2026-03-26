@@ -18,6 +18,10 @@ spec:
     releaseName: edge-logs
     repository: http://chartmuseum.{{ .Release.Namespace }}.svc:8080
   values:
+    # 全局配置
+    global:
+      imageRegistry: {{ .Values.global.imageRegistry }}
+
     # 根据集群角色控制服务部署
     # iLogtail 在所有集群都部署（收集日志）
     ilogtail:
@@ -27,6 +31,11 @@ spec:
     # ClickHouse 只在 Host 集群部署（存储日志数据）
     clickhouse:
       enabled: true
+    # 存储配置
+    {{- if .Values.autoInstall.edgeLogs.values.clickhouse.persistence }}
+      persistence:
+        {{- toYaml .Values.autoInstall.edgeLogs.values.clickhouse.persistence | nindent 8 }}
+    {{- end }}
 
     # OTEL Collector 只在 Host 集群部署（接收和处理日志）
     otelCollector:
@@ -45,17 +54,6 @@ spec:
 
     apiserver:
       enabled: false
-    {{- end }}
-
-    # 全局配置
-    global:
-      imageRegistry: {{ .Values.autoInstall.edgeLogs.values.global.imageRegistry | default .Values.global.imageRegistry }}
-
-    # 存储配置
-    {{- if .Values.autoInstall.edgeLogs.values.clickhouse.persistence }}
-    clickhouse:
-      persistence:
-        {{- toYaml .Values.autoInstall.edgeLogs.values.clickhouse.persistence | nindent 8 }}
     {{- end }}
 
   {{- if .Values.autoInstall.edgeLogs.values }}
