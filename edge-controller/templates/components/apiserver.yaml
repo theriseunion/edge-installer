@@ -17,8 +17,10 @@ spec:
     namespace: {{ .Release.Namespace }}
     releaseName: edge-apiserver
     repository: http://chartmuseum.{{ .Release.Namespace }}.svc:8080
-  {{- if .Values.autoInstall.apiserver.values }}
   values:
+    global:
+      imageRegistry: {{ .Values.global.imageRegistry }}
+    {{- if .Values.autoInstall.apiserver.values }}
     {{- toYaml .Values.autoInstall.apiserver.values | nindent 4 }}
-  {{- end }}
+    {{- end }}
 {{- end }}

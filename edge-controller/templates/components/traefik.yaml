@@ -18,8 +18,10 @@ spec:
     namespace: {{ .Values.autoInstall.traefik.namespace | default .Release.Namespace }}
     releaseName: traefik
     repository: http://chartmuseum.{{ .Release.Namespace }}.svc:8080
-  {{- if .Values.autoInstall.traefik.values }}
   values:
+    global:
+      imageRegistry: {{ .Values.global.imageRegistry }}
+    {{- if .Values.autoInstall.traefik.values }}
     {{- toYaml .Values.autoInstall.traefik.values | nindent 4 }}
-  {{- end }}
+    {{- end }}
 {{- end }}
