@@ -238,17 +238,10 @@ autoInstall:
       ilogtail:
         enabled: true
 
-      # ClickHouse 只在 Host 集群部署（存储日志数据）
-      clickhouse:
-        enabled: false # 将在模板中根据 global.mode 动态设置
-
-      # OTEL Collector 只在 Host 集群部署（接收和处理日志）
-      otelCollector:
-        enabled: false # 将在模板中根据 global.mode 动态设置
-
-      # APIServer 在 Host 集群部署
-      apiserver:
-        enabled: false # 将在模板中根据 global.mode 动态设置
+      # ClickHouse、OTEL Collector、APIServer 的 enabled 状态
+      # 由模板根据 global.mode 自动设置，无需在此配置
+      # ClickHouse 和 OTEL Collector 只在 mode="all" 或 mode="host" 时启用
+      # APIServer 只在 mode="all" 或 mode="host" 时启用
 
       # 全局配置
       global:
