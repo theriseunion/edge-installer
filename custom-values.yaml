@@ -69,7 +69,9 @@ autoInstall:
         auth:
           jwt:
             issuerUrl: localhost:30080
-            secret: "c069c36be9c64acd4d3993d7e9ea44c3c65802e06a5909cee933af6768e2004e"
+            # secret: "<必须替换为 Base64 编码的安全随机字符串>"
+            # 可以使用以下命令生成一个：head -c 32 /dev/urandom | base64
+            secret: ""
 
   # Console 组件（仅在 host/all 模式安装）
   console:
@@ -205,21 +207,7 @@ autoInstall:
     version: "0.1.0"
     namespace: "edge-system"
 
-# ==================== Hook 配置 ====================
-hooks:
-  # 是否在安装前打包和上传 charts
-  packageCharts: false
 
-  # Hook 操作超时时间（秒）
-  timeout: 300
-
-  # 删除 Hook Pod 的策略
-  deletePolicy: before-hook-creation,hook-succeeded
-
-# ==================== 节点选择配置 ====================
-# 默认调度到 control-plane 节点，可根据需要调整
-nodeSelector:
-  node-role.kubernetes.io/control-plane: ""
 
 # 如需调度到任意节点，取消下面的注释并注释掉上面的配置：
 # nodeSelector: {}
