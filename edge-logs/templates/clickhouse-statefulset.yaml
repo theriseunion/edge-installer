@@ -83,26 +83,27 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- if .Values.clickhouse.persistence.enabled }}
-      volumeClaimTemplates:
-        - metadata:
-            name: data
-            labels:
-              {{- include "edge-logs.labels" . | nindent 10 }}
-          spec:
-            accessModes: [ "ReadWriteOnce" ]
-            {{- if .Values.clickhouse.persistence.storageClass }}
-            {{- if (eq "-" .Values.clickhouse.persistence.storageClass) }}
-            storageClassName: ""
-            {{- else }}
-            storageClassName: {{ .Values.clickhouse.persistence.storageClass | quote }}
-            {{- end }}
-            {{- end }}
-            resources:
-              requests:
-                storage: {{ .Values.clickhouse.persistence.size | quote }}
-      {{- else }}
+      {{- if not .Values.clickhouse.persistence.enabled }}
         - name: data
           emptyDir: {}
       {{- end }}
+  {{- if .Values.clickhouse.persistence.enabled }}
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+        labels:
+          {{- include "edge-logs.labels" . | nindent 6 }}
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        {{- if .Values.clickhouse.persistence.storageClass }}
+        {{- if (eq "-" .Values.clickhouse.persistence.storageClass) }}
+        storageClassName: ""
+        {{- else }}
+        storageClassName: {{ .Values.clickhouse.persistence.storageClass | quote }}
+        {{- end }}
+        {{- end }}
+        resources:
+          requests:
+            storage: {{ .Values.clickhouse.persistence.size | quote }}
+  {{- end }}
 {{- end }}
