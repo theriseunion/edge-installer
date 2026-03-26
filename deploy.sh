@@ -1,185 +1,280 @@
 #!/bin/bash
 
-# Edge 快速部署脚本
-# 使用 Helm 直接部署三个组件
+# Edge Platform 统一部署脚本
+# 基于测试优化的自动化部署流程
+
+set -e
 
 # 默认参数设置
 NAMESPACE=${NAMESPACE:-edge-system}
 KUBECONFIG_PATH=${KUBECONFIG:-~/.kube/config}
-REGISTRY=${REGISTRY:-quanzhenglong.com/edge}
+REGISTRY=${REGISTRY:-quanzhenglong.com}
 TAG=${TAG:-main}
-PULL_POLICY=${PULL_POLICY:-Always}
-ENABLE_MONITORING=${ENABLE_MONITORING:-false}
-INSTALL_OPENYURT=${INSTALL_OPENYURT:-false}
-OPENYURT_API_SERVER=${OPENYURT_API_SERVER:-""}
+MODE=${MODE:-all}  # all, host, member, none
+CONFIG_FILE=${CONFIG_FILE:-""}
+
+# 脚本目录
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "$SCRIPT_DIR"
+
+# 颜色输出
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+NC='\033[0m' # No Color
+
+# 日志函数
+log_info() {
+    echo -e "${GREEN}[INFO]${NC} $1"
+}
+
+log_warn() {
+    echo -e "${YELLOW}[WARN]${NC} $1"
+}
+
+log_error() {
+    echo -e "${RED}[ERROR]${NC} $1"
+}
 
 # 显示所有部署参数
-echo "==================== Edge Platform 部署参数确认 ===================="
-echo "命名空间 (NAMESPACE):           $NAMESPACE"
-echo "Kubeconfig 路径 (KUBECONFIG):   $KUBECONFIG_PATH"
-echo "镜像仓库 (REGISTRY):            $REGISTRY"
-echo "镜像标签 (TAG):                 $TAG"
-echo "拉取策略 (PULL_POLICY):         $PULL_POLICY"
-echo "启用监控 (ENABLE_MONITORING):   $ENABLE_MONITORING"
-echo "安装 OpenYurt (INSTALL_OPENYURT): $INSTALL_OPENYURT"
-if [ "$INSTALL_OPENYURT" = "true" ]; then
-    echo "OpenYurt API Server:          $OPENYURT_API_SERVER"
-fi
-echo "===================================================================="
+show_parameters() {
+    echo "==================== Edge Platform 部署参数确认 ===================="
+    echo "命名空间 (NAMESPACE):           $NAMESPACE"
+    echo "Kubeconfig 路径 (KUBECONFIG):   $KUBECONFIG_PATH"
+    echo "镜像仓库 (REGISTRY):            $REGISTRY"
+    echo "镜像标签 (TAG):                 $TAG"
+    echo "安装模式 (MODE):                $MODE"
+    echo "配置文件 (CONFIG_FILE):         ${CONFIG_FILE:-无（使用默认配置）}"
+    echo ""
+    echo "安装模式说明："
+    echo "  all    - 安装所有组件（单集群独立部署）"
+    echo "  host   - 安装控制平面组件（主机集群）"
+    echo "  member - 安装成员组件（成员集群）"
+    echo "  none   - 仅安装 Controller 基础设施"
+    echo "===================================================================="
+}
 
-# 用户确认
-echo ""
-read -p "确认以上参数并开始部署？(y/N): " confirm
-if [[ ! "$confirm" =~ ^[Yy]$ ]]; then
-    echo "❌ 用户取消部署"
-    exit 1
-fi
+# 检查依赖
+check_dependencies() {
+    log_info "检查依赖工具..."
 
-echo ""
-echo "✅ 开始部署 Edge Platform..."
-echo ""
+    local missing_deps=()
 
-# 设置 kubeconfig
-export KUBECONFIG=$KUBECONFIG_PATH
+    command -v kubectl >/dev/null 2>&1 || missing_deps+=("kubectl")
+    command -v helm >/dev/null 2>&1 || missing_deps+=("helm")
+    command -v rsync >/dev/null 2>&1 || missing_deps+=("rsync")
+
+    if [ ${#missing_deps[@]} -ne 0 ]; then
+        log_error "缺少必要的依赖工具: ${missing_deps[*]}"
+        echo "请先安装缺少的工具："
+        for dep in "${missing_deps[@]}"; do
+            echo "  - $dep"
+        done
+        exit 1
+    fi
+
+    log_info "依赖检查通过"
+}
+
+# 检查集群连接
+check_cluster() {
+    log_info "检查集群连接..."
+
+    export KUBECONFIG=$KUBECONFIG_PATH
+
+    if ! kubectl cluster-info >/dev/null 2>&1; then
+        log_error "无法连接到 Kubernetes 集群"
+        echo "请检查："
+        echo "  1. KUBECONFIG 环境变量是否正确"
+        echo "  2. 集群是否正常运行"
+        echo "  3. 网络连接是否正常"
+        exit 1
+    fi
+
+    log_info "集群连接正常"
+    kubectl cluster-info | head -3
+}
+
+# 更新 ChartMuseum 镜像
+update_chartmuseum() {
+    log_info "更新 ChartMuseum 镜像..."
+
+    if [ ! -f "Makefile" ]; then
+        log_warn "未找到 Makefile，跳过 ChartMuseum 更新"
+        return
+    fi
+
+    # 检查是否需要更新
+    if [ "$SKIP_CHARTMUSEUM_UPDATE" = "true" ]; then
+        log_info "跳过 ChartMuseum 更新（SKIP_CHARTMUSEUM_UPDATE=true）"
+        return
+    fi
+
+    # 打包所有 charts
+    log_info "打包 Helm charts..."
+    make package-charts || {
+        log_warn "Helm charts 打包失败，尝试继续..."
+    }
+
+    # 构建 ChartMuseum 镜像
+    log_info "构建 ChartMuseum 镜像..."
+    make docker-build-museum || {
+        log_warn "ChartMuseum 镜像构建失败，尝试继续..."
+    }
+
+    # 推送镜像
+    log_info "推送 ChartMuseum 镜像..."
+    make docker-push-museum || {
+        log_warn "ChartMuseum 镜像推送失败，尝试继续..."
+    }
+
+    log_info "ChartMuseum 镜像更新完成"
+}
 
 # 创建命名空间
-kubectl create namespace $NAMESPACE --dry-run=client -o yaml | kubectl apply -f -
+create_namespaces() {
+    log_info "创建必要的命名空间..."
 
-# 可选安装 OpenYurt
-if [ "$INSTALL_OPENYURT" = "true" ]; then
-  echo "==================== 安装 OpenYurt ===================="
+    export KUBECONFIG=$KUBECONFIG_PATH
 
-  # 检查 API Server 地址是否设置
-  if [ -z "$OPENYURT_API_SERVER" ]; then
-    echo "❌ 错误：必须设置 OPENYURT_API_SERVER 环境变量"
-    echo ""
-    echo "快速设置方法："
-    echo "  export OPENYURT_API_SERVER=\$(kubectl config view --minify | grep server | awk '{print \$2}')"
-    echo ""
-    echo "或手动设置："
-    echo "  export OPENYURT_API_SERVER=https://192.168.1.102:6443"
-    echo ""
-    exit 1
-  fi
+    # 主命名空间
+    kubectl create namespace $NAMESPACE --dry-run=client -o yaml | kubectl apply -f -
 
-  echo "OpenYurt API Server: $OPENYURT_API_SERVER"
+    # 根据模式创建其他命名空间
+    if [ "$MODE" = "all" ] || [ "$MODE" = "host" ]; then
+        kubectl create namespace observability-system --dry-run=client -o yaml | kubectl apply -f -
+        kubectl create namespace logging-system --dry-run=client -o yaml | kubectl apply -f -
+        kubectl create namespace rise-vast-system --dry-run=client -o yaml | kubectl apply -f -
+    fi
 
-  # 使用本地 OpenYurt 1.6 安装脚本
-  echo "使用本地 OpenYurt 1.6 安装脚本..."
+    log_info "命名空间创建完成"
+}
 
-  # 设置环境变量并执行本地安装脚本
-  export KUBECONFIG=$KUBECONFIG_PATH
-  # 不传递 NAMESPACE，让 OpenYurt 使用默认的 kube-system
-  # 如需修改，可通过 OPENYURT_NAMESPACE 环境变量设置
-  export OPENYURT_API_SERVER=$OPENYURT_API_SERVER
-  export OPENYURT_VERSION=${OPENYURT_VERSION:-v1.6.0}
-  export INSTALL_RAVEN=${INSTALL_RAVEN:-false}
-  export SKIP_HELM_UPDATE=${SKIP_HELM_UPDATE:-true}  # 默认跳过 Helm update，加快安装速度
+# 部署 Edge Platform
+deploy_platform() {
+    log_info "部署 Edge Platform..."
 
-  # 执行本地安装脚本
-  if [ -f "./openyurt-1.6/install.sh" ]; then
-    chmod +x ./openyurt-1.6/install.sh
-    ./openyurt-1.6/install.sh || {
-      echo "⚠️  OpenYurt 安装失败"
-      exit 1
-    }
-  else
-    echo "❌ 错误：找不到本地 OpenYurt 安装脚本 ./openyurt-1.6/install.sh"
-    exit 1
-  fi
+    export KUBECONFIG=$KUBECONFIG_PATH
 
-  echo "✅ OpenYurt 安装成功"
-  echo "验证 OpenYurt 组件："
-  kubectl get pods -n kube-system | grep yurt
+    # 构建 helm 命令参数
+    local helm_args=(
+        "upgrade"
+        "--install"
+        "edge-platform"
+        "./edge-controller"
+        "--namespace" "$NAMESPACE"
+        "--set" "global.imageRegistry=$REGISTRY"
+        "--set" "global.mode=$MODE"
+    )
 
-  # 验证关键配置
-  echo ""
-  echo "验证 yurt-hub 配置..."
-  if kubectl get configmap yurt-static-set-yurt-hub -n kube-system -o yaml 2>/dev/null | grep -q "hub-cert-organizations=system:nodes"; then
-    echo "✅ yurt-hub 配置包含 hub-cert-organizations 参数"
-  else
-    echo "⚠️  yurt-hub 配置缺少 hub-cert-organizations 参数"
-  fi
-  echo ""
-fi
+    # 如果提供了配置文件，添加到参数中
+    if [ -n "$CONFIG_FILE" ] && [ -f "$CONFIG_FILE" ]; then
+        log_info "使用自定义配置文件: $CONFIG_FILE"
+        helm_args+=("-f" "$CONFIG_FILE")
+    fi
 
+    # 镜像标签
+    helm_args+=("--set" "controller.image.tag=$TAG")
 
-# 部署 API Server
-echo "部署 API Server..."
-helm upgrade --install apiserver ./edge-apiserver \
-  --namespace $NAMESPACE \
-  --set image.repository=$REGISTRY/apiserver \
-  --set image.tag=$TAG \
-  --set image.pullPolicy=$PULL_POLICY \
-  --wait || {
-    echo "❌ API Server 部署失败"
-    echo "请检查镜像是否存在以及集群连接状态"
-    exit 1
-  }
-
-# 部署 Controller
-echo "部署 Controller..."
-helm upgrade --install controller ./edge-controller \
-  --namespace $NAMESPACE \
-  --set image.repository=$REGISTRY/controller \
-  --set image.tag=$TAG \
-  --set image.pullPolicy=$PULL_POLICY \
-  --wait || {
-    echo "❌ Controller 部署失败"
-    exit 1
-  }
-
-# 部署 Console
-echo "部署 Console..."
-helm upgrade --install console ./edge-console \
-  --namespace $NAMESPACE \
-  --set image.repository=$REGISTRY/console \
-  --set image.tag=$TAG \
-  --set image.pullPolicy=$PULL_POLICY \
-  --set 'env[0].name=NEXT_PUBLIC_API_BASE_URL' \
-  --set 'env[0].value=http://apiserver:8080' \
-  --wait || {
-    echo "❌ Console 部署失败"
-    exit 1
-  }
-
-# 可选部署监控套件
-if [ "$ENABLE_MONITORING" = "true" ]; then
-  echo "部署监控套件 (Prometheus + Grafana + AlertManager + Monitoring Service)..."
-
-  # 创建 observability-system 命名空间
-  kubectl create namespace observability-system --dry-run=client -o yaml | kubectl apply -f -
-
-  # 部署完整监控套件（包含 monitoring-service）
-  helm upgrade --install edge-monitoring ./edge-monitoring \
-    --namespace observability-system \
-    --create-namespace \
-    --set monitoringService.image.tag=$TAG \
-    --wait \
-    --timeout 10m || {
-      echo "⚠️  监控套件部署失败"
-      echo "你可以稍后手动安装监控套件："
-      echo "  ENABLE_MONITORING=true ./deploy.sh"
-      exit 1
+    # 执行 helm 安装
+    echo "执行命令: helm ${helm_args[*]}"
+    helm "${helm_args[@]}" || {
+        log_error "Edge Platform 部署失败"
+        echo ""
+        echo "故障排查建议："
+        echo "  1. 检查 ChartMuseum 是否正常运行："
+        echo "     kubectl get pods -n $NAMESPACE -l app.kubernetes.io/name=chartmuseum"
+        echo "  2. 查看 Controller 日志："
+        echo "     kubectl logs deployment/controller -n $NAMESPACE"
+        echo "  3. 检查 Component 状态："
+        echo "     kubectl get component -A"
+        exit 1
     }
 
-  echo "✅ 完整监控环境部署成功"
-fi
+    log_info "Edge Platform 部署成功"
+}
 
-echo "部署完成！"
-echo "查看 Pod 状态："
-kubectl get pods -n $NAMESPACE
+# 等待组件就绪
+wait_for_ready() {
+    log_info "等待组件就绪..."
 
-if [ "$ENABLE_MONITORING" = "true" ]; then
-  echo ""
-  echo "监控服务访问方式："
-  echo "- Prometheus: kubectl port-forward svc/edge-monitoring-kube-prome-prometheus 9090:9090 -n observability-system"
-  echo "- Grafana: kubectl port-forward svc/edge-monitoring-grafana 3000:80 -n observability-system (admin/admin123)"
-  echo "- AlertManager: kubectl port-forward svc/edge-monitoring-kube-prome-alertmanager 9093:9093 -n observability-system"
-  echo "- Monitoring Service API: kubectl port-forward svc/monitoring-service 8080:80 -n observability-system"
-  echo "- 前端监控 API: 通过 apiserver 的 /oapis/monitoring.theriseunion.io/v1alpha1/* 访问"
-  echo ""
-  echo "检查监控服务状态："
-  echo "kubectl get pods -n observability-system"
-  echo "kubectl get svc -n observability-system"
-fi
+    export KUBECONFIG=$KUBECONFIG_PATH
+
+    local max_wait=300  # 最大等待 5 分钟
+    local waited=0
+
+    while [ $waited -lt $max_wait ]; do
+        local not_ready=$(kubectl get pods -n $NAMESPACE -l app.kubernetes.io/instance=edge-platform --no-headers 2>/dev/null | grep -v "Running\|Completed" | wc -l | tr -d ' ')
+
+        if [ "$not_ready" -eq 0 ]; then
+            log_info "所有组件已就绪"
+            return 0
+        fi
+
+        echo -n "."
+        sleep 5
+        waited=$((waited + 5))
+    done
+
+    log_warn "部分组件未能在预期时间内就绪"
+}
+
+# 显示部署结果
+show_results() {
+    export KUBECONFIG=$KUBECONFIG_PATH
+
+    echo ""
+    echo "==================== 部署结果 ===================="
+    echo ""
+    echo "Pod 状态："
+    kubectl get pods -n $NAMESPACE
+    echo ""
+    echo "Component 状态："
+    kubectl get component -A
+    echo ""
+    echo "访问方式："
+    echo "  Console:    使用 NodePort 或 Ingress 访问"
+    echo "  APIServer:  kubectl port-forward svc/apiserver 8080:8080 -n $NAMESPACE"
+    echo "  Controller: kubectl logs deployment/controller -n $NAMESPACE"
+    echo ""
+    echo "================================================"
+}
+
+# 主流程
+main() {
+    echo "==================== Edge Platform 部署脚本 ===================="
+    echo "基于测试优化的自动化部署流程"
+    echo ""
+
+    # 显示参数
+    show_parameters
+
+    # 用户确认
+    if [ "$AUTO_CONFIRM" != "true" ]; then
+        echo ""
+        read -p "确认以上参数并开始部署？(y/N): " confirm
+        if [[ ! "$confirm" =~ ^[Yy]$ ]]; then
+            echo "❌ 用户取消部署"
+            exit 1
+        fi
+    fi
+
+    echo ""
+    log_info "开始部署 Edge Platform..."
+    echo ""
+
+    # 执行部署步骤
+    check_dependencies
+    check_cluster
+    update_chartmuseum
+    create_namespaces
+    deploy_platform
+    wait_for_ready
+    show_results
+
+    echo ""
+    log_info "部署完成！"
+}
+
+# 执行主流程
+main "$@"

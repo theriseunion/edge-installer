@@ -1,0 +1,62 @@
+{{- if and .Values.controller.enabled (and (ne .Values.global.mode "none") .Values.autoInstall.edgeLogs.enabled) }}
+apiVersion: ext.theriseunion.io/v1alpha1
+kind: Component
+metadata:
+  name: edge-logs
+  namespace: logging-system
+  labels:
+    {{- include "edge-controller.labels" . | nindent 4 }}
+    app.kubernetes.io/component: edge-logs
+    app.kubernetes.io/part-of: edge-platform
+    cluster.theriseunion.io/role: {{ .Values.global.mode }}
+spec:
+  enabled: {{ .Values.autoInstall.edgeLogs.enabled }}
+  version: {{ .Values.autoInstall.edgeLogs.version | default .Chart.AppVersion }}
+  chart:
+    name: edge-logs
+    namespace: logging-system
+    releaseName: edge-logs
+    repository: http://chartmuseum.{{ .Release.Namespace }}.svc:8080
+  values:
+    # 全局配置
+    global:
+      imageRegistry: {{ .Values.global.imageRegistry }}
+
+    # 根据集群角色控制服务部署
+    # iLogtail 在所有集群都部署（收集日志）
+    ilogtail:
+      enabled: true
+
+    {{- if or (eq .Values.global.mode "all") (eq .Values.global.mode "host") }}
+    # ClickHouse 只在 Host 集群部署（存储日志数据）
+    clickhouse:
+      enabled: true
+    # 存储配置
+    {{- if .Values.autoInstall.edgeLogs.values.clickhouse.persistence }}
+      persistence:
+        {{- toYaml .Values.autoInstall.edgeLogs.values.clickhouse.persistence | nindent 8 }}
+    {{- end }}
+
+    # OTEL Collector 只在 Host 集群部署（接收和处理日志）
+    otelCollector:
+      enabled: true
+
+    # APIServer 在 Host 集群部署
+    apiserver:
+      enabled: true
+    {{- else }}
+    # Member 集群不部署这些服务
+    clickhouse:
+      enabled: false
+
+    otelCollector:
+      enabled: false
+
+    apiserver:
+      enabled: false
+    {{- end }}
+
+  {{- if .Values.autoInstall.edgeLogs.values }}
+    {{- toYaml .Values.autoInstall.edgeLogs.values | nindent 2 }}
+  {{- end }}
+{{- end }}

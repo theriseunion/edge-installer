@@ -286,6 +286,13 @@ spec:
     - members
     verbs:
     - '*'
+  - apiGroups:
+      - iam.theriseunion.io
+    resources:
+      - users
+    verbs:
+      - get
+      - list
 
 ---
 apiVersion: iam.theriseunion.io/v1alpha1

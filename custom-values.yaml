@@ -1,0 +1,296 @@
+# Edge Platform 用户自定义配置文件
+# 复制此文件为 config.yaml 并根据需要修改配置
+
+# ==================== 全局配置 ====================
+global:
+  # 安装模式: all, host, member, none
+  #   - all: 安装所有组件（单集群独立部署）
+  #   - host: 安装控制平面组件（主机集群）
+  #   - member: 安装成员组件（成员集群）
+  #   - none: 仅安装 Controller 基础设施
+  mode: "all"
+
+  # 命名空间
+  namespace: "edge-system"
+
+  # 镜像仓库配置
+  imageRegistry: "quanzhenglong.com"
+
+# ==================== Controller 配置 ====================
+controller:
+  enabled: true
+
+  # 资源配置
+  replicaCount: 1
+  resources:
+    limits:
+      cpu: 500m
+      memory: 1Gi
+    requests:
+      cpu: 50m
+      memory: 64Mi
+
+  # 日志级别: debug, info, warn, error
+  logLevel: info
+
+# ==================== ChartMuseum 配置 ====================
+chartmuseum:
+  enabled: true
+
+  resources:
+    limits:
+      cpu: 100m
+      memory: 128Mi
+    requests:
+      cpu: 50m
+      memory: 64Mi
+
+# ==================== 组件自动安装配置 ====================
+autoInstall:
+
+  # APIServer 组件
+  apiserver:
+    enabled: true
+    version: "0.1.0"
+    values:
+      replicaCount: 1
+      service:
+        type: ClusterIP
+        port: 8080
+      resources:
+        limits:
+          cpu: 1
+          memory: 1Gi
+        requests:
+          cpu: 100m
+          memory: 128Mi
+      # JWT 认证配置（生产环境请修改）
+      edge:
+        auth:
+          jwt:
+            issuerUrl: localhost:30080
+            # secret: "<必须替换为 Base64 编码的安全随机字符串>"
+            # 可以使用以下命令生成一个：head -c 32 /dev/urandom | base64
+            secret: ""
+
+  # Console 组件（仅在 host/all 模式安装）
+  console:
+    enabled: true  # 会被模板根据 global.mode 动态设置
+    version: "0.1.0"
+    values:
+      replicaCount: 1
+      service:
+        type: NodePort
+        port: 3000
+        nodePort: 30446
+      resources:
+        limits:
+          cpu: 1000m
+          memory: 1Gi
+        requests:
+          cpu: 100m
+          memory: 128Mi
+      env:
+        - name: NEXT_PUBLIC_API_BASE_URL
+          value: "http://apiserver:8080"
+
+  # Monitoring 组件
+  monitoring:
+    enabled: true
+    version: "0.1.0"
+    namespace: "observability-system"
+    values:
+      namespace: "observability-system"
+      monitoringService:
+        image:
+          tag: "main"
+        resources:
+          limits:
+            cpu: 500m
+            memory: 512Mi
+          requests:
+            cpu: 100m
+            memory: 128Mi
+      # 边缘数据接收配置
+      edgeTraefikRemoteWrite:
+        enabled: true
+        remote-hostname: host.rise.io
+      # Prometheus Agent 配置
+      edge-prometheus-agent:
+        remoteWriteUrl: "http://host.rise.io:30990/api/v1/write"
+
+  # Edge Logs 组件
+  edgeLogs:
+    enabled: true
+    version: "0.1.0"
+    namespace: "logging-system"
+    values:
+      # ClickHouse 配置（仅在 host/all 模式部署）
+      clickhouse:
+        persistence:
+          enabled: true
+          # StorageClass: "" = 使用默认类, "-" = 禁用 StorageClass, "your-class" = 指定类
+          storageClass: ""
+          # 存储大小
+          size: 10Gi
+        resources:
+          limits:
+            cpu: 1000m
+            memory: 2Gi
+          requests:
+            cpu: 250m
+            memory: 512Mi
+
+      # OTEL Collector 配置（仅在 host/all 模式部署）
+      otelCollector:
+        resources:
+          limits:
+            cpu: 500m
+            memory: 512Mi
+          requests:
+            cpu: 100m
+            memory: 128Mi
+
+      # APIServer 配置（仅在 host/all 模式部署）
+      apiserver:
+        resources:
+          limits:
+            cpu: 500m
+            memory: 512Mi
+          requests:
+            cpu: 100m
+            memory: 128Mi
+
+  # Duty 组件
+  duty:
+    enabled: true
+    version: "0.1.0"
+    namespace: "observability-system"
+    values:
+      duty-web:
+        image:
+          tag: "v1.0.1"
+
+  # PostgreSQL 组件
+  postgresql:
+    enabled: true
+    version: "0.1.0"
+    values:
+      # PostgreSQL 资源配置
+      resources:
+        limits:
+          cpu: 500m
+          memory: 1Gi
+        requests:
+          cpu: 100m
+          memory: 256Mi
+
+  # VAST 组件（GPU 调度平台）
+  vast:
+    enabled: true
+    version: "0.1.0"
+    namespace: "rise-vast-system"
+    values:
+      # VAST 平台配置
+      # 可以在这里覆盖 VAST chart 的默认 values
+      # 例如：controller.enabled, apiserver.enabled, hami.enabled 等
+
+  # Traefik Ingress Controller
+  traefik:
+    enabled: true
+    version: "0.1.0"
+    namespace: "edge-system"
+
+  # Bin Downloader（静态文件服务器）
+  binDownloader:
+    enabled: true
+    version: "0.1.0"
+    namespace: "edge-system"
+
+
+
+# 如需调度到任意节点，取消下面的注释并注释掉上面的配置：
+# nodeSelector: {}
+
+# ==================== 常见配置场景 ====================
+
+# 场景 1: 开发测试环境（低资源配置）
+# global:
+#   mode: "all"
+# autoInstall:
+#   apiserver:
+#     values:
+#       resources:
+#         limits:
+#           cpu: 500m
+#           memory: 512Mi
+#   console:
+#     values:
+#       resources:
+#         limits:
+#           cpu: 500m
+#           memory: 512Mi
+#   edgeLogs:
+#     values:
+#       clickhouse:
+#         persistence:
+#           size: 5Gi
+
+# 场景 2: 生产环境（高资源配置）
+# autoInstall:
+#   apiserver:
+#     values:
+#       replicaCount: 3
+#       resources:
+#         limits:
+#           cpu: 2000m
+#           memory: 2Gi
+#   edgeLogs:
+#     values:
+#       clickhouse:
+#         persistence:
+#           storageClass: "fast-ssd"  # 使用高性能存储
+#           size: 100Gi
+
+# 场景 3: 仅主机集群（不安装 Console）
+# global:
+#   mode: "host"
+# autoInstall:
+#   console:
+#     enabled: false  # 会被模板根据 mode 设置，这里仅为示例
+
+# 场景 4: 成员集群（最小化安装）
+# global:
+#   mode: "member"
+# autoInstall:
+#   console:
+#     enabled: false
+#   edgeLogs:
+#     values:
+#       clickhouse:
+#         enabled: false  # 成员集群不部署 ClickHouse
+#       otelCollector:
+#         enabled: false
+
+# ==================== 注意事项 ====================
+#
+# 1. 资源配置建议：
+#    - 开发环境：requests 的 1/2 可用于 limits
+#    - 生产环境：requests 应接近实际使用量，limits 留有余量
+#
+# 2. 存储配置建议：
+#    - ClickHouse 存储大小应预计至少 30 天的日志量
+#    - 生产环境建议使用高性能 StorageClass（如 SSD）
+#
+# 3. 镜像配置：
+#    - 确保镜像仓库可访问
+#    - 开发环境可使用 IfNotPresent 策略
+#    - 生产环境建议使用特定版本 tag 而非 main
+#
+# 4. 安全配置：
+#    - 生产环境务必修改 JWT secret
+#    - 考虑启用 RBAC 和网络策略
+#
+# 5. 监控配置：
+#    - 建议启用 monitoring 组件以监控集群状态
+#    - 根据需求调整 Prometheus 存储保留期
