@@ -149,3 +149,5 @@ reverseProxy:
   upstream:
     port: 8080
     scheme: http
+  directives:
+    authProxy: true
