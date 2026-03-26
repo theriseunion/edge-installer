@@ -24,8 +24,8 @@ controller:
   replicaCount: 1
   resources:
     limits:
-      cpu: 200m
-      memory: 256Mi
+      cpu: 500m
+      memory: 1Gi
     requests:
       cpu: 50m
       memory: 64Mi
@@ -59,7 +59,7 @@ autoInstall:
         port: 8080
       resources:
         limits:
-          cpu: 1000m
+          cpu: 1
           memory: 1Gi
         requests:
           cpu: 100m
@@ -123,17 +123,8 @@ autoInstall:
     version: "0.1.0"
     namespace: "logging-system"
     values:
-      # 全局镜像仓库
-      global:
-        imageRegistry: "quanzhenglong.com"
-
-      # iLogtail 配置（所有集群都部署）
-      ilogtail:
-        enabled: true
-
       # ClickHouse 配置（仅在 host/all 模式部署）
       clickhouse:
-        enabled: true  # 会被模板根据 global.mode 动态设置
         persistence:
           enabled: true
           # StorageClass: "" = 使用默认类, "-" = 禁用 StorageClass, "your-class" = 指定类
@@ -150,7 +141,6 @@ autoInstall:
 
       # OTEL Collector 配置（仅在 host/all 模式部署）
       otelCollector:
-        enabled: true  # 会被模板根据 global.mode 动态设置
         resources:
           limits:
             cpu: 500m
@@ -161,7 +151,6 @@ autoInstall:
 
       # APIServer 配置（仅在 host/all 模式部署）
       apiserver:
-        enabled: true  # 会被模板根据 global.mode 动态设置
         resources:
           limits:
             cpu: 500m
