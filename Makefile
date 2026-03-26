@@ -24,7 +24,7 @@ CHARTS_SOURCE := .
 
 # List of charts to package - modify this when adding/removing charts
 # Note: monitoring-service is embedded in edge-monitoring chart
-CHARTS := edge-apiserver edge-console edge-controller edge-monitoring edge-duty edge-ota kubeedge yurt-manager yurthub vast vcluster-k8s-addition yurt-iot-dock traefik bin-downloader iot-apiserver iot-controller openyurt-addition postgresql
+CHARTS := edge-logs edge-apiserver edge-console edge-controller edge-monitoring edge-duty edge-ota kubeedge yurt-manager yurthub vast vcluster-k8s-addition yurt-iot-dock traefik bin-downloader iot-apiserver iot-controller openyurt-addition postgresql
 
 # ChartMuseum image
 MUSEUM_IMG ?= $(REGISTRY)/edge-museum:$(TAG)
@@ -60,6 +60,15 @@ docker-push-museum: ## Push ChartMuseum docker image
 .PHONY: docker-buildx-museum
 docker-buildx-museum: package-charts ## Build and push ChartMuseum image for cross-platform
 	$(CONTAINER_TOOL) buildx build --platform linux/amd64,linux/arm64 -f Dockerfile.museum -t ${MUSEUM_IMG} --push .
+
+.PHONY: update-chartmuseum
+update-chartmuseum: ## Update ChartMuseum image (package, build, push, and deploy)
+	@echo "=== Updating ChartMuseum Image ==="
+	@$(MAKE) package-charts
+	@$(MAKE) docker-build-museum
+	@$(MAKE) docker-push-museum
+	@echo "ChartMuseum image updated: ${MUSEUM_IMG}"
+	@echo "Run 'kubectl set image deployment/chartmuseum chartmuseum=${MUSEUM_IMG} -n edge-system' to deploy"
 
 ##@ Deployment
 
