@@ -18,6 +18,8 @@ spec:
     releaseName: iot-apiserver
     repository: http://chartmuseum.{{ .Release.Namespace }}.svc:{{ .Values.chartmuseum.service.port }}
   values:
+    global:
+      imageRegistry: {{ .Values.global.imageRegistry }}
     replicaCount: 1
     service:
       type: ClusterIP
@@ -42,6 +44,8 @@ spec:
     releaseName: iot-controller
     repository: http://chartmuseum.{{ .Release.Namespace }}.svc:{{ .Values.chartmuseum.service.port }}
   values:
+    global:
+      imageRegistry: {{ .Values.global.imageRegistry }}
     replicaCount: 1
     service:
       type: ClusterIP
@@ -64,3 +68,6 @@ spec:
     namespace: kube-system
     releaseName: yurt-iot-dock
     repository: http://chartmuseum.{{ .Release.Namespace }}.svc:{{ .Values.chartmuseum.service.port }}
+  values:
+    global:
+      imageRegistry: {{ .Values.global.imageRegistry }}
