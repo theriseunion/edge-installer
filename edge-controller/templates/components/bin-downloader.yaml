@@ -18,8 +18,10 @@ spec:
     namespace: {{ .Values.autoInstall.binDownloader.namespace | default "edge-system" }}
     releaseName: bin-downloader
     repository: http://chartmuseum.{{ .Release.Namespace }}.svc:8080
-  {{- if .Values.autoInstall.binDownloader.values }}
   values:
+    global:
+      imageRegistry: {{ .Values.global.imageRegistry }}
+    {{- if .Values.autoInstall.binDownloader.values }}
     {{- toYaml .Values.autoInstall.binDownloader.values | nindent 4 }}
-  {{- end }}
+    {{- end }}
 {{- end }}

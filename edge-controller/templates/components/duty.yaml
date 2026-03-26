@@ -17,8 +17,10 @@ spec:
     namespace: observability-system
     releaseName: edge-duty
     repository: http://chartmuseum.{{ .Release.Namespace }}.svc:8080
-  {{- if .Values.autoInstall.duty.values }}
   values:
+    global:
+      imageRegistry: {{ .Values.global.imageRegistry }}
+    {{- if .Values.autoInstall.duty.values }}
     {{- toYaml .Values.autoInstall.duty.values | nindent 4 }}
-  {{- end }}
+    {{- end }}
 {{- end }}

@@ -17,8 +17,10 @@ spec:
     namespace: observability-system
     releaseName: edge-monitoring
     repository: http://chartmuseum.{{ .Release.Namespace }}.svc:8080
-  {{- if .Values.autoInstall.monitoring.values }}
   values:
+    global:
+      imageRegistry: {{ .Values.global.imageRegistry }}
+    {{- if .Values.autoInstall.monitoring.values }}
     {{- toYaml .Values.autoInstall.monitoring.values | nindent 4 }}
-  {{- end }}
+    {{- end }}
 {{- end }}

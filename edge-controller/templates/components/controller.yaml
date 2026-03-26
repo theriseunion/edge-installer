@@ -24,6 +24,8 @@ spec:
     releaseName: edge-platform	
     repository: http://chartmuseum.{{ .Release.Namespace }}.svc:{{ .Values.chartmuseum.service.port }}
   values:
+    global:
+      imageRegistry: {{ .Values.global.imageRegistry }}
     controller:
       {{- toYaml .Values.controller | nindent 6 }}
     chartmuseum:
