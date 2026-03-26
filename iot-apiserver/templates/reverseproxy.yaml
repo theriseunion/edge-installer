@@ -12,3 +12,5 @@ spec:
     host: {{ include "iot-apiserver.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local
     port: {{ .Values.reverseProxy.upstream.port }}
     scheme: {{ .Values.reverseProxy.upstream.scheme }}
+  directives:
+    authProxy: {{ .Values.reverseProxy.directives.authProxy }}
